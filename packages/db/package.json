@@ -1,0 +1,31 @@
+{
+  "name": "@pms-oms/db",
+  "version": "1.0.0",
+  "types": "module",
+  "main": "./src/index.ts",
+  "exports":{
+    ".":"./src/index.ts"
+  },
+  "module": "index.ts",
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.9.1",
+    "@prisma/client": "^7.9.1",
+    "cors": "^2.8.6",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "pg": "^8.23.0"
+  },
+  "scripts": {
+    "generate":"prisma generate",
+    "migrate":"prisma miferate dev",
+    "studio":"prisma studio",
+    "seed":"bun --env-file==../../,enc prisma/seed.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/pg": "^8.23.1",
+    "prisma": "^7.9.1"
+  },
+  "private": true,
+  "type": "module"
+}

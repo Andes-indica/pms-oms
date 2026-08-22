@@ -1,0 +1,149 @@
+generator client {
+  provider = "prisma-client-js"
+  output = "../src/generated/prisma"
+  runtime="bun"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  ADMIN
+  PORTFOLIO_MANAGER
+  OPERATIONS
+  VIEWER
+}
+
+model Firm {
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  users   User[]
+  clients Client[]
+}
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(PORTFOLIO_MANAGER)
+
+  firmId String
+  firm   Firm   @relation(fields: [firmId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id    String @id @default(cuid())
+  name  String
+  email String?
+
+  firmId String
+  firm   Firm   @relation(fields: [firmId], references: [id])
+
+  brokerAccounts BrokerAccount[]
+  portfolios Portfolio[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BrokerAccount {
+  id String @id @default(cuid())
+
+  broker       String
+  accountId    String
+  accountLabel String?
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([broker, accountId])
+}
+enum OrderSide {
+  BUY
+  SELL
+}
+
+enum OrderType {
+  MARKET
+  LIMIT
+}
+
+enum OrderStatus {
+  PENDING
+  SUBMITTED
+  OPEN
+  FILLED
+  CANCELLED
+  REJECTED
+}
+
+model Portfolio {
+  id       String @id @default(cuid())
+  name     String
+
+  clientId String
+  client   Client @relation(fields: [clientId], references: [id])
+
+  holdings Holding[]
+  orders   Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Holding {
+  id       String @id @default(cuid())
+
+  symbol   String
+  exchange String
+  quantity Int
+
+  averagePrice Decimal @db.Decimal(18, 4)
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([portfolioId, symbol, exchange])
+}
+
+model Order {
+  id String @id @default(cuid())
+
+  symbol   String
+  exchange String
+
+  side      OrderSide
+  orderType OrderType
+  status    OrderStatus @default(PENDING)
+
+  quantity Int
+
+  limitPrice Decimal? @db.Decimal(18, 4)
+
+  brokerOrderId String?
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
