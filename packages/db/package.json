@@ -17,7 +17,7 @@
   },
   "scripts": {
     "generate":"prisma generate",
-    "migrate":"prisma miferate dev",
+    "migrate":"prisma migrate dev",
     "studio":"prisma studio",
     "seed":"bun --env-file==../../,enc prisma/seed.ts"
   },

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import { prisma } from "@pms-oms/db";
 import clientRoutes from "./routes/client.routes.ts";
+import orderRoutes from "./routes/order.routes";
 
 const app = express();
 
@@ -35,4 +36,5 @@ app.get("/health/db", async (_req, res) => {
 
 app.use("/api/clients", clientRoutes);
 
+app.use("/api/orders",orderRoutes);
 export default app;
