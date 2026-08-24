@@ -1,4 +1,5 @@
 import type { Request, Response } from "express";
+import { createOrderService } from "../services/order.service";
 import { prisma } from "@pms-oms/db";
 
 type CreateOrderBody = {
@@ -34,13 +35,13 @@ export async function createOrder(
       });
     }
 
-    if (!side || !["BUY", "SELL"].includes(side)) {
+    if (!["BUY", "SELL"].includes(side)) {
       return res.status(400).json({
         error: "Invalid order side",
       });
     }
 
-    if (!orderType || !["MARKET", "LIMIT"].includes(orderType)) {
+    if (!["MARKET", "LIMIT"].includes(orderType)) {
       return res.status(400).json({
         error: "Invalid order type",
       });
@@ -58,58 +59,76 @@ export async function createOrder(
       });
     }
 
-    const portfolio = await prisma.portfolio.findUnique({
-      where: {
-        id: portfolioId,
-      },
-    });
-
-    if (!portfolio) {
-      return res.status(404).json({
-        error: "Portfolio not found",
-      });
-    }
-
-    const brokerAccount = await prisma.brokerAccount.findUnique({
-      where: {
-        id: brokerAccountId,
-      },
-    });
-
-    if (!brokerAccount) {
-      return res.status(404).json({
-        error: "Broker account not found",
-      });
-    }
-
-    if (portfolio.clientId !== brokerAccount.clientId) {
-      return res.status(400).json({
-        error: "Portfolio and broker account belong to different clients",
-      });
-    }
-
-    const order = await prisma.order.create({
-      data: {
-        portfolioId,
-        brokerAccountId,
-        symbol: symbol.toUpperCase(),
-        exchange: exchange.toUpperCase(),
-        side,
-        orderType,
-        quantity,
-        limitPrice: orderType === "LIMIT" ? limitPrice : null,
-        status: "PENDING",
-      },
+    const order = await createOrderService({
+      portfolioId,
+      brokerAccountId,
+      symbol,
+      exchange,
+      side,
+      orderType,
+      quantity,
+      limitPrice,
     });
 
     return res.status(201).json({
       data: order,
     });
   } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "PORTFOLIO_NOT_FOUND") {
+        return res.status(404).json({
+          error: "Portfolio not found",
+        });
+      }
+
+      if (error.message === "BROKER_ACCOUNT_NOT_FOUND") {
+        return res.status(404).json({
+          error: "Broker account not found",
+        });
+      }
+
+      if (error.message === "BROKER_ACCOUNT_MISMATCH") {
+        return res.status(400).json({
+          error: "Portfolio and broker account belong to different clients",
+        });
+      }
+    }
+
     console.error("Failed to create order:", error);
 
     return res.status(500).json({
       error: "Failed to create order",
+    });
+  }
+}
+
+export async function getOrders(
+  _req: Request,
+  res: Response,
+) {
+  try {
+    const orders = await prisma.order.findMany({
+      include: {
+        portfolio: {
+          include: {
+            client: true,
+          },
+        },
+        brokerAccount: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    return res.status(200).json({
+      data: orders,
+    });
+  } catch (error) {
+    console.error("Failed to fetch orders:", error);
+
+    return res.status(500).json({
+      error: "Failed to fetch orders",
     });
   }
 }
