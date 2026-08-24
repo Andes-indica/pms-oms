@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { createOrderService } from "../services/order.service";
 import { prisma } from "@pms-oms/db";
+import { executeOrderService } from "../services/order-execution.service";
 
 type CreateOrderBody = {
   portfolioId: string;
@@ -129,6 +130,40 @@ export async function getOrders(
 
     return res.status(500).json({
       error: "Failed to fetch orders",
+    });
+  }
+}
+export async function executeOrder(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  try {
+    const { id } = req.params;
+
+    const order = await executeOrderService(id);
+
+    return res.status(200).json({
+      data: order,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === "ORDER_NOT_FOUND") {
+        return res.status(404).json({
+          error: "Order not found",
+        });
+      }
+
+      if (error.message === "ORDER_NOT_PENDING") {
+        return res.status(409).json({
+          error: "Only pending orders can be executed",
+        });
+      }
+    }
+
+    console.error("Failed to execute order:", error);
+
+    return res.status(500).json({
+      error: "Failed to execute order",
     });
   }
 }

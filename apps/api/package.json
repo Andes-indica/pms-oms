@@ -9,6 +9,7 @@
     "build": "bun run build.ts"
   },
   "dependencies": {
+    "@pms-oms/broker": "workspace:*",
     "@pms-oms/db": "workspace:*",
     "bun-plugin-tailwind": "^0.1.2",
     "cors": "^2.8.6",
