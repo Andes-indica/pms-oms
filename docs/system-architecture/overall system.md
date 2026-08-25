@@ -21,4 +21,4 @@ flowchart TD
 
     DB --> Live["WebSocket Updates"]
     Live --> UI
-    ```
+    
