@@ -8,22 +8,10 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
-    "start": "NODE_ENV=production bun src/index.ts",
-    "build": "bun run build.ts",
+    "dev": "bun --filter '*' dev",
+    "build": "bun --filter '*' build",
     "test": "bun --filter '*' test",
-    "lint": "bun --filter '*' lint"
-  },
-  "dependencies": {
-    "@prisma/client-runtime-utils": "^7.9.1",
-    "bun-plugin-tailwind": "^0.1.2",
-    "react": "^19",
-    "react-dom": "^19",
-    "tailwindcss": "^4.1.11"
-  },
-  "devDependencies": {
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "@types/bun": "latest"
-  }
+    "lint": "bun --filter '*' lint",
+    "dev:api":"cd apps/api && bun run dev"
+  } 
 }

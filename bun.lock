@@ -4,18 +4,6 @@
   "workspaces": {
     "": {
       "name": "pms-oms",
-      "dependencies": {
-        "@prisma/client-runtime-utils": "^7.9.1",
-        "bun-plugin-tailwind": "^0.1.2",
-        "react": "^19",
-        "react-dom": "^19",
-        "tailwindcss": "^4.1.11",
-      },
-      "devDependencies": {
-        "@types/bun": "latest",
-        "@types/react": "^19",
-        "@types/react-dom": "^19",
-      },
     },
     "apps/api": {
       "name": "bun-react-template",
