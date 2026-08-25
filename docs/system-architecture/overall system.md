@@ -1,3 +1,4 @@
+```mermaid
 flowchart TD
     Manager["Portfolio Manager"] --> UI["React + Tailwind Dashboard"]
     UI --> API["Bun + TypeScript API"]
@@ -20,3 +21,4 @@ flowchart TD
 
     DB --> Live["WebSocket Updates"]
     Live --> UI
+    ```
