@@ -1,27 +1,13 @@
 import { prisma } from "@pms-oms/db";
 import { MockBroker } from "@pms-oms/broker";
+import { runPreTradeChecks } from "./pre-trade.service";
 
-const broker = new MockBroker();
+const mockBroker = new MockBroker();
 
 export async function executeOrderService(orderId: string) {
-  const order = await prisma.order.findUnique({
-    where: {
-      id: orderId,
-    },
-    include: {
-      brokerAccount: true,
-    },
-  });
+  const order = await runPreTradeChecks(orderId);
 
-  if (!order) {
-    throw new Error("ORDER_NOT_FOUND");
-  }
-
-  if (order.status !== "PENDING") {
-    throw new Error("ORDER_NOT_PENDING");
-  }
-
-  const result = await broker.placeOrder({
+  const brokerResult = await mockBroker.placeOrder({
     symbol: order.symbol,
     exchange: order.exchange,
     side: order.side,
@@ -32,15 +18,13 @@ export async function executeOrderService(orderId: string) {
       : null,
   });
 
-  const updatedOrder = await prisma.order.update({
+  return prisma.order.update({
     where: {
       id: order.id,
     },
     data: {
-      brokerOrderId: result.brokerOrderId,
-      status: result.status,
+      brokerOrderId: brokerResult.brokerOrderId,
+      status: brokerResult.status,
     },
   });
-
-  return updatedOrder;
 }

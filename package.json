@@ -12,6 +12,9 @@
     "build": "bun --filter '*' build",
     "test": "bun --filter '*' test",
     "lint": "bun --filter '*' lint",
-    "dev:api":"cd apps/api && bun run dev"
-  } 
+    "dev:api": "cd apps/api && bun run dev"
+  },
+  "dependencies": {
+    "@pms-oms/broker": "workspace:*"
+  }
 }

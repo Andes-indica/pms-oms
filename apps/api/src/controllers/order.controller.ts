@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import { createOrderService } from "../services/order.service";
 import { prisma } from "@pms-oms/db";
 import { executeOrderService } from "../services/order-execution.service";
+import { syncOrderService } from "@/services/order-sync.service";
 
 type CreateOrderBody = {
   portfolioId: string;
@@ -138,9 +139,54 @@ export async function executeOrder(
   res: Response,
 ) {
   try {
-    const { id } = req.params;
+    const order = await executeOrderService(req.params.id);
 
-    const order = await executeOrderService(id);
+    return res.status(200).json({
+      data: order,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      switch (error.message) {
+        case "ORDER_NOT_FOUND":
+          return res.status(404).json({
+            error: "Order not found",
+          });
+
+        case "ORDER_NOT_PENDING":
+          return res.status(409).json({
+            error: "Order is not pending",
+          });
+
+        case "BROKER_ACCOUNT_MISMATCH":
+          return res.status(400).json({
+            error: "Broker account does not belong to portfolio client",
+          });
+
+        case "INVALID_QUANTITY":
+          return res.status(400).json({
+            error: "Invalid order quantity",
+          });
+
+        case "INSUFFICIENT_HOLDINGS":
+          return res.status(400).json({
+            error: "Insufficient holdings for sell order",
+          });
+      }
+    }
+
+    console.error("Order execution failed:", error);
+
+    return res.status(500).json({
+      error: "Order execution failed",
+    });
+  }
+}
+export async function syncOrder(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  try {
+    const order = await syncOrderService(req.params.id);
 
     return res.status(200).json({
       data: order,
@@ -153,17 +199,23 @@ export async function executeOrder(
         });
       }
 
-      if (error.message === "ORDER_NOT_PENDING") {
+      if (error.message === "ORDER_NOT_SUBMITTED") {
         return res.status(409).json({
-          error: "Only pending orders can be executed",
+          error: "Order has not been submitted to a broker",
+        });
+      }
+
+      if (error.message === "INSUFFICIENT_HOLDINGS") {
+        return res.status(409).json({
+          error: "Insufficient holdings",
         });
       }
     }
 
-    console.error("Failed to execute order:", error);
+    console.error("Order sync failed:", error);
 
     return res.status(500).json({
-      error: "Failed to execute order",
+      error: "Order sync failed",
     });
   }
 }
