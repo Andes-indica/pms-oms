@@ -83,6 +83,7 @@ export const OrderStatus: {
   PENDING: 'PENDING',
   SUBMITTED: 'SUBMITTED',
   OPEN: 'OPEN',
+  PARTIALLY_FILLED: 'PARTIALLY_FILLED',
   FILLED: 'FILLED',
   CANCELLED: 'CANCELLED',
   REJECTED: 'REJECTED'
@@ -8370,11 +8371,15 @@ export namespace Prisma {
   export type OrderAvgAggregateOutputType = {
     quantity: number | null
     limitPrice: Decimal | null
+    filledQuantity: number | null
+    averageFillPrice: Decimal | null
   }
 
   export type OrderSumAggregateOutputType = {
     quantity: number | null
     limitPrice: Decimal | null
+    filledQuantity: number | null
+    averageFillPrice: Decimal | null
   }
 
   export type OrderMinAggregateOutputType = {
@@ -8387,6 +8392,9 @@ export namespace Prisma {
     quantity: number | null
     limitPrice: Decimal | null
     brokerOrderId: string | null
+    filledQuantity: number | null
+    averageFillPrice: Decimal | null
+    filledAt: Date | null
     portfolioId: string | null
     brokerAccountId: string | null
     createdAt: Date | null
@@ -8403,6 +8411,9 @@ export namespace Prisma {
     quantity: number | null
     limitPrice: Decimal | null
     brokerOrderId: string | null
+    filledQuantity: number | null
+    averageFillPrice: Decimal | null
+    filledAt: Date | null
     portfolioId: string | null
     brokerAccountId: string | null
     createdAt: Date | null
@@ -8419,6 +8430,9 @@ export namespace Prisma {
     quantity: number
     limitPrice: number
     brokerOrderId: number
+    filledQuantity: number
+    averageFillPrice: number
+    filledAt: number
     portfolioId: number
     brokerAccountId: number
     createdAt: number
@@ -8430,11 +8444,15 @@ export namespace Prisma {
   export type OrderAvgAggregateInputType = {
     quantity?: true
     limitPrice?: true
+    filledQuantity?: true
+    averageFillPrice?: true
   }
 
   export type OrderSumAggregateInputType = {
     quantity?: true
     limitPrice?: true
+    filledQuantity?: true
+    averageFillPrice?: true
   }
 
   export type OrderMinAggregateInputType = {
@@ -8447,6 +8465,9 @@ export namespace Prisma {
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
+    filledQuantity?: true
+    averageFillPrice?: true
+    filledAt?: true
     portfolioId?: true
     brokerAccountId?: true
     createdAt?: true
@@ -8463,6 +8484,9 @@ export namespace Prisma {
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
+    filledQuantity?: true
+    averageFillPrice?: true
+    filledAt?: true
     portfolioId?: true
     brokerAccountId?: true
     createdAt?: true
@@ -8479,6 +8503,9 @@ export namespace Prisma {
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
+    filledQuantity?: true
+    averageFillPrice?: true
+    filledAt?: true
     portfolioId?: true
     brokerAccountId?: true
     createdAt?: true
@@ -8582,6 +8609,9 @@ export namespace Prisma {
     quantity: number
     limitPrice: Decimal | null
     brokerOrderId: string | null
+    filledQuantity: number
+    averageFillPrice: Decimal | null
+    filledAt: Date | null
     portfolioId: string
     brokerAccountId: string
     createdAt: Date
@@ -8617,6 +8647,9 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    filledQuantity?: boolean
+    averageFillPrice?: boolean
+    filledAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
@@ -8635,6 +8668,9 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    filledQuantity?: boolean
+    averageFillPrice?: boolean
+    filledAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
@@ -8653,6 +8689,9 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    filledQuantity?: boolean
+    averageFillPrice?: boolean
+    filledAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
@@ -8671,13 +8710,16 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    filledQuantity?: boolean
+    averageFillPrice?: boolean
+    filledAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "quantity" | "limitPrice" | "brokerOrderId" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "quantity" | "limitPrice" | "brokerOrderId" | "filledQuantity" | "averageFillPrice" | "filledAt" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
@@ -8707,6 +8749,9 @@ export namespace Prisma {
       quantity: number
       limitPrice: Prisma.Decimal | null
       brokerOrderId: string | null
+      filledQuantity: number
+      averageFillPrice: Prisma.Decimal | null
+      filledAt: Date | null
       portfolioId: string
       brokerAccountId: string
       createdAt: Date
@@ -9145,6 +9190,9 @@ export namespace Prisma {
     readonly quantity: FieldRef<"Order", 'Int'>
     readonly limitPrice: FieldRef<"Order", 'Decimal'>
     readonly brokerOrderId: FieldRef<"Order", 'String'>
+    readonly filledQuantity: FieldRef<"Order", 'Int'>
+    readonly averageFillPrice: FieldRef<"Order", 'Decimal'>
+    readonly filledAt: FieldRef<"Order", 'DateTime'>
     readonly portfolioId: FieldRef<"Order", 'String'>
     readonly brokerAccountId: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
@@ -9666,6 +9714,9 @@ export namespace Prisma {
     quantity: 'quantity',
     limitPrice: 'limitPrice',
     brokerOrderId: 'brokerOrderId',
+    filledQuantity: 'filledQuantity',
+    averageFillPrice: 'averageFillPrice',
+    filledAt: 'filledAt',
     portfolioId: 'portfolioId',
     brokerAccountId: 'brokerAccountId',
     createdAt: 'createdAt',
@@ -10238,6 +10289,9 @@ export namespace Prisma {
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
+    filledQuantity?: IntFilter<"Order"> | number
+    averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    filledAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -10256,6 +10310,9 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrderInput | SortOrder
     brokerOrderId?: SortOrderInput | SortOrder
+    filledQuantity?: SortOrder
+    averageFillPrice?: SortOrderInput | SortOrder
+    filledAt?: SortOrderInput | SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -10277,6 +10334,9 @@ export namespace Prisma {
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
+    filledQuantity?: IntFilter<"Order"> | number
+    averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    filledAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -10295,6 +10355,9 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrderInput | SortOrder
     brokerOrderId?: SortOrderInput | SortOrder
+    filledQuantity?: SortOrder
+    averageFillPrice?: SortOrderInput | SortOrder
+    filledAt?: SortOrderInput | SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -10319,6 +10382,9 @@ export namespace Prisma {
     quantity?: IntWithAggregatesFilter<"Order"> | number
     limitPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    filledQuantity?: IntWithAggregatesFilter<"Order"> | number
+    averageFillPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    filledAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     portfolioId?: StringWithAggregatesFilter<"Order"> | string
     brokerAccountId?: StringWithAggregatesFilter<"Order"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -10750,6 +10816,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
@@ -10766,6 +10835,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     createdAt?: Date | string
@@ -10782,6 +10854,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
@@ -10798,6 +10873,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -10814,6 +10892,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     createdAt?: Date | string
@@ -10830,6 +10911,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -10844,6 +10928,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -11313,6 +11400,17 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type BrokerAccountScalarRelationFilter = {
     is?: BrokerAccountWhereInput
     isNot?: BrokerAccountWhereInput
@@ -11328,6 +11426,9 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
+    filledQuantity?: SortOrder
+    averageFillPrice?: SortOrder
+    filledAt?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -11337,6 +11438,8 @@ export namespace Prisma {
   export type OrderAvgOrderByAggregateInput = {
     quantity?: SortOrder
     limitPrice?: SortOrder
+    filledQuantity?: SortOrder
+    averageFillPrice?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
@@ -11349,6 +11452,9 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
+    filledQuantity?: SortOrder
+    averageFillPrice?: SortOrder
+    filledAt?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -11365,6 +11471,9 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
+    filledQuantity?: SortOrder
+    averageFillPrice?: SortOrder
+    filledAt?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -11374,6 +11483,8 @@ export namespace Prisma {
   export type OrderSumOrderByAggregateInput = {
     quantity?: SortOrder
     limitPrice?: SortOrder
+    filledQuantity?: SortOrder
+    averageFillPrice?: SortOrder
   }
 
   export type EnumOrderSideWithAggregatesFilter<$PrismaModel = never> = {
@@ -11420,6 +11531,20 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type UserCreateNestedManyWithoutFirmInput = {
@@ -11850,6 +11975,10 @@ export namespace Prisma {
     divide?: Decimal | DecimalJsLike | number | string
   }
 
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
+  }
+
   export type PortfolioUpdateOneRequiredWithoutOrdersNestedInput = {
     create?: XOR<PortfolioCreateWithoutOrdersInput, PortfolioUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutOrdersInput
@@ -12078,6 +12207,17 @@ export namespace Prisma {
     not?: NestedDecimalNullableFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string | null
   }
 
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
   export type NestedEnumOrderSideWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderSide | EnumOrderSideFieldRefInput<$PrismaModel>
     in?: $Enums.OrderSide[] | ListEnumOrderSideFieldRefInput<$PrismaModel>
@@ -12122,6 +12262,20 @@ export namespace Prisma {
     _sum?: NestedDecimalNullableFilter<$PrismaModel>
     _min?: NestedDecimalNullableFilter<$PrismaModel>
     _max?: NestedDecimalNullableFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
   }
 
   export type UserCreateWithoutFirmInput = {
@@ -12487,6 +12641,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
@@ -12502,6 +12659,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     portfolioId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -12577,6 +12737,9 @@ export namespace Prisma {
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
+    filledQuantity?: IntFilter<"Order"> | number
+    averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    filledAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -12648,6 +12811,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
@@ -12663,6 +12829,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13071,6 +13240,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     portfolioId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13086,6 +13258,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
@@ -13101,6 +13276,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13116,6 +13294,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13141,6 +13322,9 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -13186,6 +13370,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
@@ -13201,6 +13388,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13216,6 +13406,9 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

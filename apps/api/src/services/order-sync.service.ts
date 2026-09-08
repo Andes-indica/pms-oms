@@ -1,7 +1,6 @@
 import { prisma } from "@pms-oms/db";
-import { MockBroker } from "@pms-oms/broker";
 
-const broker = new MockBroker();
+import { mockBroker } from "../brokers/broker-registry";
 
 export async function syncOrderService(orderId: string) {
   const order = await prisma.order.findUnique({
@@ -22,17 +21,23 @@ export async function syncOrderService(orderId: string) {
     return order;
   }
 
-  const brokerStatus = await broker.getOrderStatus(
+  const brokerUpdate = await mockBroker.getOrderStatus(
     order.brokerOrderId,
   );
 
-  if (brokerStatus !== "FILLED") {
+  if (
+    brokerUpdate.status !== "FILLED" ||
+    brokerUpdate.averageFillPrice === null
+  ) {
     return prisma.order.update({
       where: {
         id: order.id,
       },
       data: {
-        status: brokerStatus,
+        status: brokerUpdate.status,
+        filledQuantity: brokerUpdate.filledQuantity,
+        averageFillPrice:
+          brokerUpdate.averageFillPrice,
       },
     });
   }
@@ -48,9 +53,16 @@ export async function syncOrderService(orderId: string) {
       throw new Error("ORDER_NOT_FOUND");
     }
 
+    // Prevent applying the same fill twice.
     if (freshOrder.status === "FILLED") {
       return freshOrder;
     }
+
+    const fillQuantity =
+      brokerUpdate.filledQuantity;
+
+    const fillPrice =
+      brokerUpdate.averageFillPrice!;
 
     const holding = await tx.holding.findUnique({
       where: {
@@ -63,37 +75,54 @@ export async function syncOrderService(orderId: string) {
     });
 
     if (freshOrder.side === "BUY") {
-      if (holding) {
-        await tx.holding.update({
-          where: {
-            id: holding.id,
-          },
-          data: {
-            quantity: {
-              increment: freshOrder.quantity,
-            },
-          },
-        });
-      } else {
+      if (!holding) {
         await tx.holding.create({
           data: {
             portfolioId: freshOrder.portfolioId,
             symbol: freshOrder.symbol,
             exchange: freshOrder.exchange,
-            quantity: freshOrder.quantity,
-            averagePrice: freshOrder.limitPrice ?? 0,
+            quantity: fillQuantity,
+            averagePrice: fillPrice,
+          },
+        });
+      } else {
+        const oldQuantity = holding.quantity;
+        const oldAveragePrice =
+          Number(holding.averagePrice);
+
+        const newQuantity =
+          oldQuantity + fillQuantity;
+
+        const newAveragePrice =
+          (
+            oldQuantity * oldAveragePrice +
+            fillQuantity * fillPrice
+          ) / newQuantity;
+
+        await tx.holding.update({
+          where: {
+            id: holding.id,
+          },
+          data: {
+            quantity: newQuantity,
+            averagePrice: newAveragePrice,
           },
         });
       }
     }
 
     if (freshOrder.side === "SELL") {
-      if (!holding || holding.quantity < freshOrder.quantity) {
-        throw new Error("INSUFFICIENT_HOLDINGS");
+      if (
+        !holding ||
+        holding.quantity < fillQuantity
+      ) {
+        throw new Error(
+          "INSUFFICIENT_HOLDINGS",
+        );
       }
 
       const remainingQuantity =
-        holding.quantity - freshOrder.quantity;
+        holding.quantity - fillQuantity;
 
       if (remainingQuantity === 0) {
         await tx.holding.delete({
@@ -119,6 +148,9 @@ export async function syncOrderService(orderId: string) {
       },
       data: {
         status: "FILLED",
+        filledQuantity: fillQuantity,
+        averageFillPrice: fillPrice,
+        filledAt: new Date(),
       },
     });
   });

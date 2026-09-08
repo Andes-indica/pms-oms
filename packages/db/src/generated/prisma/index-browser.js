@@ -186,6 +186,9 @@ exports.Prisma.OrderScalarFieldEnum = {
   quantity: 'quantity',
   limitPrice: 'limitPrice',
   brokerOrderId: 'brokerOrderId',
+  filledQuantity: 'filledQuantity',
+  averageFillPrice: 'averageFillPrice',
+  filledAt: 'filledAt',
   portfolioId: 'portfolioId',
   brokerAccountId: 'brokerAccountId',
   createdAt: 'createdAt',
@@ -227,6 +230,7 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   PENDING: 'PENDING',
   SUBMITTED: 'SUBMITTED',
   OPEN: 'OPEN',
+  PARTIALLY_FILLED: 'PARTIALLY_FILLED',
   FILLED: 'FILLED',
   CANCELLED: 'CANCELLED',
   REJECTED: 'REJECTED'

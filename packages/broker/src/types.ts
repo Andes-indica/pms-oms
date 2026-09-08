@@ -5,6 +5,7 @@ export type BrokerOrderType = "MARKET" | "LIMIT";
 export type BrokerOrderStatus =
   | "SUBMITTED"
   | "OPEN"
+  | "PARTIALLY_FILLED"
   | "FILLED"
   | "REJECTED";
 
@@ -20,4 +21,11 @@ export type BrokerOrderRequest = {
 export type BrokerOrderResult = {
   brokerOrderId: string;
   status: BrokerOrderStatus;
+};
+
+export type BrokerOrderUpdate = {
+  brokerOrderId: string;
+  status: BrokerOrderStatus;
+  filledQuantity: number;
+  averageFillPrice: number | null;
 };

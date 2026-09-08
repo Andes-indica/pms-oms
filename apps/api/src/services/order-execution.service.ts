@@ -1,8 +1,7 @@
 import { prisma } from "@pms-oms/db";
-import { MockBroker } from "@pms-oms/broker";
-import { runPreTradeChecks } from "./pre-trade.service";
 
-const mockBroker = new MockBroker();
+import { mockBroker } from "../brokers/broker-registry";
+import { runPreTradeChecks } from "./pre-trade.service";
 
 export async function executeOrderService(orderId: string) {
   const order = await runPreTradeChecks(orderId);
@@ -13,9 +12,10 @@ export async function executeOrderService(orderId: string) {
     side: order.side,
     orderType: order.orderType,
     quantity: order.quantity,
-    limitPrice: order.limitPrice
-      ? Number(order.limitPrice)
-      : null,
+    limitPrice:
+      order.limitPrice !== null
+        ? Number(order.limitPrice)
+        : null,
   });
 
   return prisma.order.update({

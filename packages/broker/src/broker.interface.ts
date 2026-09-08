@@ -1,12 +1,15 @@
 import type {
   BrokerOrderRequest,
   BrokerOrderResult,
-  BrokerOrderStatus
+  BrokerOrderUpdate,
 } from "./types";
 
 export interface BrokerAdapter {
   placeOrder(
     order: BrokerOrderRequest,
   ): Promise<BrokerOrderResult>;
-  getOrderStatus(brokerorderid:string): Promise<BrokerOrderStatus>;
+
+  getOrderStatus(
+    brokerOrderId: string,
+  ): Promise<BrokerOrderUpdate>;
 }

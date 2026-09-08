@@ -86,6 +86,7 @@ enum OrderStatus {
   PENDING
   SUBMITTED
   OPEN
+  PARTIALLY_FILLED
   FILLED
   CANCELLED
   REJECTED
@@ -138,6 +139,10 @@ model Order {
   limitPrice Decimal? @db.Decimal(18, 4)
 
   brokerOrderId String?
+
+  filledQuantity   Int       @default(0)
+  averageFillPrice Decimal?  @db.Decimal(18, 4)
+  filledAt         DateTime?
 
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
