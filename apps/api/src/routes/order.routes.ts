@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrder,executeOrder,getOrders,syncOrder } from "../controllers/order.controller";
+import { cancelOrder, createOrder,executeOrder,getOrders,syncOrder } from "../controllers/order.controller";
 
 const router = Router();
 
@@ -11,4 +11,5 @@ router.post("/:id/execute",executeOrder);
 
 router.post("/:id/sync", syncOrder);
 
+router.post("/:id/cancel",cancelOrder)
 export default router;

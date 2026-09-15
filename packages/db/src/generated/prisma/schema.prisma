@@ -92,6 +92,15 @@ enum OrderStatus {
   REJECTED
 }
 
+enum AuditAction {
+  ORDER_CREATED
+  ORDER_SUBMITTED
+  ORDER_FILLED
+  ORDER_CANCELLED
+  ORDER_REJECTED
+  ORDER_SYNCED
+}
+
 model Portfolio {
   id   String @id @default(cuid())
   name String
@@ -142,6 +151,7 @@ model Order {
 
   filledQuantity   Int       @default(0)
   averageFillPrice Decimal?  @db.Decimal(18, 4)
+  realizedPnl      Decimal?  @db.Decimal(18, 4)
   filledAt         DateTime?
 
   portfolioId String
@@ -152,4 +162,19 @@ model Order {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  action AuditAction
+
+  entityType String
+  entityId   String
+
+  message String?
+
+  metadata Json?
+
+  createdAt DateTime @default(now())
 }

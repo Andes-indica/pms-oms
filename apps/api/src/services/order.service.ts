@@ -1,4 +1,5 @@
 import { prisma } from "@pms-oms/db";
+import { createAuditLog } from "./audit.service";
 
 type CreateOrderInput = {
   portfolioId: string;
@@ -43,17 +44,36 @@ export async function createOrderService(input: CreateOrderInput) {
     throw new Error("BROKER_ACCOUNT_MISMATCH");
   }
 
-  return prisma.order.create({
-    data: {
-      portfolioId,
-      brokerAccountId,
-      symbol: symbol.toUpperCase(),
-      exchange: exchange.toUpperCase(),
-      side,
-      orderType,
-      quantity,
-      limitPrice: orderType === "LIMIT" ? limitPrice : null,
-      status: "PENDING",
-    },
-  });
+const order = await prisma.order.create({
+  data: {
+    portfolioId,
+    brokerAccountId,
+    symbol: symbol.toUpperCase(),
+    exchange: exchange.toUpperCase(),
+    side,
+    orderType,
+    quantity,
+    limitPrice:
+      orderType === "LIMIT"
+        ? limitPrice
+        : null,
+    status: "PENDING",
+  },
+});
+
+await createAuditLog({
+  action: "ORDER_CREATED",
+  entityType: "ORDER",
+  entityId: order.id,
+  message: "Order created",
+  metadata: {
+    portfolioId,
+    brokerAccountId,
+    symbol: order.symbol,
+    side,
+    quantity,
+  },
+});
+
+return order;
 }

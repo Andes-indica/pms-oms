@@ -1,5 +1,5 @@
 import { prisma } from "@pms-oms/db";
-
+import { createAuditLog } from "./audit.service";
 import { mockBroker } from "../brokers/broker-registry";
 import { runPreTradeChecks } from "./pre-trade.service";
 
@@ -18,13 +18,26 @@ export async function executeOrderService(orderId: string) {
         : null,
   });
 
-  return prisma.order.update({
-    where: {
-      id: order.id,
-    },
-    data: {
-      brokerOrderId: brokerResult.brokerOrderId,
-      status: brokerResult.status,
-    },
-  });
+const updatedOrder = await prisma.order.update({
+  where: {
+    id: order.id,
+  },
+  data: {
+    brokerOrderId: brokerResult.brokerOrderId,
+    status: brokerResult.status,
+  },
+});
+
+await createAuditLog({
+  action: "ORDER_SUBMITTED",
+  entityType: "ORDER",
+  entityId: updatedOrder.id,
+  message: "Order submitted to broker",
+  metadata: {
+    brokerOrderId: brokerResult.brokerOrderId,
+    status: brokerResult.status,
+  },
+});
+
+return updatedOrder;
 }

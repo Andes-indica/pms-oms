@@ -65,3 +65,71 @@ export async function getClientById(
     });
   }
 }
+export async function getClientPortfolioSummary(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  try {
+    const { id } = req.params;
+
+    const client = await prisma.client.findUnique({
+      where: {
+        id,
+      },
+      include: {
+        portfolios: {
+          include: {
+            holdings: true,
+            orders: {
+              where: {
+                status: "FILLED",
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!client) {
+      return res.status(404).json({
+        error: "Client not found",
+      });
+    }
+
+    const portfolios = client.portfolios.map(
+      (portfolio) => {
+        const realizedPnl =
+          portfolio.orders.reduce(
+            (total, order) =>
+              total +
+              Number(order.realizedPnl ?? 0),
+            0,
+          );
+
+        return {
+          id: portfolio.id,
+          name: portfolio.name,
+          holdings: portfolio.holdings,
+          realizedPnl,
+        };
+      },
+    );
+
+    return res.status(200).json({
+      data: {
+        clientId: client.id,
+        clientName: client.name,
+        portfolios,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Failed to fetch portfolio summary:",
+      error,
+    );
+
+    return res.status(500).json({
+      error: "Failed to fetch portfolio summary",
+    });
+  }
+}

@@ -3,6 +3,7 @@ import { createOrderService } from "../services/order.service";
 import { prisma } from "@pms-oms/db";
 import { executeOrderService } from "../services/order-execution.service";
 import { syncOrderService } from "@/services/order-sync.service";
+import { cancelOrderService } from "../services/order-cancellation.service";
 
 type CreateOrderBody = {
   portfolioId: string;
@@ -216,6 +217,50 @@ export async function syncOrder(
 
     return res.status(500).json({
       error: "Order sync failed",
+    });
+  }
+}
+export async function cancelOrder(
+  req: Request<{ id: string }>,
+  res: Response,
+) {
+  try {
+    const order = await cancelOrderService(
+      req.params.id,
+    );
+
+    return res.status(200).json({
+      data: order,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      switch (error.message) {
+        case "ORDER_NOT_FOUND":
+          return res.status(404).json({
+            error: "Order not found",
+          });
+
+        case "ORDER_ALREADY_FILLED":
+          return res.status(409).json({
+            error: "Filled orders cannot be cancelled",
+          });
+
+        case "ORDER_ALREADY_CANCELLED":
+          return res.status(409).json({
+            error: "Order is already cancelled",
+          });
+
+        case "ORDER_ALREADY_REJECTED":
+          return res.status(409).json({
+            error: "Rejected orders cannot be cancelled",
+          });
+      }
+    }
+
+    console.error("Order cancellation failed:", error);
+
+    return res.status(500).json({
+      error: "Order cancellation failed",
     });
   }
 }

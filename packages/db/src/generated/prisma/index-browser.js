@@ -188,6 +188,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   brokerOrderId: 'brokerOrderId',
   filledQuantity: 'filledQuantity',
   averageFillPrice: 'averageFillPrice',
+  realizedPnl: 'realizedPnl',
   filledAt: 'filledAt',
   portfolioId: 'portfolioId',
   brokerAccountId: 'brokerAccountId',
@@ -195,9 +196,24 @@ exports.Prisma.OrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AuditLogScalarFieldEnum = {
+  id: 'id',
+  action: 'action',
+  entityType: 'entityType',
+  entityId: 'entityId',
+  message: 'message',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
+};
+
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
 };
 
 exports.Prisma.QueryMode = {
@@ -208,6 +224,12 @@ exports.Prisma.QueryMode = {
 exports.Prisma.NullsOrder = {
   first: 'first',
   last: 'last'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 exports.UserRole = exports.$Enums.UserRole = {
   ADMIN: 'ADMIN',
@@ -236,6 +258,15 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   REJECTED: 'REJECTED'
 };
 
+exports.AuditAction = exports.$Enums.AuditAction = {
+  ORDER_CREATED: 'ORDER_CREATED',
+  ORDER_SUBMITTED: 'ORDER_SUBMITTED',
+  ORDER_FILLED: 'ORDER_FILLED',
+  ORDER_CANCELLED: 'ORDER_CANCELLED',
+  ORDER_REJECTED: 'ORDER_REJECTED',
+  ORDER_SYNCED: 'ORDER_SYNCED'
+};
+
 exports.Prisma.ModelName = {
   Firm: 'Firm',
   User: 'User',
@@ -243,7 +274,8 @@ exports.Prisma.ModelName = {
   BrokerAccount: 'BrokerAccount',
   Portfolio: 'Portfolio',
   Holding: 'Holding',
-  Order: 'Order'
+  Order: 'Order',
+  AuditLog: 'AuditLog'
 };
 
 /**
