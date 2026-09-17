@@ -186,6 +186,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   quantity: 'quantity',
   limitPrice: 'limitPrice',
   brokerOrderId: 'brokerOrderId',
+  basketOrderId: 'basketOrderId',
   filledQuantity: 'filledQuantity',
   averageFillPrice: 'averageFillPrice',
   realizedPnl: 'realizedPnl',
@@ -204,6 +205,21 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   message: 'message',
   metadata: 'metadata',
   createdAt: 'createdAt'
+};
+
+exports.Prisma.BasketOrderScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  symbol: 'symbol',
+  exchange: 'exchange',
+  side: 'side',
+  orderType: 'orderType',
+  limitPrice: 'limitPrice',
+  totalQuantity: 'totalQuantity',
+  allocationMethod: 'allocationMethod',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -264,7 +280,26 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   ORDER_FILLED: 'ORDER_FILLED',
   ORDER_CANCELLED: 'ORDER_CANCELLED',
   ORDER_REJECTED: 'ORDER_REJECTED',
-  ORDER_SYNCED: 'ORDER_SYNCED'
+  ORDER_SYNCED: 'ORDER_SYNCED',
+  BASKET_CREATED: 'BASKET_CREATED',
+  BASKET_SUBMITTED: 'BASKET_SUBMITTED',
+  BASKET_CAMCELLED: 'BASKET_CAMCELLED'
+};
+
+exports.AllocationMethod = exports.$Enums.AllocationMethod = {
+  FIXED_QUANTITY: 'FIXED_QUANTITY',
+  EQUAL_QUANTITY: 'EQUAL_QUANTITY',
+  PERCENTAGE: 'PERCENTAGE'
+};
+
+exports.BasketOrderStatus = exports.$Enums.BasketOrderStatus = {
+  PENDING: 'PENDING',
+  PARTIALLY_SUBMITTED: 'PARTIALLY_SUBMITTED',
+  SUBMITTED: 'SUBMITTED',
+  PARTIALLY_FILLED: 'PARTIALLY_FILLED',
+  FILLED: 'FILLED',
+  CANCELLED: 'CANCELLED',
+  REJECTED: 'REJECTED'
 };
 
 exports.Prisma.ModelName = {
@@ -275,7 +310,8 @@ exports.Prisma.ModelName = {
   Portfolio: 'Portfolio',
   Holding: 'Holding',
   Order: 'Order',
-  AuditLog: 'AuditLog'
+  AuditLog: 'AuditLog',
+  BasketOrder: 'BasketOrder'
 };
 
 /**

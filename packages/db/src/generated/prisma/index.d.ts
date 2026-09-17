@@ -53,6 +53,11 @@ export type Order = $Result.DefaultSelection<Prisma.$OrderPayload>
  * 
  */
 export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
+/**
+ * Model BasketOrder
+ * 
+ */
+export type BasketOrder = $Result.DefaultSelection<Prisma.$BasketOrderPayload>
 
 /**
  * Enums
@@ -103,10 +108,35 @@ export const AuditAction: {
   ORDER_FILLED: 'ORDER_FILLED',
   ORDER_CANCELLED: 'ORDER_CANCELLED',
   ORDER_REJECTED: 'ORDER_REJECTED',
-  ORDER_SYNCED: 'ORDER_SYNCED'
+  ORDER_SYNCED: 'ORDER_SYNCED',
+  BASKET_CREATED: 'BASKET_CREATED',
+  BASKET_SUBMITTED: 'BASKET_SUBMITTED',
+  BASKET_CAMCELLED: 'BASKET_CAMCELLED'
 };
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
+
+
+export const AllocationMethod: {
+  FIXED_QUANTITY: 'FIXED_QUANTITY',
+  EQUAL_QUANTITY: 'EQUAL_QUANTITY',
+  PERCENTAGE: 'PERCENTAGE'
+};
+
+export type AllocationMethod = (typeof AllocationMethod)[keyof typeof AllocationMethod]
+
+
+export const BasketOrderStatus: {
+  PENDING: 'PENDING',
+  PARTIALLY_SUBMITTED: 'PARTIALLY_SUBMITTED',
+  SUBMITTED: 'SUBMITTED',
+  PARTIALLY_FILLED: 'PARTIALLY_FILLED',
+  FILLED: 'FILLED',
+  CANCELLED: 'CANCELLED',
+  REJECTED: 'REJECTED'
+};
+
+export type BasketOrderStatus = (typeof BasketOrderStatus)[keyof typeof BasketOrderStatus]
 
 }
 
@@ -129,6 +159,14 @@ export const OrderStatus: typeof $Enums.OrderStatus
 export type AuditAction = $Enums.AuditAction
 
 export const AuditAction: typeof $Enums.AuditAction
+
+export type AllocationMethod = $Enums.AllocationMethod
+
+export const AllocationMethod: typeof $Enums.AllocationMethod
+
+export type BasketOrderStatus = $Enums.BasketOrderStatus
+
+export const BasketOrderStatus: typeof $Enums.BasketOrderStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -330,6 +368,16 @@ export class PrismaClient<
     * ```
     */
   get auditLog(): Prisma.AuditLogDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.basketOrder`: Exposes CRUD operations for the **BasketOrder** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BasketOrders
+    * const basketOrders = await prisma.basketOrder.findMany()
+    * ```
+    */
+  get basketOrder(): Prisma.BasketOrderDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -784,7 +832,8 @@ export namespace Prisma {
     Portfolio: 'Portfolio',
     Holding: 'Holding',
     Order: 'Order',
-    AuditLog: 'AuditLog'
+    AuditLog: 'AuditLog',
+    BasketOrder: 'BasketOrder'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -800,7 +849,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1396,6 +1445,80 @@ export namespace Prisma {
           }
         }
       }
+      BasketOrder: {
+        payload: Prisma.$BasketOrderPayload<ExtArgs>
+        fields: Prisma.BasketOrderFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BasketOrderFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BasketOrderFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>
+          }
+          findFirst: {
+            args: Prisma.BasketOrderFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BasketOrderFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>
+          }
+          findMany: {
+            args: Prisma.BasketOrderFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>[]
+          }
+          create: {
+            args: Prisma.BasketOrderCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>
+          }
+          createMany: {
+            args: Prisma.BasketOrderCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BasketOrderCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>[]
+          }
+          delete: {
+            args: Prisma.BasketOrderDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>
+          }
+          update: {
+            args: Prisma.BasketOrderUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>
+          }
+          deleteMany: {
+            args: Prisma.BasketOrderDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BasketOrderUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BasketOrderUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>[]
+          }
+          upsert: {
+            args: Prisma.BasketOrderUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BasketOrderPayload>
+          }
+          aggregate: {
+            args: Prisma.BasketOrderAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBasketOrder>
+          }
+          groupBy: {
+            args: Prisma.BasketOrderGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BasketOrderGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BasketOrderCountArgs<ExtArgs>
+            result: $Utils.Optional<BasketOrderCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1527,6 +1650,7 @@ export namespace Prisma {
     holding?: HoldingOmit
     order?: OrderOmit
     auditLog?: AuditLogOmit
+    basketOrder?: BasketOrderOmit
   }
 
   /* Types for Logging */
@@ -1749,6 +1873,37 @@ export namespace Prisma {
    * PortfolioCountOutputType without action
    */
   export type PortfolioCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: OrderWhereInput
+  }
+
+
+  /**
+   * Count Type BasketOrderCountOutputType
+   */
+
+  export type BasketOrderCountOutputType = {
+    orders: number
+  }
+
+  export type BasketOrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    orders?: boolean | BasketOrderCountOutputTypeCountOrdersArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * BasketOrderCountOutputType without action
+   */
+  export type BasketOrderCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrderCountOutputType
+     */
+    select?: BasketOrderCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * BasketOrderCountOutputType without action
+   */
+  export type BasketOrderCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
   }
 
@@ -8501,6 +8656,7 @@ export namespace Prisma {
     quantity: number | null
     limitPrice: Decimal | null
     brokerOrderId: string | null
+    basketOrderId: string | null
     filledQuantity: number | null
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
@@ -8521,6 +8677,7 @@ export namespace Prisma {
     quantity: number | null
     limitPrice: Decimal | null
     brokerOrderId: string | null
+    basketOrderId: string | null
     filledQuantity: number | null
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
@@ -8541,6 +8698,7 @@ export namespace Prisma {
     quantity: number
     limitPrice: number
     brokerOrderId: number
+    basketOrderId: number
     filledQuantity: number
     averageFillPrice: number
     realizedPnl: number
@@ -8579,6 +8737,7 @@ export namespace Prisma {
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
+    basketOrderId?: true
     filledQuantity?: true
     averageFillPrice?: true
     realizedPnl?: true
@@ -8599,6 +8758,7 @@ export namespace Prisma {
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
+    basketOrderId?: true
     filledQuantity?: true
     averageFillPrice?: true
     realizedPnl?: true
@@ -8619,6 +8779,7 @@ export namespace Prisma {
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
+    basketOrderId?: true
     filledQuantity?: true
     averageFillPrice?: true
     realizedPnl?: true
@@ -8726,6 +8887,7 @@ export namespace Prisma {
     quantity: number
     limitPrice: Decimal | null
     brokerOrderId: string | null
+    basketOrderId: string | null
     filledQuantity: number
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
@@ -8765,6 +8927,7 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    basketOrderId?: boolean
     filledQuantity?: boolean
     averageFillPrice?: boolean
     realizedPnl?: boolean
@@ -8773,6 +8936,7 @@ export namespace Prisma {
     brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -8787,6 +8951,7 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    basketOrderId?: boolean
     filledQuantity?: boolean
     averageFillPrice?: boolean
     realizedPnl?: boolean
@@ -8795,6 +8960,7 @@ export namespace Prisma {
     brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -8809,6 +8975,7 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    basketOrderId?: boolean
     filledQuantity?: boolean
     averageFillPrice?: boolean
     realizedPnl?: boolean
@@ -8817,6 +8984,7 @@ export namespace Prisma {
     brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
@@ -8831,6 +8999,7 @@ export namespace Prisma {
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
+    basketOrderId?: boolean
     filledQuantity?: boolean
     averageFillPrice?: boolean
     realizedPnl?: boolean
@@ -8841,16 +9010,19 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "quantity" | "limitPrice" | "brokerOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "quantity" | "limitPrice" | "brokerOrderId" | "basketOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }
   export type OrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }
@@ -8858,6 +9030,7 @@ export namespace Prisma {
   export type $OrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Order"
     objects: {
+      basketOrder: Prisma.$BasketOrderPayload<ExtArgs> | null
       portfolio: Prisma.$PortfolioPayload<ExtArgs>
       brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs>
     }
@@ -8871,6 +9044,7 @@ export namespace Prisma {
       quantity: number
       limitPrice: Prisma.Decimal | null
       brokerOrderId: string | null
+      basketOrderId: string | null
       filledQuantity: number
       averageFillPrice: Prisma.Decimal | null
       realizedPnl: Prisma.Decimal | null
@@ -9273,6 +9447,7 @@ export namespace Prisma {
    */
   export interface Prisma__OrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    basketOrder<T extends Order$basketOrderArgs<ExtArgs> = {}>(args?: Subset<T, Order$basketOrderArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     portfolio<T extends PortfolioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioDefaultArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     brokerAccount<T extends BrokerAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccountDefaultArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
@@ -9313,6 +9488,7 @@ export namespace Prisma {
     readonly quantity: FieldRef<"Order", 'Int'>
     readonly limitPrice: FieldRef<"Order", 'Decimal'>
     readonly brokerOrderId: FieldRef<"Order", 'String'>
+    readonly basketOrderId: FieldRef<"Order", 'String'>
     readonly filledQuantity: FieldRef<"Order", 'Int'>
     readonly averageFillPrice: FieldRef<"Order", 'Decimal'>
     readonly realizedPnl: FieldRef<"Order", 'Decimal'>
@@ -9719,6 +9895,25 @@ export namespace Prisma {
      * Limit how many Orders to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Order.basketOrder
+   */
+  export type Order$basketOrderArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    where?: BasketOrderWhereInput
   }
 
   /**
@@ -10763,6 +10958,1210 @@ export namespace Prisma {
 
 
   /**
+   * Model BasketOrder
+   */
+
+  export type AggregateBasketOrder = {
+    _count: BasketOrderCountAggregateOutputType | null
+    _avg: BasketOrderAvgAggregateOutputType | null
+    _sum: BasketOrderSumAggregateOutputType | null
+    _min: BasketOrderMinAggregateOutputType | null
+    _max: BasketOrderMaxAggregateOutputType | null
+  }
+
+  export type BasketOrderAvgAggregateOutputType = {
+    limitPrice: Decimal | null
+    totalQuantity: number | null
+  }
+
+  export type BasketOrderSumAggregateOutputType = {
+    limitPrice: Decimal | null
+    totalQuantity: number | null
+  }
+
+  export type BasketOrderMinAggregateOutputType = {
+    id: string | null
+    name: string | null
+    symbol: string | null
+    exchange: string | null
+    side: $Enums.OrderSide | null
+    orderType: $Enums.OrderType | null
+    limitPrice: Decimal | null
+    totalQuantity: number | null
+    allocationMethod: $Enums.AllocationMethod | null
+    status: $Enums.BasketOrderStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BasketOrderMaxAggregateOutputType = {
+    id: string | null
+    name: string | null
+    symbol: string | null
+    exchange: string | null
+    side: $Enums.OrderSide | null
+    orderType: $Enums.OrderType | null
+    limitPrice: Decimal | null
+    totalQuantity: number | null
+    allocationMethod: $Enums.AllocationMethod | null
+    status: $Enums.BasketOrderStatus | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BasketOrderCountAggregateOutputType = {
+    id: number
+    name: number
+    symbol: number
+    exchange: number
+    side: number
+    orderType: number
+    limitPrice: number
+    totalQuantity: number
+    allocationMethod: number
+    status: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BasketOrderAvgAggregateInputType = {
+    limitPrice?: true
+    totalQuantity?: true
+  }
+
+  export type BasketOrderSumAggregateInputType = {
+    limitPrice?: true
+    totalQuantity?: true
+  }
+
+  export type BasketOrderMinAggregateInputType = {
+    id?: true
+    name?: true
+    symbol?: true
+    exchange?: true
+    side?: true
+    orderType?: true
+    limitPrice?: true
+    totalQuantity?: true
+    allocationMethod?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BasketOrderMaxAggregateInputType = {
+    id?: true
+    name?: true
+    symbol?: true
+    exchange?: true
+    side?: true
+    orderType?: true
+    limitPrice?: true
+    totalQuantity?: true
+    allocationMethod?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BasketOrderCountAggregateInputType = {
+    id?: true
+    name?: true
+    symbol?: true
+    exchange?: true
+    side?: true
+    orderType?: true
+    limitPrice?: true
+    totalQuantity?: true
+    allocationMethod?: true
+    status?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BasketOrderAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BasketOrder to aggregate.
+     */
+    where?: BasketOrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BasketOrders to fetch.
+     */
+    orderBy?: BasketOrderOrderByWithRelationInput | BasketOrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BasketOrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BasketOrders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BasketOrders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BasketOrders
+    **/
+    _count?: true | BasketOrderCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BasketOrderAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BasketOrderSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BasketOrderMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BasketOrderMaxAggregateInputType
+  }
+
+  export type GetBasketOrderAggregateType<T extends BasketOrderAggregateArgs> = {
+        [P in keyof T & keyof AggregateBasketOrder]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBasketOrder[P]>
+      : GetScalarType<T[P], AggregateBasketOrder[P]>
+  }
+
+
+
+
+  export type BasketOrderGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BasketOrderWhereInput
+    orderBy?: BasketOrderOrderByWithAggregationInput | BasketOrderOrderByWithAggregationInput[]
+    by: BasketOrderScalarFieldEnum[] | BasketOrderScalarFieldEnum
+    having?: BasketOrderScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BasketOrderCountAggregateInputType | true
+    _avg?: BasketOrderAvgAggregateInputType
+    _sum?: BasketOrderSumAggregateInputType
+    _min?: BasketOrderMinAggregateInputType
+    _max?: BasketOrderMaxAggregateInputType
+  }
+
+  export type BasketOrderGroupByOutputType = {
+    id: string
+    name: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice: Decimal | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status: $Enums.BasketOrderStatus
+    createdAt: Date
+    updatedAt: Date
+    _count: BasketOrderCountAggregateOutputType | null
+    _avg: BasketOrderAvgAggregateOutputType | null
+    _sum: BasketOrderSumAggregateOutputType | null
+    _min: BasketOrderMinAggregateOutputType | null
+    _max: BasketOrderMaxAggregateOutputType | null
+  }
+
+  type GetBasketOrderGroupByPayload<T extends BasketOrderGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BasketOrderGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BasketOrderGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BasketOrderGroupByOutputType[P]>
+            : GetScalarType<T[P], BasketOrderGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BasketOrderSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    side?: boolean
+    orderType?: boolean
+    limitPrice?: boolean
+    totalQuantity?: boolean
+    allocationMethod?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    orders?: boolean | BasketOrder$ordersArgs<ExtArgs>
+    _count?: boolean | BasketOrderCountOutputTypeDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["basketOrder"]>
+
+  export type BasketOrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    side?: boolean
+    orderType?: boolean
+    limitPrice?: boolean
+    totalQuantity?: boolean
+    allocationMethod?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["basketOrder"]>
+
+  export type BasketOrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    name?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    side?: boolean
+    orderType?: boolean
+    limitPrice?: boolean
+    totalQuantity?: boolean
+    allocationMethod?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }, ExtArgs["result"]["basketOrder"]>
+
+  export type BasketOrderSelectScalar = {
+    id?: boolean
+    name?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    side?: boolean
+    orderType?: boolean
+    limitPrice?: boolean
+    totalQuantity?: boolean
+    allocationMethod?: boolean
+    status?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BasketOrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "symbol" | "exchange" | "side" | "orderType" | "limitPrice" | "totalQuantity" | "allocationMethod" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["basketOrder"]>
+  export type BasketOrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    orders?: boolean | BasketOrder$ordersArgs<ExtArgs>
+    _count?: boolean | BasketOrderCountOutputTypeDefaultArgs<ExtArgs>
+  }
+  export type BasketOrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type BasketOrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+
+  export type $BasketOrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BasketOrder"
+    objects: {
+      orders: Prisma.$OrderPayload<ExtArgs>[]
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      name: string | null
+      symbol: string
+      exchange: string
+      side: $Enums.OrderSide
+      orderType: $Enums.OrderType
+      limitPrice: Prisma.Decimal | null
+      totalQuantity: number
+      allocationMethod: $Enums.AllocationMethod
+      status: $Enums.BasketOrderStatus
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["basketOrder"]>
+    composites: {}
+  }
+
+  type BasketOrderGetPayload<S extends boolean | null | undefined | BasketOrderDefaultArgs> = $Result.GetResult<Prisma.$BasketOrderPayload, S>
+
+  type BasketOrderCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BasketOrderFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BasketOrderCountAggregateInputType | true
+    }
+
+  export interface BasketOrderDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BasketOrder'], meta: { name: 'BasketOrder' } }
+    /**
+     * Find zero or one BasketOrder that matches the filter.
+     * @param {BasketOrderFindUniqueArgs} args - Arguments to find a BasketOrder
+     * @example
+     * // Get one BasketOrder
+     * const basketOrder = await prisma.basketOrder.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BasketOrderFindUniqueArgs>(args: SelectSubset<T, BasketOrderFindUniqueArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BasketOrder that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BasketOrderFindUniqueOrThrowArgs} args - Arguments to find a BasketOrder
+     * @example
+     * // Get one BasketOrder
+     * const basketOrder = await prisma.basketOrder.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BasketOrderFindUniqueOrThrowArgs>(args: SelectSubset<T, BasketOrderFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BasketOrder that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BasketOrderFindFirstArgs} args - Arguments to find a BasketOrder
+     * @example
+     * // Get one BasketOrder
+     * const basketOrder = await prisma.basketOrder.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BasketOrderFindFirstArgs>(args?: SelectSubset<T, BasketOrderFindFirstArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BasketOrder that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BasketOrderFindFirstOrThrowArgs} args - Arguments to find a BasketOrder
+     * @example
+     * // Get one BasketOrder
+     * const basketOrder = await prisma.basketOrder.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BasketOrderFindFirstOrThrowArgs>(args?: SelectSubset<T, BasketOrderFindFirstOrThrowArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BasketOrders that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BasketOrderFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BasketOrders
+     * const basketOrders = await prisma.basketOrder.findMany()
+     * 
+     * // Get first 10 BasketOrders
+     * const basketOrders = await prisma.basketOrder.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const basketOrderWithIdOnly = await prisma.basketOrder.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BasketOrderFindManyArgs>(args?: SelectSubset<T, BasketOrderFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BasketOrder.
+     * @param {BasketOrderCreateArgs} args - Arguments to create a BasketOrder.
+     * @example
+     * // Create one BasketOrder
+     * const BasketOrder = await prisma.basketOrder.create({
+     *   data: {
+     *     // ... data to create a BasketOrder
+     *   }
+     * })
+     * 
+     */
+    create<T extends BasketOrderCreateArgs>(args: SelectSubset<T, BasketOrderCreateArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BasketOrders.
+     * @param {BasketOrderCreateManyArgs} args - Arguments to create many BasketOrders.
+     * @example
+     * // Create many BasketOrders
+     * const basketOrder = await prisma.basketOrder.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BasketOrderCreateManyArgs>(args?: SelectSubset<T, BasketOrderCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BasketOrders and returns the data saved in the database.
+     * @param {BasketOrderCreateManyAndReturnArgs} args - Arguments to create many BasketOrders.
+     * @example
+     * // Create many BasketOrders
+     * const basketOrder = await prisma.basketOrder.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BasketOrders and only return the `id`
+     * const basketOrderWithIdOnly = await prisma.basketOrder.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BasketOrderCreateManyAndReturnArgs>(args?: SelectSubset<T, BasketOrderCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BasketOrder.
+     * @param {BasketOrderDeleteArgs} args - Arguments to delete one BasketOrder.
+     * @example
+     * // Delete one BasketOrder
+     * const BasketOrder = await prisma.basketOrder.delete({
+     *   where: {
+     *     // ... filter to delete one BasketOrder
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BasketOrderDeleteArgs>(args: SelectSubset<T, BasketOrderDeleteArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BasketOrder.
+     * @param {BasketOrderUpdateArgs} args - Arguments to update one BasketOrder.
+     * @example
+     * // Update one BasketOrder
+     * const basketOrder = await prisma.basketOrder.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BasketOrderUpdateArgs>(args: SelectSubset<T, BasketOrderUpdateArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BasketOrders.
+     * @param {BasketOrderDeleteManyArgs} args - Arguments to filter BasketOrders to delete.
+     * @example
+     * // Delete a few BasketOrders
+     * const { count } = await prisma.basketOrder.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BasketOrderDeleteManyArgs>(args?: SelectSubset<T, BasketOrderDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BasketOrders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BasketOrderUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BasketOrders
+     * const basketOrder = await prisma.basketOrder.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BasketOrderUpdateManyArgs>(args: SelectSubset<T, BasketOrderUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BasketOrders and returns the data updated in the database.
+     * @param {BasketOrderUpdateManyAndReturnArgs} args - Arguments to update many BasketOrders.
+     * @example
+     * // Update many BasketOrders
+     * const basketOrder = await prisma.basketOrder.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BasketOrders and only return the `id`
+     * const basketOrderWithIdOnly = await prisma.basketOrder.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BasketOrderUpdateManyAndReturnArgs>(args: SelectSubset<T, BasketOrderUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BasketOrder.
+     * @param {BasketOrderUpsertArgs} args - Arguments to update or create a BasketOrder.
+     * @example
+     * // Update or create a BasketOrder
+     * const basketOrder = await prisma.basketOrder.upsert({
+     *   create: {
+     *     // ... data to create a BasketOrder
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BasketOrder we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BasketOrderUpsertArgs>(args: SelectSubset<T, BasketOrderUpsertArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BasketOrders.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BasketOrderCountArgs} args - Arguments to filter BasketOrders to count.
+     * @example
+     * // Count the number of BasketOrders
+     * const count = await prisma.basketOrder.count({
+     *   where: {
+     *     // ... the filter for the BasketOrders we want to count
+     *   }
+     * })
+    **/
+    count<T extends BasketOrderCountArgs>(
+      args?: Subset<T, BasketOrderCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BasketOrderCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BasketOrder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BasketOrderAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BasketOrderAggregateArgs>(args: Subset<T, BasketOrderAggregateArgs>): Prisma.PrismaPromise<GetBasketOrderAggregateType<T>>
+
+    /**
+     * Group by BasketOrder.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BasketOrderGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BasketOrderGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BasketOrderGroupByArgs['orderBy'] }
+        : { orderBy?: BasketOrderGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BasketOrderGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBasketOrderGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BasketOrder model
+   */
+  readonly fields: BasketOrderFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BasketOrder.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BasketOrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    orders<T extends BasketOrder$ordersArgs<ExtArgs> = {}>(args?: Subset<T, BasketOrder$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BasketOrder model
+   */
+  interface BasketOrderFieldRefs {
+    readonly id: FieldRef<"BasketOrder", 'String'>
+    readonly name: FieldRef<"BasketOrder", 'String'>
+    readonly symbol: FieldRef<"BasketOrder", 'String'>
+    readonly exchange: FieldRef<"BasketOrder", 'String'>
+    readonly side: FieldRef<"BasketOrder", 'OrderSide'>
+    readonly orderType: FieldRef<"BasketOrder", 'OrderType'>
+    readonly limitPrice: FieldRef<"BasketOrder", 'Decimal'>
+    readonly totalQuantity: FieldRef<"BasketOrder", 'Int'>
+    readonly allocationMethod: FieldRef<"BasketOrder", 'AllocationMethod'>
+    readonly status: FieldRef<"BasketOrder", 'BasketOrderStatus'>
+    readonly createdAt: FieldRef<"BasketOrder", 'DateTime'>
+    readonly updatedAt: FieldRef<"BasketOrder", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BasketOrder findUnique
+   */
+  export type BasketOrderFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * Filter, which BasketOrder to fetch.
+     */
+    where: BasketOrderWhereUniqueInput
+  }
+
+  /**
+   * BasketOrder findUniqueOrThrow
+   */
+  export type BasketOrderFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * Filter, which BasketOrder to fetch.
+     */
+    where: BasketOrderWhereUniqueInput
+  }
+
+  /**
+   * BasketOrder findFirst
+   */
+  export type BasketOrderFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * Filter, which BasketOrder to fetch.
+     */
+    where?: BasketOrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BasketOrders to fetch.
+     */
+    orderBy?: BasketOrderOrderByWithRelationInput | BasketOrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BasketOrders.
+     */
+    cursor?: BasketOrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BasketOrders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BasketOrders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BasketOrders.
+     */
+    distinct?: BasketOrderScalarFieldEnum | BasketOrderScalarFieldEnum[]
+  }
+
+  /**
+   * BasketOrder findFirstOrThrow
+   */
+  export type BasketOrderFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * Filter, which BasketOrder to fetch.
+     */
+    where?: BasketOrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BasketOrders to fetch.
+     */
+    orderBy?: BasketOrderOrderByWithRelationInput | BasketOrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BasketOrders.
+     */
+    cursor?: BasketOrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BasketOrders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BasketOrders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BasketOrders.
+     */
+    distinct?: BasketOrderScalarFieldEnum | BasketOrderScalarFieldEnum[]
+  }
+
+  /**
+   * BasketOrder findMany
+   */
+  export type BasketOrderFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * Filter, which BasketOrders to fetch.
+     */
+    where?: BasketOrderWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BasketOrders to fetch.
+     */
+    orderBy?: BasketOrderOrderByWithRelationInput | BasketOrderOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BasketOrders.
+     */
+    cursor?: BasketOrderWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BasketOrders from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BasketOrders.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BasketOrders.
+     */
+    distinct?: BasketOrderScalarFieldEnum | BasketOrderScalarFieldEnum[]
+  }
+
+  /**
+   * BasketOrder create
+   */
+  export type BasketOrderCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BasketOrder.
+     */
+    data: XOR<BasketOrderCreateInput, BasketOrderUncheckedCreateInput>
+  }
+
+  /**
+   * BasketOrder createMany
+   */
+  export type BasketOrderCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BasketOrders.
+     */
+    data: BasketOrderCreateManyInput | BasketOrderCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BasketOrder createManyAndReturn
+   */
+  export type BasketOrderCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * The data used to create many BasketOrders.
+     */
+    data: BasketOrderCreateManyInput | BasketOrderCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BasketOrder update
+   */
+  export type BasketOrderUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BasketOrder.
+     */
+    data: XOR<BasketOrderUpdateInput, BasketOrderUncheckedUpdateInput>
+    /**
+     * Choose, which BasketOrder to update.
+     */
+    where: BasketOrderWhereUniqueInput
+  }
+
+  /**
+   * BasketOrder updateMany
+   */
+  export type BasketOrderUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BasketOrders.
+     */
+    data: XOR<BasketOrderUpdateManyMutationInput, BasketOrderUncheckedUpdateManyInput>
+    /**
+     * Filter which BasketOrders to update
+     */
+    where?: BasketOrderWhereInput
+    /**
+     * Limit how many BasketOrders to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BasketOrder updateManyAndReturn
+   */
+  export type BasketOrderUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * The data used to update BasketOrders.
+     */
+    data: XOR<BasketOrderUpdateManyMutationInput, BasketOrderUncheckedUpdateManyInput>
+    /**
+     * Filter which BasketOrders to update
+     */
+    where?: BasketOrderWhereInput
+    /**
+     * Limit how many BasketOrders to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BasketOrder upsert
+   */
+  export type BasketOrderUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BasketOrder to update in case it exists.
+     */
+    where: BasketOrderWhereUniqueInput
+    /**
+     * In case the BasketOrder found by the `where` argument doesn't exist, create a new BasketOrder with this data.
+     */
+    create: XOR<BasketOrderCreateInput, BasketOrderUncheckedCreateInput>
+    /**
+     * In case the BasketOrder was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BasketOrderUpdateInput, BasketOrderUncheckedUpdateInput>
+  }
+
+  /**
+   * BasketOrder delete
+   */
+  export type BasketOrderDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    /**
+     * Filter which BasketOrder to delete.
+     */
+    where: BasketOrderWhereUniqueInput
+  }
+
+  /**
+   * BasketOrder deleteMany
+   */
+  export type BasketOrderDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BasketOrders to delete
+     */
+    where?: BasketOrderWhereInput
+    /**
+     * Limit how many BasketOrders to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BasketOrder.orders
+   */
+  export type BasketOrder$ordersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Order
+     */
+    select?: OrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Order
+     */
+    omit?: OrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: OrderInclude<ExtArgs> | null
+    where?: OrderWhereInput
+    orderBy?: OrderOrderByWithRelationInput | OrderOrderByWithRelationInput[]
+    cursor?: OrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * BasketOrder without action
+   */
+  export type BasketOrderDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -10860,6 +12259,7 @@ export namespace Prisma {
     quantity: 'quantity',
     limitPrice: 'limitPrice',
     brokerOrderId: 'brokerOrderId',
+    basketOrderId: 'basketOrderId',
     filledQuantity: 'filledQuantity',
     averageFillPrice: 'averageFillPrice',
     realizedPnl: 'realizedPnl',
@@ -10884,6 +12284,24 @@ export namespace Prisma {
   };
 
   export type AuditLogScalarFieldEnum = (typeof AuditLogScalarFieldEnum)[keyof typeof AuditLogScalarFieldEnum]
+
+
+  export const BasketOrderScalarFieldEnum: {
+    id: 'id',
+    name: 'name',
+    symbol: 'symbol',
+    exchange: 'exchange',
+    side: 'side',
+    orderType: 'orderType',
+    limitPrice: 'limitPrice',
+    totalQuantity: 'totalQuantity',
+    allocationMethod: 'allocationMethod',
+    status: 'status',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BasketOrderScalarFieldEnum = (typeof BasketOrderScalarFieldEnum)[keyof typeof BasketOrderScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -11069,6 +12487,34 @@ export namespace Prisma {
    * Reference to a field of type 'QueryMode'
    */
   export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'AllocationMethod'
+   */
+  export type EnumAllocationMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AllocationMethod'>
+    
+
+
+  /**
+   * Reference to a field of type 'AllocationMethod[]'
+   */
+  export type ListEnumAllocationMethodFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AllocationMethod[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BasketOrderStatus'
+   */
+  export type EnumBasketOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BasketOrderStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BasketOrderStatus[]'
+   */
+  export type ListEnumBasketOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BasketOrderStatus[]'>
     
 
 
@@ -11494,6 +12940,7 @@ export namespace Prisma {
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
+    basketOrderId?: StringNullableFilter<"Order"> | string | null
     filledQuantity?: IntFilter<"Order"> | number
     averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
@@ -11502,6 +12949,7 @@ export namespace Prisma {
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    basketOrder?: XOR<BasketOrderNullableScalarRelationFilter, BasketOrderWhereInput> | null
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
     brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
   }
@@ -11516,6 +12964,7 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrderInput | SortOrder
     brokerOrderId?: SortOrderInput | SortOrder
+    basketOrderId?: SortOrderInput | SortOrder
     filledQuantity?: SortOrder
     averageFillPrice?: SortOrderInput | SortOrder
     realizedPnl?: SortOrderInput | SortOrder
@@ -11524,6 +12973,7 @@ export namespace Prisma {
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    basketOrder?: BasketOrderOrderByWithRelationInput
     portfolio?: PortfolioOrderByWithRelationInput
     brokerAccount?: BrokerAccountOrderByWithRelationInput
   }
@@ -11541,6 +12991,7 @@ export namespace Prisma {
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
+    basketOrderId?: StringNullableFilter<"Order"> | string | null
     filledQuantity?: IntFilter<"Order"> | number
     averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
@@ -11549,6 +13000,7 @@ export namespace Prisma {
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+    basketOrder?: XOR<BasketOrderNullableScalarRelationFilter, BasketOrderWhereInput> | null
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
     brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
   }, "id">
@@ -11563,6 +13015,7 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrderInput | SortOrder
     brokerOrderId?: SortOrderInput | SortOrder
+    basketOrderId?: SortOrderInput | SortOrder
     filledQuantity?: SortOrder
     averageFillPrice?: SortOrderInput | SortOrder
     realizedPnl?: SortOrderInput | SortOrder
@@ -11591,6 +13044,7 @@ export namespace Prisma {
     quantity?: IntWithAggregatesFilter<"Order"> | number
     limitPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
+    basketOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
     filledQuantity?: IntWithAggregatesFilter<"Order"> | number
     averageFillPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
@@ -11661,6 +13115,98 @@ export namespace Prisma {
     message?: StringNullableWithAggregatesFilter<"AuditLog"> | string | null
     metadata?: JsonNullableWithAggregatesFilter<"AuditLog">
     createdAt?: DateTimeWithAggregatesFilter<"AuditLog"> | Date | string
+  }
+
+  export type BasketOrderWhereInput = {
+    AND?: BasketOrderWhereInput | BasketOrderWhereInput[]
+    OR?: BasketOrderWhereInput[]
+    NOT?: BasketOrderWhereInput | BasketOrderWhereInput[]
+    id?: StringFilter<"BasketOrder"> | string
+    name?: StringNullableFilter<"BasketOrder"> | string | null
+    symbol?: StringFilter<"BasketOrder"> | string
+    exchange?: StringFilter<"BasketOrder"> | string
+    side?: EnumOrderSideFilter<"BasketOrder"> | $Enums.OrderSide
+    orderType?: EnumOrderTypeFilter<"BasketOrder"> | $Enums.OrderType
+    limitPrice?: DecimalNullableFilter<"BasketOrder"> | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFilter<"BasketOrder"> | number
+    allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
+    updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
+    orders?: OrderListRelationFilter
+  }
+
+  export type BasketOrderOrderByWithRelationInput = {
+    id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    side?: SortOrder
+    orderType?: SortOrder
+    limitPrice?: SortOrderInput | SortOrder
+    totalQuantity?: SortOrder
+    allocationMethod?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    orders?: OrderOrderByRelationAggregateInput
+  }
+
+  export type BasketOrderWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BasketOrderWhereInput | BasketOrderWhereInput[]
+    OR?: BasketOrderWhereInput[]
+    NOT?: BasketOrderWhereInput | BasketOrderWhereInput[]
+    name?: StringNullableFilter<"BasketOrder"> | string | null
+    symbol?: StringFilter<"BasketOrder"> | string
+    exchange?: StringFilter<"BasketOrder"> | string
+    side?: EnumOrderSideFilter<"BasketOrder"> | $Enums.OrderSide
+    orderType?: EnumOrderTypeFilter<"BasketOrder"> | $Enums.OrderType
+    limitPrice?: DecimalNullableFilter<"BasketOrder"> | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFilter<"BasketOrder"> | number
+    allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
+    updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
+    orders?: OrderListRelationFilter
+  }, "id">
+
+  export type BasketOrderOrderByWithAggregationInput = {
+    id?: SortOrder
+    name?: SortOrderInput | SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    side?: SortOrder
+    orderType?: SortOrder
+    limitPrice?: SortOrderInput | SortOrder
+    totalQuantity?: SortOrder
+    allocationMethod?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BasketOrderCountOrderByAggregateInput
+    _avg?: BasketOrderAvgOrderByAggregateInput
+    _max?: BasketOrderMaxOrderByAggregateInput
+    _min?: BasketOrderMinOrderByAggregateInput
+    _sum?: BasketOrderSumOrderByAggregateInput
+  }
+
+  export type BasketOrderScalarWhereWithAggregatesInput = {
+    AND?: BasketOrderScalarWhereWithAggregatesInput | BasketOrderScalarWhereWithAggregatesInput[]
+    OR?: BasketOrderScalarWhereWithAggregatesInput[]
+    NOT?: BasketOrderScalarWhereWithAggregatesInput | BasketOrderScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BasketOrder"> | string
+    name?: StringNullableWithAggregatesFilter<"BasketOrder"> | string | null
+    symbol?: StringWithAggregatesFilter<"BasketOrder"> | string
+    exchange?: StringWithAggregatesFilter<"BasketOrder"> | string
+    side?: EnumOrderSideWithAggregatesFilter<"BasketOrder"> | $Enums.OrderSide
+    orderType?: EnumOrderTypeWithAggregatesFilter<"BasketOrder"> | $Enums.OrderType
+    limitPrice?: DecimalNullableWithAggregatesFilter<"BasketOrder"> | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntWithAggregatesFilter<"BasketOrder"> | number
+    allocationMethod?: EnumAllocationMethodWithAggregatesFilter<"BasketOrder"> | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusWithAggregatesFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    createdAt?: DateTimeWithAggregatesFilter<"BasketOrder"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BasketOrder"> | Date | string
   }
 
   export type FirmCreateInput = {
@@ -12094,6 +13640,7 @@ export namespace Prisma {
     filledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
   }
@@ -12108,6 +13655,7 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    basketOrderId?: string | null
     filledQuantity?: number
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
@@ -12134,6 +13682,7 @@ export namespace Prisma {
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
   }
@@ -12148,6 +13697,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     filledQuantity?: IntFieldUpdateOperationsInput | number
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -12168,6 +13718,7 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    basketOrderId?: string | null
     filledQuantity?: number
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
@@ -12206,6 +13757,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     filledQuantity?: IntFieldUpdateOperationsInput | number
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -12284,6 +13836,115 @@ export namespace Prisma {
     message?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BasketOrderCreateInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutBasketOrderInput
+  }
+
+  export type BasketOrderUncheckedCreateInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutBasketOrderInput
+  }
+
+  export type BasketOrderUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutBasketOrderNestedInput
+  }
+
+  export type BasketOrderUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutBasketOrderNestedInput
+  }
+
+  export type BasketOrderCreateManyInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BasketOrderUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BasketOrderUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -12760,6 +14421,11 @@ export namespace Prisma {
     not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
+  export type BasketOrderNullableScalarRelationFilter = {
+    is?: BasketOrderWhereInput | null
+    isNot?: BasketOrderWhereInput | null
+  }
+
   export type BrokerAccountScalarRelationFilter = {
     is?: BrokerAccountWhereInput
     isNot?: BrokerAccountWhereInput
@@ -12775,6 +14441,7 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
+    basketOrderId?: SortOrder
     filledQuantity?: SortOrder
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
@@ -12803,6 +14470,7 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
+    basketOrderId?: SortOrder
     filledQuantity?: SortOrder
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
@@ -12823,6 +14491,7 @@ export namespace Prisma {
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
+    basketOrderId?: SortOrder
     filledQuantity?: SortOrder
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
@@ -12993,6 +14662,95 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedJsonNullableFilter<$PrismaModel>
     _max?: NestedJsonNullableFilter<$PrismaModel>
+  }
+
+  export type EnumAllocationMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.AllocationMethod | EnumAllocationMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumAllocationMethodFilter<$PrismaModel> | $Enums.AllocationMethod
+  }
+
+  export type EnumBasketOrderStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BasketOrderStatus | EnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBasketOrderStatusFilter<$PrismaModel> | $Enums.BasketOrderStatus
+  }
+
+  export type BasketOrderCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    side?: SortOrder
+    orderType?: SortOrder
+    limitPrice?: SortOrder
+    totalQuantity?: SortOrder
+    allocationMethod?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BasketOrderAvgOrderByAggregateInput = {
+    limitPrice?: SortOrder
+    totalQuantity?: SortOrder
+  }
+
+  export type BasketOrderMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    side?: SortOrder
+    orderType?: SortOrder
+    limitPrice?: SortOrder
+    totalQuantity?: SortOrder
+    allocationMethod?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BasketOrderMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    side?: SortOrder
+    orderType?: SortOrder
+    limitPrice?: SortOrder
+    totalQuantity?: SortOrder
+    allocationMethod?: SortOrder
+    status?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BasketOrderSumOrderByAggregateInput = {
+    limitPrice?: SortOrder
+    totalQuantity?: SortOrder
+  }
+
+  export type EnumAllocationMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AllocationMethod | EnumAllocationMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumAllocationMethodWithAggregatesFilter<$PrismaModel> | $Enums.AllocationMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAllocationMethodFilter<$PrismaModel>
+    _max?: NestedEnumAllocationMethodFilter<$PrismaModel>
+  }
+
+  export type EnumBasketOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BasketOrderStatus | EnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBasketOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.BasketOrderStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
+    _max?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
   }
 
   export type UserCreateNestedManyWithoutFirmInput = {
@@ -13391,6 +15149,12 @@ export namespace Prisma {
     update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutHoldingsInput, PortfolioUpdateWithoutHoldingsInput>, PortfolioUncheckedUpdateWithoutHoldingsInput>
   }
 
+  export type BasketOrderCreateNestedOneWithoutOrdersInput = {
+    create?: XOR<BasketOrderCreateWithoutOrdersInput, BasketOrderUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: BasketOrderCreateOrConnectWithoutOrdersInput
+    connect?: BasketOrderWhereUniqueInput
+  }
+
   export type PortfolioCreateNestedOneWithoutOrdersInput = {
     create?: XOR<PortfolioCreateWithoutOrdersInput, PortfolioUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutOrdersInput
@@ -13427,6 +15191,16 @@ export namespace Prisma {
     set?: Date | string | null
   }
 
+  export type BasketOrderUpdateOneWithoutOrdersNestedInput = {
+    create?: XOR<BasketOrderCreateWithoutOrdersInput, BasketOrderUncheckedCreateWithoutOrdersInput>
+    connectOrCreate?: BasketOrderCreateOrConnectWithoutOrdersInput
+    upsert?: BasketOrderUpsertWithoutOrdersInput
+    disconnect?: BasketOrderWhereInput | boolean
+    delete?: BasketOrderWhereInput | boolean
+    connect?: BasketOrderWhereUniqueInput
+    update?: XOR<XOR<BasketOrderUpdateToOneWithWhereWithoutOrdersInput, BasketOrderUpdateWithoutOrdersInput>, BasketOrderUncheckedUpdateWithoutOrdersInput>
+  }
+
   export type PortfolioUpdateOneRequiredWithoutOrdersNestedInput = {
     create?: XOR<PortfolioCreateWithoutOrdersInput, PortfolioUncheckedCreateWithoutOrdersInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutOrdersInput
@@ -13445,6 +15219,56 @@ export namespace Prisma {
 
   export type EnumAuditActionFieldUpdateOperationsInput = {
     set?: $Enums.AuditAction
+  }
+
+  export type OrderCreateNestedManyWithoutBasketOrderInput = {
+    create?: XOR<OrderCreateWithoutBasketOrderInput, OrderUncheckedCreateWithoutBasketOrderInput> | OrderCreateWithoutBasketOrderInput[] | OrderUncheckedCreateWithoutBasketOrderInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutBasketOrderInput | OrderCreateOrConnectWithoutBasketOrderInput[]
+    createMany?: OrderCreateManyBasketOrderInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type OrderUncheckedCreateNestedManyWithoutBasketOrderInput = {
+    create?: XOR<OrderCreateWithoutBasketOrderInput, OrderUncheckedCreateWithoutBasketOrderInput> | OrderCreateWithoutBasketOrderInput[] | OrderUncheckedCreateWithoutBasketOrderInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutBasketOrderInput | OrderCreateOrConnectWithoutBasketOrderInput[]
+    createMany?: OrderCreateManyBasketOrderInputEnvelope
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type EnumAllocationMethodFieldUpdateOperationsInput = {
+    set?: $Enums.AllocationMethod
+  }
+
+  export type EnumBasketOrderStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BasketOrderStatus
+  }
+
+  export type OrderUpdateManyWithoutBasketOrderNestedInput = {
+    create?: XOR<OrderCreateWithoutBasketOrderInput, OrderUncheckedCreateWithoutBasketOrderInput> | OrderCreateWithoutBasketOrderInput[] | OrderUncheckedCreateWithoutBasketOrderInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutBasketOrderInput | OrderCreateOrConnectWithoutBasketOrderInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutBasketOrderInput | OrderUpsertWithWhereUniqueWithoutBasketOrderInput[]
+    createMany?: OrderCreateManyBasketOrderInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutBasketOrderInput | OrderUpdateWithWhereUniqueWithoutBasketOrderInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutBasketOrderInput | OrderUpdateManyWithWhereWithoutBasketOrderInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type OrderUncheckedUpdateManyWithoutBasketOrderNestedInput = {
+    create?: XOR<OrderCreateWithoutBasketOrderInput, OrderUncheckedCreateWithoutBasketOrderInput> | OrderCreateWithoutBasketOrderInput[] | OrderUncheckedCreateWithoutBasketOrderInput[]
+    connectOrCreate?: OrderCreateOrConnectWithoutBasketOrderInput | OrderCreateOrConnectWithoutBasketOrderInput[]
+    upsert?: OrderUpsertWithWhereUniqueWithoutBasketOrderInput | OrderUpsertWithWhereUniqueWithoutBasketOrderInput[]
+    createMany?: OrderCreateManyBasketOrderInputEnvelope
+    set?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    disconnect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    delete?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+    update?: OrderUpdateWithWhereUniqueWithoutBasketOrderInput | OrderUpdateWithWhereUniqueWithoutBasketOrderInput[]
+    updateMany?: OrderUpdateManyWithWhereWithoutBasketOrderInput | OrderUpdateManyWithWhereWithoutBasketOrderInput[]
+    deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -13768,6 +15592,40 @@ export namespace Prisma {
     gt?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     gte?: InputJsonValue | JsonFieldRefInput<$PrismaModel>
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
+  }
+
+  export type NestedEnumAllocationMethodFilter<$PrismaModel = never> = {
+    equals?: $Enums.AllocationMethod | EnumAllocationMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumAllocationMethodFilter<$PrismaModel> | $Enums.AllocationMethod
+  }
+
+  export type NestedEnumBasketOrderStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BasketOrderStatus | EnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBasketOrderStatusFilter<$PrismaModel> | $Enums.BasketOrderStatus
+  }
+
+  export type NestedEnumAllocationMethodWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.AllocationMethod | EnumAllocationMethodFieldRefInput<$PrismaModel>
+    in?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    notIn?: $Enums.AllocationMethod[] | ListEnumAllocationMethodFieldRefInput<$PrismaModel>
+    not?: NestedEnumAllocationMethodWithAggregatesFilter<$PrismaModel> | $Enums.AllocationMethod
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumAllocationMethodFilter<$PrismaModel>
+    _max?: NestedEnumAllocationMethodFilter<$PrismaModel>
+  }
+
+  export type NestedEnumBasketOrderStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BasketOrderStatus | EnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BasketOrderStatus[] | ListEnumBasketOrderStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBasketOrderStatusWithAggregatesFilter<$PrismaModel> | $Enums.BasketOrderStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
+    _max?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
   }
 
   export type UserCreateWithoutFirmInput = {
@@ -14139,6 +15997,7 @@ export namespace Prisma {
     filledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
   }
 
@@ -14152,6 +16011,7 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    basketOrderId?: string | null
     filledQuantity?: number
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
@@ -14231,6 +16091,7 @@ export namespace Prisma {
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
+    basketOrderId?: StringNullableFilter<"Order"> | string | null
     filledQuantity?: IntFilter<"Order"> | number
     averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
@@ -14312,6 +16173,7 @@ export namespace Prisma {
     filledAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+    basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
   }
 
@@ -14325,6 +16187,7 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    basketOrderId?: string | null
     filledQuantity?: number
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
@@ -14473,6 +16336,41 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
+  export type BasketOrderCreateWithoutOrdersInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BasketOrderUncheckedCreateWithoutOrdersInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BasketOrderCreateOrConnectWithoutOrdersInput = {
+    where: BasketOrderWhereUniqueInput
+    create: XOR<BasketOrderCreateWithoutOrdersInput, BasketOrderUncheckedCreateWithoutOrdersInput>
+  }
+
   export type PortfolioCreateWithoutOrdersInput = {
     id?: string
     name: string
@@ -14519,6 +16417,47 @@ export namespace Prisma {
   export type BrokerAccountCreateOrConnectWithoutOrdersInput = {
     where: BrokerAccountWhereUniqueInput
     create: XOR<BrokerAccountCreateWithoutOrdersInput, BrokerAccountUncheckedCreateWithoutOrdersInput>
+  }
+
+  export type BasketOrderUpsertWithoutOrdersInput = {
+    update: XOR<BasketOrderUpdateWithoutOrdersInput, BasketOrderUncheckedUpdateWithoutOrdersInput>
+    create: XOR<BasketOrderCreateWithoutOrdersInput, BasketOrderUncheckedCreateWithoutOrdersInput>
+    where?: BasketOrderWhereInput
+  }
+
+  export type BasketOrderUpdateToOneWithWhereWithoutOrdersInput = {
+    where?: BasketOrderWhereInput
+    data: XOR<BasketOrderUpdateWithoutOrdersInput, BasketOrderUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type BasketOrderUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BasketOrderUncheckedUpdateWithoutOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PortfolioUpsertWithoutOrdersInput = {
@@ -14579,6 +16518,72 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateWithoutBasketOrderInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    portfolio: PortfolioCreateNestedOneWithoutOrdersInput
+    brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutBasketOrderInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    portfolioId: string
+    brokerAccountId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutBasketOrderInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutBasketOrderInput, OrderUncheckedCreateWithoutBasketOrderInput>
+  }
+
+  export type OrderCreateManyBasketOrderInputEnvelope = {
+    data: OrderCreateManyBasketOrderInput | OrderCreateManyBasketOrderInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type OrderUpsertWithWhereUniqueWithoutBasketOrderInput = {
+    where: OrderWhereUniqueInput
+    update: XOR<OrderUpdateWithoutBasketOrderInput, OrderUncheckedUpdateWithoutBasketOrderInput>
+    create: XOR<OrderCreateWithoutBasketOrderInput, OrderUncheckedCreateWithoutBasketOrderInput>
+  }
+
+  export type OrderUpdateWithWhereUniqueWithoutBasketOrderInput = {
+    where: OrderWhereUniqueInput
+    data: XOR<OrderUpdateWithoutBasketOrderInput, OrderUncheckedUpdateWithoutBasketOrderInput>
+  }
+
+  export type OrderUpdateManyWithWhereWithoutBasketOrderInput = {
+    where: OrderScalarWhereInput
+    data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutBasketOrderInput>
   }
 
   export type UserCreateManyFirmInput = {
@@ -14737,6 +16742,7 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    basketOrderId?: string | null
     filledQuantity?: number
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
@@ -14762,6 +16768,7 @@ export namespace Prisma {
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
   }
 
@@ -14775,6 +16782,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     filledQuantity?: IntFieldUpdateOperationsInput | number
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -14794,6 +16802,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     filledQuantity?: IntFieldUpdateOperationsInput | number
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -14823,6 +16832,7 @@ export namespace Prisma {
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
+    basketOrderId?: string | null
     filledQuantity?: number
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
@@ -14878,6 +16888,7 @@ export namespace Prisma {
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
   }
 
@@ -14891,6 +16902,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     filledQuantity?: IntFieldUpdateOperationsInput | number
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
@@ -14910,10 +16922,91 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
     filledQuantity?: IntFieldUpdateOperationsInput | number
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderCreateManyBasketOrderInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    portfolioId: string
+    brokerAccountId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderUpdateWithoutBasketOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutBasketOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type OrderUncheckedUpdateManyWithoutBasketOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string

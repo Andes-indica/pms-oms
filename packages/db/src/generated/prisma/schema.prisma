@@ -99,6 +99,10 @@ enum AuditAction {
   ORDER_CANCELLED
   ORDER_REJECTED
   ORDER_SYNCED
+
+  BASKET_CREATED
+  BASKET_SUBMITTED
+  BASKET_CAMCELLED
 }
 
 model Portfolio {
@@ -148,6 +152,8 @@ model Order {
   limitPrice Decimal? @db.Decimal(18, 4)
 
   brokerOrderId String?
+  basketOrderId String?
+  basketOrder   BasketOrder? @relation(fields: [basketOrderId], references: [id])
 
   filledQuantity   Int       @default(0)
   averageFillPrice Decimal?  @db.Decimal(18, 4)
@@ -177,4 +183,45 @@ model AuditLog {
   metadata Json?
 
   createdAt DateTime @default(now())
+}
+
+enum AllocationMethod {
+  FIXED_QUANTITY
+  EQUAL_QUANTITY
+  PERCENTAGE
+}
+
+enum BasketOrderStatus {
+  PENDING
+  PARTIALLY_SUBMITTED
+  SUBMITTED
+  PARTIALLY_FILLED
+  FILLED
+  CANCELLED
+  REJECTED
+}
+
+model BasketOrder {
+  id String @id @default(cuid())
+
+  name String?
+
+  symbol   String
+  exchange String
+
+  side      OrderSide
+  orderType OrderType
+
+  limitPrice Decimal? @db.Decimal(18, 4)
+
+  totalQuantity Int
+
+  allocationMethod AllocationMethod
+
+  status BasketOrderStatus @default(PENDING)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

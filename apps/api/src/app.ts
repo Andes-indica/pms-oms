@@ -3,7 +3,8 @@ import cors from "cors";
 import { prisma } from "@pms-oms/db";
 import clientRoutes from "./routes/client.routes.ts";
 import orderRoutes from "./routes/order.routes";
-import auditRoutes from "./routes/audit.routes.ts"
+import auditRoutes from "./routes/audit.routes.ts";
+import basketOrderRoutes from "./routes/basket-order.routes.ts";
 
 const app = express();
 
@@ -39,4 +40,5 @@ app.use("/api/clients", clientRoutes);
 
 app.use("/api/orders",orderRoutes);
 app.use("/api/audit-logs",auditRoutes);
+app.use("/api/basket-orders",basketOrderRoutes);
 export default app;
