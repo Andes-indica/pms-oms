@@ -1,15 +1,85 @@
 import { Router } from "express";
-import { cancelOrder, createOrder,executeOrder,getOrders,syncOrder } from "../controllers/order.controller";
+
+import {
+  createOrder,
+  getOrders,
+  executeOrder,
+  syncOrder,
+  cancelOrder,
+} from "../controllers/order.controller";
+
+import {
+  requireAuth,
+} from "../middleware/auth.middleware";
+
+import {
+  requireRole,
+} from "../middleware/role.middleware";
 
 const router = Router();
 
-router.post("/", createOrder);
+//
+// Every route below requires login.
+//
+router.use(requireAuth);
 
-router.get("/",getOrders);
+//
+// Everyone who is authenticated can view orders.
+//
+router.get(
+  "/",
+  getOrders,
+);
 
-router.post("/:id/execute",executeOrder);
+//
+// Only managers/admins can create orders.
+//
+router.post(
+  "/",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  createOrder,
+);
 
-router.post("/:id/sync", syncOrder);
+//
+// Only managers/admins can send orders
+// to the broker.
+//
+router.post(
+  "/:id/execute",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  executeOrder,
+);
 
-router.post("/:id/cancel",cancelOrder)
+//
+// Sync is normally a system/operations activity.
+//
+router.post(
+  "/:id/sync",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+  syncOrder,
+);
+
+//
+// Managers and operations can cancel.
+//
+router.post(
+  "/:id/cancel",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+  cancelOrder,
+);
+
 export default router;

@@ -7,15 +7,22 @@ export type BrokerOrderStatus =
   | "OPEN"
   | "PARTIALLY_FILLED"
   | "FILLED"
+  | "CANCELLED"
   | "REJECTED";
 
 export type BrokerOrderRequest = {
+  clientOrderId: string;
   symbol: string;
   exchange: string;
   side: BrokerOrderSide;
   orderType: BrokerOrderType;
   quantity: number;
   limitPrice?: number | null;
+};
+
+export type BrokerCancellationResult = {
+  brokerOrderId: string;
+  status: "CANCELLED";
 };
 
 export type BrokerOrderResult = {

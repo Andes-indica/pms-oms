@@ -1,13 +1,11 @@
-import type {
-  Request,
-  Response,
-} from "express";
+import type { Response } from "express";
 
 import { prisma } from "@pms-oms/db";
 
 import { createBasketOrderService } from "../services/basket-order.service";
 import { executeBasketOrderService } from "../services/basket-execution.service";
 import { syncBasketOrderService } from "../services/basket-sync.service";
+import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 
 type BasketOrderBody = {
   name?: string;
@@ -39,17 +37,17 @@ type BasketOrderBody = {
 };
 
 export async function createBasketOrder(
-  req: Request<
-    {},
-    {},
-    BasketOrderBody
-  >,
+  req: AuthenticatedRequest & { body: BasketOrderBody },
   res: Response,
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const basket =
       await createBasketOrderService(
-        req.body,
+        { ...req.body, firmId: req.user.firmId },
       );
 
     return res.status(201).json({
@@ -75,12 +73,19 @@ export async function createBasketOrder(
 }
 
 export async function getBasketOrders(
-  _req: Request,
+  req: AuthenticatedRequest,
   res: Response,
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const baskets =
       await prisma.basketOrder.findMany({
+        where: {
+          firmId: req.user.firmId,
+        },
         include: {
           orders: {
             include: {
@@ -115,13 +120,18 @@ export async function getBasketOrders(
 }
 
 export async function executeBasketOrder(
-  req: Request<{ id: string }>,
+  req: AuthenticatedRequest & { params: { id: string } },
   res: Response,
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const result =
       await executeBasketOrderService(
         req.params.id,
+        req.user.firmId,
       );
 
     return res.status(200).json({
@@ -160,26 +170,36 @@ export async function executeBasketOrder(
   }
 }
 export async function syncBasketOrder(
-  req: Request<{ id: string }>,
+  req: AuthenticatedRequest & { params: { id: string } },
   res: Response,
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const result =
       await syncBasketOrderService(
         req.params.id,
+        req.user.firmId,
       );
 
     return res.status(200).json({
       data: result,
     });
   } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message === "BASKET_NOT_FOUND"
-    ) {
-      return res.status(404).json({
-        error: "Basket order not found",
-      });
+    if (error instanceof Error) {
+      if (error.message === "BASKET_NOT_FOUND") {
+        return res.status(404).json({
+          error: "Basket order not found",
+        });
+      }
+
+      if (error.message === "BASKET_HAS_NO_ORDERS") {
+        return res.status(409).json({
+          error: "Basket contains no child orders",
+        });
+      }
     }
 
     console.error(

@@ -5,10 +5,12 @@ import { createAuditLog } from "./audit.service";
 
 export async function executeBasketOrderService(
   basketOrderId: string,
+  firmId: string,
 ) {
-  const basket = await prisma.basketOrder.findUnique({
+  const basket = await prisma.basketOrder.findFirst({
     where: {
       id: basketOrderId,
+      firmId,
     },
     include: {
       orders: true,
@@ -37,7 +39,7 @@ export async function executeBasketOrderService(
   for (const childOrder of basket.orders) {
     try {
       const executedOrder =
-        await executeOrderService(childOrder.id);
+        await executeOrderService(childOrder.id, firmId);
 
       results.push({
         orderId: childOrder.id,
@@ -73,8 +75,8 @@ export async function executeBasketOrderService(
     basketStatus = "PARTIALLY_SUBMITTED";
   }
 
-  const updatedBasket =
-    await prisma.basketOrder.update({
+  const updatedBasket = await prisma.$transaction(async (tx) => {
+    const updated = await tx.basketOrder.update({
       where: {
         id: basket.id,
       },
@@ -86,18 +88,21 @@ export async function executeBasketOrderService(
       },
     });
 
-  await createAuditLog({
-    action: "BASKET_SUBMITTED",
-    entityType: "BASKET_ORDER",
-    entityId: basket.id,
-    message: "Basket execution attempted",
-    metadata: {
-      totalOrders: results.length,
-      successfulOrders: successfulCount,
-      failedOrders:
-        results.length - successfulCount,
-      status: basketStatus,
-    },
+    await createAuditLog({
+      firmId,
+      action: "BASKET_SUBMITTED",
+      entityType: "BASKET_ORDER",
+      entityId: basket.id,
+      message: "Basket execution attempted",
+      metadata: {
+        totalOrders: results.length,
+        successfulOrders: successfulCount,
+        failedOrders: results.length - successfulCount,
+        status: basketStatus,
+      },
+    }, tx);
+
+    return updated;
   });
 
   return {

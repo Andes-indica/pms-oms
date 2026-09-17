@@ -5,11 +5,13 @@ import clientRoutes from "./routes/client.routes.ts";
 import orderRoutes from "./routes/order.routes";
 import auditRoutes from "./routes/audit.routes.ts";
 import basketOrderRoutes from "./routes/basket-order.routes.ts";
+import authRoutes from "./routes/auth.routes"
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/auth", authRoutes);
 
 app.get("/health", (_req, res) => {
   res.json({

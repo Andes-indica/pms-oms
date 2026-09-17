@@ -10,11 +10,18 @@
   "scripts": {
     "dev": "bun --filter '*' dev",
     "build": "bun --filter '*' build",
-    "test": "bun --filter '*' test",
-    "lint": "bun --filter '*' lint",
+    "test": "bun test ./apps ./packages",
+    "typecheck": "bunx tsc --noEmit -p apps/api/tsconfig.json && bunx tsc --noEmit -p packages/db/tsconfig.json && bunx tsc --noEmit -p packages/broker/tsconfig.json",
+    "lint": "bun run typecheck",
     "dev:api": "cd apps/api && bun run dev"
   },
   "dependencies": {
     "@pms-oms/broker": "workspace:*"
+  },
+  "overrides": {
+    "deepmerge-ts": "^8.0.0",
+    "fast-uri": "^3.1.6",
+    "mysql2": "^3.23.1",
+    "qs": "^6.15.4"
   }
 }

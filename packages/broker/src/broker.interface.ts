@@ -2,6 +2,7 @@ import type {
   BrokerOrderRequest,
   BrokerOrderResult,
   BrokerOrderUpdate,
+  BrokerCancellationResult,
 } from "./types";
 
 export interface BrokerAdapter {
@@ -12,4 +13,13 @@ export interface BrokerAdapter {
   getOrderStatus(
     brokerOrderId: string,
   ): Promise<BrokerOrderUpdate>;
+
+  cancelOrder(
+    brokerOrderId: string,
+  ): Promise<BrokerCancellationResult>;
+
+  getEstimatedPrice(
+    symbol: string,
+    exchange: string,
+  ): Promise<number>;
 }

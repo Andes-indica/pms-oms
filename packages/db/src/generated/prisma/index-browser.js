@@ -161,6 +161,7 @@ exports.Prisma.PortfolioScalarFieldEnum = {
   id: 'id',
   name: 'name',
   clientId: 'clientId',
+  cashBalance: 'cashBalance',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -191,6 +192,9 @@ exports.Prisma.OrderScalarFieldEnum = {
   averageFillPrice: 'averageFillPrice',
   realizedPnl: 'realizedPnl',
   filledAt: 'filledAt',
+  estimatedPrice: 'estimatedPrice',
+  reservedCash: 'reservedCash',
+  reservedQuantity: 'reservedQuantity',
   portfolioId: 'portfolioId',
   brokerAccountId: 'brokerAccountId',
   createdAt: 'createdAt',
@@ -199,6 +203,7 @@ exports.Prisma.OrderScalarFieldEnum = {
 
 exports.Prisma.AuditLogScalarFieldEnum = {
   id: 'id',
+  firmId: 'firmId',
   action: 'action',
   entityType: 'entityType',
   entityId: 'entityId',
@@ -218,8 +223,28 @@ exports.Prisma.BasketOrderScalarFieldEnum = {
   totalQuantity: 'totalQuantity',
   allocationMethod: 'allocationMethod',
   status: 'status',
+  firmId: 'firmId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RiskLimitScalarFieldEnum = {
+  id: 'id',
+  portfolioId: 'portfolioId',
+  maxOrderQuantity: 'maxOrderQuantity',
+  maxOrderValue: 'maxOrderValue',
+  maxPositionQuantity: 'maxPositionQuantity',
+  maxPositionValue: 'maxPositionValue',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.RestrictedSecurityScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  exchange: 'exchange',
+  reason: 'reason',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.SortOrder = {
@@ -283,7 +308,7 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   ORDER_SYNCED: 'ORDER_SYNCED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
-  BASKET_CAMCELLED: 'BASKET_CAMCELLED'
+  BASKET_CANCELLED: 'BASKET_CANCELLED'
 };
 
 exports.AllocationMethod = exports.$Enums.AllocationMethod = {
@@ -311,7 +336,9 @@ exports.Prisma.ModelName = {
   Holding: 'Holding',
   Order: 'Order',
   AuditLog: 'AuditLog',
-  BasketOrder: 'BasketOrder'
+  BasketOrder: 'BasketOrder',
+  RiskLimit: 'RiskLimit',
+  RestrictedSecurity: 'RestrictedSecurity'
 };
 
 /**

@@ -8,6 +8,7 @@ import {
 import { createAuditLog } from "./audit.service";
 
 type CreateBasketOrderInput = {
+  firmId: string;
   name?: string;
 
   symbol: string;
@@ -34,6 +35,34 @@ type CreateBasketOrderInput = {
 export async function createBasketOrderService(
   input: CreateBasketOrderInput,
 ) {
+  if (
+    typeof input.symbol !== "string" || !input.symbol.trim() ||
+    typeof input.exchange !== "string" || !input.exchange.trim()
+  ) {
+    throw new Error("INVALID_INSTRUMENT");
+  }
+
+  if (!(["BUY", "SELL"] as const).includes(input.side)) {
+    throw new Error("INVALID_ORDER_SIDE");
+  }
+
+  if (!(["MARKET", "LIMIT"] as const).includes(input.orderType)) {
+    throw new Error("INVALID_ORDER_TYPE");
+  }
+
+  if (
+    input.orderType === "LIMIT" &&
+    (typeof input.limitPrice !== "number" ||
+      !Number.isFinite(input.limitPrice) ||
+      input.limitPrice <= 0)
+  ) {
+    throw new Error("INVALID_LIMIT_PRICE");
+  }
+
+  if (!Array.isArray(input.targets)) {
+    throw new Error("NO_ALLOCATION_TARGETS");
+  }
+
   const allocations = allocateOrder({
     method: input.allocationMethod,
     totalQuantity: input.totalQuantity,
@@ -45,9 +74,12 @@ export async function createBasketOrderService(
   //
   for (const allocation of allocations) {
     const portfolio =
-      await prisma.portfolio.findUnique({
+      await prisma.portfolio.findFirst({
         where: {
           id: allocation.portfolioId,
+          client: {
+            firmId: input.firmId,
+          },
         },
       });
 
@@ -58,9 +90,12 @@ export async function createBasketOrderService(
     }
 
     const brokerAccount =
-      await prisma.brokerAccount.findUnique({
+      await prisma.brokerAccount.findFirst({
         where: {
           id: allocation.brokerAccountId,
+          client: {
+            firmId: input.firmId,
+          },
         },
       });
 
@@ -111,6 +146,7 @@ export async function createBasketOrderService(
                 input.allocationMethod,
 
               status: "PENDING",
+              firmId: input.firmId,
             },
           });
 
@@ -150,27 +186,23 @@ export async function createBasketOrderService(
           });
         }
 
+        await createAuditLog({
+          firmId: input.firmId,
+          action: "BASKET_CREATED",
+          entityType: "BASKET_ORDER",
+          entityId: createdBasket.id,
+          message: "Basket order created",
+          metadata: {
+            symbol: createdBasket.symbol,
+            totalQuantity: createdBasket.totalQuantity,
+            allocationMethod: createdBasket.allocationMethod,
+            clientCount: allocations.length,
+          },
+        }, tx);
+
         return createdBasket;
       },
     );
-
-  await createAuditLog({
-    action: "BASKET_CREATED",
-    entityType: "BASKET_ORDER",
-    entityId: basket.id,
-
-    message: "Basket order created",
-
-    metadata: {
-      symbol: basket.symbol,
-      totalQuantity:
-        basket.totalQuantity,
-      allocationMethod:
-        basket.allocationMethod,
-      clientCount:
-        allocations.length,
-    },
-  });
 
   return prisma.basketOrder.findUnique({
     where: {

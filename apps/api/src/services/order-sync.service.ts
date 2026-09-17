@@ -2,10 +2,14 @@ import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
 import { mockBroker } from "../brokers/broker-registry";
 
-export async function syncOrderService(orderId: string) {
-  const order = await prisma.order.findUnique({
+export async function syncOrderService(
+  orderId: string,
+  firmId: string,
+) {
+  const order = await prisma.order.findFirst({
     where: {
       id: orderId,
+      portfolio: { client: { firmId } },
     },
   });
 
@@ -17,37 +21,28 @@ export async function syncOrderService(orderId: string) {
     throw new Error("ORDER_NOT_SUBMITTED");
   }
 
-  // Prevent applying the same fill twice
-  if (order.status === "FILLED") {
+  if (["FILLED", "CANCELLED", "REJECTED"].includes(order.status)) {
     return order;
   }
 
-  const brokerUpdate = await mockBroker.getOrderStatus(
-    order.brokerOrderId,
-  );
+  const brokerUpdate = await mockBroker.getOrderStatus(order.brokerOrderId);
 
-  // If the broker hasn't fully filled the order yet,
-  // only update the execution state.
-  if (
-    brokerUpdate.status !== "FILLED" ||
-    brokerUpdate.averageFillPrice === null
-  ) {
-    return prisma.order.update({
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`
+      SELECT "id" FROM "Portfolio"
+      WHERE "id" = ${order.portfolioId}
+      FOR UPDATE
+    `;
+    await tx.$queryRaw`
+      SELECT "id" FROM "Order"
+      WHERE "id" = ${order.id}
+      FOR UPDATE
+    `;
+
+    const freshOrder = await tx.order.findFirst({
       where: {
         id: order.id,
-      },
-      data: {
-        status: brokerUpdate.status,
-        filledQuantity: brokerUpdate.filledQuantity,
-        averageFillPrice: brokerUpdate.averageFillPrice,
-      },
-    });
-  }
-
-  const  updatedOrder= await prisma.$transaction(async (tx) => {
-    const freshOrder = await tx.order.findUnique({
-      where: {
-        id: order.id,
+        portfolio: { client: { firmId } },
       },
     });
 
@@ -55,153 +50,189 @@ export async function syncOrderService(orderId: string) {
       throw new Error("ORDER_NOT_FOUND");
     }
 
-    // Protect against duplicate sync calls
-    if (freshOrder.status === "FILLED") {
+    if (["FILLED", "CANCELLED", "REJECTED"].includes(freshOrder.status)) {
       return freshOrder;
     }
 
-    const fillQuantity = brokerUpdate.filledQuantity;
-    const fillPrice = brokerUpdate.averageFillPrice;
+    const cumulativeFillQuantity = brokerUpdate.filledQuantity;
 
-    if(fillPrice === null){
-      throw new Error("INVALID_FILL_PRICE");
-    }
-
-    if (fillQuantity <= 0) {
+    if (
+      !Number.isInteger(cumulativeFillQuantity) ||
+      cumulativeFillQuantity < freshOrder.filledQuantity ||
+      cumulativeFillQuantity > freshOrder.quantity
+    ) {
       throw new Error("INVALID_FILL_QUANTITY");
     }
 
-    const holding = await tx.holding.findUnique({
-      where: {
-        portfolioId_symbol_exchange: {
-          portfolioId: freshOrder.portfolioId,
-          symbol: freshOrder.symbol,
-          exchange: freshOrder.exchange,
-        },
-      },
-    });
+    const incrementalFillQuantity =
+      cumulativeFillQuantity - freshOrder.filledQuantity;
 
-    // BUY
-    if (freshOrder.side === "BUY") {
-      if (!holding) {
-        await tx.holding.create({
-          data: {
+    let incrementalFillPrice: number | null = null;
+    let sellCostBasis: number | null = null;
+
+    if (incrementalFillQuantity > 0) {
+      if (
+        brokerUpdate.averageFillPrice === null ||
+        !Number.isFinite(brokerUpdate.averageFillPrice) ||
+        brokerUpdate.averageFillPrice <= 0
+      ) {
+        throw new Error("INVALID_FILL_PRICE");
+      }
+
+      const previousFillValue =
+        freshOrder.filledQuantity *
+        Number(freshOrder.averageFillPrice ?? 0);
+      const cumulativeFillValue =
+        cumulativeFillQuantity * brokerUpdate.averageFillPrice;
+
+      incrementalFillPrice =
+        (cumulativeFillValue - previousFillValue) /
+        incrementalFillQuantity;
+
+      const holding = await tx.holding.findUnique({
+        where: {
+          portfolioId_symbol_exchange: {
             portfolioId: freshOrder.portfolioId,
             symbol: freshOrder.symbol,
             exchange: freshOrder.exchange,
-            quantity: fillQuantity,
-            averagePrice: fillPrice,
+          },
+        },
+      });
+
+      if (freshOrder.side === "BUY") {
+        if (!holding) {
+          await tx.holding.create({
+            data: {
+              portfolioId: freshOrder.portfolioId,
+              symbol: freshOrder.symbol,
+              exchange: freshOrder.exchange,
+              quantity: incrementalFillQuantity,
+              averagePrice: incrementalFillPrice,
+            },
+          });
+        } else {
+          const newQuantity = holding.quantity + incrementalFillQuantity;
+          const newAveragePrice =
+            (holding.quantity * Number(holding.averagePrice) +
+              incrementalFillQuantity * incrementalFillPrice) /
+            newQuantity;
+
+          await tx.holding.update({
+            where: { id: holding.id },
+            data: {
+              quantity: newQuantity,
+              averagePrice: newAveragePrice,
+            },
+          });
+        }
+
+        await tx.portfolio.update({
+          where: { id: freshOrder.portfolioId },
+          data: {
+            cashBalance: {
+              decrement: incrementalFillQuantity * incrementalFillPrice,
+            },
           },
         });
       } else {
-        const oldQuantity = holding.quantity;
-        const oldAveragePrice = Number(
-          holding.averagePrice,
-        );
+        if (!holding || holding.quantity < incrementalFillQuantity) {
+          throw new Error("INSUFFICIENT_HOLDINGS");
+        }
 
-        const newQuantity =
-          oldQuantity + fillQuantity;
+        sellCostBasis = Number(holding.averagePrice);
 
-        const newAveragePrice =
-          (
-            oldQuantity * oldAveragePrice +
-            fillQuantity * fillPrice
-          ) / newQuantity;
+        const remainingQuantity =
+          holding.quantity - incrementalFillQuantity;
 
-        await tx.holding.update({
-          where: {
-            id: holding.id,
-          },
+        if (remainingQuantity === 0) {
+          await tx.holding.delete({ where: { id: holding.id } });
+        } else {
+          await tx.holding.update({
+            where: { id: holding.id },
+            data: { quantity: remainingQuantity },
+          });
+        }
+
+        await tx.portfolio.update({
+          where: { id: freshOrder.portfolioId },
           data: {
-            quantity: newQuantity,
-            averagePrice: newAveragePrice,
+            cashBalance: {
+              increment: incrementalFillQuantity * incrementalFillPrice,
+            },
           },
         });
       }
-
-      return tx.order.update({
-        where: {
-          id: freshOrder.id,
-        },
-        data: {
-          status: "FILLED",
-          filledQuantity: fillQuantity,
-          averageFillPrice: fillPrice,
-          realizedPnl: null,
-          filledAt: new Date(),
-        },
-      });
     }
 
-    // SELL
-    if (freshOrder.side === "SELL") {
-      if (
-        !holding ||
-        holding.quantity < fillQuantity
-      ) {
-        throw new Error("INSUFFICIENT_HOLDINGS");
-      }
+    const terminal = ["FILLED", "CANCELLED", "REJECTED"].includes(
+      brokerUpdate.status,
+    );
+    const remainingQuantity = freshOrder.quantity - cumulativeFillQuantity;
+    const estimatedPrice = Number(
+      freshOrder.estimatedPrice ?? brokerUpdate.averageFillPrice ?? 0,
+    );
 
-      const holdingAveragePrice = Number(
-        holding.averagePrice,
-      );
+    let realizedPnl: number | null =
+      freshOrder.realizedPnl === null
+        ? null
+        : Number(freshOrder.realizedPnl);
 
-      const realizedPnl =
-        (fillPrice - holdingAveragePrice) *
-        fillQuantity;
-
-      const remainingQuantity =
-        holding.quantity - fillQuantity;
-
-      if (remainingQuantity === 0) {
-        await tx.holding.delete({
-          where: {
-            id: holding.id,
-          },
-        });
-      } else {
-        await tx.holding.update({
-          where: {
-            id: holding.id,
-          },
-          data: {
-            quantity: remainingQuantity,
-          },
-        });
-      }
-
-      return tx.order.update({
-        where: {
-          id: freshOrder.id,
-        },
-        data: {
-          status: "FILLED",
-          filledQuantity: fillQuantity,
-          averageFillPrice: fillPrice,
-          realizedPnl,
-          filledAt: new Date(),
-        },
-      });
+    if (
+      freshOrder.side === "SELL" &&
+      incrementalFillQuantity > 0 &&
+      incrementalFillPrice !== null
+    ) {
+      realizedPnl =
+        Number(freshOrder.realizedPnl ?? 0) +
+        (incrementalFillPrice - (sellCostBasis ?? incrementalFillPrice)) *
+          incrementalFillQuantity;
     }
 
-    throw new Error("INVALID_ORDER_SIDE");
-  });
+    const updatedOrder = await tx.order.update({
+      where: { id: freshOrder.id },
+      data: {
+        status: brokerUpdate.status,
+        filledQuantity: cumulativeFillQuantity,
+        averageFillPrice: brokerUpdate.averageFillPrice,
+        realizedPnl,
+        filledAt:
+          brokerUpdate.status === "FILLED"
+            ? freshOrder.filledAt ?? new Date()
+            : freshOrder.filledAt,
+        reservedCash:
+          !terminal && freshOrder.side === "BUY"
+            ? remainingQuantity * estimatedPrice
+            : 0,
+        reservedQuantity:
+          !terminal && freshOrder.side === "SELL"
+            ? remainingQuantity
+            : 0,
+      },
+    });
 
-  if (updatedOrder.status === "FILLED") {
-  await createAuditLog({
-    action: "ORDER_FILLED",
-    entityType: "ORDER",
-    entityId: updatedOrder.id,
-    message: "Order filled",
-    metadata: {
-      filledQuantity: updatedOrder.filledQuantity,
-      averageFillPrice:
-        updatedOrder.averageFillPrice?.toString(),
-      realizedPnl:
-        updatedOrder.realizedPnl?.toString(),
-    },
-  });
-}
+    const action =
+      updatedOrder.status === "FILLED"
+        ? "ORDER_FILLED"
+        : updatedOrder.status === "REJECTED"
+          ? "ORDER_REJECTED"
+          : updatedOrder.status === "CANCELLED"
+            ? "ORDER_CANCELLED"
+          : "ORDER_SYNCED";
 
-return updatedOrder;
+    await createAuditLog({
+      firmId,
+      action,
+      entityType: "ORDER",
+      entityId: updatedOrder.id,
+      message: "Order synchronized with broker",
+      metadata: {
+        status: updatedOrder.status,
+        filledQuantity: updatedOrder.filledQuantity,
+        averageFillPrice: updatedOrder.averageFillPrice?.toString(),
+        realizedPnl: updatedOrder.realizedPnl?.toString(),
+      },
+    }, tx);
+
+    return updatedOrder;
+  });
 }

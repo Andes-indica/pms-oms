@@ -14,15 +14,20 @@ async function main() {
   });
 
   // 2. Manager
+  const managerPasswordHash =
+  await Bun.password.hash("demo1234");
+
   const manager = await prisma.user.upsert({
     where: {
       email: "manager@alphapms.com",
     },
-    update: {},
+    update: {
+      passwordHash:managerPasswordHash,
+    },
     create: {
       name: "Demo Manager",
       email: "manager@alphapms.com",
-      passwordHash: "temporary",
+      passwordHash: managerPasswordHash,
       role: "PORTFOLIO_MANAGER",
       firmId: firm.id,
     },
@@ -131,6 +136,74 @@ async function main() {
     },
   });
 
+  await prisma.riskLimit.upsert({
+  where: {
+    portfolioId: portfolio1.id,
+  },
+  update: {},
+  create: {
+    portfolioId: portfolio1.id,
+
+    maxOrderQuantity: 100,
+
+    maxOrderValue: 200000,
+
+    maxPositionQuantity: 500,
+
+    maxPositionValue: 1000000,
+  },
+});
+
+await prisma.riskLimit.upsert({
+  where: {
+    portfolioId: portfolio2.id,
+  },
+  update: {},
+  create: {
+    portfolioId: portfolio2.id,
+
+    maxOrderQuantity: 50,
+
+    maxOrderValue: 100000,
+
+    maxPositionQuantity: 250,
+
+    maxPositionValue: 500000,
+  },
+});
+
+await prisma.portfolio.update({
+  where: {
+    id: portfolio1.id,
+  },
+  data: {
+    cashBalance: 500000,
+  },
+});
+
+await prisma.portfolio.update({
+  where: {
+    id: portfolio2.id,
+  },
+  data: {
+    cashBalance: 200000,
+  },
+});
+
+await prisma.restrictedSecurity.upsert({
+  where: {
+    symbol_exchange: {
+      symbol: "XYZ",
+      exchange: "NSE",
+    },
+  },
+  update: {},
+  create: {
+    symbol: "XYZ",
+    exchange: "NSE",
+    reason: "Internal restricted list",
+  },
+});
   console.log("Seed completed successfully");
 
   console.log({

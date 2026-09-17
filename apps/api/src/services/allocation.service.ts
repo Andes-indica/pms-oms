@@ -32,13 +32,14 @@ export function allocateOrder({
     throw new Error("NO_ALLOCATION_TARGETS");
   }
 
-  if (totalQuantity <= 0) {
+  if (!Number.isInteger(totalQuantity) || totalQuantity <= 0) {
     throw new Error("INVALID_TOTAL_QUANTITY");
   }
 
   if (method === "FIXED_QUANTITY") {
     const allocations = targets.map((target) => {
       if (
+        !Number.isInteger(target.quantity) ||
         !target.quantity ||
         target.quantity <= 0
       ) {
@@ -100,6 +101,12 @@ export function allocateOrder({
   }
 
   if (method === "PERCENTAGE") {
+    if (totalQuantity < targets.length) {
+      throw new Error(
+        "QUANTITY_TOO_SMALL_FOR_PERCENTAGE_ALLOCATION",
+      );
+    }
+
     const totalPercentage = targets.reduce(
       (sum, target) =>
         sum + (target.percentage ?? 0),
@@ -118,6 +125,7 @@ export function allocateOrder({
       (target, index) => {
         if (
           target.percentage === undefined ||
+          !Number.isFinite(target.percentage) ||
           target.percentage <= 0
         ) {
           throw new Error(
@@ -167,13 +175,19 @@ export function allocateOrder({
       (a, b) => a.index - b.index,
     );
 
-    return calculated.map((item) => ({
-      portfolioId:
-        item.target.portfolioId,
-      brokerAccountId:
-        item.target.brokerAccountId,
-      quantity: item.quantity,
-    }));
+    return calculated.map((item) => {
+      if (item.quantity <= 0) {
+        throw new Error(
+          "ALLOCATION_PRODUCES_ZERO_QUANTITY",
+        );
+      }
+
+      return {
+        portfolioId: item.target.portfolioId,
+        brokerAccountId: item.target.brokerAccountId,
+        quantity: item.quantity,
+      };
+    });
   }
 
   throw new Error(

@@ -12,6 +12,7 @@ type AuditAction =
   | "BASKET_CANCELLED";
 
 type CreateAuditLogInput = {
+  firmId: string;
   action: AuditAction;
   entityType: string;
   entityId: string;
@@ -21,14 +22,12 @@ type CreateAuditLogInput = {
 
 export async function createAuditLog(
   input: CreateAuditLogInput,
+  database: Pick<typeof prisma, "auditLog"> = prisma,
 ) {
-  return prisma.auditLog.create({
+  return database.auditLog.create({
     data: {
-      // The generated Prisma enum currently contains a typo for this value.
-      action:
-        input.action === "BASKET_CANCELLED"
-          ? "BASKET_CAMCELLED"
-          : input.action,
+      firmId: input.firmId,
+      action: input.action,
       entityType: input.entityType,
       entityId: input.entityId,
       message: input.message,

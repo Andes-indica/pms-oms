@@ -4,6 +4,7 @@ import { prisma } from "@pms-oms/db";
 import { executeOrderService } from "../services/order-execution.service";
 import { syncOrderService } from "@/services/order-sync.service";
 import { cancelOrderService } from "../services/order-cancellation.service";
+import type { AuthenticatedRequest as BaseAuthenticatedRequest } from "../middleware/auth.middleware";
 
 type CreateOrderBody = {
   portfolioId: string;
@@ -16,8 +17,10 @@ type CreateOrderBody = {
   limitPrice?: number;
 };
 
+type AuthenticatedRequest = BaseAuthenticatedRequest & Request<{}, {}, CreateOrderBody>;
+
 export async function createOrder(
-  req: Request<{}, {}, CreateOrderBody>,
+  req: AuthenticatedRequest,
   res: Response,
 ) {
   try {
@@ -30,9 +33,14 @@ export async function createOrder(
       orderType,
       quantity,
       limitPrice,
-    } = req.body;
+    } = req.body ?? ({} as CreateOrderBody);
 
-    if (!portfolioId || !brokerAccountId || !symbol || !exchange) {
+    if (
+      typeof portfolioId !== "string" || !portfolioId.trim() ||
+      typeof brokerAccountId !== "string" || !brokerAccountId.trim() ||
+      typeof symbol !== "string" || !symbol.trim() ||
+      typeof exchange !== "string" || !exchange.trim()
+    ) {
       return res.status(400).json({
         error: "Missing required fields",
       });
@@ -56,13 +64,24 @@ export async function createOrder(
       });
     }
 
-    if (orderType === "LIMIT" && (!limitPrice || limitPrice <= 0)) {
+    if (
+      orderType === "LIMIT" &&
+      (typeof limitPrice !== "number" ||
+        !Number.isFinite(limitPrice) ||
+        limitPrice <= 0)
+    ) {
       return res.status(400).json({
         error: "Valid limitPrice is required for LIMIT orders",
       });
     }
+    if (!req.user) {
+  return res.status(401).json({
+    error: "Authentication required",
+  });
+}
 
     const order = await createOrderService({
+      firmId:req.user.firmId,
       portfolioId,
       brokerAccountId,
       symbol,
@@ -106,11 +125,24 @@ export async function createOrder(
 }
 
 export async function getOrders(
-  _req: Request,
+  _req: AuthenticatedRequest,
   res: Response,
 ) {
   try {
+    if (!_req.user) {
+      return res.status(401).json({
+        error: "Authentication required",
+      });
+    }
+
     const orders = await prisma.order.findMany({
+      where: {
+        portfolio: {
+          client: {
+            firmId: _req.user.firmId,
+          },
+        },
+      },
       include: {
         portfolio: {
           include: {
@@ -136,11 +168,15 @@ export async function getOrders(
   }
 }
 export async function executeOrder(
-  req: Request<{ id: string }>,
+  req: BaseAuthenticatedRequest & { params: { id: string } },
   res: Response,
 ) {
   try {
-    const order = await executeOrderService(req.params.id);
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const order = await executeOrderService(req.params.id, req.user.firmId);
 
     return res.status(200).json({
       data: order,
@@ -172,6 +208,33 @@ export async function executeOrder(
           return res.status(400).json({
             error: "Insufficient holdings for sell order",
           });
+        case "MAX_ORDER_QUANTITY_EXCEEDED":
+          return res.status(400).json({
+            error: "Maximum order quantity exceeded",
+          });
+
+        case "MAX_ORDER_VALUE_EXCEEDED":
+          return res.status(400).json({
+            error: "Maximum order value exceeded",
+          });
+
+        case "MAX_POSITION_QUANTITY_EXCEEDED":
+          return res.status(400).json({
+            error: "Maximum position quantity exceeded",
+          });
+
+        case "MAX_POSITION_VALUE_EXCEEDED":
+          return res.status(400).json({
+            error: "Maximum position value exceeded",
+          });
+        case "INSUFFICIENT_CASH":
+          return res.status(400).json({
+            error:"Insufficient cash Balance",
+          });
+        case "RESTRICTED_SECURITY":
+          return res.status(400).json({
+            error: "security is restricted",
+          });
       }
     }
 
@@ -183,11 +246,15 @@ export async function executeOrder(
   }
 }
 export async function syncOrder(
-  req: Request<{ id: string }>,
+  req: BaseAuthenticatedRequest & { params: { id: string } },
   res: Response,
 ) {
   try {
-    const order = await syncOrderService(req.params.id);
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
+    const order = await syncOrderService(req.params.id, req.user.firmId);
 
     return res.status(200).json({
       data: order,
@@ -221,12 +288,17 @@ export async function syncOrder(
   }
 }
 export async function cancelOrder(
-  req: Request<{ id: string }>,
+  req: BaseAuthenticatedRequest & { params: { id: string } },
   res: Response,
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({ error: "Authentication required" });
+    }
+
     const order = await cancelOrderService(
       req.params.id,
+      req.user.firmId,
     );
 
     return res.status(200).json({
@@ -253,6 +325,11 @@ export async function cancelOrder(
         case "ORDER_ALREADY_REJECTED":
           return res.status(409).json({
             error: "Rejected orders cannot be cancelled",
+          });
+
+        case "ORDER_SUBMISSION_IN_PROGRESS":
+          return res.status(409).json({
+            error: "Order submission is still in progress",
           });
       }
     }

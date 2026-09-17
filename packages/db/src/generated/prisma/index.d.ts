@@ -58,6 +58,16 @@ export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
  * 
  */
 export type BasketOrder = $Result.DefaultSelection<Prisma.$BasketOrderPayload>
+/**
+ * Model RiskLimit
+ * 
+ */
+export type RiskLimit = $Result.DefaultSelection<Prisma.$RiskLimitPayload>
+/**
+ * Model RestrictedSecurity
+ * 
+ */
+export type RestrictedSecurity = $Result.DefaultSelection<Prisma.$RestrictedSecurityPayload>
 
 /**
  * Enums
@@ -111,7 +121,7 @@ export const AuditAction: {
   ORDER_SYNCED: 'ORDER_SYNCED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
-  BASKET_CAMCELLED: 'BASKET_CAMCELLED'
+  BASKET_CANCELLED: 'BASKET_CANCELLED'
 };
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -378,6 +388,26 @@ export class PrismaClient<
     * ```
     */
   get basketOrder(): Prisma.BasketOrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.riskLimit`: Exposes CRUD operations for the **RiskLimit** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RiskLimits
+    * const riskLimits = await prisma.riskLimit.findMany()
+    * ```
+    */
+  get riskLimit(): Prisma.RiskLimitDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.restrictedSecurity`: Exposes CRUD operations for the **RestrictedSecurity** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more RestrictedSecurities
+    * const restrictedSecurities = await prisma.restrictedSecurity.findMany()
+    * ```
+    */
+  get restrictedSecurity(): Prisma.RestrictedSecurityDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -833,7 +863,9 @@ export namespace Prisma {
     Holding: 'Holding',
     Order: 'Order',
     AuditLog: 'AuditLog',
-    BasketOrder: 'BasketOrder'
+    BasketOrder: 'BasketOrder',
+    RiskLimit: 'RiskLimit',
+    RestrictedSecurity: 'RestrictedSecurity'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -849,7 +881,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder" | "riskLimit" | "restrictedSecurity"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1519,6 +1551,154 @@ export namespace Prisma {
           }
         }
       }
+      RiskLimit: {
+        payload: Prisma.$RiskLimitPayload<ExtArgs>
+        fields: Prisma.RiskLimitFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RiskLimitFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RiskLimitFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>
+          }
+          findFirst: {
+            args: Prisma.RiskLimitFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RiskLimitFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>
+          }
+          findMany: {
+            args: Prisma.RiskLimitFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>[]
+          }
+          create: {
+            args: Prisma.RiskLimitCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>
+          }
+          createMany: {
+            args: Prisma.RiskLimitCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RiskLimitCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>[]
+          }
+          delete: {
+            args: Prisma.RiskLimitDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>
+          }
+          update: {
+            args: Prisma.RiskLimitUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>
+          }
+          deleteMany: {
+            args: Prisma.RiskLimitDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RiskLimitUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RiskLimitUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>[]
+          }
+          upsert: {
+            args: Prisma.RiskLimitUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RiskLimitPayload>
+          }
+          aggregate: {
+            args: Prisma.RiskLimitAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRiskLimit>
+          }
+          groupBy: {
+            args: Prisma.RiskLimitGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RiskLimitGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RiskLimitCountArgs<ExtArgs>
+            result: $Utils.Optional<RiskLimitCountAggregateOutputType> | number
+          }
+        }
+      }
+      RestrictedSecurity: {
+        payload: Prisma.$RestrictedSecurityPayload<ExtArgs>
+        fields: Prisma.RestrictedSecurityFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.RestrictedSecurityFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.RestrictedSecurityFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>
+          }
+          findFirst: {
+            args: Prisma.RestrictedSecurityFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.RestrictedSecurityFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>
+          }
+          findMany: {
+            args: Prisma.RestrictedSecurityFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>[]
+          }
+          create: {
+            args: Prisma.RestrictedSecurityCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>
+          }
+          createMany: {
+            args: Prisma.RestrictedSecurityCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.RestrictedSecurityCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>[]
+          }
+          delete: {
+            args: Prisma.RestrictedSecurityDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>
+          }
+          update: {
+            args: Prisma.RestrictedSecurityUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>
+          }
+          deleteMany: {
+            args: Prisma.RestrictedSecurityDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.RestrictedSecurityUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.RestrictedSecurityUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>[]
+          }
+          upsert: {
+            args: Prisma.RestrictedSecurityUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$RestrictedSecurityPayload>
+          }
+          aggregate: {
+            args: Prisma.RestrictedSecurityAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateRestrictedSecurity>
+          }
+          groupBy: {
+            args: Prisma.RestrictedSecurityGroupByArgs<ExtArgs>
+            result: $Utils.Optional<RestrictedSecurityGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.RestrictedSecurityCountArgs<ExtArgs>
+            result: $Utils.Optional<RestrictedSecurityCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1651,6 +1831,8 @@ export namespace Prisma {
     order?: OrderOmit
     auditLog?: AuditLogOmit
     basketOrder?: BasketOrderOmit
+    riskLimit?: RiskLimitOmit
+    restrictedSecurity?: RestrictedSecurityOmit
   }
 
   /* Types for Logging */
@@ -1733,11 +1915,15 @@ export namespace Prisma {
   export type FirmCountOutputType = {
     users: number
     clients: number
+    basketOrders: number
+    auditLogs: number
   }
 
   export type FirmCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | FirmCountOutputTypeCountUsersArgs
     clients?: boolean | FirmCountOutputTypeCountClientsArgs
+    basketOrders?: boolean | FirmCountOutputTypeCountBasketOrdersArgs
+    auditLogs?: boolean | FirmCountOutputTypeCountAuditLogsArgs
   }
 
   // Custom InputTypes
@@ -1763,6 +1949,20 @@ export namespace Prisma {
    */
   export type FirmCountOutputTypeCountClientsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ClientWhereInput
+  }
+
+  /**
+   * FirmCountOutputType without action
+   */
+  export type FirmCountOutputTypeCountBasketOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BasketOrderWhereInput
+  }
+
+  /**
+   * FirmCountOutputType without action
+   */
+  export type FirmCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: AuditLogWhereInput
   }
 
 
@@ -2070,6 +2270,8 @@ export namespace Prisma {
     updatedAt?: boolean
     users?: boolean | Firm$usersArgs<ExtArgs>
     clients?: boolean | Firm$clientsArgs<ExtArgs>
+    basketOrders?: boolean | Firm$basketOrdersArgs<ExtArgs>
+    auditLogs?: boolean | Firm$auditLogsArgs<ExtArgs>
     _count?: boolean | FirmCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["firm"]>
 
@@ -2098,6 +2300,8 @@ export namespace Prisma {
   export type FirmInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     users?: boolean | Firm$usersArgs<ExtArgs>
     clients?: boolean | Firm$clientsArgs<ExtArgs>
+    basketOrders?: boolean | Firm$basketOrdersArgs<ExtArgs>
+    auditLogs?: boolean | Firm$auditLogsArgs<ExtArgs>
     _count?: boolean | FirmCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type FirmIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -2108,6 +2312,8 @@ export namespace Prisma {
     objects: {
       users: Prisma.$UserPayload<ExtArgs>[]
       clients: Prisma.$ClientPayload<ExtArgs>[]
+      basketOrders: Prisma.$BasketOrderPayload<ExtArgs>[]
+      auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -2510,6 +2716,8 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     users<T extends Firm$usersArgs<ExtArgs> = {}>(args?: Subset<T, Firm$usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     clients<T extends Firm$clientsArgs<ExtArgs> = {}>(args?: Subset<T, Firm$clientsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    basketOrders<T extends Firm$basketOrdersArgs<ExtArgs> = {}>(args?: Subset<T, Firm$basketOrdersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    auditLogs<T extends Firm$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, Firm$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2981,6 +3189,54 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ClientScalarFieldEnum | ClientScalarFieldEnum[]
+  }
+
+  /**
+   * Firm.basketOrders
+   */
+  export type Firm$basketOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BasketOrder
+     */
+    select?: BasketOrderSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BasketOrder
+     */
+    omit?: BasketOrderOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderInclude<ExtArgs> | null
+    where?: BasketOrderWhereInput
+    orderBy?: BasketOrderOrderByWithRelationInput | BasketOrderOrderByWithRelationInput[]
+    cursor?: BasketOrderWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BasketOrderScalarFieldEnum | BasketOrderScalarFieldEnum[]
+  }
+
+  /**
+   * Firm.auditLogs
+   */
+  export type Firm$auditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the AuditLog
+     */
+    select?: AuditLogSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the AuditLog
+     */
+    omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    where?: AuditLogWhereInput
+    orderBy?: AuditLogOrderByWithRelationInput | AuditLogOrderByWithRelationInput[]
+    cursor?: AuditLogWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
   }
 
   /**
@@ -6363,14 +6619,25 @@ export namespace Prisma {
 
   export type AggregatePortfolio = {
     _count: PortfolioCountAggregateOutputType | null
+    _avg: PortfolioAvgAggregateOutputType | null
+    _sum: PortfolioSumAggregateOutputType | null
     _min: PortfolioMinAggregateOutputType | null
     _max: PortfolioMaxAggregateOutputType | null
+  }
+
+  export type PortfolioAvgAggregateOutputType = {
+    cashBalance: Decimal | null
+  }
+
+  export type PortfolioSumAggregateOutputType = {
+    cashBalance: Decimal | null
   }
 
   export type PortfolioMinAggregateOutputType = {
     id: string | null
     name: string | null
     clientId: string | null
+    cashBalance: Decimal | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6379,6 +6646,7 @@ export namespace Prisma {
     id: string | null
     name: string | null
     clientId: string | null
+    cashBalance: Decimal | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -6387,16 +6655,26 @@ export namespace Prisma {
     id: number
     name: number
     clientId: number
+    cashBalance: number
     createdAt: number
     updatedAt: number
     _all: number
   }
 
 
+  export type PortfolioAvgAggregateInputType = {
+    cashBalance?: true
+  }
+
+  export type PortfolioSumAggregateInputType = {
+    cashBalance?: true
+  }
+
   export type PortfolioMinAggregateInputType = {
     id?: true
     name?: true
     clientId?: true
+    cashBalance?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6405,6 +6683,7 @@ export namespace Prisma {
     id?: true
     name?: true
     clientId?: true
+    cashBalance?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -6413,6 +6692,7 @@ export namespace Prisma {
     id?: true
     name?: true
     clientId?: true
+    cashBalance?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -6456,6 +6736,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: PortfolioAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: PortfolioSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: PortfolioMinAggregateInputType
@@ -6486,6 +6778,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: PortfolioCountAggregateInputType | true
+    _avg?: PortfolioAvgAggregateInputType
+    _sum?: PortfolioSumAggregateInputType
     _min?: PortfolioMinAggregateInputType
     _max?: PortfolioMaxAggregateInputType
   }
@@ -6494,9 +6788,12 @@ export namespace Prisma {
     id: string
     name: string
     clientId: string
+    cashBalance: Decimal
     createdAt: Date
     updatedAt: Date
     _count: PortfolioCountAggregateOutputType | null
+    _avg: PortfolioAvgAggregateOutputType | null
+    _sum: PortfolioSumAggregateOutputType | null
     _min: PortfolioMinAggregateOutputType | null
     _max: PortfolioMaxAggregateOutputType | null
   }
@@ -6519,11 +6816,13 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     clientId?: boolean
+    cashBalance?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     holdings?: boolean | Portfolio$holdingsArgs<ExtArgs>
     orders?: boolean | Portfolio$ordersArgs<ExtArgs>
+    riskLimit?: boolean | Portfolio$riskLimitArgs<ExtArgs>
     _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["portfolio"]>
 
@@ -6531,6 +6830,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     clientId?: boolean
+    cashBalance?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
@@ -6540,6 +6840,7 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     clientId?: boolean
+    cashBalance?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
@@ -6549,15 +6850,17 @@ export namespace Prisma {
     id?: boolean
     name?: boolean
     clientId?: boolean
+    cashBalance?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PortfolioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "clientId" | "createdAt" | "updatedAt", ExtArgs["result"]["portfolio"]>
+  export type PortfolioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "clientId" | "cashBalance" | "createdAt" | "updatedAt", ExtArgs["result"]["portfolio"]>
   export type PortfolioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     holdings?: boolean | Portfolio$holdingsArgs<ExtArgs>
     orders?: boolean | Portfolio$ordersArgs<ExtArgs>
+    riskLimit?: boolean | Portfolio$riskLimitArgs<ExtArgs>
     _count?: boolean | PortfolioCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type PortfolioIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -6573,11 +6876,13 @@ export namespace Prisma {
       client: Prisma.$ClientPayload<ExtArgs>
       holdings: Prisma.$HoldingPayload<ExtArgs>[]
       orders: Prisma.$OrderPayload<ExtArgs>[]
+      riskLimit: Prisma.$RiskLimitPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       clientId: string
+      cashBalance: Prisma.Decimal
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["portfolio"]>
@@ -6977,6 +7282,7 @@ export namespace Prisma {
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     holdings<T extends Portfolio$holdingsArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$holdingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HoldingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     orders<T extends Portfolio$ordersArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    riskLimit<T extends Portfolio$riskLimitArgs<ExtArgs> = {}>(args?: Subset<T, Portfolio$riskLimitArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -7009,6 +7315,7 @@ export namespace Prisma {
     readonly id: FieldRef<"Portfolio", 'String'>
     readonly name: FieldRef<"Portfolio", 'String'>
     readonly clientId: FieldRef<"Portfolio", 'String'>
+    readonly cashBalance: FieldRef<"Portfolio", 'Decimal'>
     readonly createdAt: FieldRef<"Portfolio", 'DateTime'>
     readonly updatedAt: FieldRef<"Portfolio", 'DateTime'>
   }
@@ -7457,6 +7764,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * Portfolio.riskLimit
+   */
+  export type Portfolio$riskLimitArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    where?: RiskLimitWhereInput
   }
 
   /**
@@ -8636,6 +8962,9 @@ export namespace Prisma {
     filledQuantity: number | null
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
+    estimatedPrice: Decimal | null
+    reservedCash: Decimal | null
+    reservedQuantity: number | null
   }
 
   export type OrderSumAggregateOutputType = {
@@ -8644,6 +8973,9 @@ export namespace Prisma {
     filledQuantity: number | null
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
+    estimatedPrice: Decimal | null
+    reservedCash: Decimal | null
+    reservedQuantity: number | null
   }
 
   export type OrderMinAggregateOutputType = {
@@ -8661,6 +8993,9 @@ export namespace Prisma {
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
     filledAt: Date | null
+    estimatedPrice: Decimal | null
+    reservedCash: Decimal | null
+    reservedQuantity: number | null
     portfolioId: string | null
     brokerAccountId: string | null
     createdAt: Date | null
@@ -8682,6 +9017,9 @@ export namespace Prisma {
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
     filledAt: Date | null
+    estimatedPrice: Decimal | null
+    reservedCash: Decimal | null
+    reservedQuantity: number | null
     portfolioId: string | null
     brokerAccountId: string | null
     createdAt: Date | null
@@ -8703,6 +9041,9 @@ export namespace Prisma {
     averageFillPrice: number
     realizedPnl: number
     filledAt: number
+    estimatedPrice: number
+    reservedCash: number
+    reservedQuantity: number
     portfolioId: number
     brokerAccountId: number
     createdAt: number
@@ -8717,6 +9058,9 @@ export namespace Prisma {
     filledQuantity?: true
     averageFillPrice?: true
     realizedPnl?: true
+    estimatedPrice?: true
+    reservedCash?: true
+    reservedQuantity?: true
   }
 
   export type OrderSumAggregateInputType = {
@@ -8725,6 +9069,9 @@ export namespace Prisma {
     filledQuantity?: true
     averageFillPrice?: true
     realizedPnl?: true
+    estimatedPrice?: true
+    reservedCash?: true
+    reservedQuantity?: true
   }
 
   export type OrderMinAggregateInputType = {
@@ -8742,6 +9089,9 @@ export namespace Prisma {
     averageFillPrice?: true
     realizedPnl?: true
     filledAt?: true
+    estimatedPrice?: true
+    reservedCash?: true
+    reservedQuantity?: true
     portfolioId?: true
     brokerAccountId?: true
     createdAt?: true
@@ -8763,6 +9113,9 @@ export namespace Prisma {
     averageFillPrice?: true
     realizedPnl?: true
     filledAt?: true
+    estimatedPrice?: true
+    reservedCash?: true
+    reservedQuantity?: true
     portfolioId?: true
     brokerAccountId?: true
     createdAt?: true
@@ -8784,6 +9137,9 @@ export namespace Prisma {
     averageFillPrice?: true
     realizedPnl?: true
     filledAt?: true
+    estimatedPrice?: true
+    reservedCash?: true
+    reservedQuantity?: true
     portfolioId?: true
     brokerAccountId?: true
     createdAt?: true
@@ -8892,6 +9248,9 @@ export namespace Prisma {
     averageFillPrice: Decimal | null
     realizedPnl: Decimal | null
     filledAt: Date | null
+    estimatedPrice: Decimal | null
+    reservedCash: Decimal
+    reservedQuantity: number
     portfolioId: string
     brokerAccountId: string
     createdAt: Date
@@ -8932,6 +9291,9 @@ export namespace Prisma {
     averageFillPrice?: boolean
     realizedPnl?: boolean
     filledAt?: boolean
+    estimatedPrice?: boolean
+    reservedCash?: boolean
+    reservedQuantity?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
@@ -8956,6 +9318,9 @@ export namespace Prisma {
     averageFillPrice?: boolean
     realizedPnl?: boolean
     filledAt?: boolean
+    estimatedPrice?: boolean
+    reservedCash?: boolean
+    reservedQuantity?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
@@ -8980,6 +9345,9 @@ export namespace Prisma {
     averageFillPrice?: boolean
     realizedPnl?: boolean
     filledAt?: boolean
+    estimatedPrice?: boolean
+    reservedCash?: boolean
+    reservedQuantity?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
@@ -9004,13 +9372,16 @@ export namespace Prisma {
     averageFillPrice?: boolean
     realizedPnl?: boolean
     filledAt?: boolean
+    estimatedPrice?: boolean
+    reservedCash?: boolean
+    reservedQuantity?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "quantity" | "limitPrice" | "brokerOrderId" | "basketOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "quantity" | "limitPrice" | "brokerOrderId" | "basketOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "estimatedPrice" | "reservedCash" | "reservedQuantity" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
@@ -9049,6 +9420,9 @@ export namespace Prisma {
       averageFillPrice: Prisma.Decimal | null
       realizedPnl: Prisma.Decimal | null
       filledAt: Date | null
+      estimatedPrice: Prisma.Decimal | null
+      reservedCash: Prisma.Decimal
+      reservedQuantity: number
       portfolioId: string
       brokerAccountId: string
       createdAt: Date
@@ -9493,6 +9867,9 @@ export namespace Prisma {
     readonly averageFillPrice: FieldRef<"Order", 'Decimal'>
     readonly realizedPnl: FieldRef<"Order", 'Decimal'>
     readonly filledAt: FieldRef<"Order", 'DateTime'>
+    readonly estimatedPrice: FieldRef<"Order", 'Decimal'>
+    readonly reservedCash: FieldRef<"Order", 'Decimal'>
+    readonly reservedQuantity: FieldRef<"Order", 'Int'>
     readonly portfolioId: FieldRef<"Order", 'String'>
     readonly brokerAccountId: FieldRef<"Order", 'String'>
     readonly createdAt: FieldRef<"Order", 'DateTime'>
@@ -9947,6 +10324,7 @@ export namespace Prisma {
 
   export type AuditLogMinAggregateOutputType = {
     id: string | null
+    firmId: string | null
     action: $Enums.AuditAction | null
     entityType: string | null
     entityId: string | null
@@ -9956,6 +10334,7 @@ export namespace Prisma {
 
   export type AuditLogMaxAggregateOutputType = {
     id: string | null
+    firmId: string | null
     action: $Enums.AuditAction | null
     entityType: string | null
     entityId: string | null
@@ -9965,6 +10344,7 @@ export namespace Prisma {
 
   export type AuditLogCountAggregateOutputType = {
     id: number
+    firmId: number
     action: number
     entityType: number
     entityId: number
@@ -9977,6 +10357,7 @@ export namespace Prisma {
 
   export type AuditLogMinAggregateInputType = {
     id?: true
+    firmId?: true
     action?: true
     entityType?: true
     entityId?: true
@@ -9986,6 +10367,7 @@ export namespace Prisma {
 
   export type AuditLogMaxAggregateInputType = {
     id?: true
+    firmId?: true
     action?: true
     entityType?: true
     entityId?: true
@@ -9995,6 +10377,7 @@ export namespace Prisma {
 
   export type AuditLogCountAggregateInputType = {
     id?: true
+    firmId?: true
     action?: true
     entityType?: true
     entityId?: true
@@ -10078,6 +10461,7 @@ export namespace Prisma {
 
   export type AuditLogGroupByOutputType = {
     id: string
+    firmId: string
     action: $Enums.AuditAction
     entityType: string
     entityId: string
@@ -10105,36 +10489,43 @@ export namespace Prisma {
 
   export type AuditLogSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    firmId?: boolean
     action?: boolean
     entityType?: boolean
     entityId?: boolean
     message?: boolean
     metadata?: boolean
     createdAt?: boolean
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
 
   export type AuditLogSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    firmId?: boolean
     action?: boolean
     entityType?: boolean
     entityId?: boolean
     message?: boolean
     metadata?: boolean
     createdAt?: boolean
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
 
   export type AuditLogSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
+    firmId?: boolean
     action?: boolean
     entityType?: boolean
     entityId?: boolean
     message?: boolean
     metadata?: boolean
     createdAt?: boolean
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["auditLog"]>
 
   export type AuditLogSelectScalar = {
     id?: boolean
+    firmId?: boolean
     action?: boolean
     entityType?: boolean
     entityId?: boolean
@@ -10143,13 +10534,25 @@ export namespace Prisma {
     createdAt?: boolean
   }
 
-  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "action" | "entityType" | "entityId" | "message" | "metadata" | "createdAt", ExtArgs["result"]["auditLog"]>
+  export type AuditLogOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "firmId" | "action" | "entityType" | "entityId" | "message" | "metadata" | "createdAt", ExtArgs["result"]["auditLog"]>
+  export type AuditLogInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
+  }
+  export type AuditLogIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
+  }
+  export type AuditLogIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
+  }
 
   export type $AuditLogPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "AuditLog"
-    objects: {}
+    objects: {
+      firm: Prisma.$FirmPayload<ExtArgs>
+    }
     scalars: $Extensions.GetPayloadResult<{
       id: string
+      firmId: string
       action: $Enums.AuditAction
       entityType: string
       entityId: string
@@ -10550,6 +10953,7 @@ export namespace Prisma {
    */
   export interface Prisma__AuditLogClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    firm<T extends FirmDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FirmDefaultArgs<ExtArgs>>): Prisma__FirmClient<$Result.GetResult<Prisma.$FirmPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10580,6 +10984,7 @@ export namespace Prisma {
    */
   interface AuditLogFieldRefs {
     readonly id: FieldRef<"AuditLog", 'String'>
+    readonly firmId: FieldRef<"AuditLog", 'String'>
     readonly action: FieldRef<"AuditLog", 'AuditAction'>
     readonly entityType: FieldRef<"AuditLog", 'String'>
     readonly entityId: FieldRef<"AuditLog", 'String'>
@@ -10603,6 +11008,10 @@ export namespace Prisma {
      */
     omit?: AuditLogOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
      * Filter, which AuditLog to fetch.
      */
     where: AuditLogWhereUniqueInput
@@ -10621,6 +11030,10 @@ export namespace Prisma {
      */
     omit?: AuditLogOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
      * Filter, which AuditLog to fetch.
      */
     where: AuditLogWhereUniqueInput
@@ -10638,6 +11051,10 @@ export namespace Prisma {
      * Omit specific fields from the AuditLog
      */
     omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
     /**
      * Filter, which AuditLog to fetch.
      */
@@ -10687,6 +11104,10 @@ export namespace Prisma {
      */
     omit?: AuditLogOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
      * Filter, which AuditLog to fetch.
      */
     where?: AuditLogWhereInput
@@ -10734,6 +11155,10 @@ export namespace Prisma {
      * Omit specific fields from the AuditLog
      */
     omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
     /**
      * Filter, which AuditLogs to fetch.
      */
@@ -10783,6 +11208,10 @@ export namespace Prisma {
      */
     omit?: AuditLogOmit<ExtArgs> | null
     /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
+    /**
      * The data needed to create a AuditLog.
      */
     data: XOR<AuditLogCreateInput, AuditLogUncheckedCreateInput>
@@ -10816,6 +11245,10 @@ export namespace Prisma {
      */
     data: AuditLogCreateManyInput | AuditLogCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -10830,6 +11263,10 @@ export namespace Prisma {
      * Omit specific fields from the AuditLog
      */
     omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
     /**
      * The data needed to update a AuditLog.
      */
@@ -10882,6 +11319,10 @@ export namespace Prisma {
      * Limit how many AuditLogs to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -10896,6 +11337,10 @@ export namespace Prisma {
      * Omit specific fields from the AuditLog
      */
     omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
     /**
      * The filter to search for the AuditLog to update in case it exists.
      */
@@ -10922,6 +11367,10 @@ export namespace Prisma {
      * Omit specific fields from the AuditLog
      */
     omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
     /**
      * Filter which AuditLog to delete.
      */
@@ -10954,6 +11403,10 @@ export namespace Prisma {
      * Omit specific fields from the AuditLog
      */
     omit?: AuditLogOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: AuditLogInclude<ExtArgs> | null
   }
 
 
@@ -10990,6 +11443,7 @@ export namespace Prisma {
     totalQuantity: number | null
     allocationMethod: $Enums.AllocationMethod | null
     status: $Enums.BasketOrderStatus | null
+    firmId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11005,6 +11459,7 @@ export namespace Prisma {
     totalQuantity: number | null
     allocationMethod: $Enums.AllocationMethod | null
     status: $Enums.BasketOrderStatus | null
+    firmId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -11020,6 +11475,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: number
     status: number
+    firmId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -11047,6 +11503,7 @@ export namespace Prisma {
     totalQuantity?: true
     allocationMethod?: true
     status?: true
+    firmId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11062,6 +11519,7 @@ export namespace Prisma {
     totalQuantity?: true
     allocationMethod?: true
     status?: true
+    firmId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -11077,6 +11535,7 @@ export namespace Prisma {
     totalQuantity?: true
     allocationMethod?: true
     status?: true
+    firmId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -11179,6 +11638,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status: $Enums.BasketOrderStatus
+    firmId: string
     createdAt: Date
     updatedAt: Date
     _count: BasketOrderCountAggregateOutputType | null
@@ -11213,8 +11673,10 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
     orders?: boolean | BasketOrder$ordersArgs<ExtArgs>
     _count?: boolean | BasketOrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["basketOrder"]>
@@ -11230,8 +11692,10 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["basketOrder"]>
 
   export type BasketOrderSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -11245,8 +11709,10 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["basketOrder"]>
 
   export type BasketOrderSelectScalar = {
@@ -11260,21 +11726,28 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BasketOrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "symbol" | "exchange" | "side" | "orderType" | "limitPrice" | "totalQuantity" | "allocationMethod" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["basketOrder"]>
+  export type BasketOrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "symbol" | "exchange" | "side" | "orderType" | "limitPrice" | "totalQuantity" | "allocationMethod" | "status" | "firmId" | "createdAt" | "updatedAt", ExtArgs["result"]["basketOrder"]>
   export type BasketOrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
     orders?: boolean | BasketOrder$ordersArgs<ExtArgs>
     _count?: boolean | BasketOrderCountOutputTypeDefaultArgs<ExtArgs>
   }
-  export type BasketOrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
-  export type BasketOrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
+  export type BasketOrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
+  }
+  export type BasketOrderIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    firm?: boolean | FirmDefaultArgs<ExtArgs>
+  }
 
   export type $BasketOrderPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "BasketOrder"
     objects: {
+      firm: Prisma.$FirmPayload<ExtArgs>
       orders: Prisma.$OrderPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -11288,6 +11761,7 @@ export namespace Prisma {
       totalQuantity: number
       allocationMethod: $Enums.AllocationMethod
       status: $Enums.BasketOrderStatus
+      firmId: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["basketOrder"]>
@@ -11684,6 +12158,7 @@ export namespace Prisma {
    */
   export interface Prisma__BasketOrderClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
+    firm<T extends FirmDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FirmDefaultArgs<ExtArgs>>): Prisma__FirmClient<$Result.GetResult<Prisma.$FirmPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     orders<T extends BasketOrder$ordersArgs<ExtArgs> = {}>(args?: Subset<T, BasketOrder$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -11724,6 +12199,7 @@ export namespace Prisma {
     readonly totalQuantity: FieldRef<"BasketOrder", 'Int'>
     readonly allocationMethod: FieldRef<"BasketOrder", 'AllocationMethod'>
     readonly status: FieldRef<"BasketOrder", 'BasketOrderStatus'>
+    readonly firmId: FieldRef<"BasketOrder", 'String'>
     readonly createdAt: FieldRef<"BasketOrder", 'DateTime'>
     readonly updatedAt: FieldRef<"BasketOrder", 'DateTime'>
   }
@@ -11980,6 +12456,10 @@ export namespace Prisma {
      */
     data: BasketOrderCreateManyInput | BasketOrderCreateManyInput[]
     skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12050,6 +12530,10 @@ export namespace Prisma {
      * Limit how many BasketOrders to update.
      */
     limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BasketOrderIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
@@ -12162,6 +12646,2154 @@ export namespace Prisma {
 
 
   /**
+   * Model RiskLimit
+   */
+
+  export type AggregateRiskLimit = {
+    _count: RiskLimitCountAggregateOutputType | null
+    _avg: RiskLimitAvgAggregateOutputType | null
+    _sum: RiskLimitSumAggregateOutputType | null
+    _min: RiskLimitMinAggregateOutputType | null
+    _max: RiskLimitMaxAggregateOutputType | null
+  }
+
+  export type RiskLimitAvgAggregateOutputType = {
+    maxOrderQuantity: number | null
+    maxOrderValue: Decimal | null
+    maxPositionQuantity: number | null
+    maxPositionValue: Decimal | null
+  }
+
+  export type RiskLimitSumAggregateOutputType = {
+    maxOrderQuantity: number | null
+    maxOrderValue: Decimal | null
+    maxPositionQuantity: number | null
+    maxPositionValue: Decimal | null
+  }
+
+  export type RiskLimitMinAggregateOutputType = {
+    id: string | null
+    portfolioId: string | null
+    maxOrderQuantity: number | null
+    maxOrderValue: Decimal | null
+    maxPositionQuantity: number | null
+    maxPositionValue: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RiskLimitMaxAggregateOutputType = {
+    id: string | null
+    portfolioId: string | null
+    maxOrderQuantity: number | null
+    maxOrderValue: Decimal | null
+    maxPositionQuantity: number | null
+    maxPositionValue: Decimal | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type RiskLimitCountAggregateOutputType = {
+    id: number
+    portfolioId: number
+    maxOrderQuantity: number
+    maxOrderValue: number
+    maxPositionQuantity: number
+    maxPositionValue: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type RiskLimitAvgAggregateInputType = {
+    maxOrderQuantity?: true
+    maxOrderValue?: true
+    maxPositionQuantity?: true
+    maxPositionValue?: true
+  }
+
+  export type RiskLimitSumAggregateInputType = {
+    maxOrderQuantity?: true
+    maxOrderValue?: true
+    maxPositionQuantity?: true
+    maxPositionValue?: true
+  }
+
+  export type RiskLimitMinAggregateInputType = {
+    id?: true
+    portfolioId?: true
+    maxOrderQuantity?: true
+    maxOrderValue?: true
+    maxPositionQuantity?: true
+    maxPositionValue?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RiskLimitMaxAggregateInputType = {
+    id?: true
+    portfolioId?: true
+    maxOrderQuantity?: true
+    maxOrderValue?: true
+    maxPositionQuantity?: true
+    maxPositionValue?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type RiskLimitCountAggregateInputType = {
+    id?: true
+    portfolioId?: true
+    maxOrderQuantity?: true
+    maxOrderValue?: true
+    maxPositionQuantity?: true
+    maxPositionValue?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type RiskLimitAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RiskLimit to aggregate.
+     */
+    where?: RiskLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RiskLimits to fetch.
+     */
+    orderBy?: RiskLimitOrderByWithRelationInput | RiskLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RiskLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RiskLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RiskLimits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RiskLimits
+    **/
+    _count?: true | RiskLimitCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: RiskLimitAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: RiskLimitSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RiskLimitMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RiskLimitMaxAggregateInputType
+  }
+
+  export type GetRiskLimitAggregateType<T extends RiskLimitAggregateArgs> = {
+        [P in keyof T & keyof AggregateRiskLimit]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRiskLimit[P]>
+      : GetScalarType<T[P], AggregateRiskLimit[P]>
+  }
+
+
+
+
+  export type RiskLimitGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RiskLimitWhereInput
+    orderBy?: RiskLimitOrderByWithAggregationInput | RiskLimitOrderByWithAggregationInput[]
+    by: RiskLimitScalarFieldEnum[] | RiskLimitScalarFieldEnum
+    having?: RiskLimitScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RiskLimitCountAggregateInputType | true
+    _avg?: RiskLimitAvgAggregateInputType
+    _sum?: RiskLimitSumAggregateInputType
+    _min?: RiskLimitMinAggregateInputType
+    _max?: RiskLimitMaxAggregateInputType
+  }
+
+  export type RiskLimitGroupByOutputType = {
+    id: string
+    portfolioId: string
+    maxOrderQuantity: number | null
+    maxOrderValue: Decimal | null
+    maxPositionQuantity: number | null
+    maxPositionValue: Decimal | null
+    createdAt: Date
+    updatedAt: Date
+    _count: RiskLimitCountAggregateOutputType | null
+    _avg: RiskLimitAvgAggregateOutputType | null
+    _sum: RiskLimitSumAggregateOutputType | null
+    _min: RiskLimitMinAggregateOutputType | null
+    _max: RiskLimitMaxAggregateOutputType | null
+  }
+
+  type GetRiskLimitGroupByPayload<T extends RiskLimitGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RiskLimitGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RiskLimitGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RiskLimitGroupByOutputType[P]>
+            : GetScalarType<T[P], RiskLimitGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RiskLimitSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    portfolioId?: boolean
+    maxOrderQuantity?: boolean
+    maxOrderValue?: boolean
+    maxPositionQuantity?: boolean
+    maxPositionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["riskLimit"]>
+
+  export type RiskLimitSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    portfolioId?: boolean
+    maxOrderQuantity?: boolean
+    maxOrderValue?: boolean
+    maxPositionQuantity?: boolean
+    maxPositionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["riskLimit"]>
+
+  export type RiskLimitSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    portfolioId?: boolean
+    maxOrderQuantity?: boolean
+    maxOrderValue?: boolean
+    maxPositionQuantity?: boolean
+    maxPositionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["riskLimit"]>
+
+  export type RiskLimitSelectScalar = {
+    id?: boolean
+    portfolioId?: boolean
+    maxOrderQuantity?: boolean
+    maxOrderValue?: boolean
+    maxPositionQuantity?: boolean
+    maxPositionValue?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type RiskLimitOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "portfolioId" | "maxOrderQuantity" | "maxOrderValue" | "maxPositionQuantity" | "maxPositionValue" | "createdAt" | "updatedAt", ExtArgs["result"]["riskLimit"]>
+  export type RiskLimitInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+  }
+  export type RiskLimitIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+  }
+  export type RiskLimitIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+  }
+
+  export type $RiskLimitPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RiskLimit"
+    objects: {
+      portfolio: Prisma.$PortfolioPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      portfolioId: string
+      maxOrderQuantity: number | null
+      maxOrderValue: Prisma.Decimal | null
+      maxPositionQuantity: number | null
+      maxPositionValue: Prisma.Decimal | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["riskLimit"]>
+    composites: {}
+  }
+
+  type RiskLimitGetPayload<S extends boolean | null | undefined | RiskLimitDefaultArgs> = $Result.GetResult<Prisma.$RiskLimitPayload, S>
+
+  type RiskLimitCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RiskLimitFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RiskLimitCountAggregateInputType | true
+    }
+
+  export interface RiskLimitDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RiskLimit'], meta: { name: 'RiskLimit' } }
+    /**
+     * Find zero or one RiskLimit that matches the filter.
+     * @param {RiskLimitFindUniqueArgs} args - Arguments to find a RiskLimit
+     * @example
+     * // Get one RiskLimit
+     * const riskLimit = await prisma.riskLimit.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RiskLimitFindUniqueArgs>(args: SelectSubset<T, RiskLimitFindUniqueArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RiskLimit that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RiskLimitFindUniqueOrThrowArgs} args - Arguments to find a RiskLimit
+     * @example
+     * // Get one RiskLimit
+     * const riskLimit = await prisma.riskLimit.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RiskLimitFindUniqueOrThrowArgs>(args: SelectSubset<T, RiskLimitFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RiskLimit that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RiskLimitFindFirstArgs} args - Arguments to find a RiskLimit
+     * @example
+     * // Get one RiskLimit
+     * const riskLimit = await prisma.riskLimit.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RiskLimitFindFirstArgs>(args?: SelectSubset<T, RiskLimitFindFirstArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RiskLimit that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RiskLimitFindFirstOrThrowArgs} args - Arguments to find a RiskLimit
+     * @example
+     * // Get one RiskLimit
+     * const riskLimit = await prisma.riskLimit.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RiskLimitFindFirstOrThrowArgs>(args?: SelectSubset<T, RiskLimitFindFirstOrThrowArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RiskLimits that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RiskLimitFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RiskLimits
+     * const riskLimits = await prisma.riskLimit.findMany()
+     * 
+     * // Get first 10 RiskLimits
+     * const riskLimits = await prisma.riskLimit.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const riskLimitWithIdOnly = await prisma.riskLimit.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RiskLimitFindManyArgs>(args?: SelectSubset<T, RiskLimitFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RiskLimit.
+     * @param {RiskLimitCreateArgs} args - Arguments to create a RiskLimit.
+     * @example
+     * // Create one RiskLimit
+     * const RiskLimit = await prisma.riskLimit.create({
+     *   data: {
+     *     // ... data to create a RiskLimit
+     *   }
+     * })
+     * 
+     */
+    create<T extends RiskLimitCreateArgs>(args: SelectSubset<T, RiskLimitCreateArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RiskLimits.
+     * @param {RiskLimitCreateManyArgs} args - Arguments to create many RiskLimits.
+     * @example
+     * // Create many RiskLimits
+     * const riskLimit = await prisma.riskLimit.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RiskLimitCreateManyArgs>(args?: SelectSubset<T, RiskLimitCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RiskLimits and returns the data saved in the database.
+     * @param {RiskLimitCreateManyAndReturnArgs} args - Arguments to create many RiskLimits.
+     * @example
+     * // Create many RiskLimits
+     * const riskLimit = await prisma.riskLimit.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RiskLimits and only return the `id`
+     * const riskLimitWithIdOnly = await prisma.riskLimit.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RiskLimitCreateManyAndReturnArgs>(args?: SelectSubset<T, RiskLimitCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RiskLimit.
+     * @param {RiskLimitDeleteArgs} args - Arguments to delete one RiskLimit.
+     * @example
+     * // Delete one RiskLimit
+     * const RiskLimit = await prisma.riskLimit.delete({
+     *   where: {
+     *     // ... filter to delete one RiskLimit
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RiskLimitDeleteArgs>(args: SelectSubset<T, RiskLimitDeleteArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RiskLimit.
+     * @param {RiskLimitUpdateArgs} args - Arguments to update one RiskLimit.
+     * @example
+     * // Update one RiskLimit
+     * const riskLimit = await prisma.riskLimit.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RiskLimitUpdateArgs>(args: SelectSubset<T, RiskLimitUpdateArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RiskLimits.
+     * @param {RiskLimitDeleteManyArgs} args - Arguments to filter RiskLimits to delete.
+     * @example
+     * // Delete a few RiskLimits
+     * const { count } = await prisma.riskLimit.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RiskLimitDeleteManyArgs>(args?: SelectSubset<T, RiskLimitDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RiskLimits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RiskLimitUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RiskLimits
+     * const riskLimit = await prisma.riskLimit.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RiskLimitUpdateManyArgs>(args: SelectSubset<T, RiskLimitUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RiskLimits and returns the data updated in the database.
+     * @param {RiskLimitUpdateManyAndReturnArgs} args - Arguments to update many RiskLimits.
+     * @example
+     * // Update many RiskLimits
+     * const riskLimit = await prisma.riskLimit.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RiskLimits and only return the `id`
+     * const riskLimitWithIdOnly = await prisma.riskLimit.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RiskLimitUpdateManyAndReturnArgs>(args: SelectSubset<T, RiskLimitUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RiskLimit.
+     * @param {RiskLimitUpsertArgs} args - Arguments to update or create a RiskLimit.
+     * @example
+     * // Update or create a RiskLimit
+     * const riskLimit = await prisma.riskLimit.upsert({
+     *   create: {
+     *     // ... data to create a RiskLimit
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RiskLimit we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RiskLimitUpsertArgs>(args: SelectSubset<T, RiskLimitUpsertArgs<ExtArgs>>): Prisma__RiskLimitClient<$Result.GetResult<Prisma.$RiskLimitPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RiskLimits.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RiskLimitCountArgs} args - Arguments to filter RiskLimits to count.
+     * @example
+     * // Count the number of RiskLimits
+     * const count = await prisma.riskLimit.count({
+     *   where: {
+     *     // ... the filter for the RiskLimits we want to count
+     *   }
+     * })
+    **/
+    count<T extends RiskLimitCountArgs>(
+      args?: Subset<T, RiskLimitCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RiskLimitCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RiskLimit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RiskLimitAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RiskLimitAggregateArgs>(args: Subset<T, RiskLimitAggregateArgs>): Prisma.PrismaPromise<GetRiskLimitAggregateType<T>>
+
+    /**
+     * Group by RiskLimit.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RiskLimitGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RiskLimitGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RiskLimitGroupByArgs['orderBy'] }
+        : { orderBy?: RiskLimitGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RiskLimitGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRiskLimitGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RiskLimit model
+   */
+  readonly fields: RiskLimitFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RiskLimit.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RiskLimitClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    portfolio<T extends PortfolioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioDefaultArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RiskLimit model
+   */
+  interface RiskLimitFieldRefs {
+    readonly id: FieldRef<"RiskLimit", 'String'>
+    readonly portfolioId: FieldRef<"RiskLimit", 'String'>
+    readonly maxOrderQuantity: FieldRef<"RiskLimit", 'Int'>
+    readonly maxOrderValue: FieldRef<"RiskLimit", 'Decimal'>
+    readonly maxPositionQuantity: FieldRef<"RiskLimit", 'Int'>
+    readonly maxPositionValue: FieldRef<"RiskLimit", 'Decimal'>
+    readonly createdAt: FieldRef<"RiskLimit", 'DateTime'>
+    readonly updatedAt: FieldRef<"RiskLimit", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RiskLimit findUnique
+   */
+  export type RiskLimitFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * Filter, which RiskLimit to fetch.
+     */
+    where: RiskLimitWhereUniqueInput
+  }
+
+  /**
+   * RiskLimit findUniqueOrThrow
+   */
+  export type RiskLimitFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * Filter, which RiskLimit to fetch.
+     */
+    where: RiskLimitWhereUniqueInput
+  }
+
+  /**
+   * RiskLimit findFirst
+   */
+  export type RiskLimitFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * Filter, which RiskLimit to fetch.
+     */
+    where?: RiskLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RiskLimits to fetch.
+     */
+    orderBy?: RiskLimitOrderByWithRelationInput | RiskLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RiskLimits.
+     */
+    cursor?: RiskLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RiskLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RiskLimits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RiskLimits.
+     */
+    distinct?: RiskLimitScalarFieldEnum | RiskLimitScalarFieldEnum[]
+  }
+
+  /**
+   * RiskLimit findFirstOrThrow
+   */
+  export type RiskLimitFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * Filter, which RiskLimit to fetch.
+     */
+    where?: RiskLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RiskLimits to fetch.
+     */
+    orderBy?: RiskLimitOrderByWithRelationInput | RiskLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RiskLimits.
+     */
+    cursor?: RiskLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RiskLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RiskLimits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RiskLimits.
+     */
+    distinct?: RiskLimitScalarFieldEnum | RiskLimitScalarFieldEnum[]
+  }
+
+  /**
+   * RiskLimit findMany
+   */
+  export type RiskLimitFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * Filter, which RiskLimits to fetch.
+     */
+    where?: RiskLimitWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RiskLimits to fetch.
+     */
+    orderBy?: RiskLimitOrderByWithRelationInput | RiskLimitOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RiskLimits.
+     */
+    cursor?: RiskLimitWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RiskLimits from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RiskLimits.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RiskLimits.
+     */
+    distinct?: RiskLimitScalarFieldEnum | RiskLimitScalarFieldEnum[]
+  }
+
+  /**
+   * RiskLimit create
+   */
+  export type RiskLimitCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * The data needed to create a RiskLimit.
+     */
+    data: XOR<RiskLimitCreateInput, RiskLimitUncheckedCreateInput>
+  }
+
+  /**
+   * RiskLimit createMany
+   */
+  export type RiskLimitCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RiskLimits.
+     */
+    data: RiskLimitCreateManyInput | RiskLimitCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RiskLimit createManyAndReturn
+   */
+  export type RiskLimitCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * The data used to create many RiskLimits.
+     */
+    data: RiskLimitCreateManyInput | RiskLimitCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RiskLimit update
+   */
+  export type RiskLimitUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * The data needed to update a RiskLimit.
+     */
+    data: XOR<RiskLimitUpdateInput, RiskLimitUncheckedUpdateInput>
+    /**
+     * Choose, which RiskLimit to update.
+     */
+    where: RiskLimitWhereUniqueInput
+  }
+
+  /**
+   * RiskLimit updateMany
+   */
+  export type RiskLimitUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RiskLimits.
+     */
+    data: XOR<RiskLimitUpdateManyMutationInput, RiskLimitUncheckedUpdateManyInput>
+    /**
+     * Filter which RiskLimits to update
+     */
+    where?: RiskLimitWhereInput
+    /**
+     * Limit how many RiskLimits to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RiskLimit updateManyAndReturn
+   */
+  export type RiskLimitUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * The data used to update RiskLimits.
+     */
+    data: XOR<RiskLimitUpdateManyMutationInput, RiskLimitUncheckedUpdateManyInput>
+    /**
+     * Filter which RiskLimits to update
+     */
+    where?: RiskLimitWhereInput
+    /**
+     * Limit how many RiskLimits to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * RiskLimit upsert
+   */
+  export type RiskLimitUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * The filter to search for the RiskLimit to update in case it exists.
+     */
+    where: RiskLimitWhereUniqueInput
+    /**
+     * In case the RiskLimit found by the `where` argument doesn't exist, create a new RiskLimit with this data.
+     */
+    create: XOR<RiskLimitCreateInput, RiskLimitUncheckedCreateInput>
+    /**
+     * In case the RiskLimit was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RiskLimitUpdateInput, RiskLimitUncheckedUpdateInput>
+  }
+
+  /**
+   * RiskLimit delete
+   */
+  export type RiskLimitDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+    /**
+     * Filter which RiskLimit to delete.
+     */
+    where: RiskLimitWhereUniqueInput
+  }
+
+  /**
+   * RiskLimit deleteMany
+   */
+  export type RiskLimitDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RiskLimits to delete
+     */
+    where?: RiskLimitWhereInput
+    /**
+     * Limit how many RiskLimits to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RiskLimit without action
+   */
+  export type RiskLimitDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RiskLimit
+     */
+    select?: RiskLimitSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RiskLimit
+     */
+    omit?: RiskLimitOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: RiskLimitInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model RestrictedSecurity
+   */
+
+  export type AggregateRestrictedSecurity = {
+    _count: RestrictedSecurityCountAggregateOutputType | null
+    _min: RestrictedSecurityMinAggregateOutputType | null
+    _max: RestrictedSecurityMaxAggregateOutputType | null
+  }
+
+  export type RestrictedSecurityMinAggregateOutputType = {
+    id: string | null
+    symbol: string | null
+    exchange: string | null
+    reason: string | null
+    createdAt: Date | null
+  }
+
+  export type RestrictedSecurityMaxAggregateOutputType = {
+    id: string | null
+    symbol: string | null
+    exchange: string | null
+    reason: string | null
+    createdAt: Date | null
+  }
+
+  export type RestrictedSecurityCountAggregateOutputType = {
+    id: number
+    symbol: number
+    exchange: number
+    reason: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type RestrictedSecurityMinAggregateInputType = {
+    id?: true
+    symbol?: true
+    exchange?: true
+    reason?: true
+    createdAt?: true
+  }
+
+  export type RestrictedSecurityMaxAggregateInputType = {
+    id?: true
+    symbol?: true
+    exchange?: true
+    reason?: true
+    createdAt?: true
+  }
+
+  export type RestrictedSecurityCountAggregateInputType = {
+    id?: true
+    symbol?: true
+    exchange?: true
+    reason?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type RestrictedSecurityAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RestrictedSecurity to aggregate.
+     */
+    where?: RestrictedSecurityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RestrictedSecurities to fetch.
+     */
+    orderBy?: RestrictedSecurityOrderByWithRelationInput | RestrictedSecurityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: RestrictedSecurityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RestrictedSecurities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RestrictedSecurities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned RestrictedSecurities
+    **/
+    _count?: true | RestrictedSecurityCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: RestrictedSecurityMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: RestrictedSecurityMaxAggregateInputType
+  }
+
+  export type GetRestrictedSecurityAggregateType<T extends RestrictedSecurityAggregateArgs> = {
+        [P in keyof T & keyof AggregateRestrictedSecurity]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateRestrictedSecurity[P]>
+      : GetScalarType<T[P], AggregateRestrictedSecurity[P]>
+  }
+
+
+
+
+  export type RestrictedSecurityGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: RestrictedSecurityWhereInput
+    orderBy?: RestrictedSecurityOrderByWithAggregationInput | RestrictedSecurityOrderByWithAggregationInput[]
+    by: RestrictedSecurityScalarFieldEnum[] | RestrictedSecurityScalarFieldEnum
+    having?: RestrictedSecurityScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: RestrictedSecurityCountAggregateInputType | true
+    _min?: RestrictedSecurityMinAggregateInputType
+    _max?: RestrictedSecurityMaxAggregateInputType
+  }
+
+  export type RestrictedSecurityGroupByOutputType = {
+    id: string
+    symbol: string
+    exchange: string
+    reason: string | null
+    createdAt: Date
+    _count: RestrictedSecurityCountAggregateOutputType | null
+    _min: RestrictedSecurityMinAggregateOutputType | null
+    _max: RestrictedSecurityMaxAggregateOutputType | null
+  }
+
+  type GetRestrictedSecurityGroupByPayload<T extends RestrictedSecurityGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<RestrictedSecurityGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof RestrictedSecurityGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], RestrictedSecurityGroupByOutputType[P]>
+            : GetScalarType<T[P], RestrictedSecurityGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type RestrictedSecuritySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    reason?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["restrictedSecurity"]>
+
+  export type RestrictedSecuritySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    reason?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["restrictedSecurity"]>
+
+  export type RestrictedSecuritySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    reason?: boolean
+    createdAt?: boolean
+  }, ExtArgs["result"]["restrictedSecurity"]>
+
+  export type RestrictedSecuritySelectScalar = {
+    id?: boolean
+    symbol?: boolean
+    exchange?: boolean
+    reason?: boolean
+    createdAt?: boolean
+  }
+
+  export type RestrictedSecurityOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "reason" | "createdAt", ExtArgs["result"]["restrictedSecurity"]>
+
+  export type $RestrictedSecurityPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "RestrictedSecurity"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      symbol: string
+      exchange: string
+      reason: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["restrictedSecurity"]>
+    composites: {}
+  }
+
+  type RestrictedSecurityGetPayload<S extends boolean | null | undefined | RestrictedSecurityDefaultArgs> = $Result.GetResult<Prisma.$RestrictedSecurityPayload, S>
+
+  type RestrictedSecurityCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<RestrictedSecurityFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: RestrictedSecurityCountAggregateInputType | true
+    }
+
+  export interface RestrictedSecurityDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['RestrictedSecurity'], meta: { name: 'RestrictedSecurity' } }
+    /**
+     * Find zero or one RestrictedSecurity that matches the filter.
+     * @param {RestrictedSecurityFindUniqueArgs} args - Arguments to find a RestrictedSecurity
+     * @example
+     * // Get one RestrictedSecurity
+     * const restrictedSecurity = await prisma.restrictedSecurity.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends RestrictedSecurityFindUniqueArgs>(args: SelectSubset<T, RestrictedSecurityFindUniqueArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one RestrictedSecurity that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {RestrictedSecurityFindUniqueOrThrowArgs} args - Arguments to find a RestrictedSecurity
+     * @example
+     * // Get one RestrictedSecurity
+     * const restrictedSecurity = await prisma.restrictedSecurity.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends RestrictedSecurityFindUniqueOrThrowArgs>(args: SelectSubset<T, RestrictedSecurityFindUniqueOrThrowArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RestrictedSecurity that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RestrictedSecurityFindFirstArgs} args - Arguments to find a RestrictedSecurity
+     * @example
+     * // Get one RestrictedSecurity
+     * const restrictedSecurity = await prisma.restrictedSecurity.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends RestrictedSecurityFindFirstArgs>(args?: SelectSubset<T, RestrictedSecurityFindFirstArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first RestrictedSecurity that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RestrictedSecurityFindFirstOrThrowArgs} args - Arguments to find a RestrictedSecurity
+     * @example
+     * // Get one RestrictedSecurity
+     * const restrictedSecurity = await prisma.restrictedSecurity.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends RestrictedSecurityFindFirstOrThrowArgs>(args?: SelectSubset<T, RestrictedSecurityFindFirstOrThrowArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more RestrictedSecurities that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RestrictedSecurityFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all RestrictedSecurities
+     * const restrictedSecurities = await prisma.restrictedSecurity.findMany()
+     * 
+     * // Get first 10 RestrictedSecurities
+     * const restrictedSecurities = await prisma.restrictedSecurity.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const restrictedSecurityWithIdOnly = await prisma.restrictedSecurity.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends RestrictedSecurityFindManyArgs>(args?: SelectSubset<T, RestrictedSecurityFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a RestrictedSecurity.
+     * @param {RestrictedSecurityCreateArgs} args - Arguments to create a RestrictedSecurity.
+     * @example
+     * // Create one RestrictedSecurity
+     * const RestrictedSecurity = await prisma.restrictedSecurity.create({
+     *   data: {
+     *     // ... data to create a RestrictedSecurity
+     *   }
+     * })
+     * 
+     */
+    create<T extends RestrictedSecurityCreateArgs>(args: SelectSubset<T, RestrictedSecurityCreateArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many RestrictedSecurities.
+     * @param {RestrictedSecurityCreateManyArgs} args - Arguments to create many RestrictedSecurities.
+     * @example
+     * // Create many RestrictedSecurities
+     * const restrictedSecurity = await prisma.restrictedSecurity.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends RestrictedSecurityCreateManyArgs>(args?: SelectSubset<T, RestrictedSecurityCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many RestrictedSecurities and returns the data saved in the database.
+     * @param {RestrictedSecurityCreateManyAndReturnArgs} args - Arguments to create many RestrictedSecurities.
+     * @example
+     * // Create many RestrictedSecurities
+     * const restrictedSecurity = await prisma.restrictedSecurity.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many RestrictedSecurities and only return the `id`
+     * const restrictedSecurityWithIdOnly = await prisma.restrictedSecurity.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends RestrictedSecurityCreateManyAndReturnArgs>(args?: SelectSubset<T, RestrictedSecurityCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a RestrictedSecurity.
+     * @param {RestrictedSecurityDeleteArgs} args - Arguments to delete one RestrictedSecurity.
+     * @example
+     * // Delete one RestrictedSecurity
+     * const RestrictedSecurity = await prisma.restrictedSecurity.delete({
+     *   where: {
+     *     // ... filter to delete one RestrictedSecurity
+     *   }
+     * })
+     * 
+     */
+    delete<T extends RestrictedSecurityDeleteArgs>(args: SelectSubset<T, RestrictedSecurityDeleteArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one RestrictedSecurity.
+     * @param {RestrictedSecurityUpdateArgs} args - Arguments to update one RestrictedSecurity.
+     * @example
+     * // Update one RestrictedSecurity
+     * const restrictedSecurity = await prisma.restrictedSecurity.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends RestrictedSecurityUpdateArgs>(args: SelectSubset<T, RestrictedSecurityUpdateArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more RestrictedSecurities.
+     * @param {RestrictedSecurityDeleteManyArgs} args - Arguments to filter RestrictedSecurities to delete.
+     * @example
+     * // Delete a few RestrictedSecurities
+     * const { count } = await prisma.restrictedSecurity.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends RestrictedSecurityDeleteManyArgs>(args?: SelectSubset<T, RestrictedSecurityDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RestrictedSecurities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RestrictedSecurityUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many RestrictedSecurities
+     * const restrictedSecurity = await prisma.restrictedSecurity.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends RestrictedSecurityUpdateManyArgs>(args: SelectSubset<T, RestrictedSecurityUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more RestrictedSecurities and returns the data updated in the database.
+     * @param {RestrictedSecurityUpdateManyAndReturnArgs} args - Arguments to update many RestrictedSecurities.
+     * @example
+     * // Update many RestrictedSecurities
+     * const restrictedSecurity = await prisma.restrictedSecurity.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more RestrictedSecurities and only return the `id`
+     * const restrictedSecurityWithIdOnly = await prisma.restrictedSecurity.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends RestrictedSecurityUpdateManyAndReturnArgs>(args: SelectSubset<T, RestrictedSecurityUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one RestrictedSecurity.
+     * @param {RestrictedSecurityUpsertArgs} args - Arguments to update or create a RestrictedSecurity.
+     * @example
+     * // Update or create a RestrictedSecurity
+     * const restrictedSecurity = await prisma.restrictedSecurity.upsert({
+     *   create: {
+     *     // ... data to create a RestrictedSecurity
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the RestrictedSecurity we want to update
+     *   }
+     * })
+     */
+    upsert<T extends RestrictedSecurityUpsertArgs>(args: SelectSubset<T, RestrictedSecurityUpsertArgs<ExtArgs>>): Prisma__RestrictedSecurityClient<$Result.GetResult<Prisma.$RestrictedSecurityPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of RestrictedSecurities.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RestrictedSecurityCountArgs} args - Arguments to filter RestrictedSecurities to count.
+     * @example
+     * // Count the number of RestrictedSecurities
+     * const count = await prisma.restrictedSecurity.count({
+     *   where: {
+     *     // ... the filter for the RestrictedSecurities we want to count
+     *   }
+     * })
+    **/
+    count<T extends RestrictedSecurityCountArgs>(
+      args?: Subset<T, RestrictedSecurityCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], RestrictedSecurityCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a RestrictedSecurity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RestrictedSecurityAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends RestrictedSecurityAggregateArgs>(args: Subset<T, RestrictedSecurityAggregateArgs>): Prisma.PrismaPromise<GetRestrictedSecurityAggregateType<T>>
+
+    /**
+     * Group by RestrictedSecurity.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {RestrictedSecurityGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends RestrictedSecurityGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: RestrictedSecurityGroupByArgs['orderBy'] }
+        : { orderBy?: RestrictedSecurityGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, RestrictedSecurityGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetRestrictedSecurityGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the RestrictedSecurity model
+   */
+  readonly fields: RestrictedSecurityFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for RestrictedSecurity.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__RestrictedSecurityClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the RestrictedSecurity model
+   */
+  interface RestrictedSecurityFieldRefs {
+    readonly id: FieldRef<"RestrictedSecurity", 'String'>
+    readonly symbol: FieldRef<"RestrictedSecurity", 'String'>
+    readonly exchange: FieldRef<"RestrictedSecurity", 'String'>
+    readonly reason: FieldRef<"RestrictedSecurity", 'String'>
+    readonly createdAt: FieldRef<"RestrictedSecurity", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * RestrictedSecurity findUnique
+   */
+  export type RestrictedSecurityFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * Filter, which RestrictedSecurity to fetch.
+     */
+    where: RestrictedSecurityWhereUniqueInput
+  }
+
+  /**
+   * RestrictedSecurity findUniqueOrThrow
+   */
+  export type RestrictedSecurityFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * Filter, which RestrictedSecurity to fetch.
+     */
+    where: RestrictedSecurityWhereUniqueInput
+  }
+
+  /**
+   * RestrictedSecurity findFirst
+   */
+  export type RestrictedSecurityFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * Filter, which RestrictedSecurity to fetch.
+     */
+    where?: RestrictedSecurityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RestrictedSecurities to fetch.
+     */
+    orderBy?: RestrictedSecurityOrderByWithRelationInput | RestrictedSecurityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RestrictedSecurities.
+     */
+    cursor?: RestrictedSecurityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RestrictedSecurities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RestrictedSecurities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RestrictedSecurities.
+     */
+    distinct?: RestrictedSecurityScalarFieldEnum | RestrictedSecurityScalarFieldEnum[]
+  }
+
+  /**
+   * RestrictedSecurity findFirstOrThrow
+   */
+  export type RestrictedSecurityFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * Filter, which RestrictedSecurity to fetch.
+     */
+    where?: RestrictedSecurityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RestrictedSecurities to fetch.
+     */
+    orderBy?: RestrictedSecurityOrderByWithRelationInput | RestrictedSecurityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for RestrictedSecurities.
+     */
+    cursor?: RestrictedSecurityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RestrictedSecurities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RestrictedSecurities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RestrictedSecurities.
+     */
+    distinct?: RestrictedSecurityScalarFieldEnum | RestrictedSecurityScalarFieldEnum[]
+  }
+
+  /**
+   * RestrictedSecurity findMany
+   */
+  export type RestrictedSecurityFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * Filter, which RestrictedSecurities to fetch.
+     */
+    where?: RestrictedSecurityWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of RestrictedSecurities to fetch.
+     */
+    orderBy?: RestrictedSecurityOrderByWithRelationInput | RestrictedSecurityOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing RestrictedSecurities.
+     */
+    cursor?: RestrictedSecurityWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` RestrictedSecurities from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` RestrictedSecurities.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of RestrictedSecurities.
+     */
+    distinct?: RestrictedSecurityScalarFieldEnum | RestrictedSecurityScalarFieldEnum[]
+  }
+
+  /**
+   * RestrictedSecurity create
+   */
+  export type RestrictedSecurityCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * The data needed to create a RestrictedSecurity.
+     */
+    data: XOR<RestrictedSecurityCreateInput, RestrictedSecurityUncheckedCreateInput>
+  }
+
+  /**
+   * RestrictedSecurity createMany
+   */
+  export type RestrictedSecurityCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many RestrictedSecurities.
+     */
+    data: RestrictedSecurityCreateManyInput | RestrictedSecurityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RestrictedSecurity createManyAndReturn
+   */
+  export type RestrictedSecurityCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * The data used to create many RestrictedSecurities.
+     */
+    data: RestrictedSecurityCreateManyInput | RestrictedSecurityCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * RestrictedSecurity update
+   */
+  export type RestrictedSecurityUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * The data needed to update a RestrictedSecurity.
+     */
+    data: XOR<RestrictedSecurityUpdateInput, RestrictedSecurityUncheckedUpdateInput>
+    /**
+     * Choose, which RestrictedSecurity to update.
+     */
+    where: RestrictedSecurityWhereUniqueInput
+  }
+
+  /**
+   * RestrictedSecurity updateMany
+   */
+  export type RestrictedSecurityUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update RestrictedSecurities.
+     */
+    data: XOR<RestrictedSecurityUpdateManyMutationInput, RestrictedSecurityUncheckedUpdateManyInput>
+    /**
+     * Filter which RestrictedSecurities to update
+     */
+    where?: RestrictedSecurityWhereInput
+    /**
+     * Limit how many RestrictedSecurities to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RestrictedSecurity updateManyAndReturn
+   */
+  export type RestrictedSecurityUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * The data used to update RestrictedSecurities.
+     */
+    data: XOR<RestrictedSecurityUpdateManyMutationInput, RestrictedSecurityUncheckedUpdateManyInput>
+    /**
+     * Filter which RestrictedSecurities to update
+     */
+    where?: RestrictedSecurityWhereInput
+    /**
+     * Limit how many RestrictedSecurities to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * RestrictedSecurity upsert
+   */
+  export type RestrictedSecurityUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * The filter to search for the RestrictedSecurity to update in case it exists.
+     */
+    where: RestrictedSecurityWhereUniqueInput
+    /**
+     * In case the RestrictedSecurity found by the `where` argument doesn't exist, create a new RestrictedSecurity with this data.
+     */
+    create: XOR<RestrictedSecurityCreateInput, RestrictedSecurityUncheckedCreateInput>
+    /**
+     * In case the RestrictedSecurity was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<RestrictedSecurityUpdateInput, RestrictedSecurityUncheckedUpdateInput>
+  }
+
+  /**
+   * RestrictedSecurity delete
+   */
+  export type RestrictedSecurityDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+    /**
+     * Filter which RestrictedSecurity to delete.
+     */
+    where: RestrictedSecurityWhereUniqueInput
+  }
+
+  /**
+   * RestrictedSecurity deleteMany
+   */
+  export type RestrictedSecurityDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which RestrictedSecurities to delete
+     */
+    where?: RestrictedSecurityWhereInput
+    /**
+     * Limit how many RestrictedSecurities to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * RestrictedSecurity without action
+   */
+  export type RestrictedSecurityDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the RestrictedSecurity
+     */
+    select?: RestrictedSecuritySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the RestrictedSecurity
+     */
+    omit?: RestrictedSecurityOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -12228,6 +14860,7 @@ export namespace Prisma {
     id: 'id',
     name: 'name',
     clientId: 'clientId',
+    cashBalance: 'cashBalance',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -12264,6 +14897,9 @@ export namespace Prisma {
     averageFillPrice: 'averageFillPrice',
     realizedPnl: 'realizedPnl',
     filledAt: 'filledAt',
+    estimatedPrice: 'estimatedPrice',
+    reservedCash: 'reservedCash',
+    reservedQuantity: 'reservedQuantity',
     portfolioId: 'portfolioId',
     brokerAccountId: 'brokerAccountId',
     createdAt: 'createdAt',
@@ -12275,6 +14911,7 @@ export namespace Prisma {
 
   export const AuditLogScalarFieldEnum: {
     id: 'id',
+    firmId: 'firmId',
     action: 'action',
     entityType: 'entityType',
     entityId: 'entityId',
@@ -12297,11 +14934,37 @@ export namespace Prisma {
     totalQuantity: 'totalQuantity',
     allocationMethod: 'allocationMethod',
     status: 'status',
+    firmId: 'firmId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type BasketOrderScalarFieldEnum = (typeof BasketOrderScalarFieldEnum)[keyof typeof BasketOrderScalarFieldEnum]
+
+
+  export const RiskLimitScalarFieldEnum: {
+    id: 'id',
+    portfolioId: 'portfolioId',
+    maxOrderQuantity: 'maxOrderQuantity',
+    maxOrderValue: 'maxOrderValue',
+    maxPositionQuantity: 'maxPositionQuantity',
+    maxPositionValue: 'maxPositionValue',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type RiskLimitScalarFieldEnum = (typeof RiskLimitScalarFieldEnum)[keyof typeof RiskLimitScalarFieldEnum]
+
+
+  export const RestrictedSecurityScalarFieldEnum: {
+    id: 'id',
+    symbol: 'symbol',
+    exchange: 'exchange',
+    reason: 'reason',
+    createdAt: 'createdAt'
+  };
+
+  export type RestrictedSecurityScalarFieldEnum = (typeof RestrictedSecurityScalarFieldEnum)[keyof typeof RestrictedSecurityScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -12393,20 +15056,6 @@ export namespace Prisma {
 
 
   /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-  /**
    * Reference to a field of type 'Decimal'
    */
   export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -12417,6 +15066,20 @@ export namespace Prisma {
    * Reference to a field of type 'Decimal[]'
    */
   export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -12545,6 +15208,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Firm"> | Date | string
     users?: UserListRelationFilter
     clients?: ClientListRelationFilter
+    basketOrders?: BasketOrderListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }
 
   export type FirmOrderByWithRelationInput = {
@@ -12554,6 +15219,8 @@ export namespace Prisma {
     updatedAt?: SortOrder
     users?: UserOrderByRelationAggregateInput
     clients?: ClientOrderByRelationAggregateInput
+    basketOrders?: BasketOrderOrderByRelationAggregateInput
+    auditLogs?: AuditLogOrderByRelationAggregateInput
   }
 
   export type FirmWhereUniqueInput = Prisma.AtLeast<{
@@ -12566,6 +15233,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Firm"> | Date | string
     users?: UserListRelationFilter
     clients?: ClientListRelationFilter
+    basketOrders?: BasketOrderListRelationFilter
+    auditLogs?: AuditLogListRelationFilter
   }, "id">
 
   export type FirmOrderByWithAggregationInput = {
@@ -12800,22 +15469,26 @@ export namespace Prisma {
     id?: StringFilter<"Portfolio"> | string
     name?: StringFilter<"Portfolio"> | string
     clientId?: StringFilter<"Portfolio"> | string
+    cashBalance?: DecimalFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     holdings?: HoldingListRelationFilter
     orders?: OrderListRelationFilter
+    riskLimit?: XOR<RiskLimitNullableScalarRelationFilter, RiskLimitWhereInput> | null
   }
 
   export type PortfolioOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     clientId?: SortOrder
+    cashBalance?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
     holdings?: HoldingOrderByRelationAggregateInput
     orders?: OrderOrderByRelationAggregateInput
+    riskLimit?: RiskLimitOrderByWithRelationInput
   }
 
   export type PortfolioWhereUniqueInput = Prisma.AtLeast<{
@@ -12825,22 +15498,27 @@ export namespace Prisma {
     NOT?: PortfolioWhereInput | PortfolioWhereInput[]
     name?: StringFilter<"Portfolio"> | string
     clientId?: StringFilter<"Portfolio"> | string
+    cashBalance?: DecimalFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     holdings?: HoldingListRelationFilter
     orders?: OrderListRelationFilter
+    riskLimit?: XOR<RiskLimitNullableScalarRelationFilter, RiskLimitWhereInput> | null
   }, "id">
 
   export type PortfolioOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     clientId?: SortOrder
+    cashBalance?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PortfolioCountOrderByAggregateInput
+    _avg?: PortfolioAvgOrderByAggregateInput
     _max?: PortfolioMaxOrderByAggregateInput
     _min?: PortfolioMinOrderByAggregateInput
+    _sum?: PortfolioSumOrderByAggregateInput
   }
 
   export type PortfolioScalarWhereWithAggregatesInput = {
@@ -12850,6 +15528,7 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"Portfolio"> | string
     name?: StringWithAggregatesFilter<"Portfolio"> | string
     clientId?: StringWithAggregatesFilter<"Portfolio"> | string
+    cashBalance?: DecimalWithAggregatesFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Portfolio"> | Date | string
   }
@@ -12945,6 +15624,9 @@ export namespace Prisma {
     averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     filledAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    estimatedPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFilter<"Order"> | number
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -12969,6 +15651,9 @@ export namespace Prisma {
     averageFillPrice?: SortOrderInput | SortOrder
     realizedPnl?: SortOrderInput | SortOrder
     filledAt?: SortOrderInput | SortOrder
+    estimatedPrice?: SortOrderInput | SortOrder
+    reservedCash?: SortOrder
+    reservedQuantity?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -12980,6 +15665,7 @@ export namespace Prisma {
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
     id?: string
+    brokerOrderId?: string
     AND?: OrderWhereInput | OrderWhereInput[]
     OR?: OrderWhereInput[]
     NOT?: OrderWhereInput | OrderWhereInput[]
@@ -12990,12 +15676,14 @@ export namespace Prisma {
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
-    brokerOrderId?: StringNullableFilter<"Order"> | string | null
     basketOrderId?: StringNullableFilter<"Order"> | string | null
     filledQuantity?: IntFilter<"Order"> | number
     averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     filledAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    estimatedPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFilter<"Order"> | number
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -13003,7 +15691,7 @@ export namespace Prisma {
     basketOrder?: XOR<BasketOrderNullableScalarRelationFilter, BasketOrderWhereInput> | null
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
     brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
-  }, "id">
+  }, "id" | "brokerOrderId">
 
   export type OrderOrderByWithAggregationInput = {
     id?: SortOrder
@@ -13020,6 +15708,9 @@ export namespace Prisma {
     averageFillPrice?: SortOrderInput | SortOrder
     realizedPnl?: SortOrderInput | SortOrder
     filledAt?: SortOrderInput | SortOrder
+    estimatedPrice?: SortOrderInput | SortOrder
+    reservedCash?: SortOrder
+    reservedQuantity?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -13049,6 +15740,9 @@ export namespace Prisma {
     averageFillPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     filledAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
+    estimatedPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntWithAggregatesFilter<"Order"> | number
     portfolioId?: StringWithAggregatesFilter<"Order"> | string
     brokerAccountId?: StringWithAggregatesFilter<"Order"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Order"> | Date | string
@@ -13060,22 +15754,26 @@ export namespace Prisma {
     OR?: AuditLogWhereInput[]
     NOT?: AuditLogWhereInput | AuditLogWhereInput[]
     id?: StringFilter<"AuditLog"> | string
+    firmId?: StringFilter<"AuditLog"> | string
     action?: EnumAuditActionFilter<"AuditLog"> | $Enums.AuditAction
     entityType?: StringFilter<"AuditLog"> | string
     entityId?: StringFilter<"AuditLog"> | string
     message?: StringNullableFilter<"AuditLog"> | string | null
     metadata?: JsonNullableFilter<"AuditLog">
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
   }
 
   export type AuditLogOrderByWithRelationInput = {
     id?: SortOrder
+    firmId?: SortOrder
     action?: SortOrder
     entityType?: SortOrder
     entityId?: SortOrder
     message?: SortOrderInput | SortOrder
     metadata?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    firm?: FirmOrderByWithRelationInput
   }
 
   export type AuditLogWhereUniqueInput = Prisma.AtLeast<{
@@ -13083,16 +15781,19 @@ export namespace Prisma {
     AND?: AuditLogWhereInput | AuditLogWhereInput[]
     OR?: AuditLogWhereInput[]
     NOT?: AuditLogWhereInput | AuditLogWhereInput[]
+    firmId?: StringFilter<"AuditLog"> | string
     action?: EnumAuditActionFilter<"AuditLog"> | $Enums.AuditAction
     entityType?: StringFilter<"AuditLog"> | string
     entityId?: StringFilter<"AuditLog"> | string
     message?: StringNullableFilter<"AuditLog"> | string | null
     metadata?: JsonNullableFilter<"AuditLog">
     createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+    firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
   }, "id">
 
   export type AuditLogOrderByWithAggregationInput = {
     id?: SortOrder
+    firmId?: SortOrder
     action?: SortOrder
     entityType?: SortOrder
     entityId?: SortOrder
@@ -13109,6 +15810,7 @@ export namespace Prisma {
     OR?: AuditLogScalarWhereWithAggregatesInput[]
     NOT?: AuditLogScalarWhereWithAggregatesInput | AuditLogScalarWhereWithAggregatesInput[]
     id?: StringWithAggregatesFilter<"AuditLog"> | string
+    firmId?: StringWithAggregatesFilter<"AuditLog"> | string
     action?: EnumAuditActionWithAggregatesFilter<"AuditLog"> | $Enums.AuditAction
     entityType?: StringWithAggregatesFilter<"AuditLog"> | string
     entityId?: StringWithAggregatesFilter<"AuditLog"> | string
@@ -13131,8 +15833,10 @@ export namespace Prisma {
     totalQuantity?: IntFilter<"BasketOrder"> | number
     allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    firmId?: StringFilter<"BasketOrder"> | string
     createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
     updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
+    firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
     orders?: OrderListRelationFilter
   }
 
@@ -13147,8 +15851,10 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    firm?: FirmOrderByWithRelationInput
     orders?: OrderOrderByRelationAggregateInput
   }
 
@@ -13166,8 +15872,10 @@ export namespace Prisma {
     totalQuantity?: IntFilter<"BasketOrder"> | number
     allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    firmId?: StringFilter<"BasketOrder"> | string
     createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
     updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
+    firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
     orders?: OrderListRelationFilter
   }, "id">
 
@@ -13182,6 +15890,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: BasketOrderCountOrderByAggregateInput
@@ -13205,8 +15914,134 @@ export namespace Prisma {
     totalQuantity?: IntWithAggregatesFilter<"BasketOrder"> | number
     allocationMethod?: EnumAllocationMethodWithAggregatesFilter<"BasketOrder"> | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusWithAggregatesFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    firmId?: StringWithAggregatesFilter<"BasketOrder"> | string
     createdAt?: DateTimeWithAggregatesFilter<"BasketOrder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BasketOrder"> | Date | string
+  }
+
+  export type RiskLimitWhereInput = {
+    AND?: RiskLimitWhereInput | RiskLimitWhereInput[]
+    OR?: RiskLimitWhereInput[]
+    NOT?: RiskLimitWhereInput | RiskLimitWhereInput[]
+    id?: StringFilter<"RiskLimit"> | string
+    portfolioId?: StringFilter<"RiskLimit"> | string
+    maxOrderQuantity?: IntNullableFilter<"RiskLimit"> | number | null
+    maxOrderValue?: DecimalNullableFilter<"RiskLimit"> | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: IntNullableFilter<"RiskLimit"> | number | null
+    maxPositionValue?: DecimalNullableFilter<"RiskLimit"> | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFilter<"RiskLimit"> | Date | string
+    updatedAt?: DateTimeFilter<"RiskLimit"> | Date | string
+    portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
+  }
+
+  export type RiskLimitOrderByWithRelationInput = {
+    id?: SortOrder
+    portfolioId?: SortOrder
+    maxOrderQuantity?: SortOrderInput | SortOrder
+    maxOrderValue?: SortOrderInput | SortOrder
+    maxPositionQuantity?: SortOrderInput | SortOrder
+    maxPositionValue?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    portfolio?: PortfolioOrderByWithRelationInput
+  }
+
+  export type RiskLimitWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    portfolioId?: string
+    AND?: RiskLimitWhereInput | RiskLimitWhereInput[]
+    OR?: RiskLimitWhereInput[]
+    NOT?: RiskLimitWhereInput | RiskLimitWhereInput[]
+    maxOrderQuantity?: IntNullableFilter<"RiskLimit"> | number | null
+    maxOrderValue?: DecimalNullableFilter<"RiskLimit"> | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: IntNullableFilter<"RiskLimit"> | number | null
+    maxPositionValue?: DecimalNullableFilter<"RiskLimit"> | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFilter<"RiskLimit"> | Date | string
+    updatedAt?: DateTimeFilter<"RiskLimit"> | Date | string
+    portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
+  }, "id" | "portfolioId">
+
+  export type RiskLimitOrderByWithAggregationInput = {
+    id?: SortOrder
+    portfolioId?: SortOrder
+    maxOrderQuantity?: SortOrderInput | SortOrder
+    maxOrderValue?: SortOrderInput | SortOrder
+    maxPositionQuantity?: SortOrderInput | SortOrder
+    maxPositionValue?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: RiskLimitCountOrderByAggregateInput
+    _avg?: RiskLimitAvgOrderByAggregateInput
+    _max?: RiskLimitMaxOrderByAggregateInput
+    _min?: RiskLimitMinOrderByAggregateInput
+    _sum?: RiskLimitSumOrderByAggregateInput
+  }
+
+  export type RiskLimitScalarWhereWithAggregatesInput = {
+    AND?: RiskLimitScalarWhereWithAggregatesInput | RiskLimitScalarWhereWithAggregatesInput[]
+    OR?: RiskLimitScalarWhereWithAggregatesInput[]
+    NOT?: RiskLimitScalarWhereWithAggregatesInput | RiskLimitScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RiskLimit"> | string
+    portfolioId?: StringWithAggregatesFilter<"RiskLimit"> | string
+    maxOrderQuantity?: IntNullableWithAggregatesFilter<"RiskLimit"> | number | null
+    maxOrderValue?: DecimalNullableWithAggregatesFilter<"RiskLimit"> | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: IntNullableWithAggregatesFilter<"RiskLimit"> | number | null
+    maxPositionValue?: DecimalNullableWithAggregatesFilter<"RiskLimit"> | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"RiskLimit"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"RiskLimit"> | Date | string
+  }
+
+  export type RestrictedSecurityWhereInput = {
+    AND?: RestrictedSecurityWhereInput | RestrictedSecurityWhereInput[]
+    OR?: RestrictedSecurityWhereInput[]
+    NOT?: RestrictedSecurityWhereInput | RestrictedSecurityWhereInput[]
+    id?: StringFilter<"RestrictedSecurity"> | string
+    symbol?: StringFilter<"RestrictedSecurity"> | string
+    exchange?: StringFilter<"RestrictedSecurity"> | string
+    reason?: StringNullableFilter<"RestrictedSecurity"> | string | null
+    createdAt?: DateTimeFilter<"RestrictedSecurity"> | Date | string
+  }
+
+  export type RestrictedSecurityOrderByWithRelationInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RestrictedSecurityWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    symbol_exchange?: RestrictedSecuritySymbolExchangeCompoundUniqueInput
+    AND?: RestrictedSecurityWhereInput | RestrictedSecurityWhereInput[]
+    OR?: RestrictedSecurityWhereInput[]
+    NOT?: RestrictedSecurityWhereInput | RestrictedSecurityWhereInput[]
+    symbol?: StringFilter<"RestrictedSecurity"> | string
+    exchange?: StringFilter<"RestrictedSecurity"> | string
+    reason?: StringNullableFilter<"RestrictedSecurity"> | string | null
+    createdAt?: DateTimeFilter<"RestrictedSecurity"> | Date | string
+  }, "id" | "symbol_exchange">
+
+  export type RestrictedSecurityOrderByWithAggregationInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    reason?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: RestrictedSecurityCountOrderByAggregateInput
+    _max?: RestrictedSecurityMaxOrderByAggregateInput
+    _min?: RestrictedSecurityMinOrderByAggregateInput
+  }
+
+  export type RestrictedSecurityScalarWhereWithAggregatesInput = {
+    AND?: RestrictedSecurityScalarWhereWithAggregatesInput | RestrictedSecurityScalarWhereWithAggregatesInput[]
+    OR?: RestrictedSecurityScalarWhereWithAggregatesInput[]
+    NOT?: RestrictedSecurityScalarWhereWithAggregatesInput | RestrictedSecurityScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"RestrictedSecurity"> | string
+    symbol?: StringWithAggregatesFilter<"RestrictedSecurity"> | string
+    exchange?: StringWithAggregatesFilter<"RestrictedSecurity"> | string
+    reason?: StringNullableWithAggregatesFilter<"RestrictedSecurity"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"RestrictedSecurity"> | Date | string
   }
 
   export type FirmCreateInput = {
@@ -13216,6 +16051,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     users?: UserCreateNestedManyWithoutFirmInput
     clients?: ClientCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogCreateNestedManyWithoutFirmInput
   }
 
   export type FirmUncheckedCreateInput = {
@@ -13225,6 +16062,8 @@ export namespace Prisma {
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutFirmInput
     clients?: ClientUncheckedCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderUncheckedCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutFirmInput
   }
 
   export type FirmUpdateInput = {
@@ -13234,6 +16073,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutFirmNestedInput
     clients?: ClientUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutFirmNestedInput
   }
 
   export type FirmUncheckedUpdateInput = {
@@ -13243,6 +16084,8 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutFirmNestedInput
     clients?: ClientUncheckedUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUncheckedUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutFirmNestedInput
   }
 
   export type FirmCreateManyInput = {
@@ -13488,47 +16331,56 @@ export namespace Prisma {
   export type PortfolioCreateInput = {
     id?: string
     name: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
     holdings?: HoldingCreateNestedManyWithoutPortfolioInput
     orders?: OrderCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateInput = {
     id?: string
     name: string
     clientId: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
     orders?: OrderUncheckedCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitUncheckedCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
     holdings?: HoldingUpdateManyWithoutPortfolioNestedInput
     orders?: OrderUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUpdateOneWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
     orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUncheckedUpdateOneWithoutPortfolioNestedInput
   }
 
   export type PortfolioCreateManyInput = {
     id?: string
     name: string
     clientId: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13536,6 +16388,7 @@ export namespace Prisma {
   export type PortfolioUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13544,6 +16397,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13638,6 +16492,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -13660,6 +16517,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     portfolioId: string
     brokerAccountId: string
     createdAt?: Date | string
@@ -13680,6 +16540,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -13702,6 +16565,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13723,6 +16589,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     portfolioId: string
     brokerAccountId: string
     createdAt?: Date | string
@@ -13743,6 +16612,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -13762,6 +16634,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -13776,10 +16651,12 @@ export namespace Prisma {
     message?: string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    firm: FirmCreateNestedOneWithoutAuditLogsInput
   }
 
   export type AuditLogUncheckedCreateInput = {
     id?: string
+    firmId: string
     action: $Enums.AuditAction
     entityType: string
     entityId: string
@@ -13796,10 +16673,12 @@ export namespace Prisma {
     message?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firm?: FirmUpdateOneRequiredWithoutAuditLogsNestedInput
   }
 
   export type AuditLogUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    firmId?: StringFieldUpdateOperationsInput | string
     action?: EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
     entityType?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
@@ -13810,6 +16689,7 @@ export namespace Prisma {
 
   export type AuditLogCreateManyInput = {
     id?: string
+    firmId: string
     action: $Enums.AuditAction
     entityType: string
     entityId: string
@@ -13830,6 +16710,7 @@ export namespace Prisma {
 
   export type AuditLogUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
+    firmId?: StringFieldUpdateOperationsInput | string
     action?: EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
     entityType?: StringFieldUpdateOperationsInput | string
     entityId?: StringFieldUpdateOperationsInput | string
@@ -13851,6 +16732,7 @@ export namespace Prisma {
     status?: $Enums.BasketOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    firm: FirmCreateNestedOneWithoutBasketOrdersInput
     orders?: OrderCreateNestedManyWithoutBasketOrderInput
   }
 
@@ -13865,6 +16747,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBasketOrderInput
@@ -13883,6 +16766,7 @@ export namespace Prisma {
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firm?: FirmUpdateOneRequiredWithoutBasketOrdersNestedInput
     orders?: OrderUpdateManyWithoutBasketOrderNestedInput
   }
 
@@ -13897,6 +16781,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBasketOrderNestedInput
@@ -13913,6 +16798,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -13943,8 +16829,141 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RiskLimitCreateInput = {
+    id?: string
+    maxOrderQuantity?: number | null
+    maxOrderValue?: Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: number | null
+    maxPositionValue?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    portfolio: PortfolioCreateNestedOneWithoutRiskLimitInput
+  }
+
+  export type RiskLimitUncheckedCreateInput = {
+    id?: string
+    portfolioId: string
+    maxOrderQuantity?: number | null
+    maxOrderValue?: Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: number | null
+    maxPositionValue?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RiskLimitUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maxOrderQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxOrderValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxPositionValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    portfolio?: PortfolioUpdateOneRequiredWithoutRiskLimitNestedInput
+  }
+
+  export type RiskLimitUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    maxOrderQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxOrderValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxPositionValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RiskLimitCreateManyInput = {
+    id?: string
+    portfolioId: string
+    maxOrderQuantity?: number | null
+    maxOrderValue?: Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: number | null
+    maxPositionValue?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RiskLimitUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maxOrderQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxOrderValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxPositionValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RiskLimitUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    maxOrderQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxOrderValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxPositionValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RestrictedSecurityCreateInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    reason?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RestrictedSecurityUncheckedCreateInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    reason?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RestrictedSecurityUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RestrictedSecurityUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RestrictedSecurityCreateManyInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    reason?: string | null
+    createdAt?: Date | string
+  }
+
+  export type RestrictedSecurityUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RestrictedSecurityUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    reason?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -13985,11 +17004,31 @@ export namespace Prisma {
     none?: ClientWhereInput
   }
 
+  export type BasketOrderListRelationFilter = {
+    every?: BasketOrderWhereInput
+    some?: BasketOrderWhereInput
+    none?: BasketOrderWhereInput
+  }
+
+  export type AuditLogListRelationFilter = {
+    every?: AuditLogWhereInput
+    some?: AuditLogWhereInput
+    none?: AuditLogWhereInput
+  }
+
   export type UserOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
   export type ClientOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BasketOrderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type AuditLogOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -14236,10 +17275,26 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
+  export type DecimalFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+  }
+
   export type HoldingListRelationFilter = {
     every?: HoldingWhereInput
     some?: HoldingWhereInput
     none?: HoldingWhereInput
+  }
+
+  export type RiskLimitNullableScalarRelationFilter = {
+    is?: RiskLimitWhereInput | null
+    isNot?: RiskLimitWhereInput | null
   }
 
   export type HoldingOrderByRelationAggregateInput = {
@@ -14250,14 +17305,20 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     clientId?: SortOrder
+    cashBalance?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type PortfolioAvgOrderByAggregateInput = {
+    cashBalance?: SortOrder
   }
 
   export type PortfolioMaxOrderByAggregateInput = {
     id?: SortOrder
     name?: SortOrder
     clientId?: SortOrder
+    cashBalance?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14266,8 +17327,29 @@ export namespace Prisma {
     id?: SortOrder
     name?: SortOrder
     clientId?: SortOrder
+    cashBalance?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+  }
+
+  export type PortfolioSumOrderByAggregateInput = {
+    cashBalance?: SortOrder
+  }
+
+  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -14279,17 +17361,6 @@ export namespace Prisma {
     gt?: number | IntFieldRefInput<$PrismaModel>
     gte?: number | IntFieldRefInput<$PrismaModel>
     not?: NestedIntFilter<$PrismaModel> | number
-  }
-
-  export type DecimalFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
   export type PortfolioScalarRelationFilter = {
@@ -14362,22 +17433,6 @@ export namespace Prisma {
     _max?: NestedIntFilter<$PrismaModel>
   }
 
-  export type DecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
-  }
-
   export type EnumOrderSideFilter<$PrismaModel = never> = {
     equals?: $Enums.OrderSide | EnumOrderSideFieldRefInput<$PrismaModel>
     in?: $Enums.OrderSide[] | ListEnumOrderSideFieldRefInput<$PrismaModel>
@@ -14446,6 +17501,9 @@ export namespace Prisma {
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
     filledAt?: SortOrder
+    estimatedPrice?: SortOrder
+    reservedCash?: SortOrder
+    reservedQuantity?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -14458,6 +17516,9 @@ export namespace Prisma {
     filledQuantity?: SortOrder
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
+    estimatedPrice?: SortOrder
+    reservedCash?: SortOrder
+    reservedQuantity?: SortOrder
   }
 
   export type OrderMaxOrderByAggregateInput = {
@@ -14475,6 +17536,9 @@ export namespace Prisma {
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
     filledAt?: SortOrder
+    estimatedPrice?: SortOrder
+    reservedCash?: SortOrder
+    reservedQuantity?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -14496,6 +17560,9 @@ export namespace Prisma {
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
     filledAt?: SortOrder
+    estimatedPrice?: SortOrder
+    reservedCash?: SortOrder
+    reservedQuantity?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     createdAt?: SortOrder
@@ -14508,6 +17575,9 @@ export namespace Prisma {
     filledQuantity?: SortOrder
     averageFillPrice?: SortOrder
     realizedPnl?: SortOrder
+    estimatedPrice?: SortOrder
+    reservedCash?: SortOrder
+    reservedQuantity?: SortOrder
   }
 
   export type EnumOrderSideWithAggregatesFilter<$PrismaModel = never> = {
@@ -14602,6 +17672,7 @@ export namespace Prisma {
 
   export type AuditLogCountOrderByAggregateInput = {
     id?: SortOrder
+    firmId?: SortOrder
     action?: SortOrder
     entityType?: SortOrder
     entityId?: SortOrder
@@ -14612,6 +17683,7 @@ export namespace Prisma {
 
   export type AuditLogMaxOrderByAggregateInput = {
     id?: SortOrder
+    firmId?: SortOrder
     action?: SortOrder
     entityType?: SortOrder
     entityId?: SortOrder
@@ -14621,6 +17693,7 @@ export namespace Prisma {
 
   export type AuditLogMinOrderByAggregateInput = {
     id?: SortOrder
+    firmId?: SortOrder
     action?: SortOrder
     entityType?: SortOrder
     entityId?: SortOrder
@@ -14689,6 +17762,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14709,6 +17783,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14724,6 +17799,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -14753,6 +17829,109 @@ export namespace Prisma {
     _max?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
   }
 
+  export type IntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
+  }
+
+  export type RiskLimitCountOrderByAggregateInput = {
+    id?: SortOrder
+    portfolioId?: SortOrder
+    maxOrderQuantity?: SortOrder
+    maxOrderValue?: SortOrder
+    maxPositionQuantity?: SortOrder
+    maxPositionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RiskLimitAvgOrderByAggregateInput = {
+    maxOrderQuantity?: SortOrder
+    maxOrderValue?: SortOrder
+    maxPositionQuantity?: SortOrder
+    maxPositionValue?: SortOrder
+  }
+
+  export type RiskLimitMaxOrderByAggregateInput = {
+    id?: SortOrder
+    portfolioId?: SortOrder
+    maxOrderQuantity?: SortOrder
+    maxOrderValue?: SortOrder
+    maxPositionQuantity?: SortOrder
+    maxPositionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RiskLimitMinOrderByAggregateInput = {
+    id?: SortOrder
+    portfolioId?: SortOrder
+    maxOrderQuantity?: SortOrder
+    maxOrderValue?: SortOrder
+    maxPositionQuantity?: SortOrder
+    maxPositionValue?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type RiskLimitSumOrderByAggregateInput = {
+    maxOrderQuantity?: SortOrder
+    maxOrderValue?: SortOrder
+    maxPositionQuantity?: SortOrder
+    maxPositionValue?: SortOrder
+  }
+
+  export type IntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type RestrictedSecuritySymbolExchangeCompoundUniqueInput = {
+    symbol: string
+    exchange: string
+  }
+
+  export type RestrictedSecurityCountOrderByAggregateInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RestrictedSecurityMaxOrderByAggregateInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type RestrictedSecurityMinOrderByAggregateInput = {
+    id?: SortOrder
+    symbol?: SortOrder
+    exchange?: SortOrder
+    reason?: SortOrder
+    createdAt?: SortOrder
+  }
+
   export type UserCreateNestedManyWithoutFirmInput = {
     create?: XOR<UserCreateWithoutFirmInput, UserUncheckedCreateWithoutFirmInput> | UserCreateWithoutFirmInput[] | UserUncheckedCreateWithoutFirmInput[]
     connectOrCreate?: UserCreateOrConnectWithoutFirmInput | UserCreateOrConnectWithoutFirmInput[]
@@ -14767,6 +17946,20 @@ export namespace Prisma {
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
   }
 
+  export type BasketOrderCreateNestedManyWithoutFirmInput = {
+    create?: XOR<BasketOrderCreateWithoutFirmInput, BasketOrderUncheckedCreateWithoutFirmInput> | BasketOrderCreateWithoutFirmInput[] | BasketOrderUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: BasketOrderCreateOrConnectWithoutFirmInput | BasketOrderCreateOrConnectWithoutFirmInput[]
+    createMany?: BasketOrderCreateManyFirmInputEnvelope
+    connect?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+  }
+
+  export type AuditLogCreateNestedManyWithoutFirmInput = {
+    create?: XOR<AuditLogCreateWithoutFirmInput, AuditLogUncheckedCreateWithoutFirmInput> | AuditLogCreateWithoutFirmInput[] | AuditLogUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutFirmInput | AuditLogCreateOrConnectWithoutFirmInput[]
+    createMany?: AuditLogCreateManyFirmInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+  }
+
   export type UserUncheckedCreateNestedManyWithoutFirmInput = {
     create?: XOR<UserCreateWithoutFirmInput, UserUncheckedCreateWithoutFirmInput> | UserCreateWithoutFirmInput[] | UserUncheckedCreateWithoutFirmInput[]
     connectOrCreate?: UserCreateOrConnectWithoutFirmInput | UserCreateOrConnectWithoutFirmInput[]
@@ -14779,6 +17972,20 @@ export namespace Prisma {
     connectOrCreate?: ClientCreateOrConnectWithoutFirmInput | ClientCreateOrConnectWithoutFirmInput[]
     createMany?: ClientCreateManyFirmInputEnvelope
     connect?: ClientWhereUniqueInput | ClientWhereUniqueInput[]
+  }
+
+  export type BasketOrderUncheckedCreateNestedManyWithoutFirmInput = {
+    create?: XOR<BasketOrderCreateWithoutFirmInput, BasketOrderUncheckedCreateWithoutFirmInput> | BasketOrderCreateWithoutFirmInput[] | BasketOrderUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: BasketOrderCreateOrConnectWithoutFirmInput | BasketOrderCreateOrConnectWithoutFirmInput[]
+    createMany?: BasketOrderCreateManyFirmInputEnvelope
+    connect?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+  }
+
+  export type AuditLogUncheckedCreateNestedManyWithoutFirmInput = {
+    create?: XOR<AuditLogCreateWithoutFirmInput, AuditLogUncheckedCreateWithoutFirmInput> | AuditLogCreateWithoutFirmInput[] | AuditLogUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutFirmInput | AuditLogCreateOrConnectWithoutFirmInput[]
+    createMany?: AuditLogCreateManyFirmInputEnvelope
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -14817,6 +18024,34 @@ export namespace Prisma {
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
   }
 
+  export type BasketOrderUpdateManyWithoutFirmNestedInput = {
+    create?: XOR<BasketOrderCreateWithoutFirmInput, BasketOrderUncheckedCreateWithoutFirmInput> | BasketOrderCreateWithoutFirmInput[] | BasketOrderUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: BasketOrderCreateOrConnectWithoutFirmInput | BasketOrderCreateOrConnectWithoutFirmInput[]
+    upsert?: BasketOrderUpsertWithWhereUniqueWithoutFirmInput | BasketOrderUpsertWithWhereUniqueWithoutFirmInput[]
+    createMany?: BasketOrderCreateManyFirmInputEnvelope
+    set?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    disconnect?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    delete?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    connect?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    update?: BasketOrderUpdateWithWhereUniqueWithoutFirmInput | BasketOrderUpdateWithWhereUniqueWithoutFirmInput[]
+    updateMany?: BasketOrderUpdateManyWithWhereWithoutFirmInput | BasketOrderUpdateManyWithWhereWithoutFirmInput[]
+    deleteMany?: BasketOrderScalarWhereInput | BasketOrderScalarWhereInput[]
+  }
+
+  export type AuditLogUpdateManyWithoutFirmNestedInput = {
+    create?: XOR<AuditLogCreateWithoutFirmInput, AuditLogUncheckedCreateWithoutFirmInput> | AuditLogCreateWithoutFirmInput[] | AuditLogUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutFirmInput | AuditLogCreateOrConnectWithoutFirmInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutFirmInput | AuditLogUpsertWithWhereUniqueWithoutFirmInput[]
+    createMany?: AuditLogCreateManyFirmInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutFirmInput | AuditLogUpdateWithWhereUniqueWithoutFirmInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutFirmInput | AuditLogUpdateManyWithWhereWithoutFirmInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
   export type UserUncheckedUpdateManyWithoutFirmNestedInput = {
     create?: XOR<UserCreateWithoutFirmInput, UserUncheckedCreateWithoutFirmInput> | UserCreateWithoutFirmInput[] | UserUncheckedCreateWithoutFirmInput[]
     connectOrCreate?: UserCreateOrConnectWithoutFirmInput | UserCreateOrConnectWithoutFirmInput[]
@@ -14843,6 +18078,34 @@ export namespace Prisma {
     update?: ClientUpdateWithWhereUniqueWithoutFirmInput | ClientUpdateWithWhereUniqueWithoutFirmInput[]
     updateMany?: ClientUpdateManyWithWhereWithoutFirmInput | ClientUpdateManyWithWhereWithoutFirmInput[]
     deleteMany?: ClientScalarWhereInput | ClientScalarWhereInput[]
+  }
+
+  export type BasketOrderUncheckedUpdateManyWithoutFirmNestedInput = {
+    create?: XOR<BasketOrderCreateWithoutFirmInput, BasketOrderUncheckedCreateWithoutFirmInput> | BasketOrderCreateWithoutFirmInput[] | BasketOrderUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: BasketOrderCreateOrConnectWithoutFirmInput | BasketOrderCreateOrConnectWithoutFirmInput[]
+    upsert?: BasketOrderUpsertWithWhereUniqueWithoutFirmInput | BasketOrderUpsertWithWhereUniqueWithoutFirmInput[]
+    createMany?: BasketOrderCreateManyFirmInputEnvelope
+    set?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    disconnect?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    delete?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    connect?: BasketOrderWhereUniqueInput | BasketOrderWhereUniqueInput[]
+    update?: BasketOrderUpdateWithWhereUniqueWithoutFirmInput | BasketOrderUpdateWithWhereUniqueWithoutFirmInput[]
+    updateMany?: BasketOrderUpdateManyWithWhereWithoutFirmInput | BasketOrderUpdateManyWithWhereWithoutFirmInput[]
+    deleteMany?: BasketOrderScalarWhereInput | BasketOrderScalarWhereInput[]
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutFirmNestedInput = {
+    create?: XOR<AuditLogCreateWithoutFirmInput, AuditLogUncheckedCreateWithoutFirmInput> | AuditLogCreateWithoutFirmInput[] | AuditLogUncheckedCreateWithoutFirmInput[]
+    connectOrCreate?: AuditLogCreateOrConnectWithoutFirmInput | AuditLogCreateOrConnectWithoutFirmInput[]
+    upsert?: AuditLogUpsertWithWhereUniqueWithoutFirmInput | AuditLogUpsertWithWhereUniqueWithoutFirmInput[]
+    createMany?: AuditLogCreateManyFirmInputEnvelope
+    set?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    disconnect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    delete?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
+    update?: AuditLogUpdateWithWhereUniqueWithoutFirmInput | AuditLogUpdateWithWhereUniqueWithoutFirmInput[]
+    updateMany?: AuditLogUpdateManyWithWhereWithoutFirmInput | AuditLogUpdateManyWithWhereWithoutFirmInput[]
+    deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
   export type FirmCreateNestedOneWithoutUsersInput = {
@@ -15041,6 +18304,12 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type RiskLimitCreateNestedOneWithoutPortfolioInput = {
+    create?: XOR<RiskLimitCreateWithoutPortfolioInput, RiskLimitUncheckedCreateWithoutPortfolioInput>
+    connectOrCreate?: RiskLimitCreateOrConnectWithoutPortfolioInput
+    connect?: RiskLimitWhereUniqueInput
+  }
+
   export type HoldingUncheckedCreateNestedManyWithoutPortfolioInput = {
     create?: XOR<HoldingCreateWithoutPortfolioInput, HoldingUncheckedCreateWithoutPortfolioInput> | HoldingCreateWithoutPortfolioInput[] | HoldingUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: HoldingCreateOrConnectWithoutPortfolioInput | HoldingCreateOrConnectWithoutPortfolioInput[]
@@ -15053,6 +18322,20 @@ export namespace Prisma {
     connectOrCreate?: OrderCreateOrConnectWithoutPortfolioInput | OrderCreateOrConnectWithoutPortfolioInput[]
     createMany?: OrderCreateManyPortfolioInputEnvelope
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type RiskLimitUncheckedCreateNestedOneWithoutPortfolioInput = {
+    create?: XOR<RiskLimitCreateWithoutPortfolioInput, RiskLimitUncheckedCreateWithoutPortfolioInput>
+    connectOrCreate?: RiskLimitCreateOrConnectWithoutPortfolioInput
+    connect?: RiskLimitWhereUniqueInput
+  }
+
+  export type DecimalFieldUpdateOperationsInput = {
+    set?: Decimal | DecimalJsLike | number | string
+    increment?: Decimal | DecimalJsLike | number | string
+    decrement?: Decimal | DecimalJsLike | number | string
+    multiply?: Decimal | DecimalJsLike | number | string
+    divide?: Decimal | DecimalJsLike | number | string
   }
 
   export type ClientUpdateOneRequiredWithoutPortfoliosNestedInput = {
@@ -15091,6 +18374,16 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type RiskLimitUpdateOneWithoutPortfolioNestedInput = {
+    create?: XOR<RiskLimitCreateWithoutPortfolioInput, RiskLimitUncheckedCreateWithoutPortfolioInput>
+    connectOrCreate?: RiskLimitCreateOrConnectWithoutPortfolioInput
+    upsert?: RiskLimitUpsertWithoutPortfolioInput
+    disconnect?: RiskLimitWhereInput | boolean
+    delete?: RiskLimitWhereInput | boolean
+    connect?: RiskLimitWhereUniqueInput
+    update?: XOR<XOR<RiskLimitUpdateToOneWithWhereWithoutPortfolioInput, RiskLimitUpdateWithoutPortfolioInput>, RiskLimitUncheckedUpdateWithoutPortfolioInput>
+  }
+
   export type HoldingUncheckedUpdateManyWithoutPortfolioNestedInput = {
     create?: XOR<HoldingCreateWithoutPortfolioInput, HoldingUncheckedCreateWithoutPortfolioInput> | HoldingCreateWithoutPortfolioInput[] | HoldingUncheckedCreateWithoutPortfolioInput[]
     connectOrCreate?: HoldingCreateOrConnectWithoutPortfolioInput | HoldingCreateOrConnectWithoutPortfolioInput[]
@@ -15119,6 +18412,16 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type RiskLimitUncheckedUpdateOneWithoutPortfolioNestedInput = {
+    create?: XOR<RiskLimitCreateWithoutPortfolioInput, RiskLimitUncheckedCreateWithoutPortfolioInput>
+    connectOrCreate?: RiskLimitCreateOrConnectWithoutPortfolioInput
+    upsert?: RiskLimitUpsertWithoutPortfolioInput
+    disconnect?: RiskLimitWhereInput | boolean
+    delete?: RiskLimitWhereInput | boolean
+    connect?: RiskLimitWhereUniqueInput
+    update?: XOR<XOR<RiskLimitUpdateToOneWithWhereWithoutPortfolioInput, RiskLimitUpdateWithoutPortfolioInput>, RiskLimitUncheckedUpdateWithoutPortfolioInput>
+  }
+
   export type PortfolioCreateNestedOneWithoutHoldingsInput = {
     create?: XOR<PortfolioCreateWithoutHoldingsInput, PortfolioUncheckedCreateWithoutHoldingsInput>
     connectOrCreate?: PortfolioCreateOrConnectWithoutHoldingsInput
@@ -15131,14 +18434,6 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
-  }
-
-  export type DecimalFieldUpdateOperationsInput = {
-    set?: Decimal | DecimalJsLike | number | string
-    increment?: Decimal | DecimalJsLike | number | string
-    decrement?: Decimal | DecimalJsLike | number | string
-    multiply?: Decimal | DecimalJsLike | number | string
-    divide?: Decimal | DecimalJsLike | number | string
   }
 
   export type PortfolioUpdateOneRequiredWithoutHoldingsNestedInput = {
@@ -15217,8 +18512,28 @@ export namespace Prisma {
     update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutOrdersInput, BrokerAccountUpdateWithoutOrdersInput>, BrokerAccountUncheckedUpdateWithoutOrdersInput>
   }
 
+  export type FirmCreateNestedOneWithoutAuditLogsInput = {
+    create?: XOR<FirmCreateWithoutAuditLogsInput, FirmUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: FirmCreateOrConnectWithoutAuditLogsInput
+    connect?: FirmWhereUniqueInput
+  }
+
   export type EnumAuditActionFieldUpdateOperationsInput = {
     set?: $Enums.AuditAction
+  }
+
+  export type FirmUpdateOneRequiredWithoutAuditLogsNestedInput = {
+    create?: XOR<FirmCreateWithoutAuditLogsInput, FirmUncheckedCreateWithoutAuditLogsInput>
+    connectOrCreate?: FirmCreateOrConnectWithoutAuditLogsInput
+    upsert?: FirmUpsertWithoutAuditLogsInput
+    connect?: FirmWhereUniqueInput
+    update?: XOR<XOR<FirmUpdateToOneWithWhereWithoutAuditLogsInput, FirmUpdateWithoutAuditLogsInput>, FirmUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type FirmCreateNestedOneWithoutBasketOrdersInput = {
+    create?: XOR<FirmCreateWithoutBasketOrdersInput, FirmUncheckedCreateWithoutBasketOrdersInput>
+    connectOrCreate?: FirmCreateOrConnectWithoutBasketOrdersInput
+    connect?: FirmWhereUniqueInput
   }
 
   export type OrderCreateNestedManyWithoutBasketOrderInput = {
@@ -15241,6 +18556,14 @@ export namespace Prisma {
 
   export type EnumBasketOrderStatusFieldUpdateOperationsInput = {
     set?: $Enums.BasketOrderStatus
+  }
+
+  export type FirmUpdateOneRequiredWithoutBasketOrdersNestedInput = {
+    create?: XOR<FirmCreateWithoutBasketOrdersInput, FirmUncheckedCreateWithoutBasketOrdersInput>
+    connectOrCreate?: FirmCreateOrConnectWithoutBasketOrdersInput
+    upsert?: FirmUpsertWithoutBasketOrdersInput
+    connect?: FirmWhereUniqueInput
+    update?: XOR<XOR<FirmUpdateToOneWithWhereWithoutBasketOrdersInput, FirmUpdateWithoutBasketOrdersInput>, FirmUncheckedUpdateWithoutBasketOrdersInput>
   }
 
   export type OrderUpdateManyWithoutBasketOrderNestedInput = {
@@ -15269,6 +18592,28 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutBasketOrderInput | OrderUpdateWithWhereUniqueWithoutBasketOrderInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutBasketOrderInput | OrderUpdateManyWithWhereWithoutBasketOrderInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type PortfolioCreateNestedOneWithoutRiskLimitInput = {
+    create?: XOR<PortfolioCreateWithoutRiskLimitInput, PortfolioUncheckedCreateWithoutRiskLimitInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutRiskLimitInput
+    connect?: PortfolioWhereUniqueInput
+  }
+
+  export type NullableIntFieldUpdateOperationsInput = {
+    set?: number | null
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type PortfolioUpdateOneRequiredWithoutRiskLimitNestedInput = {
+    create?: XOR<PortfolioCreateWithoutRiskLimitInput, PortfolioUncheckedCreateWithoutRiskLimitInput>
+    connectOrCreate?: PortfolioCreateOrConnectWithoutRiskLimitInput
+    upsert?: PortfolioUpsertWithoutRiskLimitInput
+    connect?: PortfolioWhereUniqueInput
+    update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutRiskLimitInput, PortfolioUpdateWithoutRiskLimitInput>, PortfolioUncheckedUpdateWithoutRiskLimitInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -15408,6 +18753,22 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
+  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
+    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
+    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedDecimalFilter<$PrismaModel>
+    _sum?: NestedDecimalFilter<$PrismaModel>
+    _min?: NestedDecimalFilter<$PrismaModel>
+    _max?: NestedDecimalFilter<$PrismaModel>
+  }
+
   export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
     equals?: number | IntFieldRefInput<$PrismaModel>
     in?: number[] | ListIntFieldRefInput<$PrismaModel>
@@ -15433,22 +18794,6 @@ export namespace Prisma {
     gt?: number | FloatFieldRefInput<$PrismaModel>
     gte?: number | FloatFieldRefInput<$PrismaModel>
     not?: NestedFloatFilter<$PrismaModel> | number
-  }
-
-  export type NestedDecimalWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    notIn?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel>
-    lt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    lte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gt?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    gte?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel>
-    not?: NestedDecimalWithAggregatesFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedDecimalFilter<$PrismaModel>
-    _sum?: NestedDecimalFilter<$PrismaModel>
-    _min?: NestedDecimalFilter<$PrismaModel>
-    _max?: NestedDecimalFilter<$PrismaModel>
   }
 
   export type NestedEnumOrderSideFilter<$PrismaModel = never> = {
@@ -15628,6 +18973,33 @@ export namespace Prisma {
     _max?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
   }
 
+  export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel> | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableWithAggregatesFilter<$PrismaModel> | number | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _avg?: NestedFloatNullableFilter<$PrismaModel>
+    _sum?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedIntNullableFilter<$PrismaModel>
+    _max?: NestedIntNullableFilter<$PrismaModel>
+  }
+
+  export type NestedFloatNullableFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel> | null
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel> | null
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatNullableFilter<$PrismaModel> | number | null
+  }
+
   export type UserCreateWithoutFirmInput = {
     id?: string
     name: string
@@ -15685,6 +19057,78 @@ export namespace Prisma {
 
   export type ClientCreateManyFirmInputEnvelope = {
     data: ClientCreateManyFirmInput | ClientCreateManyFirmInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BasketOrderCreateWithoutFirmInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderCreateNestedManyWithoutBasketOrderInput
+  }
+
+  export type BasketOrderUncheckedCreateWithoutFirmInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutBasketOrderInput
+  }
+
+  export type BasketOrderCreateOrConnectWithoutFirmInput = {
+    where: BasketOrderWhereUniqueInput
+    create: XOR<BasketOrderCreateWithoutFirmInput, BasketOrderUncheckedCreateWithoutFirmInput>
+  }
+
+  export type BasketOrderCreateManyFirmInputEnvelope = {
+    data: BasketOrderCreateManyFirmInput | BasketOrderCreateManyFirmInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type AuditLogCreateWithoutFirmInput = {
+    id?: string
+    action: $Enums.AuditAction
+    entityType: string
+    entityId: string
+    message?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AuditLogUncheckedCreateWithoutFirmInput = {
+    id?: string
+    action: $Enums.AuditAction
+    entityType: string
+    entityId: string
+    message?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
+  }
+
+  export type AuditLogCreateOrConnectWithoutFirmInput = {
+    where: AuditLogWhereUniqueInput
+    create: XOR<AuditLogCreateWithoutFirmInput, AuditLogUncheckedCreateWithoutFirmInput>
+  }
+
+  export type AuditLogCreateManyFirmInputEnvelope = {
+    data: AuditLogCreateManyFirmInput | AuditLogCreateManyFirmInput[]
     skipDuplicates?: boolean
   }
 
@@ -15746,12 +19190,79 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Client"> | Date | string
   }
 
+  export type BasketOrderUpsertWithWhereUniqueWithoutFirmInput = {
+    where: BasketOrderWhereUniqueInput
+    update: XOR<BasketOrderUpdateWithoutFirmInput, BasketOrderUncheckedUpdateWithoutFirmInput>
+    create: XOR<BasketOrderCreateWithoutFirmInput, BasketOrderUncheckedCreateWithoutFirmInput>
+  }
+
+  export type BasketOrderUpdateWithWhereUniqueWithoutFirmInput = {
+    where: BasketOrderWhereUniqueInput
+    data: XOR<BasketOrderUpdateWithoutFirmInput, BasketOrderUncheckedUpdateWithoutFirmInput>
+  }
+
+  export type BasketOrderUpdateManyWithWhereWithoutFirmInput = {
+    where: BasketOrderScalarWhereInput
+    data: XOR<BasketOrderUpdateManyMutationInput, BasketOrderUncheckedUpdateManyWithoutFirmInput>
+  }
+
+  export type BasketOrderScalarWhereInput = {
+    AND?: BasketOrderScalarWhereInput | BasketOrderScalarWhereInput[]
+    OR?: BasketOrderScalarWhereInput[]
+    NOT?: BasketOrderScalarWhereInput | BasketOrderScalarWhereInput[]
+    id?: StringFilter<"BasketOrder"> | string
+    name?: StringNullableFilter<"BasketOrder"> | string | null
+    symbol?: StringFilter<"BasketOrder"> | string
+    exchange?: StringFilter<"BasketOrder"> | string
+    side?: EnumOrderSideFilter<"BasketOrder"> | $Enums.OrderSide
+    orderType?: EnumOrderTypeFilter<"BasketOrder"> | $Enums.OrderType
+    limitPrice?: DecimalNullableFilter<"BasketOrder"> | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFilter<"BasketOrder"> | number
+    allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    firmId?: StringFilter<"BasketOrder"> | string
+    createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
+    updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
+  }
+
+  export type AuditLogUpsertWithWhereUniqueWithoutFirmInput = {
+    where: AuditLogWhereUniqueInput
+    update: XOR<AuditLogUpdateWithoutFirmInput, AuditLogUncheckedUpdateWithoutFirmInput>
+    create: XOR<AuditLogCreateWithoutFirmInput, AuditLogUncheckedCreateWithoutFirmInput>
+  }
+
+  export type AuditLogUpdateWithWhereUniqueWithoutFirmInput = {
+    where: AuditLogWhereUniqueInput
+    data: XOR<AuditLogUpdateWithoutFirmInput, AuditLogUncheckedUpdateWithoutFirmInput>
+  }
+
+  export type AuditLogUpdateManyWithWhereWithoutFirmInput = {
+    where: AuditLogScalarWhereInput
+    data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutFirmInput>
+  }
+
+  export type AuditLogScalarWhereInput = {
+    AND?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    OR?: AuditLogScalarWhereInput[]
+    NOT?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+    id?: StringFilter<"AuditLog"> | string
+    firmId?: StringFilter<"AuditLog"> | string
+    action?: EnumAuditActionFilter<"AuditLog"> | $Enums.AuditAction
+    entityType?: StringFilter<"AuditLog"> | string
+    entityId?: StringFilter<"AuditLog"> | string
+    message?: StringNullableFilter<"AuditLog"> | string | null
+    metadata?: JsonNullableFilter<"AuditLog">
+    createdAt?: DateTimeFilter<"AuditLog"> | Date | string
+  }
+
   export type FirmCreateWithoutUsersInput = {
     id?: string
     name: string
     createdAt?: Date | string
     updatedAt?: Date | string
     clients?: ClientCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogCreateNestedManyWithoutFirmInput
   }
 
   export type FirmUncheckedCreateWithoutUsersInput = {
@@ -15760,6 +19271,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     clients?: ClientUncheckedCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderUncheckedCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutFirmInput
   }
 
   export type FirmCreateOrConnectWithoutUsersInput = {
@@ -15784,6 +19297,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clients?: ClientUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutFirmNestedInput
   }
 
   export type FirmUncheckedUpdateWithoutUsersInput = {
@@ -15792,6 +19307,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     clients?: ClientUncheckedUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUncheckedUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutFirmNestedInput
   }
 
   export type FirmCreateWithoutClientsInput = {
@@ -15800,6 +19317,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogCreateNestedManyWithoutFirmInput
   }
 
   export type FirmUncheckedCreateWithoutClientsInput = {
@@ -15808,6 +19327,8 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     users?: UserUncheckedCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderUncheckedCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutFirmInput
   }
 
   export type FirmCreateOrConnectWithoutClientsInput = {
@@ -15848,19 +19369,23 @@ export namespace Prisma {
   export type PortfolioCreateWithoutClientInput = {
     id?: string
     name: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingCreateNestedManyWithoutPortfolioInput
     orders?: OrderCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutClientInput = {
     id?: string
     name: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
     orders?: OrderUncheckedCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitUncheckedCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutClientInput = {
@@ -15890,6 +19415,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutFirmNestedInput
   }
 
   export type FirmUncheckedUpdateWithoutClientsInput = {
@@ -15898,6 +19425,8 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     users?: UserUncheckedUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUncheckedUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutFirmNestedInput
   }
 
   export type BrokerAccountUpsertWithWhereUniqueWithoutClientInput = {
@@ -15952,6 +19481,7 @@ export namespace Prisma {
     id?: StringFilter<"Portfolio"> | string
     name?: StringFilter<"Portfolio"> | string
     clientId?: StringFilter<"Portfolio"> | string
+    cashBalance?: DecimalFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
   }
@@ -15995,6 +19525,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -16016,6 +19549,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     portfolioId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16096,6 +19632,9 @@ export namespace Prisma {
     averageFillPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     filledAt?: DateTimeNullableFilter<"Order"> | Date | string | null
+    estimatedPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFilter<"Order"> | number
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -16171,6 +19710,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -16192,6 +19734,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16205,6 +19750,31 @@ export namespace Prisma {
   export type OrderCreateManyPortfolioInputEnvelope = {
     data: OrderCreateManyPortfolioInput | OrderCreateManyPortfolioInput[]
     skipDuplicates?: boolean
+  }
+
+  export type RiskLimitCreateWithoutPortfolioInput = {
+    id?: string
+    maxOrderQuantity?: number | null
+    maxOrderValue?: Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: number | null
+    maxPositionValue?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RiskLimitUncheckedCreateWithoutPortfolioInput = {
+    id?: string
+    maxOrderQuantity?: number | null
+    maxOrderValue?: Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: number | null
+    maxPositionValue?: Decimal | DecimalJsLike | number | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type RiskLimitCreateOrConnectWithoutPortfolioInput = {
+    where: RiskLimitWhereUniqueInput
+    create: XOR<RiskLimitCreateWithoutPortfolioInput, RiskLimitUncheckedCreateWithoutPortfolioInput>
   }
 
   export type ClientUpsertWithoutPortfoliosInput = {
@@ -16284,22 +19854,57 @@ export namespace Prisma {
     data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutPortfolioInput>
   }
 
+  export type RiskLimitUpsertWithoutPortfolioInput = {
+    update: XOR<RiskLimitUpdateWithoutPortfolioInput, RiskLimitUncheckedUpdateWithoutPortfolioInput>
+    create: XOR<RiskLimitCreateWithoutPortfolioInput, RiskLimitUncheckedCreateWithoutPortfolioInput>
+    where?: RiskLimitWhereInput
+  }
+
+  export type RiskLimitUpdateToOneWithWhereWithoutPortfolioInput = {
+    where?: RiskLimitWhereInput
+    data: XOR<RiskLimitUpdateWithoutPortfolioInput, RiskLimitUncheckedUpdateWithoutPortfolioInput>
+  }
+
+  export type RiskLimitUpdateWithoutPortfolioInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maxOrderQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxOrderValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxPositionValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type RiskLimitUncheckedUpdateWithoutPortfolioInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    maxOrderQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxOrderValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    maxPositionQuantity?: NullableIntFieldUpdateOperationsInput | number | null
+    maxPositionValue?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type PortfolioCreateWithoutHoldingsInput = {
     id?: string
     name: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
     orders?: OrderCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutHoldingsInput = {
     id?: string
     name: string
     clientId: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitUncheckedCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutHoldingsInput = {
@@ -16321,19 +19926,23 @@ export namespace Prisma {
   export type PortfolioUpdateWithoutHoldingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
     orders?: OrderUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUpdateOneWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutHoldingsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUncheckedUpdateOneWithoutPortfolioNestedInput
   }
 
   export type BasketOrderCreateWithoutOrdersInput = {
@@ -16349,6 +19958,7 @@ export namespace Prisma {
     status?: $Enums.BasketOrderStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    firm: FirmCreateNestedOneWithoutBasketOrdersInput
   }
 
   export type BasketOrderUncheckedCreateWithoutOrdersInput = {
@@ -16362,6 +19972,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16374,19 +19985,23 @@ export namespace Prisma {
   export type PortfolioCreateWithoutOrdersInput = {
     id?: string
     name: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
     holdings?: HoldingCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioUncheckedCreateWithoutOrdersInput = {
     id?: string
     name: string
     clientId: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
+    riskLimit?: RiskLimitUncheckedCreateNestedOneWithoutPortfolioInput
   }
 
   export type PortfolioCreateOrConnectWithoutOrdersInput = {
@@ -16443,6 +20058,7 @@ export namespace Prisma {
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firm?: FirmUpdateOneRequiredWithoutBasketOrdersNestedInput
   }
 
   export type BasketOrderUncheckedUpdateWithoutOrdersInput = {
@@ -16456,6 +20072,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16474,19 +20091,23 @@ export namespace Prisma {
   export type PortfolioUpdateWithoutOrdersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
     holdings?: HoldingUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUpdateOneWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutOrdersInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUncheckedUpdateOneWithoutPortfolioNestedInput
   }
 
   export type BrokerAccountUpsertWithoutOrdersInput = {
@@ -16520,6 +20141,87 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type FirmCreateWithoutAuditLogsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutFirmInput
+    clients?: ClientCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderCreateNestedManyWithoutFirmInput
+  }
+
+  export type FirmUncheckedCreateWithoutAuditLogsInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutFirmInput
+    clients?: ClientUncheckedCreateNestedManyWithoutFirmInput
+    basketOrders?: BasketOrderUncheckedCreateNestedManyWithoutFirmInput
+  }
+
+  export type FirmCreateOrConnectWithoutAuditLogsInput = {
+    where: FirmWhereUniqueInput
+    create: XOR<FirmCreateWithoutAuditLogsInput, FirmUncheckedCreateWithoutAuditLogsInput>
+  }
+
+  export type FirmUpsertWithoutAuditLogsInput = {
+    update: XOR<FirmUpdateWithoutAuditLogsInput, FirmUncheckedUpdateWithoutAuditLogsInput>
+    create: XOR<FirmCreateWithoutAuditLogsInput, FirmUncheckedCreateWithoutAuditLogsInput>
+    where?: FirmWhereInput
+  }
+
+  export type FirmUpdateToOneWithWhereWithoutAuditLogsInput = {
+    where?: FirmWhereInput
+    data: XOR<FirmUpdateWithoutAuditLogsInput, FirmUncheckedUpdateWithoutAuditLogsInput>
+  }
+
+  export type FirmUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutFirmNestedInput
+    clients?: ClientUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUpdateManyWithoutFirmNestedInput
+  }
+
+  export type FirmUncheckedUpdateWithoutAuditLogsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutFirmNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutFirmNestedInput
+    basketOrders?: BasketOrderUncheckedUpdateManyWithoutFirmNestedInput
+  }
+
+  export type FirmCreateWithoutBasketOrdersInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserCreateNestedManyWithoutFirmInput
+    clients?: ClientCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogCreateNestedManyWithoutFirmInput
+  }
+
+  export type FirmUncheckedCreateWithoutBasketOrdersInput = {
+    id?: string
+    name: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    users?: UserUncheckedCreateNestedManyWithoutFirmInput
+    clients?: ClientUncheckedCreateNestedManyWithoutFirmInput
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutFirmInput
+  }
+
+  export type FirmCreateOrConnectWithoutBasketOrdersInput = {
+    where: FirmWhereUniqueInput
+    create: XOR<FirmCreateWithoutBasketOrdersInput, FirmUncheckedCreateWithoutBasketOrdersInput>
+  }
+
   export type OrderCreateWithoutBasketOrderInput = {
     id?: string
     symbol: string
@@ -16534,6 +20236,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     createdAt?: Date | string
     updatedAt?: Date | string
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
@@ -16554,6 +20259,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     portfolioId: string
     brokerAccountId: string
     createdAt?: Date | string
@@ -16568,6 +20276,37 @@ export namespace Prisma {
   export type OrderCreateManyBasketOrderInputEnvelope = {
     data: OrderCreateManyBasketOrderInput | OrderCreateManyBasketOrderInput[]
     skipDuplicates?: boolean
+  }
+
+  export type FirmUpsertWithoutBasketOrdersInput = {
+    update: XOR<FirmUpdateWithoutBasketOrdersInput, FirmUncheckedUpdateWithoutBasketOrdersInput>
+    create: XOR<FirmCreateWithoutBasketOrdersInput, FirmUncheckedCreateWithoutBasketOrdersInput>
+    where?: FirmWhereInput
+  }
+
+  export type FirmUpdateToOneWithWhereWithoutBasketOrdersInput = {
+    where?: FirmWhereInput
+    data: XOR<FirmUpdateWithoutBasketOrdersInput, FirmUncheckedUpdateWithoutBasketOrdersInput>
+  }
+
+  export type FirmUpdateWithoutBasketOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUpdateManyWithoutFirmNestedInput
+    clients?: ClientUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutFirmNestedInput
+  }
+
+  export type FirmUncheckedUpdateWithoutBasketOrdersInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    users?: UserUncheckedUpdateManyWithoutFirmNestedInput
+    clients?: ClientUncheckedUpdateManyWithoutFirmNestedInput
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutFirmNestedInput
   }
 
   export type OrderUpsertWithWhereUniqueWithoutBasketOrderInput = {
@@ -16586,6 +20325,66 @@ export namespace Prisma {
     data: XOR<OrderUpdateManyMutationInput, OrderUncheckedUpdateManyWithoutBasketOrderInput>
   }
 
+  export type PortfolioCreateWithoutRiskLimitInput = {
+    id?: string
+    name: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client: ClientCreateNestedOneWithoutPortfoliosInput
+    holdings?: HoldingCreateNestedManyWithoutPortfolioInput
+    orders?: OrderCreateNestedManyWithoutPortfolioInput
+  }
+
+  export type PortfolioUncheckedCreateWithoutRiskLimitInput = {
+    id?: string
+    name: string
+    clientId: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
+    orders?: OrderUncheckedCreateNestedManyWithoutPortfolioInput
+  }
+
+  export type PortfolioCreateOrConnectWithoutRiskLimitInput = {
+    where: PortfolioWhereUniqueInput
+    create: XOR<PortfolioCreateWithoutRiskLimitInput, PortfolioUncheckedCreateWithoutRiskLimitInput>
+  }
+
+  export type PortfolioUpsertWithoutRiskLimitInput = {
+    update: XOR<PortfolioUpdateWithoutRiskLimitInput, PortfolioUncheckedUpdateWithoutRiskLimitInput>
+    create: XOR<PortfolioCreateWithoutRiskLimitInput, PortfolioUncheckedCreateWithoutRiskLimitInput>
+    where?: PortfolioWhereInput
+  }
+
+  export type PortfolioUpdateToOneWithWhereWithoutRiskLimitInput = {
+    where?: PortfolioWhereInput
+    data: XOR<PortfolioUpdateWithoutRiskLimitInput, PortfolioUncheckedUpdateWithoutRiskLimitInput>
+  }
+
+  export type PortfolioUpdateWithoutRiskLimitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
+    holdings?: HoldingUpdateManyWithoutPortfolioNestedInput
+    orders?: OrderUpdateManyWithoutPortfolioNestedInput
+  }
+
+  export type PortfolioUncheckedUpdateWithoutRiskLimitInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    clientId?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
+    orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
+  }
+
   export type UserCreateManyFirmInput = {
     id?: string
     name: string
@@ -16602,6 +20401,31 @@ export namespace Prisma {
     email?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type BasketOrderCreateManyFirmInput = {
+    id?: string
+    name?: string | null
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    totalQuantity: number
+    allocationMethod: $Enums.AllocationMethod
+    status?: $Enums.BasketOrderStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type AuditLogCreateManyFirmInput = {
+    id?: string
+    action: $Enums.AuditAction
+    entityType: string
+    entityId: string
+    message?: string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: Date | string
   }
 
   export type UserUpdateWithoutFirmInput = {
@@ -16662,6 +20486,83 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BasketOrderUpdateWithoutFirmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUpdateManyWithoutBasketOrderNestedInput
+  }
+
+  export type BasketOrderUncheckedUpdateWithoutFirmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutBasketOrderNestedInput
+  }
+
+  export type BasketOrderUncheckedUpdateManyWithoutFirmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    totalQuantity?: IntFieldUpdateOperationsInput | number
+    allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
+    status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUpdateWithoutFirmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateWithoutFirmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type AuditLogUncheckedUpdateManyWithoutFirmInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    action?: EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
+    entityType?: StringFieldUpdateOperationsInput | string
+    entityId?: StringFieldUpdateOperationsInput | string
+    message?: NullableStringFieldUpdateOperationsInput | string | null
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type BrokerAccountCreateManyClientInput = {
     id?: string
     broker: string
@@ -16674,6 +20575,7 @@ export namespace Prisma {
   export type PortfolioCreateManyClientInput = {
     id?: string
     name: string
+    cashBalance?: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -16710,24 +20612,29 @@ export namespace Prisma {
   export type PortfolioUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUpdateManyWithoutPortfolioNestedInput
     orders?: OrderUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUpdateOneWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
     orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
+    riskLimit?: RiskLimitUncheckedUpdateOneWithoutPortfolioNestedInput
   }
 
   export type PortfolioUncheckedUpdateManyWithoutClientInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
+    cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -16747,6 +20654,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     portfolioId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16766,6 +20676,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -16787,6 +20700,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     portfolioId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16807,6 +20723,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     portfolioId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16837,6 +20756,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -16886,6 +20808,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -16907,6 +20832,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16927,6 +20855,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -16946,6 +20877,9 @@ export namespace Prisma {
     averageFillPrice?: Decimal | DecimalJsLike | number | string | null
     realizedPnl?: Decimal | DecimalJsLike | number | string | null
     filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
     portfolioId: string
     brokerAccountId: string
     createdAt?: Date | string
@@ -16966,6 +20900,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
@@ -16986,6 +20923,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -17006,6 +20946,9 @@ export namespace Prisma {
     averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string

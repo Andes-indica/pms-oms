@@ -1,12 +1,24 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 import { prisma } from "@pms-oms/db";
+import type {
+  AuthenticatedRequest,
+} from "../middleware/auth.middleware";
 
 export async function getClients(
-  _req: Request,
+  req: AuthenticatedRequest,
   res: Response,
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: "Authentication required",
+      });
+    }
+
     const clients = await prisma.client.findMany({
+      where: {
+        firmId: req.user.firmId,
+      },
       include: {
         brokerAccounts: true,
       },
@@ -15,28 +27,37 @@ export async function getClients(
       },
     });
 
-    res.status(200).json({
+    return res.status(200).json({
       data: clients,
     });
   } catch (error) {
     console.error("Failed to fetch clients:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to fetch clients",
     });
   }
 }
 
 export async function getClientById(
-  req: Request<{id:string}>,
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
   res: Response,
 ) {
   try {
-    const { id } = req.params;
+    if (!req.user) {
+      return res.status(401).json({
+        error: "Authentication required",
+      });
+    }
 
-    const client = await prisma.client.findUnique({
+    const client = await prisma.client.findFirst({
       where: {
-        id,
+        id: req.params.id,
+        firmId: req.user.firmId,
       },
       include: {
         brokerAccounts: true,
@@ -66,15 +87,22 @@ export async function getClientById(
   }
 }
 export async function getClientPortfolioSummary(
-  req: Request<{ id: string }>,
+  req: AuthenticatedRequest & { params: { id: string } },
   res: Response,
 ) {
   try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: "Authentication required",
+      });
+    }
+
     const { id } = req.params;
 
-    const client = await prisma.client.findUnique({
+    const client = await prisma.client.findFirst({
       where: {
         id,
+        firmId: req.user.firmId,
       },
       include: {
         portfolios: {

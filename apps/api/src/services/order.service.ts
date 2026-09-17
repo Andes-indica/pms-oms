@@ -2,6 +2,8 @@ import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
 
 type CreateOrderInput = {
+  firmId: string;
+
   portfolioId: string;
   brokerAccountId: string;
   symbol: string;
@@ -14,6 +16,7 @@ type CreateOrderInput = {
 
 export async function createOrderService(input: CreateOrderInput) {
   const {
+    firmId,
     portfolioId,
     brokerAccountId,
     symbol,
@@ -24,16 +27,21 @@ export async function createOrderService(input: CreateOrderInput) {
     limitPrice,
   } = input;
 
-  const portfolio = await prisma.portfolio.findUnique({
-    where: { id: portfolioId },
+  const portfolio = await prisma.portfolio.findFirst({
+    where: {
+       id: portfolioId,
+        client: {
+          firmId,
+        },
+      },
   });
 
   if (!portfolio) {
     throw new Error("PORTFOLIO_NOT_FOUND");
   }
 
-  const brokerAccount = await prisma.brokerAccount.findUnique({
-    where: { id: brokerAccountId },
+  const brokerAccount = await prisma.brokerAccount.findFirst({
+    where: { id: brokerAccountId, client:{ firmId, }, },
   });
 
   if (!brokerAccount) {
@@ -44,36 +52,39 @@ export async function createOrderService(input: CreateOrderInput) {
     throw new Error("BROKER_ACCOUNT_MISMATCH");
   }
 
-const order = await prisma.order.create({
-  data: {
-    portfolioId,
-    brokerAccountId,
-    symbol: symbol.toUpperCase(),
-    exchange: exchange.toUpperCase(),
-    side,
-    orderType,
-    quantity,
-    limitPrice:
-      orderType === "LIMIT"
-        ? limitPrice
-        : null,
-    status: "PENDING",
-  },
-});
+  return prisma.$transaction(async (tx) => {
+    const order = await tx.order.create({
+      data: {
+        portfolioId,
+        brokerAccountId,
+        symbol: symbol.toUpperCase(),
+        exchange: exchange.toUpperCase(),
+        side,
+        orderType,
+        quantity,
+        limitPrice:
+          orderType === "LIMIT"
+            ? limitPrice
+            : null,
+        status: "PENDING",
+      },
+    });
 
-await createAuditLog({
-  action: "ORDER_CREATED",
-  entityType: "ORDER",
-  entityId: order.id,
-  message: "Order created",
-  metadata: {
-    portfolioId,
-    brokerAccountId,
-    symbol: order.symbol,
-    side,
-    quantity,
-  },
-});
+    await createAuditLog({
+      firmId,
+      action: "ORDER_CREATED",
+      entityType: "ORDER",
+      entityId: order.id,
+      message: "Order created",
+      metadata: {
+        portfolioId,
+        brokerAccountId,
+        symbol: order.symbol,
+        side,
+        quantity,
+      },
+    }, tx);
 
-return order;
+    return order;
+  });
 }

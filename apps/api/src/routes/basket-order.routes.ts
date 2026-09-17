@@ -7,16 +7,49 @@ import {
   syncBasketOrder,
 } from "../controllers/basket-order.controller";
 
+import {
+  requireAuth,
+} from "../middleware/auth.middleware";
+
+import {
+  requireRole,
+} from "../middleware/role.middleware";
+
 const router = Router();
 
-router.get("/", getBasketOrders);
+router.use(requireAuth);
 
-router.post("/", createBasketOrder);
+router.get(
+  "/",
+  getBasketOrders,
+);
+
+router.post(
+  "/",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  createBasketOrder,
+);
 
 router.post(
   "/:id/execute",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
   executeBasketOrder,
 );
 
-router.post("/:id/sync",syncBasketOrder);
+router.post(
+  "/:id/sync",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+  syncBasketOrder,
+);
+
 export default router;

@@ -21,8 +21,10 @@ model Firm {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users   User[]
-  clients Client[]
+  users        User[]
+  clients      Client[]
+  basketOrders BasketOrder[]
+  auditLogs    AuditLog[]
 }
 
 model User {
@@ -102,7 +104,7 @@ enum AuditAction {
 
   BASKET_CREATED
   BASKET_SUBMITTED
-  BASKET_CAMCELLED
+  BASKET_CANCELLED
 }
 
 model Portfolio {
@@ -112,8 +114,12 @@ model Portfolio {
   clientId String
   client   Client @relation(fields: [clientId], references: [id])
 
+  cashBalance Decimal @default(0) @db.Decimal(18, 4)
+
   holdings Holding[]
   orders   Order[]
+
+  riskLimit RiskLimit?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -151,7 +157,7 @@ model Order {
 
   limitPrice Decimal? @db.Decimal(18, 4)
 
-  brokerOrderId String?
+  brokerOrderId String?      @unique
   basketOrderId String?
   basketOrder   BasketOrder? @relation(fields: [basketOrderId], references: [id])
 
@@ -159,6 +165,10 @@ model Order {
   averageFillPrice Decimal?  @db.Decimal(18, 4)
   realizedPnl      Decimal?  @db.Decimal(18, 4)
   filledAt         DateTime?
+
+  estimatedPrice   Decimal? @db.Decimal(18, 4)
+  reservedCash     Decimal  @default(0) @db.Decimal(18, 4)
+  reservedQuantity Int      @default(0)
 
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
@@ -173,6 +183,9 @@ model Order {
 model AuditLog {
   id String @id @default(cuid())
 
+  firmId String
+  firm   Firm   @relation(fields: [firmId], references: [id])
+
   action AuditAction
 
   entityType String
@@ -183,6 +196,8 @@ model AuditLog {
   metadata Json?
 
   createdAt DateTime @default(now())
+
+  @@index([firmId])
 }
 
 enum AllocationMethod {
@@ -220,8 +235,42 @@ model BasketOrder {
 
   status BasketOrderStatus @default(PENDING)
 
+  firmId String
+  firm   Firm   @relation(fields: [firmId], references: [id])
+
   orders Order[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([firmId])
+}
+
+model RiskLimit {
+  id String @id @default(cuid())
+
+  portfolioId String    @unique
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+
+  maxOrderQuantity Int?
+  maxOrderValue    Decimal? @db.Decimal(18, 4)
+
+  maxPositionQuantity Int?
+  maxPositionValue    Decimal? @db.Decimal(18, 4)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model RestrictedSecurity {
+  id String @id @default(cuid())
+
+  symbol   String
+  exchange String
+
+  reason String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([symbol, exchange])
 }

@@ -1,9 +1,18 @@
 import { prisma } from "@pms-oms/db";
 
-export async function runPreTradeChecks(orderId: string) {
-  const order = await prisma.order.findUnique({
+export async function runPreTradeChecks(
+  orderId: string,
+  firmId: string,
+  database: Pick<typeof prisma, "order" | "holding"> = prisma,
+) {
+  const order = await database.order.findFirst({
     where: {
       id: orderId,
+      portfolio: {
+        client: {
+          firmId,
+        },
+      },
     },
     include: {
       portfolio: true,
@@ -28,7 +37,7 @@ export async function runPreTradeChecks(orderId: string) {
   }
 
   if (order.side === "SELL") {
-    const holding = await prisma.holding.findUnique({
+    const holding = await database.holding.findUnique({
       where: {
         portfolioId_symbol_exchange: {
           portfolioId: order.portfolioId,
