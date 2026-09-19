@@ -28,7 +28,7 @@ async function main() {
       name: "Demo Manager",
       email: "manager@alphapms.com",
       passwordHash: managerPasswordHash,
-      role: "PORTFOLIO_MANAGER",
+      role: "ADMIN",
       firmId: firm.id,
     },
   });
