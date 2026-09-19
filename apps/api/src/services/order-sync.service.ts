@@ -1,6 +1,7 @@
 import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
 import { mockBroker } from "../brokers/broker-registry";
+import type { BrokerOrderStatus } from "@pms-oms/broker";
 
 export async function syncOrderService(
   orderId: string,
@@ -24,7 +25,20 @@ export async function syncOrderService(
   if (["FILLED", "CANCELLED", "REJECTED"].includes(order.status)) {
     return order;
   }
-
+  if(!mockBroker.hasOrder(order.brokerOrderId,)){
+    mockBroker.restoreOrder(order.brokerOrderId,
+      {
+        clientOrderId:order.id,
+        symbol:order.symbol,
+        exchange:order.exchange,
+        side:order.side,
+        orderType:order.orderType,
+        quantity:order.quantity,
+        limitPrice:order.limitPrice?Number(order.limitPrice,):undefined,
+      },
+      order.status as BrokerOrderStatus,
+    );
+  }
   const brokerUpdate = await mockBroker.getOrderStatus(order.brokerOrderId);
 
   return prisma.$transaction(async (tx) => {

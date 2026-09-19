@@ -17,6 +17,27 @@ export class MockBroker implements BrokerAdapter {
   private orders = new Map<string, StoredMockOrder>();
   private brokerOrderIdsByClientOrderId = new Map<string, string>();
 
+  hasOrder(brokerOrderId: string): boolean {
+    return this.orders.has(
+      brokerOrderId,
+    );
+  }
+  restoreOrder(
+    brokerOrderId:string,
+    request:BrokerOrderRequest,
+    status:BrokerOrderStatus="SUBMITTED",
+  ){
+    this.orders.set(
+      brokerOrderId,{
+        request,
+        status,
+      }
+    );
+    this.brokerOrderIdsByClientOrderId.set(
+      request.clientOrderId,brokerOrderId,
+    );
+  }
+
   async placeOrder(
     order: BrokerOrderRequest,
   ): Promise<BrokerOrderResult> {

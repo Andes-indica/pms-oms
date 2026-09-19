@@ -70,10 +70,8 @@ export function CreateBasketOrderForm({
   const [limitPrice, setLimitPrice] =
     useState("");
 
-  const [
-    totalQuantity,
-    setTotalQuantity,
-  ] = useState(1);
+  const [totalQuantity, setTotalQuantity] =
+    useState(1);
 
   const [
     allocationMethod,
@@ -209,25 +207,21 @@ export function CreateBasketOrderForm({
       setError("");
       setSuccess("");
 
-      if (!symbol) {
+      if (!symbol.trim()) {
         setError(
           "Symbol is required",
         );
         return;
       }
 
-      if (
-        totalQuantity <= 0
-      ) {
+      if (totalQuantity <= 0) {
         setError(
           "Total quantity must be greater than zero",
         );
         return;
       }
 
-      if (
-        targets.length === 0
-      ) {
+      if (targets.length === 0) {
         setError(
           "Select at least one client",
         );
@@ -316,7 +310,7 @@ export function CreateBasketOrderForm({
       );
 
       setSuccess(
-        "Basket order created successfully",
+        "Basket created successfully",
       );
 
       setName("");
@@ -342,15 +336,15 @@ export function CreateBasketOrderForm({
       onSubmit={handleSubmit}
       className="rounded-xl border bg-white p-5"
     >
-      <h3 className="text-lg font-semibold">
-        Create Basket Order
-      </h3>
+      <div>
+        <h3 className="text-lg font-semibold">
+          Create Basket Order
+        </h3>
 
-      <p className="mt-1 text-sm text-slate-500">
-        Create one trade instruction
-        across multiple client
-        portfolios.
-      </p>
+        <p className="mt-1 text-sm text-slate-500">
+          Create one trade across multiple client portfolios.
+        </p>
+      </div>
 
       <div className="mt-5 grid gap-4 md:grid-cols-2">
         <Field label="Basket Name">
@@ -517,7 +511,7 @@ export function CreateBasketOrderForm({
 
       <div className="mt-6">
         <h4 className="font-medium">
-          Select Clients
+          Clients
         </h4>
 
         <div className="mt-3 grid gap-3 md:grid-cols-2">
@@ -564,7 +558,8 @@ export function CreateBasketOrderForm({
                         {
                           client
                             .portfolios?.[0]
-                            ?.name
+                            ?.name ??
+                          "No portfolio"
                         }
                       </p>
                     </div>

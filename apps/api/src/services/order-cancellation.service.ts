@@ -38,6 +38,43 @@ export async function cancelOrderService(
       throw new Error("ORDER_SUBMISSION_IN_PROGRESS");
     }
 
+    if (
+      !mockBroker.hasOrder(
+        order.brokerOrderId,
+      )
+    ) {
+      mockBroker.restoreOrder(
+        order.brokerOrderId,
+        {
+          clientOrderId:
+            order.id,
+
+          symbol:
+            order.symbol,
+
+          exchange:
+            order.exchange,
+
+          side:
+            order.side,
+
+          orderType:
+            order.orderType,
+
+          quantity:
+            order.quantity,
+
+          limitPrice:
+            order.limitPrice
+              ? Number(
+                order.limitPrice,
+              )
+              : undefined,
+        },
+
+        order.status as Parameters<typeof mockBroker.restoreOrder>[2],
+      );
+    }
     try {
       await mockBroker.cancelOrder(order.brokerOrderId);
     } catch (error) {
