@@ -216,26 +216,19 @@ enum BasketOrderStatus {
 }
 
 model BasketOrder {
-  id String @id @default(cuid())
-
-  name String?
-
-  symbol   String
-  exchange String
-
-  side      OrderSide
-  orderType OrderType
-
-  limitPrice Decimal? @db.Decimal(18, 4)
-
-  totalQuantity Int
-
+  id               String            @id @default(cuid())
+  name             String?
+  symbol           String
+  exchange         String
+  side             OrderSide
+  orderType        OrderType
+  limitPrice       Decimal?          @db.Decimal(18, 4)
+  totalQuantity    Int
   allocationMethod AllocationMethod
-
-  status BasketOrderStatus @default(PENDING)
+  status           BasketOrderStatus @default(PENDING)
 
   firmId String
-  firm   Firm @relation(fields: [firmId], references: [id])
+  firm   Firm   @relation(fields: [firmId], references: [id])
 
   orders Order[]
 

@@ -1,81 +1,106 @@
+import { useEffect, useState } from "react";
+import { apiFetch } from "../lib/api";
+
+type ClientResponse = {
+  data: unknown[];
+};
+
+type Order = {
+  status: string;
+  realizedPnl?: string | null;
+};
+
+type OrderResponse = {
+  data: Order[];
+};
+
 export function DashboardPage() {
-  const rawUser =
-    localStorage.getItem("user");
+  const [clientCount, setClientCount] =
+    useState(0);
 
-  const user = rawUser
-    ? JSON.parse(rawUser)
-    : null;
+  const [orders, setOrders] =
+    useState<Order[]>([]);
 
-  function logout() {
-    localStorage.removeItem(
-      "accessToken",
+  useEffect(() => {
+    async function loadDashboard() {
+      const [
+        clientsResponse,
+        ordersResponse,
+      ] = await Promise.all([
+        apiFetch<ClientResponse>(
+          "/api/clients",
+        ),
+
+        apiFetch<OrderResponse>(
+          "/api/orders",
+        ),
+      ]);
+
+      setClientCount(
+        clientsResponse.data.length,
+      );
+
+      setOrders(
+        ordersResponse.data,
+      );
+    }
+
+    loadDashboard();
+  }, []);
+
+  const openOrders =
+    orders.filter((order) =>
+      [
+        "PENDING",
+        "SUBMITTED",
+        "OPEN",
+        "PARTIALLY_FILLED",
+      ].includes(order.status),
+    ).length;
+
+  const filledOrders =
+    orders.filter(
+      (order) =>
+        order.status === "FILLED",
+    ).length;
+
+  const realizedPnl =
+    orders.reduce(
+      (total, order) =>
+        total +
+        Number(order.realizedPnl ?? 0),
+      0,
     );
-
-    localStorage.removeItem(
-      "user",
-    );
-
-    window.location.href = "/";
-  }
 
   return (
-    <div className="min-h-screen bg-slate-100">
-      <header className="border-b bg-white">
-        <div className="flex h-16 items-center justify-between px-8">
-          <div>
-            <h1 className="font-bold text-slate-900">
-              PMS-OMS
-            </h1>
-          </div>
+    <div>
+      <h2 className="text-2xl font-semibold text-slate-900">
+        Dashboard
+      </h2>
 
-          <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm font-medium">
-                {user?.name}
-              </p>
+      <div className="mt-6 grid gap-4 md:grid-cols-4">
+        <DashboardCard
+          label="Clients"
+          value={String(clientCount)}
+        />
 
-              <p className="text-xs text-slate-500">
-                {user?.role}
-              </p>
-            </div>
+        <DashboardCard
+          label="Open Orders"
+          value={String(openOrders)}
+        />
 
-            <button
-              onClick={logout}
-              className="rounded-md border px-3 py-1.5 text-sm"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
-      </header>
+        <DashboardCard
+          label="Filled Orders"
+          value={String(filledOrders)}
+        />
 
-      <main className="p-8">
-        <h2 className="text-2xl font-semibold text-slate-900">
-          Dashboard
-        </h2>
-
-        <div className="mt-6 grid gap-4 md:grid-cols-4">
-          <DashboardCard
-            label="Clients"
-            value="—"
-          />
-
-          <DashboardCard
-            label="Open Orders"
-            value="—"
-          />
-
-          <DashboardCard
-            label="Today's Fills"
-            value="—"
-          />
-
-          <DashboardCard
-            label="Realized P&L"
-            value="—"
-          />
-        </div>
-      </main>
+        <DashboardCard
+          label="Realized P&L"
+          value={`₹${realizedPnl.toFixed(
+            2,
+          )}`}
+        />
+      </div>
     </div>
   );
 }

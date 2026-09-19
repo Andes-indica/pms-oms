@@ -94,6 +94,7 @@ export async function getBasketOrders(
                   client: true,
                 },
               },
+              brokerAccount:true,
             },
           },
         },

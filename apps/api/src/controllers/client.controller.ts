@@ -21,7 +21,12 @@ export async function getClients(
       },
       include: {
         brokerAccounts: true,
+      portfolios:{
+        include:{
+          holdings:true,
+        },
       },
+    },
       orderBy: {
         createdAt: "desc",
       },
@@ -158,6 +163,122 @@ export async function getClientPortfolioSummary(
 
     return res.status(500).json({
       error: "Failed to fetch portfolio summary",
+    });
+  }
+}
+
+export async function getClientOverview(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error: "Authentication required",
+      });
+    }
+
+    const client =
+      await prisma.client.findFirst({
+        where: {
+          id: req.params.id,
+          firmId: req.user.firmId,
+        },
+
+        include: {
+          brokerAccounts: true,
+
+          portfolios: {
+            include: {
+              holdings: true,
+
+              riskLimit: true,
+
+              orders: {
+                orderBy: {
+                  createdAt: "desc",
+                },
+
+                take: 10,
+              },
+            },
+          },
+        },
+      });
+
+    if (!client) {
+      return res.status(404).json({
+        error: "Client not found",
+      });
+    }
+
+    const portfolios =
+      client.portfolios.map(
+        (portfolio) => {
+          const realizedPnl =
+            portfolio.orders.reduce(
+              (total, order) =>
+                total +
+                Number(
+                  order.realizedPnl ??
+                    0,
+                ),
+              0,
+            );
+
+          return {
+            ...portfolio,
+            realizedPnl,
+          };
+        },
+      );
+
+    const totalCash =
+      portfolios.reduce(
+        (total, portfolio) =>
+          total +
+          Number(
+            portfolio.cashBalance,
+          ),
+        0,
+      );
+
+    const totalRealizedPnl =
+      portfolios.reduce(
+        (total, portfolio) =>
+          total +
+          portfolio.realizedPnl,
+        0,
+      );
+
+    return res.status(200).json({
+      data: {
+        id: client.id,
+        name: client.name,
+        email: client.email,
+
+        brokerAccounts:
+          client.brokerAccounts,
+
+        totalCash,
+        totalRealizedPnl,
+
+        portfolios,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Failed to fetch client overview:",
+      error,
+    );
+
+    return res.status(500).json({
+      error:
+        "Failed to fetch client overview",
     });
   }
 }

@@ -1,22 +1,63 @@
 import {
-  DashboardPage,
-} from "./pages/DashboardPage";
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+} from "react-router-dom";
 
+import { AppLayout } from "./components/AppLayout";
+import { LoginPage } from "./pages/LoginPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { ClientsPage } from "./pages/ClientsPage";
+import { OrdersPage } from "./pages/OrdersPage";
+import { BasketOrdersPage } from "./pages/BasketOrdersPage";
 import {
-  LoginPage,
-} from "./pages/LoginPage";
+  ClientDetailPage,
+} from "./pages/ClientDetailPage";
 
 function App() {
-  const token =
-    localStorage.getItem(
-      "accessToken",
-    );
+  const token = localStorage.getItem("accessToken");
 
   if (!token) {
     return <LoginPage />;
   }
 
-  return <DashboardPage />;
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route
+            path="/"
+            element={<DashboardPage />}
+          />
+
+          <Route
+            path="/clients"
+            element={<ClientsPage />}
+          />
+
+          <Route
+            path="/orders"
+            element={<OrdersPage />}
+          />
+
+          <Route
+            path="/basket-orders"
+            element={<BasketOrdersPage />}
+          />
+
+          <Route
+            path="*"
+            element={<Navigate to="/" replace />}
+          />
+          <Route
+            path="/clients/:id"
+            element={<ClientDetailPage />}
+          />
+        </Route>
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
 export default App;
