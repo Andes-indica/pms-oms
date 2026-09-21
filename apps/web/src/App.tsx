@@ -14,6 +14,9 @@ import { BasketOrdersPage } from "./pages/BasketOrdersPage";
 import {
   ClientDetailPage,
 } from "./pages/ClientDetailPage";
+import {
+  UsersPage,
+} from "./pages/UsersPage";
 
 function App() {
   const token = localStorage.getItem("accessToken");
@@ -53,6 +56,10 @@ function App() {
           <Route
             path="/clients/:id"
             element={<ClientDetailPage />}
+          />
+          <Route
+            path="/users"
+            element={<UsersPage />}
           />
         </Route>
       </Routes>

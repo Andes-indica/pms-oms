@@ -1,8 +1,15 @@
 import { NavLink, Outlet } from "react-router-dom";
 
 export function AppLayout() {
-  const rawUser = localStorage.getItem("user");
-  const user = rawUser ? JSON.parse(rawUser) : null;
+  // const rawUser = localStorage.getItem("user");
+  // const user = rawUser ? JSON.parse(rawUser) : null;
+  const storedUser =
+  localStorage.getItem("user");
+
+const user =
+  storedUser
+    ? JSON.parse(storedUser)
+    : null;
 
   function logout() {
     localStorage.removeItem("accessToken");
@@ -19,7 +26,7 @@ export function AppLayout() {
     }`;
 
   return (
-    <div className="flex min-h-screen bg-slate-100">
+    <div className="flex min-h-screen bg-slate-10s0">
       <aside className="w-64 border-r bg-white p-5">
         <h1 className="text-xl font-bold text-slate-900">
           PMS-OMS
@@ -41,6 +48,13 @@ export function AppLayout() {
           <NavLink to="/basket-orders" className={navClass}>
             Basket Orders
           </NavLink>
+          {user?.role === "ADMIN" && (
+            <NavLink
+            to="/users" 
+            className={navClass}>
+              Users
+            </NavLink>
+          )}
         </nav>
       </aside>
 
