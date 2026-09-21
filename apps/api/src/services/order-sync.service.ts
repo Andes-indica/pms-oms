@@ -2,6 +2,7 @@ import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
 import { mockBroker } from "../brokers/broker-registry";
 import type { BrokerOrderStatus } from "@pms-oms/broker";
+import { ensureMockBrokerOrder } from "../brokers/ensure-mock-broker-order";
 
 export async function syncOrderService(
   orderId: string,
@@ -39,6 +40,8 @@ export async function syncOrderService(
       order.status as BrokerOrderStatus,
     );
   }
+    ensureMockBrokerOrder(order);
+
   const brokerUpdate = await mockBroker.getOrderStatus(order.brokerOrderId);
 
   return prisma.$transaction(async (tx) => {

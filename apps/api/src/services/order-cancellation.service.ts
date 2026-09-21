@@ -1,6 +1,7 @@
 import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
 import { mockBroker } from "../brokers/broker-registry";
+import { ensureMockBrokerOrder } from "../brokers/ensure-mock-broker-order";
 
 export async function cancelOrderService(
   orderId: string,
@@ -75,6 +76,7 @@ export async function cancelOrderService(
         order.status as Parameters<typeof mockBroker.restoreOrder>[2],
       );
     }
+    ensureMockBrokerOrder(order);
     try {
       await mockBroker.cancelOrder(order.brokerOrderId);
     } catch (error) {

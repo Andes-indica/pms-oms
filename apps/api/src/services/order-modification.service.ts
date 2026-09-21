@@ -18,6 +18,7 @@ export type ModifyOrderInput = {
     quantity?: number;
     limitPrice?: number;
 };
+import { ensureMockBrokerOrder } from "../brokers/ensure-mock-broker-order";
 
 const ACTIVE_STATUSES = [
     "PENDING",
@@ -161,10 +162,7 @@ export async function modifyOrderService(
 
                 status: {
                     in: [
-                        "PENDING",
-                        "SUBMITTED",
-                        "OPEN",
-                        "PARTIALLY_FILLED",
+                        ...ACTIVE_STATUSES
                     ],
                 },
             },
@@ -272,6 +270,7 @@ export async function modifyOrderService(
      * Broker modification happens only
      * after local validation succeeds.
      */
+    ensureMockBrokerOrder(order);
     await mockBroker.modifyOrder(
         order.brokerOrderId,
         {
