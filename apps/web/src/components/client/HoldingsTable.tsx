@@ -26,7 +26,7 @@ export function HoldingsTable({
           No holdings.
         </p>
       ) : (
-        <table className="w-full min-w-[900px] text-left text-sm">
+        <table className="w-full min-w-900px text-left text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr>
               <th className="px-4 py-3">

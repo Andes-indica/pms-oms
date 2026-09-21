@@ -1,116 +1,196 @@
-import { useEffect, useState } from "react";
-import { apiFetch } from "../lib/api";
+import {
+  useEffect,
+  useState,
+} from "react";
 
-type ClientResponse = {
-  data: unknown[];
+import {
+  apiFetch,
+} from "../lib/api";
+
+type DashboardData = {
+  totalAum: number;
+
+  totalCash: number;
+
+  totalMarketValue: number;
+
+  totalUnrealizedPnl: number;
+
+  totalRealizedPnl: number;
+
+  clients: number;
+
+  portfolios: number;
+
+  activeOrders: number;
+
+  filledOrders: number;
+
+  totalOrders: number;
 };
 
-type Order = {
-  status: string;
-  realizedPnl?: string | null;
-};
-
-type OrderResponse = {
-  data: Order[];
+type DashboardResponse = {
+  data: DashboardData;
 };
 
 export function DashboardPage() {
-  const [clientCount, setClientCount] =
-    useState(0);
+  const [data, setData] =
+    useState<DashboardData | null>(
+      null,
+    );
 
-  const [orders, setOrders] =
-    useState<Order[]>([]);
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   useEffect(() => {
     async function loadDashboard() {
-      const [
-        clientsResponse,
-        ordersResponse,
-      ] = await Promise.all([
-        apiFetch<ClientResponse>(
-          "/api/clients",
-        ),
+      try {
+        const response =
+          await apiFetch<DashboardResponse>(
+            "/api/dashboard",
+          );
 
-        apiFetch<OrderResponse>(
-          "/api/orders",
-        ),
-      ]);
-
-      setClientCount(
-        clientsResponse.data.length,
-      );
-
-      setOrders(
-        ordersResponse.data,
-      );
+        setData(response.data);
+      } catch (error) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Failed to load dashboard",
+        );
+      } finally {
+        setLoading(false);
+      }
     }
 
     loadDashboard();
   }, []);
 
-  const openOrders =
-    orders.filter((order) =>
-      [
-        "PENDING",
-        "SUBMITTED",
-        "OPEN",
-        "PARTIALLY_FILLED",
-      ].includes(order.status),
-    ).length;
-
-  const filledOrders =
-    orders.filter(
-      (order) =>
-        order.status === "FILLED",
-    ).length;
-
-  const realizedPnl =
-    orders.reduce(
-      (total, order) =>
-        total +
-        Number(order.realizedPnl ?? 0),
-      0,
+  if (loading) {
+    return (
+      <p className="text-slate-500">
+        Loading dashboard...
+      </p>
     );
+  }
+
+  if (error) {
+    return (
+      <p className="text-red-600">
+        {error}
+      </p>
+    );
+  }
+
+  if (!data) {
+    return null;
+  }
 
   return (
-    <div>
-      <h2 className="text-2xl font-semibold text-slate-900">
-        Dashboard
-      </h2>
+    <div className="space-y-8">
+      <div>
+        <h2 className="text-2xl font-semibold text-slate-900">
+          Dashboard
+        </h2>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-4">
-        <DashboardCard
-          label="Clients"
-          value={String(clientCount)}
+        <p className="mt-1 text-sm text-slate-500">
+          Firm-wide portfolio and order overview.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <SummaryCard
+          label="Total AUM"
+          value={formatCurrency(
+            data.totalAum,
+          )}
         />
 
-        <DashboardCard
-          label="Open Orders"
-          value={String(openOrders)}
+        <SummaryCard
+          label="Cash"
+          value={formatCurrency(
+            data.totalCash,
+          )}
         />
 
-        <DashboardCard
-          label="Filled Orders"
-          value={String(filledOrders)}
+        <SummaryCard
+          label="Market Value"
+          value={formatCurrency(
+            data.totalMarketValue,
+          )}
         />
 
-        <DashboardCard
-          label="Realized P&L"
-          value={`₹${realizedPnl.toFixed(
-            2,
-          )}`}
+        <SummaryCard
+          label="Unrealized P&L"
+          value={formatCurrency(
+            data.totalUnrealizedPnl,
+          )}
+          positive={
+            data.totalUnrealizedPnl >=
+            0
+          }
         />
       </div>
+
+      <div className="grid gap-4 md:grid-cols-4">
+        <SummaryCard
+          label="Realized P&L"
+          value={formatCurrency(
+            data.totalRealizedPnl,
+          )}
+          positive={
+            data.totalRealizedPnl >=
+            0
+          }
+        />
+
+        <SummaryCard
+          label="Clients"
+          value={String(
+            data.clients,
+          )}
+        />
+
+        <SummaryCard
+          label="Portfolios"
+          value={String(
+            data.portfolios,
+          )}
+        />
+
+        <SummaryCard
+          label="Active Orders"
+          value={String(
+            data.activeOrders,
+          )}
+        />
+      </div>
+
+      <OrderSummary
+        activeOrders={
+          data.activeOrders
+        }
+        filledOrders={
+          data.filledOrders
+        }
+        totalOrders={
+          data.totalOrders
+        }
+      />
     </div>
   );
 }
 
-function DashboardCard({
+function SummaryCard({
   label,
   value,
+  positive,
 }: {
   label: string;
   value: string;
+  positive?: boolean;
 }) {
   return (
     <div className="rounded-xl border bg-white p-5">
@@ -118,9 +198,85 @@ function DashboardCard({
         {label}
       </p>
 
-      <p className="mt-2 text-2xl font-semibold text-slate-900">
+      <p
+        className={`mt-2 text-2xl font-semibold ${
+          positive === undefined
+            ? "text-slate-900"
+            : positive
+              ? "text-green-700"
+              : "text-red-600"
+        }`}
+      >
         {value}
       </p>
     </div>
   );
+}
+
+function OrderSummary({
+  activeOrders,
+  filledOrders,
+  totalOrders,
+}: {
+  activeOrders: number;
+  filledOrders: number;
+  totalOrders: number;
+}) {
+  return (
+    <div className="rounded-xl border bg-white p-5">
+      <h3 className="font-semibold">
+        Order Activity
+      </h3>
+
+      <div className="mt-5 grid gap-4 md:grid-cols-3">
+        <Metric
+          label="Total Orders"
+          value={totalOrders}
+        />
+
+        <Metric
+          label="Active Orders"
+          value={activeOrders}
+        />
+
+        <Metric
+          label="Filled Orders"
+          value={filledOrders}
+        />
+      </div>
+    </div>
+  );
+}
+
+function Metric({
+  label,
+  value,
+}: {
+  label: string;
+  value: number;
+}) {
+  return (
+    <div>
+      <p className="text-sm text-slate-500">
+        {label}
+      </p>
+
+      <p className="mt-1 text-xl font-semibold">
+        {value}
+      </p>
+    </div>
+  );
+}
+
+function formatCurrency(
+  value: number,
+) {
+  return new Intl.NumberFormat(
+    "en-IN",
+    {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 2,
+    },
+  ).format(value);
 }
