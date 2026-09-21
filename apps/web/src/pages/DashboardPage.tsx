@@ -27,10 +27,30 @@ type DashboardData = {
   filledOrders: number;
 
   totalOrders: number;
+
+  clientBreakdown: ClientBreakdown[];
+
+  topHoldings: TopHolding[];
 };
 
 type DashboardResponse = {
   data: DashboardData;
+};
+
+type ClientBreakdown = {
+  clientId: string;
+  clientName: string;
+  cash: number;
+  marketValue: number;
+  aum: number;
+};
+
+type TopHolding = {
+  symbol: string;
+  exchange: string;
+  quantity: number;
+  marketValue: number;
+  allocationPercent: number;
 };
 
 export function DashboardPage() {
@@ -103,16 +123,12 @@ export function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <SummaryCard
           label="Total AUM"
-          value={formatCurrency(
-            data.totalAum,
-          )}
+          value={formatCurrency(data.totalAum)}
         />
 
         <SummaryCard
           label="Cash"
-          value={formatCurrency(
-            data.totalCash,
-          )}
+          value={formatCurrency(data.totalCash)}
         />
 
         <SummaryCard
@@ -128,8 +144,7 @@ export function DashboardPage() {
             data.totalUnrealizedPnl,
           )}
           positive={
-            data.totalUnrealizedPnl >=
-            0
+            data.totalUnrealizedPnl >= 0
           }
         />
       </div>
@@ -141,43 +156,40 @@ export function DashboardPage() {
             data.totalRealizedPnl,
           )}
           positive={
-            data.totalRealizedPnl >=
-            0
+            data.totalRealizedPnl >= 0
           }
         />
 
         <SummaryCard
           label="Clients"
-          value={String(
-            data.clients,
-          )}
+          value={String(data.clients)}
         />
 
         <SummaryCard
           label="Portfolios"
-          value={String(
-            data.portfolios,
-          )}
+          value={String(data.portfolios)}
         />
 
         <SummaryCard
           label="Active Orders"
-          value={String(
-            data.activeOrders,
-          )}
+          value={String(data.activeOrders)}
+        />
+      </div>
+
+      <div className="grid gap-6 xl:grid-cols-2">
+        <TopHoldings
+          holdings={data.topHoldings}
+        />
+
+        <ClientAumBreakdown
+          clients={data.clientBreakdown}
         />
       </div>
 
       <OrderSummary
-        activeOrders={
-          data.activeOrders
-        }
-        filledOrders={
-          data.filledOrders
-        }
-        totalOrders={
-          data.totalOrders
-        }
+        activeOrders={data.activeOrders}
+        filledOrders={data.filledOrders}
+        totalOrders={data.totalOrders}
       />
     </div>
   );
@@ -199,13 +211,12 @@ function SummaryCard({
       </p>
 
       <p
-        className={`mt-2 text-2xl font-semibold ${
-          positive === undefined
-            ? "text-slate-900"
-            : positive
-              ? "text-green-700"
-              : "text-red-600"
-        }`}
+        className={`mt-2 text-2xl font-semibold ${positive === undefined
+          ? "text-slate-900"
+          : positive
+            ? "text-green-700"
+            : "text-red-600"
+          }`}
       >
         {value}
       </p>
@@ -279,4 +290,148 @@ function formatCurrency(
       maximumFractionDigits: 2,
     },
   ).format(value);
+}
+function TopHoldings({
+  holdings,
+}: {
+  holdings: TopHolding[];
+}) {
+  return (
+    <div className="rounded-xl border bg-white">
+      <div className="border-b px-5 py-4">
+        <h3 className="font-semibold">
+          Top Holdings
+        </h3>
+
+        <p className="mt-1 text-sm text-slate-500">
+          Largest positions across managed portfolios.
+        </p>
+      </div>
+
+      <div className="overflow-x-auto">
+        <table className="w-full text-left text-sm">
+          <thead className="bg-slate-50 text-slate-600">
+            <tr>
+              <th className="px-5 py-3">
+                Symbol
+              </th>
+
+              <th className="px-5 py-3">
+                Quantity
+              </th>
+
+              <th className="px-5 py-3">
+                Market Value
+              </th>
+
+              <th className="px-5 py-3">
+                Allocation
+              </th>
+            </tr>
+          </thead>
+
+          <tbody>
+            {holdings.map(
+              (holding) => (
+                <tr
+                  key={`${holding.exchange}-${holding.symbol}`}
+                  className="border-t"
+                >
+                  <td className="px-5 py-4">
+                    <p className="font-medium">
+                      {
+                        holding.symbol
+                      }
+                    </p>
+
+                    <p className="text-xs text-slate-500">
+                      {
+                        holding.exchange
+                      }
+                    </p>
+                  </td>
+
+                  <td className="px-5 py-4">
+                    {
+                      holding.quantity
+                    }
+                  </td>
+
+                  <td className="px-5 py-4">
+                    {formatCurrency(
+                      holding.marketValue,
+                    )}
+                  </td>
+
+                  <td className="px-5 py-4">
+                    {holding.allocationPercent.toFixed(
+                      2,
+                    )}
+                    %
+                  </td>
+                </tr>
+              ),
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+function ClientAumBreakdown({
+  clients,
+}: {
+  clients:
+  ClientBreakdown[];
+}) {
+  return (
+    <div className="rounded-xl border bg-white">
+      <div className="border-b px-5 py-4">
+        <h3 className="font-semibold">
+          Client AUM
+        </h3>
+
+        <p className="mt-1 text-sm text-slate-500">
+          Assets managed per client.
+        </p>
+      </div>
+
+      <div className="divide-y">
+        {clients.map(
+          (client) => (
+            <div
+              key={client.clientId}
+              className="flex items-center justify-between px-5 py-4"
+            >
+              <div>
+                <p className="font-medium">
+                  {
+                    client.clientName
+                  }
+                </p>
+
+                <p className="mt-1 text-xs text-slate-500">
+                  Cash{" "}
+                  {formatCurrency(
+                    client.cash,
+                  )}
+                  {" • "}
+                  Holdings{" "}
+                  {formatCurrency(
+                    client.marketValue,
+                  )}
+                </p>
+              </div>
+
+              <p className="font-semibold">
+                {formatCurrency(
+                  client.aum,
+                )}
+              </p>
+            </div>
+          ),
+        )}
+      </div>
+    </div>
+  );
 }

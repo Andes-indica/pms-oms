@@ -27,8 +27,29 @@ export async function getDashboardService(
   let totalMarketValue = 0;
   let totalUnrealizedPnl = 0;
   let totalRealizedPnl = 0;
-
   let portfolioCount = 0;
+
+  // IMPORTANT:
+  // These must be inside the function,
+  // so every request starts fresh.
+  const clientBreakdown: Array<{
+    clientId: string;
+    clientName: string;
+    cash: number;
+    marketValue: number;
+    aum: number;
+  }> = [];
+
+  const holdingMap =
+    new Map<
+      string,
+      {
+        symbol: string;
+        exchange: string;
+        quantity: number;
+        marketValue: number;
+      }
+    >();
 
   const allOrders =
     clients.flatMap((client) =>
@@ -39,12 +60,19 @@ export async function getDashboardService(
     );
 
   for (const client of clients) {
+    let clientCash = 0;
+    let clientMarketValue = 0;
+
     for (const portfolio of client.portfolios) {
       portfolioCount++;
 
-      totalCash += Number(
-        portfolio.cashBalance,
-      );
+      const cash =
+        Number(
+          portfolio.cashBalance,
+        );
+
+      totalCash += cash;
+      clientCash += cash;
 
       for (const holding of portfolio.holdings) {
         const currentPrice =
@@ -69,9 +97,42 @@ export async function getDashboardService(
         totalMarketValue +=
           marketValue;
 
+        clientMarketValue +=
+          marketValue;
+
         totalUnrealizedPnl +=
           marketValue -
           costValue;
+
+        const key =
+          `${holding.exchange}:${holding.symbol}`;
+
+        const existing =
+          holdingMap.get(key);
+
+        if (existing) {
+          existing.quantity +=
+            holding.quantity;
+
+          existing.marketValue +=
+            marketValue;
+        } else {
+          holdingMap.set(
+            key,
+            {
+              symbol:
+                holding.symbol,
+
+              exchange:
+                holding.exchange,
+
+              quantity:
+                holding.quantity,
+
+              marketValue,
+            },
+          );
+        }
       }
 
       totalRealizedPnl +=
@@ -85,6 +146,25 @@ export async function getDashboardService(
           0,
         );
     }
+
+    // One entry per client.
+    clientBreakdown.push({
+      clientId:
+        client.id,
+
+      clientName:
+        client.name,
+
+      cash:
+        clientCash,
+
+      marketValue:
+        clientMarketValue,
+
+      aum:
+        clientCash +
+        clientMarketValue,
+    });
   }
 
   const activeOrders =
@@ -108,15 +188,39 @@ export async function getDashboardService(
     totalCash +
     totalMarketValue;
 
+  const topHoldings =
+    Array.from(
+      holdingMap.values(),
+    )
+      .sort(
+        (a, b) =>
+          b.marketValue -
+          a.marketValue,
+      )
+      .slice(0, 5)
+      .map((holding) => ({
+        ...holding,
+
+        allocationPercent:
+          totalMarketValue > 0
+            ? (
+                holding.marketValue /
+                totalMarketValue
+              ) * 100
+            : 0,
+      }));
+
+  clientBreakdown.sort(
+    (a, b) =>
+      b.aum -
+      a.aum,
+  );
+
   return {
     totalAum,
-
     totalCash,
-
     totalMarketValue,
-
     totalUnrealizedPnl,
-
     totalRealizedPnl,
 
     clients:
@@ -126,10 +230,12 @@ export async function getDashboardService(
       portfolioCount,
 
     activeOrders,
-
     filledOrders,
 
     totalOrders:
       allOrders.length,
+
+    clientBreakdown,
+    topHoldings,
   };
 }
