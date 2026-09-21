@@ -302,6 +302,7 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
 exports.AuditAction = exports.$Enums.AuditAction = {
   ORDER_CREATED: 'ORDER_CREATED',
   ORDER_SUBMITTED: 'ORDER_SUBMITTED',
+  ORDER_MODIFIED: 'ORDER_MODIFIED',
   ORDER_FILLED: 'ORDER_FILLED',
   ORDER_CANCELLED: 'ORDER_CANCELLED',
   ORDER_REJECTED: 'ORDER_REJECTED',

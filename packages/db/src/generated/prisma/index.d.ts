@@ -115,6 +115,7 @@ export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus]
 export const AuditAction: {
   ORDER_CREATED: 'ORDER_CREATED',
   ORDER_SUBMITTED: 'ORDER_SUBMITTED',
+  ORDER_MODIFIED: 'ORDER_MODIFIED',
   ORDER_FILLED: 'ORDER_FILLED',
   ORDER_CANCELLED: 'ORDER_CANCELLED',
   ORDER_REJECTED: 'ORDER_REJECTED',
