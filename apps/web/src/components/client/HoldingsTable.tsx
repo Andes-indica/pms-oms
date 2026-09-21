@@ -1,5 +1,5 @@
 import type {
-  Holding,
+  ValuedHolding,
 } from "./types";
 
 import {
@@ -7,14 +7,14 @@ import {
 } from "./utils";
 
 type Props = {
-  holdings: Holding[];
+  holdings: ValuedHolding[];
 };
 
 export function HoldingsTable({
   holdings,
 }: Props) {
   return (
-    <div className="overflow-hidden rounded-xl border bg-white">
+    <div className="overflow-x-auto rounded-xl border bg-white">
       <div className="border-b px-5 py-4">
         <h4 className="font-medium">
           Holdings
@@ -26,78 +26,120 @@ export function HoldingsTable({
           No holdings.
         </p>
       ) : (
-        <table className="w-full text-left text-sm">
+        <table className="w-full min-w-[900px] text-left text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr>
-              <th className="px-5 py-3">
+              <th className="px-4 py-3">
                 Symbol
               </th>
 
-              <th className="px-5 py-3">
-                Exchange
+              <th className="px-4 py-3">
+                Qty
               </th>
 
-              <th className="px-5 py-3">
-                Quantity
-              </th>
-
-              <th className="px-5 py-3">
+              <th className="px-4 py-3">
                 Avg Price
               </th>
 
-              <th className="px-5 py-3">
+              <th className="px-4 py-3">
+                Current Price
+              </th>
+
+              <th className="px-4 py-3">
                 Cost Value
+              </th>
+
+              <th className="px-4 py-3">
+                Market Value
+              </th>
+
+              <th className="px-4 py-3">
+                Unrealized P&L
+              </th>
+
+              <th className="px-4 py-3">
+                P&L %
               </th>
             </tr>
           </thead>
 
           <tbody>
             {holdings.map(
-              (holding) => {
-                const averagePrice =
-                  Number(
-                    holding.averagePrice,
-                  );
-
-                const costValue =
-                  holding.quantity *
-                  averagePrice;
-
-                return (
-                  <tr
-                    key={holding.id}
-                    className="border-t"
-                  >
-                    <td className="px-5 py-4 font-medium">
+              (holding) => (
+                <tr
+                  key={holding.id}
+                  className="border-t"
+                >
+                  <td className="px-4 py-4">
+                    <p className="font-medium">
                       {holding.symbol}
-                    </td>
+                    </p>
 
-                    <td className="px-5 py-4">
+                    <p className="text-xs text-slate-500">
                       {
                         holding.exchange
                       }
-                    </td>
+                    </p>
+                  </td>
 
-                    <td className="px-5 py-4">
-                      {
-                        holding.quantity
-                      }
-                    </td>
+                  <td className="px-4 py-4">
+                    {
+                      holding.quantity
+                    }
+                  </td>
 
-                    <td className="px-5 py-4">
-                      {formatCurrency(
-                        averagePrice,
-                      )}
-                    </td>
+                  <td className="px-4 py-4">
+                    {formatCurrency(
+                      holding.averagePrice,
+                    )}
+                  </td>
 
-                    <td className="px-5 py-4">
-                      {formatCurrency(
-                        costValue,
-                      )}
-                    </td>
-                  </tr>
-                );
-              },
+                  <td className="px-4 py-4">
+                    {formatCurrency(
+                      holding.currentPrice,
+                    )}
+                  </td>
+
+                  <td className="px-4 py-4">
+                    {formatCurrency(
+                      holding.costValue,
+                    )}
+                  </td>
+
+                  <td className="px-4 py-4">
+                    {formatCurrency(
+                      holding.marketValue,
+                    )}
+                  </td>
+
+                  <td
+                    className={`px-4 py-4 font-medium ${
+                      holding.unrealizedPnl >=
+                      0
+                        ? "text-green-700"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {formatCurrency(
+                      holding.unrealizedPnl,
+                    )}
+                  </td>
+
+                  <td
+                    className={`px-4 py-4 font-medium ${
+                      holding.unrealizedPnlPercent >=
+                      0
+                        ? "text-green-700"
+                        : "text-red-600"
+                    }`}
+                  >
+                    {holding.unrealizedPnlPercent.toFixed(
+                      2,
+                    )}
+                    %
+                  </td>
+                </tr>
+              ),
             )}
           </tbody>
         </table>

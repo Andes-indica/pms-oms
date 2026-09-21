@@ -53,3 +53,32 @@ export type ClientOverview = {
 
   portfolios: Portfolio[];
 };
+
+export type ValuedHolding = {
+  id: string;
+  symbol: string;
+  exchange: string;
+  quantity: number;
+  averagePrice: number;
+  currentPrice: number;
+  costValue: number;
+  marketValue: number;
+  unrealizedPnl: number;
+  unrealizedPnlPercent: number;
+};
+
+export type PortfolioValuation = {
+  portfolioId: string;
+  portfolioName: string;
+
+  cashBalance: number;
+
+  totalCostValue: number;
+  totalMarketValue: number;
+
+  totalUnrealizedPnl: number;
+
+  portfolioValue: number;
+
+  holdings: ValuedHolding[];
+};

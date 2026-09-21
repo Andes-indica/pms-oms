@@ -7,7 +7,7 @@ import auditRoutes from "./routes/audit.routes.ts";
 import basketOrderRoutes from "./routes/basket-order.routes.ts";
 import authRoutes from "./routes/auth.routes"
 import userRoutes from "./routes/user.routes";
-
+import PortfolioRoutes from "./routes/portfolio.routes.ts";
 const app = express();
 
 app.use(cors({
@@ -17,6 +17,7 @@ app.use(cors({
 app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/users",userRoutes);
+app.use("/api/portfolios",PortfolioRoutes,);
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",
