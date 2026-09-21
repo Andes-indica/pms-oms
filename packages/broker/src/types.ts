@@ -36,3 +36,7 @@ export type BrokerOrderUpdate = {
   filledQuantity: number;
   averageFillPrice: number | null;
 };
+export type BrokerOrderModification = {
+  quantity?: number;
+  limitPrice?: number;
+};

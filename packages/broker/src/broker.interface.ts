@@ -3,6 +3,7 @@ import type {
   BrokerOrderResult,
   BrokerOrderUpdate,
   BrokerCancellationResult,
+  BrokerOrderModification
 } from "./types";
 
 export interface BrokerAdapter {
@@ -22,4 +23,10 @@ export interface BrokerAdapter {
     symbol: string,
     exchange: string,
   ): Promise<number>;
+
+  modifyOrder(
+  brokerOrderId: string,
+  changes: BrokerOrderModification
+): Promise<BrokerOrderResult>;
+
 }

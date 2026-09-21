@@ -6,6 +6,7 @@ import type {
   BrokerOrderUpdate,
   BrokerCancellationResult,
   BrokerOrderStatus,
+  BrokerOrderModification
 } from "./types";
 
 type StoredMockOrder = {
@@ -152,4 +153,75 @@ export class MockBroker implements BrokerAdapter {
 
     return prices[symbol] ?? 1000;
   }
+  async modifyOrder(
+  brokerOrderId: string,
+  changes: BrokerOrderModification,
+): Promise<BrokerOrderResult> {
+  const storedOrder =
+    this.orders.get(
+      brokerOrderId,
+    );
+
+  if (!storedOrder) {
+    throw new Error(
+      "BROKER_ORDER_NOT_FOUND",
+    );
+  }
+
+  if (
+    storedOrder.status ===
+    "FILLED"
+  ) {
+    throw new Error(
+      "BROKER_ORDER_ALREADY_FILLED",
+    );
+  }
+
+  if (
+    storedOrder.status ===
+    "CANCELLED"
+  ) {
+    throw new Error(
+      "BROKER_ORDER_ALREADY_CANCELLED",
+    );
+  }
+
+  if (
+    changes.quantity !==
+    undefined
+  ) {
+    if (
+      changes.quantity <= 0
+    ) {
+      throw new Error(
+        "INVALID_QUANTITY",
+      );
+    }
+
+    storedOrder.request.quantity =
+      changes.quantity;
+  }
+
+  if (
+    changes.limitPrice !==
+    undefined
+  ) {
+    if (
+      changes.limitPrice <= 0
+    ) {
+      throw new Error(
+        "INVALID_LIMIT_PRICE",
+      );
+    }
+
+    storedOrder.request.limitPrice =
+      changes.limitPrice;
+  }
+
+  return {
+    brokerOrderId,
+    status:
+      storedOrder.status,
+  };
+}
 }
