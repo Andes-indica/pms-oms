@@ -6,6 +6,7 @@ import {
   executeOrder,
   syncOrder,
   cancelOrder,
+  modifyOrder
 } from "../controllers/order.controller";
 
 import {
@@ -67,6 +68,16 @@ router.post(
     "OPERATIONS",
   ),
   syncOrder,
+);
+
+router.patch(
+  "/:id",
+  requireAuth,
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  modifyOrder,
 );
 
 //

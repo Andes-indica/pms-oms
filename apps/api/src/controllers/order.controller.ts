@@ -5,6 +5,9 @@ import { executeOrderService } from "../services/order-execution.service";
 import { syncOrderService } from "@/services/order-sync.service";
 import { cancelOrderService } from "../services/order-cancellation.service";
 import type { AuthenticatedRequest as BaseAuthenticatedRequest } from "../middleware/auth.middleware";
+import {
+  modifyOrderService,
+} from "../services/order-modification.service";
 
 type CreateOrderBody = {
   portfolioId: string;
@@ -339,5 +342,98 @@ export async function cancelOrder(
     return res.status(500).json({
       error: "Order cancellation failed",
     });
+  }
+}
+export async function modifyOrder(
+  req: AuthenticatedRequest,
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res
+        .status(401)
+        .json({
+          error:
+            "Authentication required",
+        });
+    }
+
+    const orderId = req.params.id;
+    if (typeof orderId !== "string") {
+      return res.status(400).json({
+        error: "Invalid order ID",
+      });
+    }
+
+    const order =
+      await modifyOrderService(
+        orderId,
+        req.user.firmId,
+        req.body,
+      );
+
+    return res.json({
+      data: order,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "UNKNOWN_ERROR";
+
+    switch (message) {
+      case "ORDER_NOT_FOUND":
+        return res
+          .status(404)
+          .json({
+            error:
+              "Order not found",
+          });
+
+      case "ORDER_NOT_MODIFIABLE":
+      case "PARTIALLY_FILLED_ORDER_NOT_MODIFIABLE":
+        return res
+          .status(409)
+          .json({
+            error: message,
+          });
+
+      case "INVALID_QUANTITY":
+      case "INVALID_LIMIT_PRICE":
+        return res
+          .status(400)
+          .json({
+            error: message,
+          });
+
+      case "INSUFFICIENT_CASH":
+      case "INSUFFICIENT_HOLDINGS":
+        return res
+          .status(409)
+          .json({
+            error: message,
+          });
+
+      case "BROKER_ORDER_NOT_FOUND":
+        return res
+          .status(409)
+          .json({
+            error:
+              "Broker order not found",
+          });
+
+      default:
+        console.error(
+          "Order modification failed:",
+          error,
+        );
+
+        return res
+          .status(500)
+          .json({
+            error:
+              "Order modification failed",
+          });
+    }
   }
 }
