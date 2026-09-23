@@ -68,6 +68,11 @@ export type RiskLimit = $Result.DefaultSelection<Prisma.$RiskLimitPayload>
  * 
  */
 export type RestrictedSecurity = $Result.DefaultSelection<Prisma.$RestrictedSecurityPayload>
+/**
+ * Model BrokerConnection
+ * 
+ */
+export type BrokerConnection = $Result.DefaultSelection<Prisma.$BrokerConnectionPayload>
 
 /**
  * Enums
@@ -149,6 +154,16 @@ export const BasketOrderStatus: {
 
 export type BasketOrderStatus = (typeof BasketOrderStatus)[keyof typeof BasketOrderStatus]
 
+
+export const BrokerConnectionStatus: {
+  DISCONNECTED: 'DISCONNECTED',
+  CONNECTED: 'CONNECTED',
+  EXPIRED: 'EXPIRED',
+  ERROR: 'ERROR'
+};
+
+export type BrokerConnectionStatus = (typeof BrokerConnectionStatus)[keyof typeof BrokerConnectionStatus]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -178,6 +193,10 @@ export const AllocationMethod: typeof $Enums.AllocationMethod
 export type BasketOrderStatus = $Enums.BasketOrderStatus
 
 export const BasketOrderStatus: typeof $Enums.BasketOrderStatus
+
+export type BrokerConnectionStatus = $Enums.BrokerConnectionStatus
+
+export const BrokerConnectionStatus: typeof $Enums.BrokerConnectionStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -409,6 +428,16 @@ export class PrismaClient<
     * ```
     */
   get restrictedSecurity(): Prisma.RestrictedSecurityDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.brokerConnection`: Exposes CRUD operations for the **BrokerConnection** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BrokerConnections
+    * const brokerConnections = await prisma.brokerConnection.findMany()
+    * ```
+    */
+  get brokerConnection(): Prisma.BrokerConnectionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -866,7 +895,8 @@ export namespace Prisma {
     AuditLog: 'AuditLog',
     BasketOrder: 'BasketOrder',
     RiskLimit: 'RiskLimit',
-    RestrictedSecurity: 'RestrictedSecurity'
+    RestrictedSecurity: 'RestrictedSecurity',
+    BrokerConnection: 'BrokerConnection'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -882,7 +912,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder" | "riskLimit" | "restrictedSecurity"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder" | "riskLimit" | "restrictedSecurity" | "brokerConnection"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1700,6 +1730,80 @@ export namespace Prisma {
           }
         }
       }
+      BrokerConnection: {
+        payload: Prisma.$BrokerConnectionPayload<ExtArgs>
+        fields: Prisma.BrokerConnectionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BrokerConnectionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BrokerConnectionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>
+          }
+          findFirst: {
+            args: Prisma.BrokerConnectionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BrokerConnectionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>
+          }
+          findMany: {
+            args: Prisma.BrokerConnectionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>[]
+          }
+          create: {
+            args: Prisma.BrokerConnectionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>
+          }
+          createMany: {
+            args: Prisma.BrokerConnectionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BrokerConnectionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>[]
+          }
+          delete: {
+            args: Prisma.BrokerConnectionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>
+          }
+          update: {
+            args: Prisma.BrokerConnectionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>
+          }
+          deleteMany: {
+            args: Prisma.BrokerConnectionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BrokerConnectionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BrokerConnectionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>[]
+          }
+          upsert: {
+            args: Prisma.BrokerConnectionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerConnectionPayload>
+          }
+          aggregate: {
+            args: Prisma.BrokerConnectionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBrokerConnection>
+          }
+          groupBy: {
+            args: Prisma.BrokerConnectionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BrokerConnectionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BrokerConnectionCountArgs<ExtArgs>
+            result: $Utils.Optional<BrokerConnectionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1834,6 +1938,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderOmit
     riskLimit?: RiskLimitOmit
     restrictedSecurity?: RestrictedSecurityOmit
+    brokerConnection?: BrokerConnectionOmit
   }
 
   /* Types for Logging */
@@ -5677,6 +5782,7 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     orders?: boolean | BrokerAccount$ordersArgs<ExtArgs>
+    connection?: boolean | BrokerAccount$connectionArgs<ExtArgs>
     _count?: boolean | BrokerAccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["brokerAccount"]>
 
@@ -5716,6 +5822,7 @@ export namespace Prisma {
   export type BrokerAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     orders?: boolean | BrokerAccount$ordersArgs<ExtArgs>
+    connection?: boolean | BrokerAccount$connectionArgs<ExtArgs>
     _count?: boolean | BrokerAccountCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BrokerAccountIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -5730,6 +5837,7 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
       orders: Prisma.$OrderPayload<ExtArgs>[]
+      connection: Prisma.$BrokerConnectionPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -6135,6 +6243,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     orders<T extends BrokerAccount$ordersArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    connection<T extends BrokerAccount$connectionArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$connectionArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -6593,6 +6702,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerAccount.connection
+   */
+  export type BrokerAccount$connectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    where?: BrokerConnectionWhereInput
   }
 
   /**
@@ -14795,6 +14923,1143 @@ export namespace Prisma {
 
 
   /**
+   * Model BrokerConnection
+   */
+
+  export type AggregateBrokerConnection = {
+    _count: BrokerConnectionCountAggregateOutputType | null
+    _min: BrokerConnectionMinAggregateOutputType | null
+    _max: BrokerConnectionMaxAggregateOutputType | null
+  }
+
+  export type BrokerConnectionMinAggregateOutputType = {
+    id: string | null
+    brokerAccountId: string | null
+    credentialsEncrypted: string | null
+    sessionEncrypted: string | null
+    externalUserId: string | null
+    sessionExpiresAt: Date | null
+    status: $Enums.BrokerConnectionStatus | null
+    lastConnectedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BrokerConnectionMaxAggregateOutputType = {
+    id: string | null
+    brokerAccountId: string | null
+    credentialsEncrypted: string | null
+    sessionEncrypted: string | null
+    externalUserId: string | null
+    sessionExpiresAt: Date | null
+    status: $Enums.BrokerConnectionStatus | null
+    lastConnectedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type BrokerConnectionCountAggregateOutputType = {
+    id: number
+    brokerAccountId: number
+    credentialsEncrypted: number
+    sessionEncrypted: number
+    externalUserId: number
+    sessionExpiresAt: number
+    status: number
+    metadata: number
+    lastConnectedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type BrokerConnectionMinAggregateInputType = {
+    id?: true
+    brokerAccountId?: true
+    credentialsEncrypted?: true
+    sessionEncrypted?: true
+    externalUserId?: true
+    sessionExpiresAt?: true
+    status?: true
+    lastConnectedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BrokerConnectionMaxAggregateInputType = {
+    id?: true
+    brokerAccountId?: true
+    credentialsEncrypted?: true
+    sessionEncrypted?: true
+    externalUserId?: true
+    sessionExpiresAt?: true
+    status?: true
+    lastConnectedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type BrokerConnectionCountAggregateInputType = {
+    id?: true
+    brokerAccountId?: true
+    credentialsEncrypted?: true
+    sessionEncrypted?: true
+    externalUserId?: true
+    sessionExpiresAt?: true
+    status?: true
+    metadata?: true
+    lastConnectedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type BrokerConnectionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BrokerConnection to aggregate.
+     */
+    where?: BrokerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerConnections to fetch.
+     */
+    orderBy?: BrokerConnectionOrderByWithRelationInput | BrokerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BrokerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BrokerConnections
+    **/
+    _count?: true | BrokerConnectionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BrokerConnectionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BrokerConnectionMaxAggregateInputType
+  }
+
+  export type GetBrokerConnectionAggregateType<T extends BrokerConnectionAggregateArgs> = {
+        [P in keyof T & keyof AggregateBrokerConnection]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBrokerConnection[P]>
+      : GetScalarType<T[P], AggregateBrokerConnection[P]>
+  }
+
+
+
+
+  export type BrokerConnectionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BrokerConnectionWhereInput
+    orderBy?: BrokerConnectionOrderByWithAggregationInput | BrokerConnectionOrderByWithAggregationInput[]
+    by: BrokerConnectionScalarFieldEnum[] | BrokerConnectionScalarFieldEnum
+    having?: BrokerConnectionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BrokerConnectionCountAggregateInputType | true
+    _min?: BrokerConnectionMinAggregateInputType
+    _max?: BrokerConnectionMaxAggregateInputType
+  }
+
+  export type BrokerConnectionGroupByOutputType = {
+    id: string
+    brokerAccountId: string
+    credentialsEncrypted: string | null
+    sessionEncrypted: string | null
+    externalUserId: string | null
+    sessionExpiresAt: Date | null
+    status: $Enums.BrokerConnectionStatus
+    metadata: JsonValue | null
+    lastConnectedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: BrokerConnectionCountAggregateOutputType | null
+    _min: BrokerConnectionMinAggregateOutputType | null
+    _max: BrokerConnectionMaxAggregateOutputType | null
+  }
+
+  type GetBrokerConnectionGroupByPayload<T extends BrokerConnectionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BrokerConnectionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BrokerConnectionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BrokerConnectionGroupByOutputType[P]>
+            : GetScalarType<T[P], BrokerConnectionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BrokerConnectionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    brokerAccountId?: boolean
+    credentialsEncrypted?: boolean
+    sessionEncrypted?: boolean
+    externalUserId?: boolean
+    sessionExpiresAt?: boolean
+    status?: boolean
+    metadata?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["brokerConnection"]>
+
+  export type BrokerConnectionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    brokerAccountId?: boolean
+    credentialsEncrypted?: boolean
+    sessionEncrypted?: boolean
+    externalUserId?: boolean
+    sessionExpiresAt?: boolean
+    status?: boolean
+    metadata?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["brokerConnection"]>
+
+  export type BrokerConnectionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    brokerAccountId?: boolean
+    credentialsEncrypted?: boolean
+    sessionEncrypted?: boolean
+    externalUserId?: boolean
+    sessionExpiresAt?: boolean
+    status?: boolean
+    metadata?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["brokerConnection"]>
+
+  export type BrokerConnectionSelectScalar = {
+    id?: boolean
+    brokerAccountId?: boolean
+    credentialsEncrypted?: boolean
+    sessionEncrypted?: boolean
+    externalUserId?: boolean
+    sessionExpiresAt?: boolean
+    status?: boolean
+    metadata?: boolean
+    lastConnectedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type BrokerConnectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "brokerAccountId" | "credentialsEncrypted" | "sessionEncrypted" | "externalUserId" | "sessionExpiresAt" | "status" | "metadata" | "lastConnectedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["brokerConnection"]>
+  export type BrokerConnectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }
+  export type BrokerConnectionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }
+  export type BrokerConnectionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }
+
+  export type $BrokerConnectionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BrokerConnection"
+    objects: {
+      brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      brokerAccountId: string
+      credentialsEncrypted: string | null
+      sessionEncrypted: string | null
+      externalUserId: string | null
+      sessionExpiresAt: Date | null
+      status: $Enums.BrokerConnectionStatus
+      metadata: Prisma.JsonValue | null
+      lastConnectedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["brokerConnection"]>
+    composites: {}
+  }
+
+  type BrokerConnectionGetPayload<S extends boolean | null | undefined | BrokerConnectionDefaultArgs> = $Result.GetResult<Prisma.$BrokerConnectionPayload, S>
+
+  type BrokerConnectionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BrokerConnectionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BrokerConnectionCountAggregateInputType | true
+    }
+
+  export interface BrokerConnectionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BrokerConnection'], meta: { name: 'BrokerConnection' } }
+    /**
+     * Find zero or one BrokerConnection that matches the filter.
+     * @param {BrokerConnectionFindUniqueArgs} args - Arguments to find a BrokerConnection
+     * @example
+     * // Get one BrokerConnection
+     * const brokerConnection = await prisma.brokerConnection.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BrokerConnectionFindUniqueArgs>(args: SelectSubset<T, BrokerConnectionFindUniqueArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BrokerConnection that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BrokerConnectionFindUniqueOrThrowArgs} args - Arguments to find a BrokerConnection
+     * @example
+     * // Get one BrokerConnection
+     * const brokerConnection = await prisma.brokerConnection.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BrokerConnectionFindUniqueOrThrowArgs>(args: SelectSubset<T, BrokerConnectionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BrokerConnection that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerConnectionFindFirstArgs} args - Arguments to find a BrokerConnection
+     * @example
+     * // Get one BrokerConnection
+     * const brokerConnection = await prisma.brokerConnection.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BrokerConnectionFindFirstArgs>(args?: SelectSubset<T, BrokerConnectionFindFirstArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BrokerConnection that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerConnectionFindFirstOrThrowArgs} args - Arguments to find a BrokerConnection
+     * @example
+     * // Get one BrokerConnection
+     * const brokerConnection = await prisma.brokerConnection.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BrokerConnectionFindFirstOrThrowArgs>(args?: SelectSubset<T, BrokerConnectionFindFirstOrThrowArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BrokerConnections that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerConnectionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BrokerConnections
+     * const brokerConnections = await prisma.brokerConnection.findMany()
+     * 
+     * // Get first 10 BrokerConnections
+     * const brokerConnections = await prisma.brokerConnection.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const brokerConnectionWithIdOnly = await prisma.brokerConnection.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BrokerConnectionFindManyArgs>(args?: SelectSubset<T, BrokerConnectionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BrokerConnection.
+     * @param {BrokerConnectionCreateArgs} args - Arguments to create a BrokerConnection.
+     * @example
+     * // Create one BrokerConnection
+     * const BrokerConnection = await prisma.brokerConnection.create({
+     *   data: {
+     *     // ... data to create a BrokerConnection
+     *   }
+     * })
+     * 
+     */
+    create<T extends BrokerConnectionCreateArgs>(args: SelectSubset<T, BrokerConnectionCreateArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BrokerConnections.
+     * @param {BrokerConnectionCreateManyArgs} args - Arguments to create many BrokerConnections.
+     * @example
+     * // Create many BrokerConnections
+     * const brokerConnection = await prisma.brokerConnection.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BrokerConnectionCreateManyArgs>(args?: SelectSubset<T, BrokerConnectionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BrokerConnections and returns the data saved in the database.
+     * @param {BrokerConnectionCreateManyAndReturnArgs} args - Arguments to create many BrokerConnections.
+     * @example
+     * // Create many BrokerConnections
+     * const brokerConnection = await prisma.brokerConnection.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BrokerConnections and only return the `id`
+     * const brokerConnectionWithIdOnly = await prisma.brokerConnection.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BrokerConnectionCreateManyAndReturnArgs>(args?: SelectSubset<T, BrokerConnectionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BrokerConnection.
+     * @param {BrokerConnectionDeleteArgs} args - Arguments to delete one BrokerConnection.
+     * @example
+     * // Delete one BrokerConnection
+     * const BrokerConnection = await prisma.brokerConnection.delete({
+     *   where: {
+     *     // ... filter to delete one BrokerConnection
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BrokerConnectionDeleteArgs>(args: SelectSubset<T, BrokerConnectionDeleteArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BrokerConnection.
+     * @param {BrokerConnectionUpdateArgs} args - Arguments to update one BrokerConnection.
+     * @example
+     * // Update one BrokerConnection
+     * const brokerConnection = await prisma.brokerConnection.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BrokerConnectionUpdateArgs>(args: SelectSubset<T, BrokerConnectionUpdateArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BrokerConnections.
+     * @param {BrokerConnectionDeleteManyArgs} args - Arguments to filter BrokerConnections to delete.
+     * @example
+     * // Delete a few BrokerConnections
+     * const { count } = await prisma.brokerConnection.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BrokerConnectionDeleteManyArgs>(args?: SelectSubset<T, BrokerConnectionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BrokerConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerConnectionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BrokerConnections
+     * const brokerConnection = await prisma.brokerConnection.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BrokerConnectionUpdateManyArgs>(args: SelectSubset<T, BrokerConnectionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BrokerConnections and returns the data updated in the database.
+     * @param {BrokerConnectionUpdateManyAndReturnArgs} args - Arguments to update many BrokerConnections.
+     * @example
+     * // Update many BrokerConnections
+     * const brokerConnection = await prisma.brokerConnection.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BrokerConnections and only return the `id`
+     * const brokerConnectionWithIdOnly = await prisma.brokerConnection.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BrokerConnectionUpdateManyAndReturnArgs>(args: SelectSubset<T, BrokerConnectionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BrokerConnection.
+     * @param {BrokerConnectionUpsertArgs} args - Arguments to update or create a BrokerConnection.
+     * @example
+     * // Update or create a BrokerConnection
+     * const brokerConnection = await prisma.brokerConnection.upsert({
+     *   create: {
+     *     // ... data to create a BrokerConnection
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BrokerConnection we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BrokerConnectionUpsertArgs>(args: SelectSubset<T, BrokerConnectionUpsertArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BrokerConnections.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerConnectionCountArgs} args - Arguments to filter BrokerConnections to count.
+     * @example
+     * // Count the number of BrokerConnections
+     * const count = await prisma.brokerConnection.count({
+     *   where: {
+     *     // ... the filter for the BrokerConnections we want to count
+     *   }
+     * })
+    **/
+    count<T extends BrokerConnectionCountArgs>(
+      args?: Subset<T, BrokerConnectionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BrokerConnectionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BrokerConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerConnectionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BrokerConnectionAggregateArgs>(args: Subset<T, BrokerConnectionAggregateArgs>): Prisma.PrismaPromise<GetBrokerConnectionAggregateType<T>>
+
+    /**
+     * Group by BrokerConnection.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerConnectionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BrokerConnectionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BrokerConnectionGroupByArgs['orderBy'] }
+        : { orderBy?: BrokerConnectionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BrokerConnectionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBrokerConnectionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BrokerConnection model
+   */
+  readonly fields: BrokerConnectionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BrokerConnection.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BrokerConnectionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    brokerAccount<T extends BrokerAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccountDefaultArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BrokerConnection model
+   */
+  interface BrokerConnectionFieldRefs {
+    readonly id: FieldRef<"BrokerConnection", 'String'>
+    readonly brokerAccountId: FieldRef<"BrokerConnection", 'String'>
+    readonly credentialsEncrypted: FieldRef<"BrokerConnection", 'String'>
+    readonly sessionEncrypted: FieldRef<"BrokerConnection", 'String'>
+    readonly externalUserId: FieldRef<"BrokerConnection", 'String'>
+    readonly sessionExpiresAt: FieldRef<"BrokerConnection", 'DateTime'>
+    readonly status: FieldRef<"BrokerConnection", 'BrokerConnectionStatus'>
+    readonly metadata: FieldRef<"BrokerConnection", 'Json'>
+    readonly lastConnectedAt: FieldRef<"BrokerConnection", 'DateTime'>
+    readonly createdAt: FieldRef<"BrokerConnection", 'DateTime'>
+    readonly updatedAt: FieldRef<"BrokerConnection", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BrokerConnection findUnique
+   */
+  export type BrokerConnectionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerConnection to fetch.
+     */
+    where: BrokerConnectionWhereUniqueInput
+  }
+
+  /**
+   * BrokerConnection findUniqueOrThrow
+   */
+  export type BrokerConnectionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerConnection to fetch.
+     */
+    where: BrokerConnectionWhereUniqueInput
+  }
+
+  /**
+   * BrokerConnection findFirst
+   */
+  export type BrokerConnectionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerConnection to fetch.
+     */
+    where?: BrokerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerConnections to fetch.
+     */
+    orderBy?: BrokerConnectionOrderByWithRelationInput | BrokerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BrokerConnections.
+     */
+    cursor?: BrokerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BrokerConnections.
+     */
+    distinct?: BrokerConnectionScalarFieldEnum | BrokerConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerConnection findFirstOrThrow
+   */
+  export type BrokerConnectionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerConnection to fetch.
+     */
+    where?: BrokerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerConnections to fetch.
+     */
+    orderBy?: BrokerConnectionOrderByWithRelationInput | BrokerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BrokerConnections.
+     */
+    cursor?: BrokerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BrokerConnections.
+     */
+    distinct?: BrokerConnectionScalarFieldEnum | BrokerConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerConnection findMany
+   */
+  export type BrokerConnectionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerConnections to fetch.
+     */
+    where?: BrokerConnectionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerConnections to fetch.
+     */
+    orderBy?: BrokerConnectionOrderByWithRelationInput | BrokerConnectionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BrokerConnections.
+     */
+    cursor?: BrokerConnectionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerConnections from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerConnections.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BrokerConnections.
+     */
+    distinct?: BrokerConnectionScalarFieldEnum | BrokerConnectionScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerConnection create
+   */
+  export type BrokerConnectionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BrokerConnection.
+     */
+    data: XOR<BrokerConnectionCreateInput, BrokerConnectionUncheckedCreateInput>
+  }
+
+  /**
+   * BrokerConnection createMany
+   */
+  export type BrokerConnectionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BrokerConnections.
+     */
+    data: BrokerConnectionCreateManyInput | BrokerConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BrokerConnection createManyAndReturn
+   */
+  export type BrokerConnectionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * The data used to create many BrokerConnections.
+     */
+    data: BrokerConnectionCreateManyInput | BrokerConnectionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BrokerConnection update
+   */
+  export type BrokerConnectionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BrokerConnection.
+     */
+    data: XOR<BrokerConnectionUpdateInput, BrokerConnectionUncheckedUpdateInput>
+    /**
+     * Choose, which BrokerConnection to update.
+     */
+    where: BrokerConnectionWhereUniqueInput
+  }
+
+  /**
+   * BrokerConnection updateMany
+   */
+  export type BrokerConnectionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BrokerConnections.
+     */
+    data: XOR<BrokerConnectionUpdateManyMutationInput, BrokerConnectionUncheckedUpdateManyInput>
+    /**
+     * Filter which BrokerConnections to update
+     */
+    where?: BrokerConnectionWhereInput
+    /**
+     * Limit how many BrokerConnections to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BrokerConnection updateManyAndReturn
+   */
+  export type BrokerConnectionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * The data used to update BrokerConnections.
+     */
+    data: XOR<BrokerConnectionUpdateManyMutationInput, BrokerConnectionUncheckedUpdateManyInput>
+    /**
+     * Filter which BrokerConnections to update
+     */
+    where?: BrokerConnectionWhereInput
+    /**
+     * Limit how many BrokerConnections to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BrokerConnection upsert
+   */
+  export type BrokerConnectionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BrokerConnection to update in case it exists.
+     */
+    where: BrokerConnectionWhereUniqueInput
+    /**
+     * In case the BrokerConnection found by the `where` argument doesn't exist, create a new BrokerConnection with this data.
+     */
+    create: XOR<BrokerConnectionCreateInput, BrokerConnectionUncheckedCreateInput>
+    /**
+     * In case the BrokerConnection was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BrokerConnectionUpdateInput, BrokerConnectionUncheckedUpdateInput>
+  }
+
+  /**
+   * BrokerConnection delete
+   */
+  export type BrokerConnectionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+    /**
+     * Filter which BrokerConnection to delete.
+     */
+    where: BrokerConnectionWhereUniqueInput
+  }
+
+  /**
+   * BrokerConnection deleteMany
+   */
+  export type BrokerConnectionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BrokerConnections to delete
+     */
+    where?: BrokerConnectionWhereInput
+    /**
+     * Limit how many BrokerConnections to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BrokerConnection without action
+   */
+  export type BrokerConnectionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerConnection
+     */
+    select?: BrokerConnectionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerConnection
+     */
+    omit?: BrokerConnectionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerConnectionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -14966,6 +16231,23 @@ export namespace Prisma {
   };
 
   export type RestrictedSecurityScalarFieldEnum = (typeof RestrictedSecurityScalarFieldEnum)[keyof typeof RestrictedSecurityScalarFieldEnum]
+
+
+  export const BrokerConnectionScalarFieldEnum: {
+    id: 'id',
+    brokerAccountId: 'brokerAccountId',
+    credentialsEncrypted: 'credentialsEncrypted',
+    sessionEncrypted: 'sessionEncrypted',
+    externalUserId: 'externalUserId',
+    sessionExpiresAt: 'sessionExpiresAt',
+    status: 'status',
+    metadata: 'metadata',
+    lastConnectedAt: 'lastConnectedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type BrokerConnectionScalarFieldEnum = (typeof BrokerConnectionScalarFieldEnum)[keyof typeof BrokerConnectionScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -15179,6 +16461,20 @@ export namespace Prisma {
    * Reference to a field of type 'BasketOrderStatus[]'
    */
   export type ListEnumBasketOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BasketOrderStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'BrokerConnectionStatus'
+   */
+  export type EnumBrokerConnectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrokerConnectionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'BrokerConnectionStatus[]'
+   */
+  export type ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrokerConnectionStatus[]'>
     
 
 
@@ -15407,6 +16703,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BrokerAccount"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     orders?: OrderListRelationFilter
+    connection?: XOR<BrokerConnectionNullableScalarRelationFilter, BrokerConnectionWhereInput> | null
   }
 
   export type BrokerAccountOrderByWithRelationInput = {
@@ -15419,6 +16716,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
     orders?: OrderOrderByRelationAggregateInput
+    connection?: BrokerConnectionOrderByWithRelationInput
   }
 
   export type BrokerAccountWhereUniqueInput = Prisma.AtLeast<{
@@ -15435,6 +16733,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BrokerAccount"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     orders?: OrderListRelationFilter
+    connection?: XOR<BrokerConnectionNullableScalarRelationFilter, BrokerConnectionWhereInput> | null
   }, "id" | "broker_accountId">
 
   export type BrokerAccountOrderByWithAggregationInput = {
@@ -16045,6 +17344,91 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"RestrictedSecurity"> | Date | string
   }
 
+  export type BrokerConnectionWhereInput = {
+    AND?: BrokerConnectionWhereInput | BrokerConnectionWhereInput[]
+    OR?: BrokerConnectionWhereInput[]
+    NOT?: BrokerConnectionWhereInput | BrokerConnectionWhereInput[]
+    id?: StringFilter<"BrokerConnection"> | string
+    brokerAccountId?: StringFilter<"BrokerConnection"> | string
+    credentialsEncrypted?: StringNullableFilter<"BrokerConnection"> | string | null
+    sessionEncrypted?: StringNullableFilter<"BrokerConnection"> | string | null
+    externalUserId?: StringNullableFilter<"BrokerConnection"> | string | null
+    sessionExpiresAt?: DateTimeNullableFilter<"BrokerConnection"> | Date | string | null
+    status?: EnumBrokerConnectionStatusFilter<"BrokerConnection"> | $Enums.BrokerConnectionStatus
+    metadata?: JsonNullableFilter<"BrokerConnection">
+    lastConnectedAt?: DateTimeNullableFilter<"BrokerConnection"> | Date | string | null
+    createdAt?: DateTimeFilter<"BrokerConnection"> | Date | string
+    updatedAt?: DateTimeFilter<"BrokerConnection"> | Date | string
+    brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
+  }
+
+  export type BrokerConnectionOrderByWithRelationInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    credentialsEncrypted?: SortOrderInput | SortOrder
+    sessionEncrypted?: SortOrderInput | SortOrder
+    externalUserId?: SortOrderInput | SortOrder
+    sessionExpiresAt?: SortOrderInput | SortOrder
+    status?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    lastConnectedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    brokerAccount?: BrokerAccountOrderByWithRelationInput
+  }
+
+  export type BrokerConnectionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    brokerAccountId?: string
+    AND?: BrokerConnectionWhereInput | BrokerConnectionWhereInput[]
+    OR?: BrokerConnectionWhereInput[]
+    NOT?: BrokerConnectionWhereInput | BrokerConnectionWhereInput[]
+    credentialsEncrypted?: StringNullableFilter<"BrokerConnection"> | string | null
+    sessionEncrypted?: StringNullableFilter<"BrokerConnection"> | string | null
+    externalUserId?: StringNullableFilter<"BrokerConnection"> | string | null
+    sessionExpiresAt?: DateTimeNullableFilter<"BrokerConnection"> | Date | string | null
+    status?: EnumBrokerConnectionStatusFilter<"BrokerConnection"> | $Enums.BrokerConnectionStatus
+    metadata?: JsonNullableFilter<"BrokerConnection">
+    lastConnectedAt?: DateTimeNullableFilter<"BrokerConnection"> | Date | string | null
+    createdAt?: DateTimeFilter<"BrokerConnection"> | Date | string
+    updatedAt?: DateTimeFilter<"BrokerConnection"> | Date | string
+    brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
+  }, "id" | "brokerAccountId">
+
+  export type BrokerConnectionOrderByWithAggregationInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    credentialsEncrypted?: SortOrderInput | SortOrder
+    sessionEncrypted?: SortOrderInput | SortOrder
+    externalUserId?: SortOrderInput | SortOrder
+    sessionExpiresAt?: SortOrderInput | SortOrder
+    status?: SortOrder
+    metadata?: SortOrderInput | SortOrder
+    lastConnectedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: BrokerConnectionCountOrderByAggregateInput
+    _max?: BrokerConnectionMaxOrderByAggregateInput
+    _min?: BrokerConnectionMinOrderByAggregateInput
+  }
+
+  export type BrokerConnectionScalarWhereWithAggregatesInput = {
+    AND?: BrokerConnectionScalarWhereWithAggregatesInput | BrokerConnectionScalarWhereWithAggregatesInput[]
+    OR?: BrokerConnectionScalarWhereWithAggregatesInput[]
+    NOT?: BrokerConnectionScalarWhereWithAggregatesInput | BrokerConnectionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BrokerConnection"> | string
+    brokerAccountId?: StringWithAggregatesFilter<"BrokerConnection"> | string
+    credentialsEncrypted?: StringNullableWithAggregatesFilter<"BrokerConnection"> | string | null
+    sessionEncrypted?: StringNullableWithAggregatesFilter<"BrokerConnection"> | string | null
+    externalUserId?: StringNullableWithAggregatesFilter<"BrokerConnection"> | string | null
+    sessionExpiresAt?: DateTimeNullableWithAggregatesFilter<"BrokerConnection"> | Date | string | null
+    status?: EnumBrokerConnectionStatusWithAggregatesFilter<"BrokerConnection"> | $Enums.BrokerConnectionStatus
+    metadata?: JsonNullableWithAggregatesFilter<"BrokerConnection">
+    lastConnectedAt?: DateTimeNullableWithAggregatesFilter<"BrokerConnection"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"BrokerConnection"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"BrokerConnection"> | Date | string
+  }
+
   export type FirmCreateInput = {
     id?: string
     name: string
@@ -16265,6 +17649,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
 
   export type BrokerAccountUncheckedCreateInput = {
@@ -16276,6 +17661,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
 
   export type BrokerAccountUpdateInput = {
@@ -16287,6 +17673,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
 
   export type BrokerAccountUncheckedUpdateInput = {
@@ -16298,6 +17685,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
   export type BrokerAccountCreateManyInput = {
@@ -16967,6 +18355,103 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type BrokerConnectionCreateInput = {
+    id?: string
+    credentialsEncrypted?: string | null
+    sessionEncrypted?: string | null
+    externalUserId?: string | null
+    sessionExpiresAt?: Date | string | null
+    status?: $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    brokerAccount: BrokerAccountCreateNestedOneWithoutConnectionInput
+  }
+
+  export type BrokerConnectionUncheckedCreateInput = {
+    id?: string
+    brokerAccountId: string
+    credentialsEncrypted?: string | null
+    sessionEncrypted?: string | null
+    externalUserId?: string | null
+    sessionExpiresAt?: Date | string | null
+    status?: $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BrokerConnectionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    credentialsEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    externalUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumBrokerConnectionStatusFieldUpdateOperationsInput | $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutConnectionNestedInput
+  }
+
+  export type BrokerConnectionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    credentialsEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    externalUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumBrokerConnectionStatusFieldUpdateOperationsInput | $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerConnectionCreateManyInput = {
+    id?: string
+    brokerAccountId: string
+    credentialsEncrypted?: string | null
+    sessionEncrypted?: string | null
+    externalUserId?: string | null
+    sessionExpiresAt?: Date | string | null
+    status?: $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BrokerConnectionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    credentialsEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    externalUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumBrokerConnectionStatusFieldUpdateOperationsInput | $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerConnectionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    credentialsEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    externalUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumBrokerConnectionStatusFieldUpdateOperationsInput | $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -17235,6 +18720,11 @@ export namespace Prisma {
     every?: OrderWhereInput
     some?: OrderWhereInput
     none?: OrderWhereInput
+  }
+
+  export type BrokerConnectionNullableScalarRelationFilter = {
+    is?: BrokerConnectionWhereInput | null
+    isNot?: BrokerConnectionWhereInput | null
   }
 
   export type OrderOrderByRelationAggregateInput = {
@@ -17933,6 +19423,63 @@ export namespace Prisma {
     createdAt?: SortOrder
   }
 
+  export type EnumBrokerConnectionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BrokerConnectionStatus | EnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel> | $Enums.BrokerConnectionStatus
+  }
+
+  export type BrokerConnectionCountOrderByAggregateInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    credentialsEncrypted?: SortOrder
+    sessionEncrypted?: SortOrder
+    externalUserId?: SortOrder
+    sessionExpiresAt?: SortOrder
+    status?: SortOrder
+    metadata?: SortOrder
+    lastConnectedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BrokerConnectionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    credentialsEncrypted?: SortOrder
+    sessionEncrypted?: SortOrder
+    externalUserId?: SortOrder
+    sessionExpiresAt?: SortOrder
+    status?: SortOrder
+    lastConnectedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type BrokerConnectionMinOrderByAggregateInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    credentialsEncrypted?: SortOrder
+    sessionEncrypted?: SortOrder
+    externalUserId?: SortOrder
+    sessionExpiresAt?: SortOrder
+    status?: SortOrder
+    lastConnectedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumBrokerConnectionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BrokerConnectionStatus | EnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBrokerConnectionStatusWithAggregatesFilter<$PrismaModel> | $Enums.BrokerConnectionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
+    _max?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
+  }
+
   export type UserCreateNestedManyWithoutFirmInput = {
     create?: XOR<UserCreateWithoutFirmInput, UserUncheckedCreateWithoutFirmInput> | UserCreateWithoutFirmInput[] | UserUncheckedCreateWithoutFirmInput[]
     connectOrCreate?: UserCreateOrConnectWithoutFirmInput | UserCreateOrConnectWithoutFirmInput[]
@@ -18242,11 +19789,23 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type BrokerConnectionCreateNestedOneWithoutBrokerAccountInput = {
+    create?: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
+    connectOrCreate?: BrokerConnectionCreateOrConnectWithoutBrokerAccountInput
+    connect?: BrokerConnectionWhereUniqueInput
+  }
+
   export type OrderUncheckedCreateNestedManyWithoutBrokerAccountInput = {
     create?: XOR<OrderCreateWithoutBrokerAccountInput, OrderUncheckedCreateWithoutBrokerAccountInput> | OrderCreateWithoutBrokerAccountInput[] | OrderUncheckedCreateWithoutBrokerAccountInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutBrokerAccountInput | OrderCreateOrConnectWithoutBrokerAccountInput[]
     createMany?: OrderCreateManyBrokerAccountInputEnvelope
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput = {
+    create?: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
+    connectOrCreate?: BrokerConnectionCreateOrConnectWithoutBrokerAccountInput
+    connect?: BrokerConnectionWhereUniqueInput
   }
 
   export type ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput = {
@@ -18271,6 +19830,16 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput = {
+    create?: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
+    connectOrCreate?: BrokerConnectionCreateOrConnectWithoutBrokerAccountInput
+    upsert?: BrokerConnectionUpsertWithoutBrokerAccountInput
+    disconnect?: BrokerConnectionWhereInput | boolean
+    delete?: BrokerConnectionWhereInput | boolean
+    connect?: BrokerConnectionWhereUniqueInput
+    update?: XOR<XOR<BrokerConnectionUpdateToOneWithWhereWithoutBrokerAccountInput, BrokerConnectionUpdateWithoutBrokerAccountInput>, BrokerConnectionUncheckedUpdateWithoutBrokerAccountInput>
+  }
+
   export type OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput = {
     create?: XOR<OrderCreateWithoutBrokerAccountInput, OrderUncheckedCreateWithoutBrokerAccountInput> | OrderCreateWithoutBrokerAccountInput[] | OrderUncheckedCreateWithoutBrokerAccountInput[]
     connectOrCreate?: OrderCreateOrConnectWithoutBrokerAccountInput | OrderCreateOrConnectWithoutBrokerAccountInput[]
@@ -18283,6 +19852,16 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutBrokerAccountInput | OrderUpdateWithWhereUniqueWithoutBrokerAccountInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutBrokerAccountInput | OrderUpdateManyWithWhereWithoutBrokerAccountInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput = {
+    create?: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
+    connectOrCreate?: BrokerConnectionCreateOrConnectWithoutBrokerAccountInput
+    upsert?: BrokerConnectionUpsertWithoutBrokerAccountInput
+    disconnect?: BrokerConnectionWhereInput | boolean
+    delete?: BrokerConnectionWhereInput | boolean
+    connect?: BrokerConnectionWhereUniqueInput
+    update?: XOR<XOR<BrokerConnectionUpdateToOneWithWhereWithoutBrokerAccountInput, BrokerConnectionUpdateWithoutBrokerAccountInput>, BrokerConnectionUncheckedUpdateWithoutBrokerAccountInput>
   }
 
   export type ClientCreateNestedOneWithoutPortfoliosInput = {
@@ -18615,6 +20194,24 @@ export namespace Prisma {
     upsert?: PortfolioUpsertWithoutRiskLimitInput
     connect?: PortfolioWhereUniqueInput
     update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutRiskLimitInput, PortfolioUpdateWithoutRiskLimitInput>, PortfolioUncheckedUpdateWithoutRiskLimitInput>
+  }
+
+  export type BrokerAccountCreateNestedOneWithoutConnectionInput = {
+    create?: XOR<BrokerAccountCreateWithoutConnectionInput, BrokerAccountUncheckedCreateWithoutConnectionInput>
+    connectOrCreate?: BrokerAccountCreateOrConnectWithoutConnectionInput
+    connect?: BrokerAccountWhereUniqueInput
+  }
+
+  export type EnumBrokerConnectionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.BrokerConnectionStatus
+  }
+
+  export type BrokerAccountUpdateOneRequiredWithoutConnectionNestedInput = {
+    create?: XOR<BrokerAccountCreateWithoutConnectionInput, BrokerAccountUncheckedCreateWithoutConnectionInput>
+    connectOrCreate?: BrokerAccountCreateOrConnectWithoutConnectionInput
+    upsert?: BrokerAccountUpsertWithoutConnectionInput
+    connect?: BrokerAccountWhereUniqueInput
+    update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutConnectionInput, BrokerAccountUpdateWithoutConnectionInput>, BrokerAccountUncheckedUpdateWithoutConnectionInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -19001,6 +20598,23 @@ export namespace Prisma {
     not?: NestedFloatNullableFilter<$PrismaModel> | number | null
   }
 
+  export type NestedEnumBrokerConnectionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.BrokerConnectionStatus | EnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel> | $Enums.BrokerConnectionStatus
+  }
+
+  export type NestedEnumBrokerConnectionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.BrokerConnectionStatus | EnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.BrokerConnectionStatus[] | ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumBrokerConnectionStatusWithAggregatesFilter<$PrismaModel> | $Enums.BrokerConnectionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
+    _max?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutFirmInput = {
     id?: string
     name: string
@@ -19345,6 +20959,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
 
   export type BrokerAccountUncheckedCreateWithoutClientInput = {
@@ -19355,6 +20970,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
 
   export type BrokerAccountCreateOrConnectWithoutClientInput = {
@@ -19568,6 +21184,37 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type BrokerConnectionCreateWithoutBrokerAccountInput = {
+    id?: string
+    credentialsEncrypted?: string | null
+    sessionEncrypted?: string | null
+    externalUserId?: string | null
+    sessionExpiresAt?: Date | string | null
+    status?: $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BrokerConnectionUncheckedCreateWithoutBrokerAccountInput = {
+    id?: string
+    credentialsEncrypted?: string | null
+    sessionEncrypted?: string | null
+    externalUserId?: string | null
+    sessionExpiresAt?: Date | string | null
+    status?: $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type BrokerConnectionCreateOrConnectWithoutBrokerAccountInput = {
+    where: BrokerConnectionWhereUniqueInput
+    create: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
+  }
+
   export type ClientUpsertWithoutBrokerAccountsInput = {
     update: XOR<ClientUpdateWithoutBrokerAccountsInput, ClientUncheckedUpdateWithoutBrokerAccountsInput>
     create: XOR<ClientCreateWithoutBrokerAccountsInput, ClientUncheckedCreateWithoutBrokerAccountsInput>
@@ -19640,6 +21287,43 @@ export namespace Prisma {
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
     updatedAt?: DateTimeFilter<"Order"> | Date | string
+  }
+
+  export type BrokerConnectionUpsertWithoutBrokerAccountInput = {
+    update: XOR<BrokerConnectionUpdateWithoutBrokerAccountInput, BrokerConnectionUncheckedUpdateWithoutBrokerAccountInput>
+    create: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
+    where?: BrokerConnectionWhereInput
+  }
+
+  export type BrokerConnectionUpdateToOneWithWhereWithoutBrokerAccountInput = {
+    where?: BrokerConnectionWhereInput
+    data: XOR<BrokerConnectionUpdateWithoutBrokerAccountInput, BrokerConnectionUncheckedUpdateWithoutBrokerAccountInput>
+  }
+
+  export type BrokerConnectionUpdateWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    credentialsEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    externalUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumBrokerConnectionStatusFieldUpdateOperationsInput | $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerConnectionUncheckedUpdateWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    credentialsEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionEncrypted?: NullableStringFieldUpdateOperationsInput | string | null
+    externalUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    sessionExpiresAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    status?: EnumBrokerConnectionStatusFieldUpdateOperationsInput | $Enums.BrokerConnectionStatus
+    metadata?: NullableJsonNullValueInput | InputJsonValue
+    lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ClientCreateWithoutPortfoliosInput = {
@@ -20018,6 +21702,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
+    connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
 
   export type BrokerAccountUncheckedCreateWithoutOrdersInput = {
@@ -20028,6 +21713,7 @@ export namespace Prisma {
     clientId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
 
   export type BrokerAccountCreateOrConnectWithoutOrdersInput = {
@@ -20130,6 +21816,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
+    connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
 
   export type BrokerAccountUncheckedUpdateWithoutOrdersInput = {
@@ -20140,6 +21827,7 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
   export type FirmCreateWithoutAuditLogsInput = {
@@ -20386,6 +22074,66 @@ export namespace Prisma {
     orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
   }
 
+  export type BrokerAccountCreateWithoutConnectionInput = {
+    id?: string
+    broker: string
+    accountId: string
+    accountLabel?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client: ClientCreateNestedOneWithoutBrokerAccountsInput
+    orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+  }
+
+  export type BrokerAccountUncheckedCreateWithoutConnectionInput = {
+    id?: string
+    broker: string
+    accountId: string
+    accountLabel?: string | null
+    clientId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+  }
+
+  export type BrokerAccountCreateOrConnectWithoutConnectionInput = {
+    where: BrokerAccountWhereUniqueInput
+    create: XOR<BrokerAccountCreateWithoutConnectionInput, BrokerAccountUncheckedCreateWithoutConnectionInput>
+  }
+
+  export type BrokerAccountUpsertWithoutConnectionInput = {
+    update: XOR<BrokerAccountUpdateWithoutConnectionInput, BrokerAccountUncheckedUpdateWithoutConnectionInput>
+    create: XOR<BrokerAccountCreateWithoutConnectionInput, BrokerAccountUncheckedCreateWithoutConnectionInput>
+    where?: BrokerAccountWhereInput
+  }
+
+  export type BrokerAccountUpdateToOneWithWhereWithoutConnectionInput = {
+    where?: BrokerAccountWhereInput
+    data: XOR<BrokerAccountUpdateWithoutConnectionInput, BrokerAccountUncheckedUpdateWithoutConnectionInput>
+  }
+
+  export type BrokerAccountUpdateWithoutConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    broker?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    accountLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
+    orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+  }
+
+  export type BrokerAccountUncheckedUpdateWithoutConnectionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    broker?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    accountLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+  }
+
   export type UserCreateManyFirmInput = {
     id?: string
     name: string
@@ -20589,6 +22337,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
 
   export type BrokerAccountUncheckedUpdateWithoutClientInput = {
@@ -20599,6 +22348,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
   export type BrokerAccountUncheckedUpdateManyWithoutClientInput = {

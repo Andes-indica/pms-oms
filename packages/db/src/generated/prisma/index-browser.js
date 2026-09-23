@@ -247,6 +247,20 @@ exports.Prisma.RestrictedSecurityScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.BrokerConnectionScalarFieldEnum = {
+  id: 'id',
+  brokerAccountId: 'brokerAccountId',
+  credentialsEncrypted: 'credentialsEncrypted',
+  sessionEncrypted: 'sessionEncrypted',
+  externalUserId: 'externalUserId',
+  sessionExpiresAt: 'sessionExpiresAt',
+  status: 'status',
+  metadata: 'metadata',
+  lastConnectedAt: 'lastConnectedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -328,6 +342,13 @@ exports.BasketOrderStatus = exports.$Enums.BasketOrderStatus = {
   REJECTED: 'REJECTED'
 };
 
+exports.BrokerConnectionStatus = exports.$Enums.BrokerConnectionStatus = {
+  DISCONNECTED: 'DISCONNECTED',
+  CONNECTED: 'CONNECTED',
+  EXPIRED: 'EXPIRED',
+  ERROR: 'ERROR'
+};
+
 exports.Prisma.ModelName = {
   Firm: 'Firm',
   User: 'User',
@@ -339,7 +360,8 @@ exports.Prisma.ModelName = {
   AuditLog: 'AuditLog',
   BasketOrder: 'BasketOrder',
   RiskLimit: 'RiskLimit',
-  RestrictedSecurity: 'RestrictedSecurity'
+  RestrictedSecurity: 'RestrictedSecurity',
+  BrokerConnection: 'BrokerConnection'
 };
 
 /**

@@ -46,8 +46,8 @@ async function main() {
       firmId: firm.id,
       brokerAccounts: {
         create: {
-          broker: "ZERODHA",
-          accountId: "ZD001",
+          broker: "MOCK",
+          accountId: "MOCK001",
           accountLabel: "Primary",
         },
       },
@@ -66,8 +66,8 @@ async function main() {
       firmId: firm.id,
       brokerAccounts: {
         create: {
-          broker: "ZERODHA",
-          accountId: "ZD002",
+          broker: "MOCK",
+          accountId: "MOCK002",
           accountLabel: "Primary",
         },
       },

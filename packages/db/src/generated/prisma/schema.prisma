@@ -68,6 +68,8 @@ model BrokerAccount {
 
   orders Order[]
 
+  connection BrokerConnection?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -267,4 +269,35 @@ model RestrictedSecurity {
   createdAt DateTime @default(now())
 
   @@unique([symbol, exchange])
+}
+
+enum BrokerConnectionStatus {
+  DISCONNECTED
+  CONNECTED
+  EXPIRED
+  ERROR
+}
+
+model BrokerConnection {
+  id String @id @default(cuid())
+
+  brokerAccountId String @unique
+
+  brokerAccount BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+
+  credentialsEncrypted String?
+  sessionEncrypted     String?
+
+  externalUserId String?
+
+  sessionExpiresAt DateTime?
+
+  status BrokerConnectionStatus @default(DISCONNECTED)
+
+  metadata Json?
+
+  lastConnectedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

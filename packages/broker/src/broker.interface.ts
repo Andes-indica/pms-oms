@@ -30,3 +30,9 @@ export interface BrokerAdapter {
 ): Promise<BrokerOrderResult>;
 
 }
+
+export interface BrokerOrderRecovery {
+  findOrderByClientOrderId(
+    clientOrderId: string,
+  ): Promise<BrokerOrderResult | null>;
+}

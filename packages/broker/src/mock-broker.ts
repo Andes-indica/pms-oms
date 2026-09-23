@@ -24,18 +24,18 @@ export class MockBroker implements BrokerAdapter {
     );
   }
   restoreOrder(
-    brokerOrderId:string,
-    request:BrokerOrderRequest,
-    status:BrokerOrderStatus="SUBMITTED",
-  ){
+    brokerOrderId: string,
+    request: BrokerOrderRequest,
+    status: BrokerOrderStatus = "SUBMITTED",
+  ) {
     this.orders.set(
-      brokerOrderId,{
-        request,
-        status,
-      }
+      brokerOrderId, {
+      request,
+      status,
+    }
     );
     this.brokerOrderIdsByClientOrderId.set(
-      request.clientOrderId,brokerOrderId,
+      request.clientOrderId, brokerOrderId,
     );
   }
 
@@ -154,74 +154,100 @@ export class MockBroker implements BrokerAdapter {
     return prices[symbol] ?? 1000;
   }
   async modifyOrder(
-  brokerOrderId: string,
-  changes: BrokerOrderModification,
-): Promise<BrokerOrderResult> {
-  const storedOrder =
-    this.orders.get(
+    brokerOrderId: string,
+    changes: BrokerOrderModification,
+  ): Promise<BrokerOrderResult> {
+    const storedOrder =
+      this.orders.get(
+        brokerOrderId,
+      );
+
+    if (!storedOrder) {
+      throw new Error(
+        "BROKER_ORDER_NOT_FOUND",
+      );
+    }
+
+    if (
+      storedOrder.status ===
+      "FILLED"
+    ) {
+      throw new Error(
+        "BROKER_ORDER_ALREADY_FILLED",
+      );
+    }
+
+    if (
+      storedOrder.status ===
+      "CANCELLED"
+    ) {
+      throw new Error(
+        "BROKER_ORDER_ALREADY_CANCELLED",
+      );
+    }
+
+    if (
+      changes.quantity !==
+      undefined
+    ) {
+      if (
+        changes.quantity <= 0
+      ) {
+        throw new Error(
+          "INVALID_QUANTITY",
+        );
+      }
+
+      storedOrder.request.quantity =
+        changes.quantity;
+    }
+
+    if (
+      changes.limitPrice !==
+      undefined
+    ) {
+      if (
+        changes.limitPrice <= 0
+      ) {
+        throw new Error(
+          "INVALID_LIMIT_PRICE",
+        );
+      }
+
+      storedOrder.request.limitPrice =
+        changes.limitPrice;
+    }
+
+    return {
       brokerOrderId,
-    );
-
-  if (!storedOrder) {
-    throw new Error(
-      "BROKER_ORDER_NOT_FOUND",
-    );
+      status:
+        storedOrder.status,
+    };
   }
-
-  if (
-    storedOrder.status ===
-    "FILLED"
-  ) {
-    throw new Error(
-      "BROKER_ORDER_ALREADY_FILLED",
-    );
-  }
-
-  if (
-    storedOrder.status ===
-    "CANCELLED"
-  ) {
-    throw new Error(
-      "BROKER_ORDER_ALREADY_CANCELLED",
-    );
-  }
-
-  if (
-    changes.quantity !==
-    undefined
-  ) {
-    if (
-      changes.quantity <= 0
-    ) {
-      throw new Error(
-        "INVALID_QUANTITY",
+  async findOrderByClientOrderId(
+    clientOrderId: string,
+  ): Promise<BrokerOrderResult | null> {
+    const brokerOrderId =
+      this.brokerOrderIdsByClientOrderId.get(
+        clientOrderId,
       );
+
+    if (!brokerOrderId) {
+      return null;
     }
 
-    storedOrder.request.quantity =
-      changes.quantity;
-  }
-
-  if (
-    changes.limitPrice !==
-    undefined
-  ) {
-    if (
-      changes.limitPrice <= 0
-    ) {
-      throw new Error(
-        "INVALID_LIMIT_PRICE",
+    const order =
+      this.orders.get(
+        brokerOrderId,
       );
+
+    if (!order) {
+      return null;
     }
 
-    storedOrder.request.limitPrice =
-      changes.limitPrice;
+    return {
+      brokerOrderId,
+      status: order.status,
+    };
   }
-
-  return {
-    brokerOrderId,
-    status:
-      storedOrder.status,
-  };
-}
 }

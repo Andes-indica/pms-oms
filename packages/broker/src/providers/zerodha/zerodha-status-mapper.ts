@@ -1,41 +1,35 @@
 import type {
   BrokerOrderStatus,
-} from "../types";
+} from "../../types";
 
 export function mapZerodhaStatus(
-  status: string,
+  rawStatus: string,
   filledQuantity: number,
   quantity: number,
 ): BrokerOrderStatus {
-  if (
-    status === "COMPLETE"
-  ) {
+  const status =
+    rawStatus.toUpperCase();
+
+  if (status === "COMPLETE") {
     return "FILLED";
   }
 
-  if (
-    status === "CANCELLED"
-  ) {
+  if (status === "CANCELLED") {
     return "CANCELLED";
   }
 
-  if (
-    status === "REJECTED"
-  ) {
+  if (status === "REJECTED") {
     return "REJECTED";
   }
 
   if (
     filledQuantity > 0 &&
-    filledQuantity <
-      quantity
+    filledQuantity < quantity
   ) {
     return "PARTIALLY_FILLED";
   }
 
-  if (
-    status === "OPEN"
-  ) {
+  if (status === "OPEN") {
     return "OPEN";
   }
 
