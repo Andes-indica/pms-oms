@@ -16,8 +16,7 @@
     "dev:api": "cd apps/api && bun run dev"
   },
   "dependencies": {
-    "@pms-oms/broker": "workspace:*",
-    "kiteconnect": "^5.3.0"
+    "@pms-oms/broker": "workspace:*"
   },
   "overrides": {
     "deepmerge-ts": "^8.0.0",

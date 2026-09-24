@@ -1,5 +1,5 @@
 import {
-  KiteConnect,
+  KiteConnect, type Connect
 } from "kiteconnect"
 import type {
   BrokerAdapter,
@@ -15,7 +15,7 @@ import type {
 
 import type{
   BrokerOrderRecoveryCapability,
-}from "../../broker-capbilites"
+}from "../../broker-capabilities"
 
 import type {
   ZerodhaTradingCredentials,
@@ -32,8 +32,7 @@ import {
 export class ZerodhaBroker
   implements BrokerAdapter,BrokerOrderRecoveryCapability
 {
-  private kite:
-    KiteConnect;
+  private kite: Connect;
   private mapExchange(
   exchange: string,
 ) {

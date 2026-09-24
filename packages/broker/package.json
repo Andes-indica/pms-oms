@@ -3,8 +3,8 @@
   "module": "index.ts",
   "type": "module",
   "main": "./src/index.ts",
-  "exports":{
-    ".":"./src/index.ts"
+  "exports": {
+    ".": "./src/index.ts"
   },
   "private": true,
   "devDependencies": {
@@ -12,5 +12,8 @@
   },
   "peerDependencies": {
     "typescript": ">=5"
+  },
+  "dependencies": {
+    "kiteconnect": "^5.3.0"
   }
 }

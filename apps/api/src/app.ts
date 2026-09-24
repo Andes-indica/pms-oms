@@ -10,6 +10,8 @@ import userRoutes from "./routes/user.routes";
 import PortfolioRoutes from "./routes/portfolio.routes.ts";
 import dashboardRoutes
   from "./routes/dashboard.routes";
+import brokerConnectionRoutes
+  from "./routes/broker-connection.routes";
 const app = express();
 
 app.use(cors({
@@ -21,6 +23,11 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users",userRoutes);
 app.use("/api/portfolios",PortfolioRoutes,);
 app.use("/api/dashboard",dashboardRoutes);
+app.use("/api/broker-connections", brokerConnectionRoutes);
+app.use(
+  "/api/broker-connections",
+  brokerConnectionRoutes,
+);
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",

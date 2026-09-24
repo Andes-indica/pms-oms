@@ -39,6 +39,9 @@ export type BrokerAccount = {
   id: string;
   broker: string;
   accountId: string;
+  accountLabel?: string | null;
+
+  connection?: BrokerConnection |null;
 };
 
 export type ClientOverview = {
@@ -81,4 +84,20 @@ export type PortfolioValuation = {
   portfolioValue: number;
 
   holdings: ValuedHolding[];
+};
+export type BrokerConnection = {
+  status:
+    | "DISCONNECTED"
+    | "CONNECTED"
+    | "EXPIRED"
+    | "ERROR";
+
+  externalUserId?:
+    string | null;
+
+  sessionExpiresAt?:
+    string | null;
+
+  lastConnectedAt?:
+    string | null;
 };

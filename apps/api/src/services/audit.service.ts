@@ -1,15 +1,5 @@
-import { prisma, Prisma } from "@pms-oms/db";
+import { prisma, Prisma, type AuditAction } from "@pms-oms/db";
 
-type AuditAction =
-  | "ORDER_CREATED"
-  | "ORDER_SUBMITTED"
-  | "ORDER_FILLED"
-  | "ORDER_CANCELLED"
-  | "ORDER_REJECTED"
-  | "ORDER_SYNCED"
-  | "BASKET_CREATED"
-  | "BASKET_SUBMITTED"
-  | "BASKET_CANCELLED";
 
 type CreateAuditLogInput = {
   firmId: string;

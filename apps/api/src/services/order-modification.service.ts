@@ -2,12 +2,10 @@ import {
     prisma,
 } from "@pms-oms/db";
 
-import {
-    mockBroker,
-} from "../brokers/broker-registry";
+import { resolveBroker } from "../brokers/broker-registry";
 
 import {
-    getMarketPrice,
+
 } from "./market-data.service";
 
 import {
@@ -52,12 +50,18 @@ export async function modifyOrderService(
                 },
             },
         });
+    
 
     if (!order) {
         throw new Error(
             "ORDER_NOT_FOUND",
         );
     }
+    const broker =
+        await resolveBroker(
+            order.brokerAccountId,
+            firmId,
+        );
 
     /*
      * For now only clean, unfilled live
@@ -133,7 +137,7 @@ export async function modifyOrderService(
         order.orderType ===
             "LIMIT"
             ? newLimitPrice!
-            : await getMarketPrice(
+            : await broker.getMarketPrice(
                 order.symbol,
                 order.exchange,
             );
@@ -271,7 +275,7 @@ export async function modifyOrderService(
      * after local validation succeeds.
      */
     ensureMockBrokerOrder(order);
-    await mockBroker.modifyOrder(
+    await broker.modifyOrder(
         order.brokerOrderId,
         {
             quantity:

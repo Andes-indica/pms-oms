@@ -1,6 +1,6 @@
 import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
-import { mockBroker } from "../brokers/broker-registry";
+import { mockBroker, resolveBroker } from "../brokers/broker-registry";
 import { ensureMockBrokerOrder } from "../brokers/ensure-mock-broker-order";
 
 export async function cancelOrderService(
@@ -21,6 +21,20 @@ export async function cancelOrderService(
   if (!order) {
     throw new Error("ORDER_NOT_FOUND");
   }
+
+  const broker =
+    await resolveBroker(
+      order.brokerAccountId,
+      firmId,
+    );
+
+  if (!order.brokerOrderId) {
+    throw new Error("ORDER_SUBMISSION_IN_PROGRESS");
+  }
+
+  await broker.cancelOrder(
+    order.brokerOrderId,
+  );
 
   if (order.status === "FILLED") {
     throw new Error("ORDER_ALREADY_FILLED");

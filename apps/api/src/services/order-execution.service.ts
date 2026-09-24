@@ -1,6 +1,12 @@
 import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
-import { mockBroker } from "../brokers/broker-registry";
+import {
+  resolveBroker,
+} from "../brokers/broker-registry";
+
+import {
+  supportsOrderRecovery,
+} from "@pms-oms/broker";
 import { runPreTradeChecks } from "./pre-trade.service";
 import { runRiskChecks } from "./risk.service";
 
@@ -19,6 +25,13 @@ export async function executeOrderService(
     throw new Error("ORDER_NOT_FOUND");
   }
 
+  const broker =
+  await resolveBroker(
+    existingOrder
+      .brokerAccountId,
+    firmId,
+  );
+
   if (existingOrder.brokerOrderId) {
     return existingOrder;
   }
@@ -34,7 +47,7 @@ export async function executeOrderService(
     existingOrder.orderType === "LIMIT" &&
     existingOrder.limitPrice !== null
       ? Number(existingOrder.limitPrice)
-      : await mockBroker.getEstimatedPrice(
+      : await broker.getEstimatedPrice(
           existingOrder.symbol,
           existingOrder.exchange,
         );
@@ -105,6 +118,7 @@ export async function executeOrderService(
               : 0,
         },
       });
+
     });
   } catch (error) {
     const rejectionReasons = new Set([
@@ -156,7 +170,7 @@ export async function executeOrderService(
     return claimedOrder;
   }
 
-  const brokerResult = await mockBroker.placeOrder({
+  const brokerResult = await broker.placeOrder({
     clientOrderId: claimedOrder.id,
     symbol: claimedOrder.symbol,
     exchange: claimedOrder.exchange,
