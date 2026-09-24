@@ -190,7 +190,23 @@ export async function getClientOverview(
         },
 
         include: {
-          brokerAccounts: true,
+          brokerAccounts: {
+            select :{
+              id:true,
+              broker:true,
+              accountId:true,
+              accountLabel:true,
+
+              connection:{
+                select:{
+                  status:true,
+                  externalUserId:true,
+                  sessionEncrypted:true,
+                  lastConnectedAt:true
+                }
+              }
+            }
+          },
 
           portfolios: {
             include: {

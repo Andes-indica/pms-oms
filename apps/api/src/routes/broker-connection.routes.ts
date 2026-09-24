@@ -1,31 +1,76 @@
-import { Router } from "express";
 import {
-	configureZerodha,
-	getBrokerConnection,
-	getZerodhaLoginUrl,
-	createZerodhaSession,
+  Router,
+} from "express";
+
+import {
+  configureZerodha,
+  createZerodhaSession,
+  getBrokerConnection,
+  getZerodhaLoginUrl,
 } from "../controllers/broker-connection.controller";
-import { requireAuth } from "../middleware/auth.middleware";
 
-const router = Router();
+import {
+  requireAuth,
+} from "../middleware/auth.middleware";
 
-router.use(requireAuth);
+import {
+  requireRole,
+} from "../middleware/role.middleware";
 
+const router =
+  Router();
+
+router.use(
+  requireAuth,
+);
+
+/*
+ * Configuring credentials and starting
+ * broker authentication can affect a
+ * real trading account.
+ *
+ * Restrict these operations.
+ */
 router.put(
-	"/:brokerAccountId/zerodha/configure",
-	configureZerodha,
+  "/:brokerAccountId/zerodha/configure",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+
+  configureZerodha,
 );
+
 router.get(
-	"/:brokerAccountId/zerodha/login-url",
-	getZerodhaLoginUrl,
+  "/:brokerAccountId/zerodha/login-url",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+
+  getZerodhaLoginUrl,
 );
+
 router.post(
-	"/:brokerAccountId/zerodha/session",
-	createZerodhaSession,
+  "/:brokerAccountId/zerodha/session",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+
+  createZerodhaSession,
 );
+
+/*
+ * Connection status itself is safe
+ * for any authenticated user to view.
+ */
 router.get(
-	"/:brokerAccountId",
-	getBrokerConnection,
+  "/:brokerAccountId",
+  getBrokerConnection,
 );
 
 export default router;

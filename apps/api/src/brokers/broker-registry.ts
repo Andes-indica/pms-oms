@@ -1,130 +1,135 @@
 import { MockBroker } from "@pms-oms/broker";
 
 import {
-  type BrokerAdapter,
+    type BrokerAdapter,
 } from "@pms-oms/broker";
 
 import {
-  prisma,
+    prisma,
 } from "@pms-oms/db";
 
 import type {
-  BrokerFactory,
+    BrokerFactory,
 } from "./broker-factory.types";
 
 import {
-  createZerodhaBroker,
+    createZerodhaBroker,
 } from "./providers/zerodha.factory";
 
 import {
-  decryptBrokerData,
+    decryptBrokerData,
 } from "../security/broker-credential-crypto";
 
 export const mockBroker =
-  new MockBroker();
+    new MockBroker();
 
 const factories =
-  new Map<
-    string,
-    BrokerFactory
-  >();
+    new Map<
+        string,
+        BrokerFactory
+    >();
 
 factories.set(
-  "MOCK",
-  async () => mockBroker,
+    "MOCK",
+    async () => mockBroker,
 );
 
 factories.set(
-  "ZERODHA",
-  createZerodhaBroker,
+    "ZERODHA",
+    createZerodhaBroker,
 );
 
 export async function resolveBroker(
-  brokerAccountId: string,
-  firmId: string,
+    brokerAccountId: string,
+    firmId: string,
 ): Promise<BrokerAdapter> {
-  const account =
-    await prisma
-      .brokerAccount
-      .findFirst({
-        where: {
-          id: brokerAccountId,
+    const account =
+        await prisma
+            .brokerAccount
+            .findFirst({
+                where: {
+                    id: brokerAccountId,
 
-          client: {
-            firmId,
-          },
-        },
+                    client: {
+                        firmId,
+                    },
+                },
 
-        include: {
-          connection: true,
-        },
-      });
+                include: {
+                    connection: true,
+                },
+            });
 
-  if (!account) {
-    throw new Error(
-      "BROKER_ACCOUNT_NOT_FOUND",
-    );
-  }
+    if (!account) {
+        throw new Error(
+            "BROKER_ACCOUNT_NOT_FOUND",
+        );
+    }
 
-  const brokerName =
-    account.broker
-      .toUpperCase();
+    const brokerName =
+        account.broker
+            .toUpperCase();
 
-  const factory =
-    factories.get(
-      brokerName,
-    );
+    const factory =
+        factories.get(
+            brokerName,
+        );
 
-  if (!factory) {
-    throw new Error(
-      "UNSUPPORTED_BROKER",
-    );
-  }
+    if (!factory) {
+        throw new Error(
+            "UNSUPPORTED_BROKER",
+        );
+    }
+    if (
+        brokerName !== "MOCK" &&
+        (
+            !account.connection ||
+            !account.connection
+                .credentialsEncrypted ||
+            !account.connection
+                .sessionEncrypted
+        )
+    ) {
+        throw new Error(
+            "BROKER_NOT_CONNECTED",
+        );
+    }
 
-  if (
-    brokerName !== "MOCK" &&
-    !account.connection
-  ) {
-    throw new Error(
-      "BROKER_NOT_CONNECTED",
-    );
-  }
+    if (
+        account.connection
+            ?.sessionExpiresAt &&
+        account.connection
+            .sessionExpiresAt <=
+        new Date()
+    ) {
+        throw new Error(
+            "BROKER_SESSION_EXPIRED",
+        );
+    }
 
-  if (
-    account.connection
-      ?.sessionExpiresAt &&
-    account.connection
-      .sessionExpiresAt <=
-      new Date()
-  ) {
-    throw new Error(
-      "BROKER_SESSION_EXPIRED",
-    );
-  }
+    return factory({
+        brokerAccountId:
+            account.id,
 
-  return factory({
-    brokerAccountId:
-      account.id,
+        accountId:
+            account.accountId,
 
-    accountId:
-      account.accountId,
-
-    credentials:
-      account.connection
-        ?.credentialsEncrypted
-        ? decryptBrokerData(
+        credentials:
             account.connection
-              .credentialsEncrypted,
-          )
-        : null,
+                ?.credentialsEncrypted
+                ? decryptBrokerData(
+                    account.connection
+                        .credentialsEncrypted,
+                )
+                : null,
 
-    session:
-      account.connection
-        ?.sessionEncrypted
-        ? decryptBrokerData(
+        session:
             account.connection
-              .sessionEncrypted,
-          )
-        : null,
-  });
+                ?.sessionEncrypted
+                ? decryptBrokerData(
+                    account.connection
+                        .sessionEncrypted,
+                )
+                : null,
+    });
 }

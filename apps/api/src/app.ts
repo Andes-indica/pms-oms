@@ -24,10 +24,6 @@ app.use("/api/users",userRoutes);
 app.use("/api/portfolios",PortfolioRoutes,);
 app.use("/api/dashboard",dashboardRoutes);
 app.use("/api/broker-connections", brokerConnectionRoutes);
-app.use(
-  "/api/broker-connections",
-  brokerConnectionRoutes,
-);
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",

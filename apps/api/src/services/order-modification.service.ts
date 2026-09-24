@@ -2,11 +2,10 @@ import {
     prisma,
 } from "@pms-oms/db";
 
-import { resolveBroker } from "../brokers/broker-registry";
-
 import {
-
-} from "./market-data.service";
+    mockBroker,
+    resolveBroker,
+} from "../brokers/broker-registry";
 
 import {
     createAuditLog,
@@ -50,7 +49,7 @@ export async function modifyOrderService(
                 },
             },
         });
-    
+
 
     if (!order) {
         throw new Error(
@@ -137,7 +136,7 @@ export async function modifyOrderService(
         order.orderType ===
             "LIMIT"
             ? newLimitPrice!
-            : await broker.getMarketPrice(
+            : await broker.getEstimatedPrice(
                 order.symbol,
                 order.exchange,
             );
@@ -274,7 +273,12 @@ export async function modifyOrderService(
      * Broker modification happens only
      * after local validation succeeds.
      */
-    ensureMockBrokerOrder(order);
+    if (broker === mockBroker) {
+        ensureMockBrokerOrder(
+            order,
+        );
+    }
+
     await broker.modifyOrder(
         order.brokerOrderId,
         {

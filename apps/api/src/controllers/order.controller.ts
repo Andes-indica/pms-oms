@@ -192,6 +192,11 @@ export async function executeOrder(
             error: "Order not found",
           });
 
+        case "BROKER_SUBMISSION_UNCERTAIN":
+          return res.status(409).json({
+            error:
+            "Broker submission state is uncertain. Do not retry automatically; reconcile the order first.",
+          });
         case "ORDER_NOT_PENDING":
           return res.status(409).json({
             error: "Order is not pending",
