@@ -38,6 +38,15 @@ factories.set(
     "ZERODHA",
     createZerodhaBroker,
 );
+export function isBrokerSupported(
+  broker: string,
+): boolean {
+  return factories.has(
+    broker
+      .trim()
+      .toUpperCase(),
+  );
+}
 
 export async function resolveBroker(
     brokerAccountId: string,

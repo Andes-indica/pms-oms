@@ -12,6 +12,8 @@ import dashboardRoutes
   from "./routes/dashboard.routes";
 import brokerConnectionRoutes
   from "./routes/broker-connection.routes";
+import brokerAccountRoutes
+  from "./routes/broker-account.routes";
 const app = express();
 
 app.use(cors({
@@ -24,6 +26,10 @@ app.use("/api/users",userRoutes);
 app.use("/api/portfolios",PortfolioRoutes,);
 app.use("/api/dashboard",dashboardRoutes);
 app.use("/api/broker-connections", brokerConnectionRoutes);
+app.use(
+  "/api",
+  brokerAccountRoutes,
+);
 app.get("/health", (_req, res) => {
   res.json({
     status: "ok",

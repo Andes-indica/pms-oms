@@ -201,7 +201,7 @@ export async function getClientOverview(
                 select:{
                   status:true,
                   externalUserId:true,
-                  sessionEncrypted:true,
+                  sessionExpiresAt:true,
                   lastConnectedAt:true
                 }
               }
