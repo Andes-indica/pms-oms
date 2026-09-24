@@ -21,6 +21,67 @@ type CreateOrderBody = {
 };
 
 type AuthenticatedRequest = BaseAuthenticatedRequest & Request<{}, {}, CreateOrderBody>;
+function handleBrokerError(
+  res: Response,
+  error: unknown,
+): Response | null {
+  if (!(error instanceof Error)) {
+    return null;
+  }
+
+  switch (error.message) {
+    case "BROKER_ACCOUNT_NOT_FOUND":
+      return res.status(404).json({
+        error:
+          "Broker account not found",
+      });
+
+    case "UNSUPPORTED_BROKER":
+      return res.status(400).json({
+        error:
+          "Broker is not supported",
+      });
+
+    case "BROKER_NOT_CONNECTED":
+      return res.status(409).json({
+        error:
+          "Broker account is not connected",
+      });
+
+    case "BROKER_SESSION_EXPIRED":
+      return res.status(409).json({
+        error:
+          "Broker session has expired. Reconnect the broker account.",
+      });
+
+    case "BROKER_UNSUPPORTED_EXCHANGE":
+      return res.status(400).json({
+        error:
+          "This broker does not support the requested exchange",
+      });
+
+    case "MARKET_PRICE_UNAVAILABLE":
+      return res.status(502).json({
+        error:
+          "Unable to fetch market price from broker",
+      });
+
+    case "BROKER_ORDER_NOT_FOUND":
+      return res.status(409).json({
+        error:
+          "Broker order could not be found",
+      });
+
+    case "BROKER_ORDER_ID_MISSING":
+      return res.status(502).json({
+        error:
+          "Broker accepted the request without returning an order ID",
+      });
+
+    default:
+      return null;
+  }
+}
 
 export async function createOrder(
   req: AuthenticatedRequest,
@@ -185,6 +246,14 @@ export async function executeOrder(
       data: order,
     });
   } catch (error) {
+    const brokerError= 
+    handleBrokerError(
+      res,
+      error,
+    );
+    if(brokerError){
+      return brokerError;
+    }
     if (error instanceof Error) {
       switch (error.message) {
         case "ORDER_NOT_FOUND":
@@ -268,6 +337,11 @@ export async function syncOrder(
       data: order,
     });
   } catch (error) {
+    const brokerError=
+    handleBrokerError(res,error); 
+    if(brokerError){
+      return brokerError;
+    }
     if (error instanceof Error) {
       if (error.message === "ORDER_NOT_FOUND") {
         return res.status(404).json({
@@ -313,6 +387,14 @@ export async function cancelOrder(
       data: order,
     });
   } catch (error) {
+    const brokerError= 
+    handleBrokerError(
+      res,
+      error,
+    );
+    if(brokerError){
+      return brokerError;
+    }
     if (error instanceof Error) {
       switch (error.message) {
         case "ORDER_NOT_FOUND":
@@ -381,6 +463,13 @@ export async function modifyOrder(
       data: order,
     });
   } catch (error) {
+    const brokerError=
+    handleBrokerError(
+      res,error,
+    );
+    if(brokerError){
+      return brokerError;
+    }
     const message =
       error instanceof Error
         ? error.message

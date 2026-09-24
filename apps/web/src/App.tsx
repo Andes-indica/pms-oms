@@ -17,6 +17,9 @@ import {
 import {
   UsersPage,
 } from "./pages/UsersPage";
+import {
+  ZerodhaCallbackPage,
+} from "./pages/ZerodhacallbackPage";
 
 function App() {
   const token = localStorage.getItem("accessToken");
@@ -28,7 +31,14 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route element={<AppLayout />}>
+        <Route path="/broker/zerodha/callback"
+        element={
+          <ZerodhaCallbackPage/>
+        }/>
+        <Route
+        element={
+          <AppLayout/>
+        }>
           <Route
             path="/"
             element={<DashboardPage />}

@@ -102,6 +102,20 @@ export async function resolveBroker(
             .sessionExpiresAt <=
         new Date()
     ) {
+        if(account.connection.status!== "EXPIRED"){
+            await prisma 
+            .brokerConnection
+            .update({
+                where:{
+                    brokerAccountId:account.id,
+                },
+                data:{
+                    status:"EXPIRED",
+                },
+            });
+        }
+    
+    
         throw new Error(
             "BROKER_SESSION_EXPIRED",
         );

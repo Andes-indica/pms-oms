@@ -22,6 +22,10 @@ import type {
   ClientOverview,
 } from "../components/client/types";
 
+import {
+  BrokerAccountsCard,
+} from "../components/client/BrokerAccountsCard";
+
 type Response = {
   data: ClientOverview;
 };
@@ -39,6 +43,11 @@ export function ClientDetailPage() {
 
   const [error, setError] =
     useState("");
+  const [
+    refreshKey,
+    setRefreshKey,
+  ] =
+    useState(0);
 
   useEffect(() => {
     async function loadClient() {
@@ -66,7 +75,7 @@ export function ClientDetailPage() {
     }
 
     loadClient();
-  }, [id]);
+  }, [id,refreshKey,]);
 
   if (loading) {
     return (
@@ -114,7 +123,15 @@ export function ClientDetailPage() {
       <ClientSummaryCards
         client={client}
       />
-
+      <BrokerAccountsCard
+        accounts={
+          client.brokerAccounts
+        } onChanged={()=>
+          setRefreshKey(
+            (current)=> current+1
+          )
+        }
+      />
       {client.portfolios.map(
         (portfolio) => (
           <PortfolioSection
