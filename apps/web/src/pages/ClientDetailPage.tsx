@@ -124,6 +124,7 @@ export function ClientDetailPage() {
         client={client}
       />
       <BrokerAccountsCard
+      clientId={client.id}
         accounts={
           client.brokerAccounts
         } onChanged={()=>

@@ -11,6 +11,7 @@ import type {
 } from "./types";
 
 type Props = {
+    clientId: string;
     accounts: BrokerAccount[];
     onChanged?: () => void;
 };
@@ -102,7 +103,7 @@ function canManageBrokerAccounts() {
 }
 
 export function BrokerAccountsCard({
-    accounts, onChanged
+    clientId, accounts, onChanged
 }: Props) {
     const [editingId, setEditingId] =
         useState<string | null>(
@@ -117,6 +118,24 @@ export function BrokerAccountsCard({
             apiKey: "",
             apiSecret: "",
         });
+    const [
+        addingAccount,
+        setAddingAccount,
+    ] = useState(false);
+
+    const [
+        creatingAccount,
+        setCreatingAccount,
+    ] = useState(false);
+
+    const [
+        newAccount,
+        setNewAccount,
+    ] = useState({
+        broker: "ZERODHA",
+        accountId: "",
+        accountLabel: "",
+    });
     const [
         connectingId,
         setConnectingId,
@@ -169,6 +188,72 @@ export function BrokerAccountsCard({
         setError("");
     }
 
+    async function createBrokerAccount() {
+        setError("");
+        setMessage("");
+
+        if (!newAccount.accountId.trim()) {
+            setError(
+                "Broker account ID is required.",
+            );
+
+            return;
+        }
+
+        try {
+            setCreatingAccount(true);
+
+            await apiFetch<{
+                data: {
+                    id: string;
+                    broker: string;
+                    accountId: string;
+                    accountLabel:
+                    | string
+                    | null;
+                };
+            }>(
+                `/api/clients/${clientId}/broker-accounts`,
+                {
+                    method: "POST",
+
+                    body: JSON.stringify({
+                        broker:
+                            newAccount.broker,
+
+                        accountId:
+                            newAccount.accountId.trim(),
+
+                        accountLabel:
+                            newAccount.accountLabel.trim() ||
+                            undefined,
+                    }),
+                },
+            );
+
+            setNewAccount({
+                broker: "ZERODHA",
+                accountId: "",
+                accountLabel: "",
+            });
+
+            setAddingAccount(false);
+
+            setMessage(
+                "Broker account added successfully.",
+            );
+
+            onChanged?.();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to add broker account",
+            );
+        } finally {
+            setCreatingAccount(false);
+        }
+    }
     async function configureZerodha(
         account: BrokerAccount,
     ) {
@@ -233,16 +318,165 @@ export function BrokerAccountsCard({
 
     return (
         <section className="rounded-xl border bg-white">
-            <div className="border-b px-5 py-4">
-                <h3 className="font-semibold text-slate-900">
-                    Broker Accounts
-                </h3>
+            <div className="flex items-center justify-between border-b px-5 py-4">
+                <div>
+                    <h3 className="font-semibold text-slate-900">
+                        Broker Accounts
+                    </h3>
 
-                <p className="mt-1 text-sm text-slate-500">
-                    Trading accounts connected to this client.
-                </p>
+                    <p className="mt-1 text-sm text-slate-500">
+                        Trading accounts connected to this client.
+                    </p>
+                </div>
+
+                {canManage && (
+                    <button
+                        type="button"
+                        onClick={() => {
+                            setAddingAccount(
+                                (current) =>
+                                    !current,
+                            );
+
+                            setError("");
+                            setMessage("");
+                        }}
+                        className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white"
+                    >
+                        Add Broker Account
+                    </button>
+                )}
             </div>
+            {addingAccount && (
+                <div className="border-b bg-slate-50 p-5">
+                    <div className="grid gap-4 sm:grid-cols-3">
+                        <label className="text-sm">
+                            <span className="text-slate-600">
+                                Broker
+                            </span>
 
+                            <select
+                                value={
+                                    newAccount.broker
+                                }
+                                onChange={(event) =>
+                                    setNewAccount(
+                                        (current) => ({
+                                            ...current,
+
+                                            broker:
+                                                event.target
+                                                    .value,
+                                        }),
+                                    )
+                                }
+                                className="mt-1 w-full rounded-lg border bg-white px-3 py-2"
+                            >
+                                <option value="ZERODHA">
+                                    Zerodha
+                                </option>
+                            </select>
+                        </label>
+
+                        <label className="text-sm">
+                            <span className="text-slate-600">
+                                Account ID
+                            </span>
+
+                            <input
+                                value={
+                                    newAccount.accountId
+                                }
+                                onChange={(event) =>
+                                    setNewAccount(
+                                        (current) => ({
+                                            ...current,
+
+                                            accountId:
+                                                event.target
+                                                    .value,
+                                        }),
+                                    )
+                                }
+                                placeholder="e.g. AB1234"
+                                autoComplete="off"
+                                className="mt-1 w-full rounded-lg border bg-white px-3 py-2"
+                            />
+                        </label>
+
+                        <label className="text-sm">
+                            <span className="text-slate-600">
+                                Label
+                            </span>
+
+                            <input
+                                value={
+                                    newAccount.accountLabel
+                                }
+                                onChange={(event) =>
+                                    setNewAccount(
+                                        (current) => ({
+                                            ...current,
+
+                                            accountLabel:
+                                                event.target
+                                                    .value,
+                                        }),
+                                    )
+                                }
+                                placeholder="Primary"
+                                className="mt-1 w-full rounded-lg border bg-white px-3 py-2"
+                            />
+                        </label>
+                    </div>
+
+                    <p className="mt-3 text-xs text-slate-500">
+                        Account ID must be the actual Zerodha user ID that will log in to this account.
+                    </p>
+
+                    <div className="mt-4 flex gap-2">
+                        <button
+                            type="button"
+                            disabled={
+                                creatingAccount
+                            }
+                            onClick={
+                                createBrokerAccount
+                            }
+                            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                        >
+                            {creatingAccount
+                                ? "Adding..."
+                                : "Add Account"}
+                        </button>
+
+                        <button
+                            type="button"
+                            disabled={
+                                creatingAccount
+                            }
+                            onClick={() => {
+                                setAddingAccount(
+                                    false,
+                                );
+
+                                setNewAccount({
+                                    broker:
+                                        "ZERODHA",
+
+                                    accountId: "",
+
+                                    accountLabel:
+                                        "",
+                                });
+                            }}
+                            className="rounded-lg border px-4 py-2 text-sm text-slate-700"
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            )}
             {message && (
                 <div className="mx-5 mt-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
                     {message}
