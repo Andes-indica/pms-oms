@@ -38,8 +38,5 @@ describe("MockBroker", () => {
     expect(update.filledQuantity).toBe(0);
   });
 
-  test("returns symbol-specific market estimates", async () => {
-    const broker = new MockBroker();
-    expect(await broker.getEstimatedPrice("TCS", "NSE")).toBe(3200);
-  });
+  
 });

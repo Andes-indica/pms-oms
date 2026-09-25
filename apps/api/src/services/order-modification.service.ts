@@ -16,6 +16,9 @@ export type ModifyOrderInput = {
     limitPrice?: number;
 };
 import { ensureMockBrokerOrder } from "../brokers/ensure-mock-broker-order";
+import {
+    getMarketPrice,
+} from "./market-data.service";
 
 const ACTIVE_STATUSES = [
     "PENDING",
@@ -136,7 +139,7 @@ export async function modifyOrderService(
         order.orderType ===
             "LIMIT"
             ? newLimitPrice!
-            : await broker.getEstimatedPrice(
+            : await getMarketPrice(
                 order.symbol,
                 order.exchange,
             );

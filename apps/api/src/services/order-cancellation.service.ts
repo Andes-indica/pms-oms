@@ -1,4 +1,7 @@
 import {
+  BrokerError,
+} from "@pms-oms/broker";
+import {
   prisma,
 } from "@pms-oms/db";
 
@@ -242,30 +245,43 @@ export async function cancelOrderService(
   }
 
   try {
-    await broker.cancelOrder(
-      liveOrder.brokerOrderId,
-    );
-  } catch (error) {
+  await broker.cancelOrder(
+    liveOrder.brokerOrderId,
+  );
+} catch (error) {
+  if (
+    error instanceof
+      BrokerError &&
+    error.code ===
+      "BROKER_ORDER_NOT_FOUND"
+  ) {
     /*
-     * MockBroker exposes this generic
-     * broker-level error.
+     * Cancellation may fail because the
+     * order already transitioned at the
+     * broker — for example REJECTED or
+     * FILLED.
      *
-     * Provider-specific error
-     * normalization can be added later
-     * inside each broker adapter.
+     * Reconcile before deciding what
+     * PMS state should be.
      */
-    if (
-      error instanceof Error &&
-      error.message ===
-        "BROKER_ORDER_ALREADY_FILLED"
-    ) {
-      throw new Error(
-        "ORDER_ALREADY_FILLED",
-      );
-    }
-
-    throw error;
+    return syncOrderService(
+      liveOrder.id,
+      firmId,
+    );
   }
+
+  if (
+    error instanceof Error &&
+    error.message ===
+      "BROKER_ORDER_ALREADY_FILLED"
+  ) {
+    throw new Error(
+      "ORDER_ALREADY_FILLED",
+    );
+  }
+
+  throw error;
+}
 
   /*
    * Do NOT manually mark a real broker

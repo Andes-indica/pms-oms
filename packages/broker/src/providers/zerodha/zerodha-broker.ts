@@ -29,6 +29,101 @@ import {
   createZerodhaOrderTag
 } from "./zerodha-tag";
 
+import {
+  BrokerError,
+} from "../../broker-error";
+
+type ZerodhaErrorLike = {
+  message?: unknown;
+  error_type?: unknown;
+};
+
+function normalizeZerodhaError(
+  error: unknown,
+): BrokerError {
+  const candidate =
+    error as
+    ZerodhaErrorLike;
+
+  const message =
+    typeof candidate?.message ===
+      "string"
+      ? candidate.message
+      : "Unknown Zerodha error";
+
+  const errorType =
+    typeof candidate?.error_type ===
+      "string"
+      ? candidate.error_type
+      : "";
+
+  if (
+    errorType ===
+    "MarginException"
+  ) {
+    return new BrokerError(
+      "BROKER_INSUFFICIENT_FUNDS",
+      message,
+      true,
+    );
+  }
+
+  if (
+    errorType ===
+    "InputException"
+  ) {
+    return new BrokerError(
+      "BROKER_ORDER_REJECTED",
+      message,
+      true,
+    );
+  }
+
+  if (
+    errorType ===
+    "TokenException"
+  ) {
+    return new BrokerError(
+      "BROKER_SESSION_INVALID",
+      message,
+      true,
+    );
+  }
+
+  if (
+    errorType ===
+    "PermissionException"
+  ) {
+    return new BrokerError(
+      "BROKER_PERMISSION_DENIED",
+      message,
+      true,
+    );
+  }
+
+  if (
+    errorType ===
+    "OrderException" &&
+    message
+      .toLowerCase()
+      .includes(
+        "does not exist",
+      )
+  ) {
+    return new BrokerError(
+      "BROKER_ORDER_NOT_FOUND",
+      message,
+      true,
+    );
+  }
+
+  return new BrokerError(
+    "BROKER_OPERATION_UNCERTAIN",
+    message,
+    false,
+  );
+}
+
 export class ZerodhaBroker
   implements BrokerAdapter, BrokerOrderRecoveryCapability {
   private kite: Connect;
@@ -136,56 +231,64 @@ export class ZerodhaBroker
         order.exchange,
       );
 
-    const response =
-      await this.kite.placeOrder(
-        this.kite.VARIETY_REGULAR,
-        {
-          exchange,
+    let response;
 
-          tradingsymbol:
-            order.symbol,
+    try {
+      response =
+        await this.kite.placeOrder(
+          this.kite.VARIETY_REGULAR,
+          {
+            exchange,
 
-          transaction_type:
-            order.side === "BUY"
-              ? this.kite
-                .TRANSACTION_TYPE_BUY
-              : this.kite
-                .TRANSACTION_TYPE_SELL,
+            tradingsymbol:
+              order.symbol,
 
-          order_type:
-            order.orderType ===
-              "MARKET"
-              ? this.kite
-                .ORDER_TYPE_MARKET
-              : this.kite
-                .ORDER_TYPE_LIMIT,
+            transaction_type:
+              order.side === "BUY"
+                ? this.kite
+                  .TRANSACTION_TYPE_BUY
+                : this.kite
+                  .TRANSACTION_TYPE_SELL,
 
-          product:
-            this.kite.PRODUCT_CNC,
+            order_type:
+              order.orderType ===
+                "MARKET"
+                ? this.kite
+                  .ORDER_TYPE_MARKET
+                : this.kite
+                  .ORDER_TYPE_LIMIT,
 
-          validity:
-            this.kite.VALIDITY_DAY,
+            product:
+              this.kite.PRODUCT_CNC,
 
-          quantity:
-            order.quantity,
+            validity:
+              this.kite.VALIDITY_DAY,
 
-          ...(order.orderType ===
-            "LIMIT"
-            ? {
-              price:
-                order.limitPrice!,
-            }
-            : {
-              market_protection:
-                -1,
-            }),
+            quantity:
+              order.quantity,
 
-          tag:
-            createZerodhaOrderTag(
-              order.clientOrderId,
-            ),
-        },
+            ...(order.orderType ===
+              "LIMIT"
+              ? {
+                price:
+                  order.limitPrice!,
+              }
+              : {
+                market_protection:
+                  -1,
+              }),
+
+            tag:
+              createZerodhaOrderTag(
+                order.clientOrderId,
+              ),
+          },
+        );
+    } catch (error) {
+      throw normalizeZerodhaError(
+        error,
       );
+    }
 
     if (!response?.order_id) {
       throw new Error(
@@ -284,10 +387,16 @@ export class ZerodhaBroker
   async cancelOrder(
     brokerOrderId: string,
   ): Promise<BrokerCancellationResult> {
-    await this.kite.cancelOrder(
-      this.kite.VARIETY_REGULAR,
-      brokerOrderId,
-    );
+    try {
+      await this.kite.cancelOrder(
+        this.kite.VARIETY_REGULAR,
+        brokerOrderId,
+      );
+    } catch (error) {
+      throw normalizeZerodhaError(
+        error,
+      );
+    }
 
     return {
       brokerOrderId,
@@ -326,35 +435,7 @@ export class ZerodhaBroker
       status: "SUBMITTED",
     };
   }
-  async getEstimatedPrice(
-    symbol: string,
-    exchange: string,
-  ): Promise<number> {
-    const instrument =
-      `${exchange.toUpperCase()}:${symbol.toUpperCase()}`;
 
-    const result =
-      await this.kite.getLTP(
-        [instrument],
-      );
-
-    const price =
-      Number(
-        result?.[instrument]
-          ?.last_price,
-      );
-
-    if (
-      !Number.isFinite(price) ||
-      price <= 0
-    ) {
-      throw new Error(
-        "MARKET_PRICE_UNAVAILABLE",
-      );
-    }
-
-    return price;
-  }
   async findOrderByClientOrderId(
     clientOrderId: string,
   ): Promise<BrokerOrderResult | null> {

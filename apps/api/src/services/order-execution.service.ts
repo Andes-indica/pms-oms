@@ -1,6 +1,7 @@
 import { prisma } from "@pms-oms/db";
 
 import {
+  BrokerError,
   supportsOrderRecovery,
   type BrokerOrderResult,
 } from "@pms-oms/broker";
@@ -20,6 +21,9 @@ import {
 import {
   runRiskChecks,
 } from "./risk.service";
+import {
+  getMarketPrice,
+} from "./market-data.service";
 
 export async function executeOrderService(
   orderId: string,
@@ -56,9 +60,9 @@ export async function executeOrderService(
 
   if (
     existingOrder.status !==
-      "PENDING" &&
+    "PENDING" &&
     existingOrder.status !==
-      "SUBMITTED"
+    "SUBMITTED"
   ) {
     throw new Error(
       "ORDER_NOT_PENDING",
@@ -75,17 +79,15 @@ export async function executeOrderService(
   const estimatedPrice =
     existingOrder.orderType ===
       "LIMIT" &&
-    existingOrder.limitPrice !==
+      existingOrder.limitPrice !==
       null
       ? Number(
-          existingOrder
-            .limitPrice,
-        )
-      : await broker
-          .getEstimatedPrice(
-            existingOrder.symbol,
-            existingOrder.exchange,
-          );
+        existingOrder.limitPrice,
+      )
+      : await getMarketPrice(
+        existingOrder.symbol,
+        existingOrder.exchange,
+      );
 
   if (
     !Number.isFinite(
@@ -243,17 +245,17 @@ export async function executeOrderService(
 
                 reservedCash:
                   checkedOrder.side ===
-                  "BUY"
+                    "BUY"
                     ? checkedOrder
-                        .quantity *
-                      estimatedPrice
+                      .quantity *
+                    estimatedPrice
                     : 0,
 
                 reservedQuantity:
                   checkedOrder.side ===
-                  "SELL"
+                    "SELL"
                     ? checkedOrder
-                        .quantity
+                      .quantity
                     : 0,
               },
             });
@@ -407,35 +409,137 @@ export async function executeOrderService(
      * This request owns the first actual
      * submission attempt.
      */
-    brokerResult =
-      await broker.placeOrder({
-        clientOrderId:
-          claimedOrder.id,
+    try {
+      brokerResult =
+        await broker.placeOrder({
+          clientOrderId:
+            claimedOrder.id,
 
-        symbol:
-          claimedOrder.symbol,
+          symbol:
+            claimedOrder.symbol,
 
-        exchange:
-          claimedOrder.exchange,
+          exchange:
+            claimedOrder.exchange,
 
-        side:
-          claimedOrder.side,
+          side:
+            claimedOrder.side,
 
-        orderType:
-          claimedOrder.orderType,
+          orderType:
+            claimedOrder.orderType,
 
-        quantity:
-          claimedOrder.quantity,
+          quantity:
+            claimedOrder.quantity,
 
-        limitPrice:
-          claimedOrder.limitPrice !==
-          null
-            ? Number(
-                claimedOrder
-                  .limitPrice,
+          limitPrice:
+            claimedOrder.limitPrice !==
+              null
+              ? Number(
+                claimedOrder.limitPrice,
               )
-            : null,
-      });
+              : null,
+        });
+    } catch (error) {
+      /*
+       * Broker explicitly told us the
+       * order was NOT accepted.
+       *
+       * It is safe to release reservations
+       * and make the PMS order terminal.
+       */
+      if (
+        error instanceof
+        BrokerError &&
+        error.definitive
+      ) {
+        await prisma.$transaction(
+          async (tx) => {
+            await tx.$queryRaw`
+          SELECT "id"
+          FROM "Portfolio"
+          WHERE "id" = ${claimedOrder.portfolioId}
+          FOR UPDATE
+        `;
+
+            await tx.$queryRaw`
+          SELECT "id"
+          FROM "Order"
+          WHERE "id" = ${claimedOrder.id}
+          FOR UPDATE
+        `;
+
+            const rejected =
+              await tx.order.updateMany({
+                where: {
+                  id:
+                    claimedOrder.id,
+
+                  brokerOrderId:
+                    null,
+
+                  status:
+                    "SUBMITTED",
+
+                  portfolio: {
+                    client: {
+                      firmId,
+                    },
+                  },
+                },
+
+                data: {
+                  status:
+                    "REJECTED",
+
+                  reservedCash: 0,
+
+                  reservedQuantity: 0,
+                },
+              });
+
+            if (
+              rejected.count > 0
+            ) {
+              await createAuditLog(
+                {
+                  firmId,
+
+                  action:
+                    "ORDER_REJECTED",
+
+                  entityType:
+                    "ORDER",
+
+                  entityId:
+                    claimedOrder.id,
+
+                  message:
+                    "Order rejected by broker",
+
+                  metadata: {
+                    code:
+                      error.code,
+
+                    brokerMessage:
+                      error.brokerMessage,
+                  },
+                },
+
+                tx,
+              );
+            }
+          },
+        );
+      }
+
+      /*
+       * Unknown/network failure:
+       * leave SUBMITTED intact.
+       *
+       * Recovery must determine whether
+       * the broker actually received it.
+       */
+      throw error;
+    }
   }
 
   /*

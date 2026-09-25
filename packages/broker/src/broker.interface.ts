@@ -19,10 +19,7 @@ export interface BrokerAdapter {
     brokerOrderId: string,
   ): Promise<BrokerCancellationResult>;
 
-  getEstimatedPrice(
-    symbol: string,
-    exchange: string,
-  ): Promise<number>;
+
 
   modifyOrder(
   brokerOrderId: string,

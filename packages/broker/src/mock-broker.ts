@@ -136,13 +136,8 @@ export class MockBroker implements BrokerAdapter {
     };
   }
 
-  async getEstimatedPrice(
-    symbol: string,
-    _exchange: string,
-  ): Promise<number> {
-    return this.getMockMarketPrice(symbol);
-  }
-
+ 
+  
   private getMockMarketPrice(symbol: string): number {
     const prices: Record<string, number> = {
       RELIANCE: 1450,
