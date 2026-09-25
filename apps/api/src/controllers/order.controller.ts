@@ -77,6 +77,17 @@ function handleBrokerError(
         error:
           "Broker accepted the request without returning an order ID",
       });
+    case "BROKER_FILL_DETAILS_UNAVAILABLE":
+      return res.status(502).json({
+        error:
+          "Broker reported fills but fill details are not yet available. Retry synchronization.",
+      });
+
+    case "BROKER_INVALID_ORDER_STATE":
+      return res.status(502).json({
+        error:
+          "Broker returned an invalid order state",
+      });
 
     default:
       return null;
@@ -139,13 +150,13 @@ export async function createOrder(
       });
     }
     if (!req.user) {
-  return res.status(401).json({
-    error: "Authentication required",
-  });
-}
+      return res.status(401).json({
+        error: "Authentication required",
+      });
+    }
 
     const order = await createOrderService({
-      firmId:req.user.firmId,
+      firmId: req.user.firmId,
       portfolioId,
       brokerAccountId,
       symbol,
@@ -246,12 +257,12 @@ export async function executeOrder(
       data: order,
     });
   } catch (error) {
-    const brokerError= 
-    handleBrokerError(
-      res,
-      error,
-    );
-    if(brokerError){
+    const brokerError =
+      handleBrokerError(
+        res,
+        error,
+      );
+    if (brokerError) {
       return brokerError;
     }
     if (error instanceof Error) {
@@ -264,7 +275,7 @@ export async function executeOrder(
         case "BROKER_SUBMISSION_UNCERTAIN":
           return res.status(409).json({
             error:
-            "Broker submission state is uncertain. Do not retry automatically; reconcile the order first.",
+              "Broker submission state is uncertain. Do not retry automatically; reconcile the order first.",
           });
         case "ORDER_NOT_PENDING":
           return res.status(409).json({
@@ -306,7 +317,7 @@ export async function executeOrder(
           });
         case "INSUFFICIENT_CASH":
           return res.status(400).json({
-            error:"Insufficient cash Balance",
+            error: "Insufficient cash Balance",
           });
         case "RESTRICTED_SECURITY":
           return res.status(400).json({
@@ -337,9 +348,9 @@ export async function syncOrder(
       data: order,
     });
   } catch (error) {
-    const brokerError=
-    handleBrokerError(res,error); 
-    if(brokerError){
+    const brokerError =
+      handleBrokerError(res, error);
+    if (brokerError) {
       return brokerError;
     }
     if (error instanceof Error) {
@@ -387,12 +398,12 @@ export async function cancelOrder(
       data: order,
     });
   } catch (error) {
-    const brokerError= 
-    handleBrokerError(
-      res,
-      error,
-    );
-    if(brokerError){
+    const brokerError =
+      handleBrokerError(
+        res,
+        error,
+      );
+    if (brokerError) {
       return brokerError;
     }
     if (error instanceof Error) {
@@ -463,11 +474,11 @@ export async function modifyOrder(
       data: order,
     });
   } catch (error) {
-    const brokerError=
-    handleBrokerError(
-      res,error,
-    );
-    if(brokerError){
+    const brokerError =
+      handleBrokerError(
+        res, error,
+      );
+    if (brokerError) {
       return brokerError;
     }
     const message =
