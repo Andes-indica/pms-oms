@@ -12,9 +12,13 @@ type Order = {
   symbol: string;
   exchange: string;
   side: "BUY" | "SELL";
-  orderType: string;
+  orderType: "MARKET" | "LIMIT";
   quantity: number;
   status: string;
+
+  limitPrice?: string | null;
+  filledQuantity?: number;
+
   averageFillPrice?: string | null;
   realizedPnl?: string | null;
 
@@ -109,6 +113,20 @@ function OrdersTable({
   ] = useState<string | null>(
     null,
   );
+  const [
+    modifyingOrder,
+    setModifyingOrder,
+  ] = useState<Order | null>(null);
+
+  const [
+    modifyQuantity,
+    setModifyQuantity,
+  ] = useState("");
+
+  const [
+    modifyLimitPrice,
+    setModifyLimitPrice,
+  ] = useState("");
 
   async function runAction(
     orderId: string,
@@ -138,8 +156,106 @@ function OrdersTable({
       setActionOrderId(null);
     }
   }
+  function openModify(
+    order: Order,
+  ) {
+    setModifyingOrder(order);
+
+    setModifyQuantity(
+      String(order.quantity),
+    );
+
+    setModifyLimitPrice(
+      order.limitPrice ?? "",
+    );
+  }
+
+  async function submitModify() {
+    if (!modifyingOrder) {
+      return;
+    }
+
+    const quantity =
+      Number(modifyQuantity);
+
+    if (
+      !Number.isInteger(quantity) ||
+      quantity <= 0
+    ) {
+      alert(
+        "Quantity must be a positive integer",
+      );
+      return;
+    }
+
+    const body: {
+      quantity: number;
+      limitPrice?: number;
+    } = {
+      quantity,
+    };
+
+    if (
+      modifyingOrder.orderType ===
+      "LIMIT"
+    ) {
+      const limitPrice =
+        Number(
+          modifyLimitPrice,
+        );
+
+      if (
+        !Number.isFinite(
+          limitPrice,
+        ) ||
+        limitPrice <= 0
+      ) {
+        alert(
+          "Enter a valid limit price",
+        );
+        return;
+      }
+
+      body.limitPrice =
+        limitPrice;
+    }
+
+    try {
+      setActionOrderId(
+        modifyingOrder.id,
+      );
+
+      await apiFetch(
+        `/api/orders/${modifyingOrder.id}`,
+        {
+          method: "PATCH",
+
+          body: JSON.stringify(
+            body,
+          ),
+        },
+      );
+
+      setModifyingOrder(
+        null,
+      );
+
+      await onUpdated();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to modify order",
+      );
+    } finally {
+      setActionOrderId(
+        null,
+      );
+    }
+  }
 
   return (
+    <>
     <div className="mt-6 overflow-x-auto rounded-xl border bg-white">
       <table className="w-full text-left text-sm">
         <thead className="border-b bg-slate-50 text-slate-600">
@@ -234,19 +350,19 @@ function OrdersTable({
                   <div className="flex flex-wrap gap-2">
                     {order.status ===
                       "PENDING" && (
-                      <button
-                        disabled={busy}
-                        onClick={() =>
-                          runAction(
-                            order.id,
-                            "execute",
-                          )
-                        }
-                        className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white"
-                      >
-                        Execute
-                      </button>
-                    )}
+                        <button
+                          disabled={busy}
+                          onClick={() =>
+                            runAction(
+                              order.id,
+                              "execute",
+                            )
+                          }
+                          className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white"
+                        >
+                          Execute
+                        </button>
+                      )}
 
                     {[
                       "SUBMITTED",
@@ -255,19 +371,19 @@ function OrdersTable({
                     ].includes(
                       order.status,
                     ) && (
-                      <button
-                        disabled={busy}
-                        onClick={() =>
-                          runAction(
-                            order.id,
-                            "sync",
-                          )
-                        }
-                        className="rounded-md border px-3 py-1.5 text-xs"
-                      >
-                        Sync
-                      </button>
-                    )}
+                        <button
+                          disabled={busy}
+                          onClick={() =>
+                            runAction(
+                              order.id,
+                              "sync",
+                            )
+                          }
+                          className="rounded-md border px-3 py-1.5 text-xs"
+                        >
+                          Sync
+                        </button>
+                      )}
 
                     {[
                       "PENDING",
@@ -276,19 +392,39 @@ function OrdersTable({
                     ].includes(
                       order.status,
                     ) && (
-                      <button
-                        disabled={busy}
-                        onClick={() =>
-                          runAction(
-                            order.id,
-                            "cancel",
-                          )
-                        }
-                        className="rounded-md border px-3 py-1.5 text-xs"
-                      >
-                        Cancel
-                      </button>
-                    )}
+                        <button
+                          disabled={busy}
+                          onClick={() =>
+                            runAction(
+                              order.id,
+                              "cancel",
+                            )
+                          }
+                          className="rounded-md border px-3 py-1.5 text-xs"
+                        >
+                          Cancel
+                        </button>
+                      )}
+                    {[
+                      "SUBMITTED",
+                      "OPEN",
+                    ].includes(
+                      order.status,
+                    ) &&
+                      (order.filledQuantity ??
+                        0) === 0 && (
+                        <button
+                          disabled={busy}
+                          onClick={() =>
+                            openModify(
+                              order,
+                            )
+                          }
+                          className="rounded-md border px-3 py-1.5 text-xs"
+                        >
+                          Modify
+                        </button>
+                      )}
                   </div>
                 </td>
               </tr>
@@ -296,6 +432,98 @@ function OrdersTable({
           })}
         </tbody>
       </table>
-    </div>
+      </div>
+      {modifyingOrder && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+            <h3 className="text-lg font-semibold">
+              Modify Order
+            </h3>
+
+            <p className="mt-1 text-sm text-slate-500">
+              {modifyingOrder.symbol}{" "}
+              {modifyingOrder.side}{" "}
+              {modifyingOrder.orderType}
+            </p>
+
+            <div className="mt-5 space-y-4">
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  Quantity
+                </label>
+
+                <input
+                  type="number"
+                  min="1"
+                  value={
+                    modifyQuantity
+                  }
+                  onChange={(event) =>
+                    setModifyQuantity(
+                      event.target
+                        .value,
+                    )
+                  }
+                  className="w-full rounded-md border px-3 py-2"
+                />
+              </div>
+
+              {modifyingOrder.orderType ===
+                "LIMIT" && (
+                  <div>
+                    <label className="mb-1 block text-sm font-medium">
+                      Limit Price
+                    </label>
+
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={
+                        modifyLimitPrice
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        setModifyLimitPrice(
+                          event.target
+                            .value,
+                        )
+                      }
+                      className="w-full rounded-md border px-3 py-2"
+                    />
+                  </div>
+                )}
+            </div>
+
+            <div className="mt-6 flex justify-end gap-2">
+              <button
+                onClick={() =>
+                  setModifyingOrder(
+                    null,
+                  )
+                }
+                className="rounded-md border px-4 py-2 text-sm"
+              >
+                Close
+              </button>
+
+              <button
+                onClick={
+                  submitModify
+                }
+                disabled={
+                  actionOrderId ===
+                  modifyingOrder.id
+                }
+                className="rounded-md bg-slate-900 px-4 py-2 text-sm text-white"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
