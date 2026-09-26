@@ -101,3 +101,39 @@ export type BrokerConnection = {
   lastConnectedAt?:
     string | null;
 };
+export type BrokerHolding = {
+  symbol: string;
+  exchange: string;
+  quantity: number;
+  averagePrice: number;
+};
+
+export type BrokerPosition = {
+  symbol: string;
+  exchange: string;
+  quantity: number;
+  averagePrice: number;
+  realizedPnl: number;
+  unrealizedPnl: number;
+};
+
+export type BrokerFunds = {
+  availableCash: number;
+  netAvailable: number;
+  usedMargin: number;
+};
+
+export type BrokerSnapshot = {
+  brokerAccountId: string;
+
+  holdings:
+    BrokerHolding[] | null;
+
+  positions:
+    BrokerPosition[] | null;
+
+  funds:
+    BrokerFunds | null;
+
+  fetchedAt: string;
+};

@@ -14,6 +14,15 @@ import type {
 import {
   isBrokerSupported,
 } from "../brokers/broker-registry";
+import {
+  supportsFunds,
+  supportsHoldings,
+  supportsPositions,
+} from "@pms-oms/broker";
+
+import {
+  resolveBroker,
+} from "../brokers/broker-registry";
 
 type CreateBrokerAccountBody = {
   broker?: unknown;
@@ -30,6 +39,114 @@ type RequestWithClientId =
     body:
       CreateBrokerAccountBody;
   };
+  type BrokerAccountRequest =
+  AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  };
+
+export async function getBrokerSnapshot(
+  req: BrokerAccountRequest,
+  res: Response,
+) {
+  if (!req.user) {
+    return res.status(401).json({
+      error:
+        "Authentication required",
+    });
+  }
+
+  try {
+    const broker =
+      await resolveBroker(
+        req.params.id,
+        req.user.firmId,
+      );
+
+    const [
+      holdings,
+      positions,
+      funds,
+    ] =
+      await Promise.all([
+        supportsHoldings(
+          broker,
+        )
+          ? broker.getHoldings()
+          : Promise.resolve(null),
+
+        supportsPositions(
+          broker,
+        )
+          ? broker.getPositions()
+          : Promise.resolve(null),
+
+        supportsFunds(
+          broker,
+        )
+          ? broker.getFunds()
+          : Promise.resolve(null),
+      ]);
+
+    return res.json({
+      data: {
+        brokerAccountId:
+          req.params.id,
+
+        holdings,
+        positions,
+        funds,
+
+        fetchedAt:
+          new Date()
+            .toISOString(),
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Failed to fetch broker snapshot:",
+      error,
+    );
+
+    if (
+      error instanceof Error
+    ) {
+      switch (
+        error.message
+      ) {
+        case "BROKER_ACCOUNT_NOT_FOUND":
+          return res
+            .status(404)
+            .json({
+              error:
+                "Broker account not found",
+            });
+
+        case "BROKER_NOT_CONNECTED":
+          return res
+            .status(409)
+            .json({
+              error:
+                "Broker account is not connected",
+            });
+
+        case "BROKER_SESSION_EXPIRED":
+          return res
+            .status(409)
+            .json({
+              error:
+                "Broker session has expired",
+            });
+      }
+    }
+
+    return res.status(502).json({
+      error:
+        "Failed to fetch broker snapshot",
+    });
+  }
+}
 
 export async function createBrokerAccount(
   req: RequestWithClientId,

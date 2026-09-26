@@ -8,6 +8,7 @@ import {
 
 import type {
     BrokerAccount,
+    BrokerSnapshot
 } from "./types";
 
 type Props = {
@@ -156,6 +157,29 @@ export function BrokerAccountsCard({
 
     const canManage =
         canManageBrokerAccounts();
+    const [
+        snapshotAccountId,
+        setSnapshotAccountId,
+    ] =
+        useState<string | null>(
+            null,
+        );
+
+    const [
+        snapshot,
+        setSnapshot,
+    ] =
+        useState<BrokerSnapshot | null>(
+            null,
+        );
+
+    const [
+        loadingSnapshotId,
+        setLoadingSnapshotId,
+    ] =
+        useState<string | null>(
+            null,
+        );
 
     function startConfigure(
         brokerAccountId: string,
@@ -315,7 +339,43 @@ export function BrokerAccountsCard({
             setSavingId(null);
         }
     }
+    async function loadSnapshot(
+        account: BrokerAccount,
+    ) {
+        try {
+            setError("");
 
+            setLoadingSnapshotId(
+                account.id,
+            );
+
+            const response =
+                await apiFetch<{
+                    data:
+                    BrokerSnapshot;
+                }>(
+                    `/api/broker-accounts/${account.id}/snapshot`,
+                );
+
+            setSnapshotAccountId(
+                account.id,
+            );
+
+            setSnapshot(
+                response.data,
+            );
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to load broker snapshot",
+            );
+        } finally {
+            setLoadingSnapshotId(
+                null,
+            );
+        }
+    }
     return (
         <section className="rounded-xl border bg-white">
             <div className="flex items-center justify-between border-b px-5 py-4">
@@ -550,48 +610,77 @@ export function BrokerAccountsCard({
                                             )}
                                         </div>
 
-                                        {canManage &&
-                                            isZerodha &&
-                                            !editing && (
+                                        {(status === "CONNECTED" ||
+                                            (canManage &&
+                                                isZerodha &&
+                                                !editing)) && (
                                                 <div className="flex gap-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() =>
-                                                            startConfigure(
-                                                                account.id,
-                                                            )
-                                                        }
-                                                        className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
-                                                    >
-                                                        {account.connection
-                                                            ? "Reconfigure"
-                                                            : "Configure"}
-                                                    </button>
+                                                    {canManage &&
+                                                        isZerodha &&
+                                                        !editing && (
+                                                            <>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() =>
+                                                                        startConfigure(
+                                                                            account.id,
+                                                                        )
+                                                                    }
+                                                                    className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                                                >
+                                                                    {account.connection
+                                                                        ? "Reconfigure"
+                                                                        : "Configure"}
+                                                                </button>
 
-                                                    {account.connection && (
-                                                        <button
-                                                            type="button"
-                                                            disabled={
-                                                                connectingId ===
+                                                                {account.connection && (
+                                                                    <button
+                                                                        type="button"
+                                                                        disabled={
+                                                                            connectingId ===
+                                                                            account.id
+                                                                        }
+                                                                        onClick={() =>
+                                                                            connectZerodha(
+                                                                                account,
+                                                                            )
+                                                                        }
+                                                                        className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+                                                                    >
+                                                                        {connectingId ===
+                                                                            account.id
+                                                                            ? "Connecting..."
+                                                                            : account.connection
+                                                                                .status ===
+                                                                                "CONNECTED"
+                                                                                ? "Reconnect"
+                                                                                : "Connect Zerodha"}
+                                                                    </button>
+                                                                )}
+                                                            </>
+                                                        )}
+
+                                                    {status ===
+                                                        "CONNECTED" && (
+                                                            <button
+                                                                type="button"
+                                                                disabled={
+                                                                    loadingSnapshotId ===
+                                                                    account.id
+                                                                }
+                                                                onClick={() =>
+                                                                    loadSnapshot(
+                                                                        account,
+                                                                    )
+                                                                }
+                                                                className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                                            >
+                                                                {loadingSnapshotId ===
                                                                 account.id
-                                                            }
-                                                            onClick={() =>
-                                                                connectZerodha(
-                                                                    account,
-                                                                )
-                                                            }
-                                                            className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
-                                                        >
-                                                            {connectingId ===
-                                                                account.id
-                                                                ? "Connecting..."
-                                                                : account.connection
-                                                                    .status ===
-                                                                    "CONNECTED"
-                                                                    ? "Reconnect"
-                                                                    : "Connect Zerodha"}
-                                                        </button>
-                                                    )}
+                                                                    ? "Loading..."
+                                                                    : "Broker Snapshot"}
+                                                            </button>
+                                                        )}
                                                 </div>
                                             )}
                                     </div>
@@ -643,6 +732,165 @@ export function BrokerAccountsCard({
                                             </div>
                                         </div>
                                     )}
+
+                                    {snapshotAccountId ===
+                                        account.id &&
+                                        snapshot && (
+                                            <div className="mt-5 rounded-lg border bg-slate-50 p-4">
+                                                <div className="flex items-center justify-between">
+                                                    <p className="font-medium text-slate-900">
+                                                        Broker Snapshot
+                                                    </p>
+
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setSnapshotAccountId(
+                                                                null,
+                                                            );
+
+                                                            setSnapshot(
+                                                                null,
+                                                            );
+                                                        }}
+                                                        className="text-xs text-slate-500"
+                                                    >
+                                                        Close
+                                                    </button>
+                                                </div>
+
+                                                {snapshot.funds && (
+                                                    <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                                                        <div>
+                                                            <p className="text-xs text-slate-500">
+                                                                Available Cash
+                                                            </p>
+
+                                                            <p className="font-medium">
+                                                                ₹
+                                                                {snapshot.funds.availableCash.toFixed(
+                                                                    2,
+                                                                )}
+                                                            </p>
+                                                        </div>
+
+                                                        <div>
+                                                            <p className="text-xs text-slate-500">
+                                                                Net Available
+                                                            </p>
+
+                                                            <p className="font-medium">
+                                                                ₹
+                                                                {snapshot.funds.netAvailable.toFixed(
+                                                                    2,
+                                                                )}
+                                                            </p>
+                                                        </div>
+
+                                                        <div>
+                                                            <p className="text-xs text-slate-500">
+                                                                Used Margin
+                                                            </p>
+
+                                                            <p className="font-medium">
+                                                                ₹
+                                                                {snapshot.funds.usedMargin.toFixed(
+                                                                    2,
+                                                                )}
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                )}
+
+                                                <div className="mt-5">
+                                                    <p className="text-sm font-medium">
+                                                        Holdings
+                                                    </p>
+
+                                                    {snapshot.holdings?.length ? (
+                                                        <div className="mt-2 space-y-2">
+                                                            {snapshot.holdings.map(
+                                                                (holding) => (
+                                                                    <div
+                                                                        key={`${holding.exchange}:${holding.symbol}`}
+                                                                        className="flex justify-between rounded-md bg-white px-3 py-2 text-sm"
+                                                                    >
+                                                                        <span>
+                                                                            {holding.exchange}:
+                                                                            {holding.symbol}
+                                                                        </span>
+
+                                                                        <span>
+                                                                            {holding.quantity} @ ₹
+                                                                            {holding.averagePrice.toFixed(
+                                                                                2,
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="mt-2 text-sm text-slate-500">
+                                                            No holdings.
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <div className="mt-5">
+                                                    <p className="text-sm font-medium">
+                                                        Positions
+                                                    </p>
+
+                                                    {snapshot.positions?.length ? (
+                                                        <div className="mt-2 space-y-2">
+                                                            {snapshot.positions.map(
+                                                                (position) => (
+                                                                    <div
+                                                                        key={`${position.exchange}:${position.symbol}`}
+                                                                        className="rounded-md bg-white px-3 py-2 text-sm"
+                                                                    >
+                                                                        <div className="flex justify-between">
+                                                                            <span>
+                                                                                {position.exchange}:
+                                                                                {position.symbol}
+                                                                            </span>
+
+                                                                            <span>
+                                                                                Qty {position.quantity}
+                                                                            </span>
+                                                                        </div>
+
+                                                                        <div className="mt-1 text-xs text-slate-500">
+                                                                            Avg ₹
+                                                                            {position.averagePrice.toFixed(
+                                                                                2,
+                                                                            )}{" "}
+                                                                            · Realized ₹
+                                                                            {position.realizedPnl.toFixed(
+                                                                                2,
+                                                                            )}{" "}
+                                                                            · Unrealized ₹
+                                                                            {position.unrealizedPnl.toFixed(
+                                                                                2,
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        </div>
+                                                    ) : (
+                                                        <p className="mt-2 text-sm text-slate-500">
+                                                            No positions.
+                                                        </p>
+                                                    )}
+                                                </div>
+
+                                                <p className="mt-4 text-xs text-slate-400">
+                                                    Broker data only. PMS state has not been changed.
+                                                </p>
+                                            </div>
+                                        )}
 
                                     {editing &&
                                         isZerodha && (

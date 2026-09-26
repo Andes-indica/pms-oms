@@ -11,10 +11,16 @@ import type {
   BrokerOrderUpdate,
   BrokerCancellationResult,
   BrokerOrderModification,
+  BrokerHolding,
+  BrokerFunds,
+  BrokerPosition
 } from "../../types";
 
 import type {
   BrokerOrderRecoveryCapability,
+  BrokerHoldingsCapability,
+  BrokerPositionsCapability,
+  BrokerFundsCapability,
 } from "../../broker-capabilities"
 
 import type {
@@ -32,6 +38,7 @@ import {
 import {
   BrokerError,
 } from "../../broker-error";
+import { error } from "node:console";
 
 type ZerodhaErrorLike = {
   message?: unknown;
@@ -125,7 +132,7 @@ function normalizeZerodhaError(
 }
 
 export class ZerodhaBroker
-  implements BrokerAdapter, BrokerOrderRecoveryCapability {
+  implements BrokerAdapter, BrokerOrderRecoveryCapability,BrokerHoldingsCapability,BrokerHoldingsCapability,BrokerFundsCapability {
   private kite: Connect;
   private mapExchange(
     exchange: string,
@@ -480,4 +487,241 @@ export class ZerodhaBroker
         ),
     };
   }
+  async getHoldings():
+  Promise<BrokerHolding[]> {
+  try {
+    const holdings =
+      await this.kite.getHoldings();
+
+    if (!Array.isArray(holdings)) {
+      throw new Error(
+        "BROKER_INVALID_HOLDINGS_RESPONSE",
+      );
+    }
+
+    return holdings.map(
+      (holding: any) => {
+        const quantity =
+          Number(
+            holding.quantity ??
+              0,
+          );
+
+        const averagePrice =
+          Number(
+            holding.average_price ??
+              0,
+          );
+
+        if (
+          !Number.isFinite(
+            quantity,
+          ) ||
+          quantity < 0 ||
+          !Number.isFinite(
+            averagePrice,
+          ) ||
+          averagePrice < 0 ||
+          typeof holding
+              .tradingsymbol !==
+            "string" ||
+          typeof holding
+              .exchange !==
+            "string"
+        ) {
+          throw new Error(
+            "BROKER_INVALID_HOLDINGS_RESPONSE",
+          );
+        }
+
+        return {
+          symbol:
+            holding.tradingsymbol,
+
+          exchange:
+            holding.exchange,
+
+          quantity,
+
+          averagePrice,
+        };
+      },
+    );
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message ===
+        "BROKER_INVALID_HOLDINGS_RESPONSE"
+    ) {
+      throw error;
+    }
+
+    throw normalizeZerodhaError(
+      error,
+    );
+  }
+}
+async getPositions():
+  Promise<BrokerPosition[]> {
+  try {
+    const positions =
+      await this.kite.getPositions();
+
+    const net =
+      positions?.net;
+
+    if (!Array.isArray(net)) {
+      throw new Error(
+        "BROKER_INVALID_POSITIONS_RESPONSE",
+      );
+    }
+
+    return net.map(
+      (position: any) => {
+        const quantity =
+          Number(
+            position.quantity ??
+              0,
+          );
+
+        const averagePrice =
+          Number(
+            position.average_price ??
+              0,
+          );
+
+        const realizedPnl =
+          Number(
+            position.realised ??
+              0,
+          );
+
+        const unrealizedPnl =
+          Number(
+            position.unrealised ??
+              0,
+          );
+
+        if (
+          !Number.isFinite(
+            quantity,
+          ) ||
+          !Number.isFinite(
+            averagePrice,
+          ) ||
+          averagePrice < 0 ||
+          !Number.isFinite(
+            realizedPnl,
+          ) ||
+          !Number.isFinite(
+            unrealizedPnl,
+          ) ||
+          typeof position
+              .tradingsymbol !==
+            "string" ||
+          typeof position
+              .exchange !==
+            "string"
+        ) {
+          throw new Error(
+            "BROKER_INVALID_POSITIONS_RESPONSE",
+          );
+        }
+
+        return {
+          symbol:
+            position.tradingsymbol,
+
+          exchange:
+            position.exchange,
+
+          quantity,
+
+          averagePrice,
+
+          realizedPnl,
+
+          unrealizedPnl,
+        };
+      },
+    );
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message ===
+        "BROKER_INVALID_POSITIONS_RESPONSE"
+    ) {
+      throw error;
+    }
+
+    throw normalizeZerodhaError(
+      error,
+    );
+  }
+}
+async getFunds():
+  Promise<BrokerFunds> {
+  try {
+    const margins =
+      await this.kite.getMargins();
+      const equity=margins.equity;
+      if(!equity) {
+        throw new Error(
+          "BROKER_INVALID_FUNDS_RESPONSE"
+        );
+      }
+
+    const availableCash =
+      Number(
+        equity.available?.cash ??
+          0,
+      );
+
+    const netAvailable =
+      Number(
+        equity.net ?? 0,
+      );
+
+    const usedMargin =
+      Number(
+        equity.utilised?.debits ??
+          0,
+      );
+
+    if (
+      !Number.isFinite(
+        availableCash,
+      ) ||
+      !Number.isFinite(
+        netAvailable,
+      ) ||
+      !Number.isFinite(
+        usedMargin,
+      )
+    ) {
+      throw new Error(
+        "BROKER_INVALID_FUNDS_RESPONSE",
+      );
+    }
+
+    return {
+      availableCash,
+      netAvailable,
+      usedMargin,
+    };
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      error.message ===
+        "BROKER_INVALID_FUNDS_RESPONSE"
+    ) {
+      throw error;
+    }
+
+    throw normalizeZerodhaError(
+      error,
+    );
+  }
+}
+
 }

@@ -4,6 +4,7 @@ import {
 
 import {
   createBrokerAccount,
+  getBrokerSnapshot
 } from "../controllers/broker-account.controller";
 
 import {
@@ -32,4 +33,16 @@ router.post(
   createBrokerAccount,
 );
 
+router.get(
+  "/broker-accounts/:id/snapshot",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+    "VIEWER",
+  ),
+
+  getBrokerSnapshot,
+);
 export default router;

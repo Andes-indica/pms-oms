@@ -50,19 +50,14 @@ export type BrokerHolding = {
 export type BrokerPosition = {
   symbol: string;
   exchange: string;
-
   quantity: number;
-
   averagePrice: number;
-
   realizedPnl: number;
   unrealizedPnl: number;
 };
 
 export type BrokerFunds = {
   availableCash: number;
-
   usedMargin: number;
-
-  totalBalance: number;
+  netAvailable: number;
 };
