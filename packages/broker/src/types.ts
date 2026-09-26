@@ -40,3 +40,29 @@ export type BrokerOrderModification = {
   quantity?: number;
   limitPrice?: number;
 };
+export type BrokerHolding = {
+  symbol: string;
+  exchange: string;
+  quantity: number;
+  averagePrice: number;
+};
+
+export type BrokerPosition = {
+  symbol: string;
+  exchange: string;
+
+  quantity: number;
+
+  averagePrice: number;
+
+  realizedPnl: number;
+  unrealizedPnl: number;
+};
+
+export type BrokerFunds = {
+  availableCash: number;
+
+  usedMargin: number;
+
+  totalBalance: number;
+};
