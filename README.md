@@ -310,10 +310,10 @@ REJECTED
 * [x] Order model
 * [x] Order creation API
 * [x] Order listing API
-* [ ] Broker adapter abstraction
-* [ ] Mock broker execution
-* [ ] Pre-trade validation
-* [ ] Order lifecycle simulation
+* [x] Broker adapter abstraction
+* [x] Mock broker execution
+* [x] Pre-trade validation
+* [x] Order lifecycle simulation
 
 ### Upcoming
 
