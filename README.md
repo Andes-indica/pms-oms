@@ -313,7 +313,6 @@ REJECTED
 * [x] Broker adapter abstraction
 * [x] Mock broker execution
 * [x] Pre-trade validation
-
 * [x] Order lifecycle simulation
 
 ### Upcoming
