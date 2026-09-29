@@ -1,45 +1,68 @@
 # PMS-OMS
 
-A multi-client **Portfolio Management System / Order Management System** designed to model how portfolio managers can manage clients, portfolios, broker accounts, and order execution through a unified backend.
+A multi-client **Portfolio Management System / Order Management System** for managing clients, portfolios, broker accounts, risk, allocations, and real broker execution through a unified application.
 
-The project is being built incrementally with a focus on clean architecture, broker abstraction, order validation, and future real-time execution workflows.
+The project uses a broker-neutral OMS core: application services work through a generic broker adapter and optional broker capabilities instead of depending directly on Zerodha-specific APIs.
 
-## Current Features
+## Current Status
 
-* Bun + TypeScript monorepo
-* Express API
-* PostgreSQL database
-* Prisma 7 ORM
-* Shared database package
-* Client management
-* Broker account management
-* Portfolio management
-* Holdings tracking
-* Order creation
-* Order status tracking
-* Broker adapter architecture
-* Mock broker integration in progress
+The system currently includes:
+
+- Bun + TypeScript monorepo
+- Express API
+- React + Tailwind frontend
+- PostgreSQL + Prisma 7
+- Authentication and RBAC
+- Multi-firm tenant scoping
+- Client, portfolio, and broker-account views
+- Individual order creation and execution
+- Multi-client basket/master orders
+- Allocation strategies
+- Pre-trade validation and risk checks
+- Cash and quantity reservations
+- Order modification and cancellation
+- Partial-fill and fill reconciliation
+- Holdings and cash accounting
+- Realized and unrealized P&L
+- Audit logging
+- Portfolio-manager dashboard
+- Generic broker adapter architecture
+- Mock broker
+- Zerodha Kite integration
+- Encrypted broker credentials and sessions
+- Zerodha order recovery using deterministic client-order tags
+- Broker holdings, positions, and funds snapshot capabilities
+
+The major remaining architecture work is **broker reconciliation, automatic broker monitoring, persistent execution/fill records, the execution queue, real-time WebSocket updates, instrument master data, and production deployment**.
 
 ## Tech Stack
 
 ### Backend
 
-* Bun
-* TypeScript
-* Express
-* Prisma 7
-* PostgreSQL
+- Bun
+- TypeScript
+- Express
+- Prisma 7
+- PostgreSQL
+
+### Frontend
+
+- React
+- TypeScript
+- React Router
+- Tailwind CSS
+- Vite
+
+### Broker Integration
+
+- Generic broker adapter package
+- Mock broker
+- Zerodha Kite Connect
 
 ### Infrastructure
 
-* Docker
-* Docker Compose
-
-### Planned Frontend
-
-* React
-* TypeScript
-* Tailwind CSS
+- Docker
+- Docker Compose
 
 ## Project Structure
 
@@ -48,292 +71,596 @@ pms-oms/
 ├── apps/
 │   ├── api/
 │   │   └── src/
+│   │       ├── brokers/
 │   │       ├── controllers/
+│   │       ├── middleware/
 │   │       ├── routes/
+│   │       ├── security/
 │   │       ├── services/
 │   │       ├── app.ts
 │   │       └── server.ts
 │   │
 │   └── web/
+│       └── src/
+│           ├── components/
+│           ├── lib/
+│           └── pages/
 │
 ├── packages/
-│   ├── db/
-│   │   ├── prisma/
-│   │   └── src/
-│   │
 │   ├── broker/
+│   │   └── src/
+│   │       ├── providers/
+│   │       ├── broker.interface.ts
+│   │       ├── broker-capabilities.ts
+│   │       └── broker-error.ts
 │   │
-│   └── types/
+│   └── db/
+│       ├── prisma/
+│       └── src/
 │
 ├── docs/
-├── infrastructure/
+│   └── system-architecture/
+├── scripts/
 ├── docker-compose.yml
 ├── package.json
 └── bun.lock
 ```
 
-## Current Domain Model
+## Domain Model
+
+The current application is centered around:
 
 ```text
 Firm
- │
  ├── Users
- │
+ ├── Audit Logs
  └── Clients
-       │
-       ├── Broker Accounts
-       │
-       └── Portfolios
-             │
-             ├── Holdings
-             │
-             └── Orders
+      ├── Broker Accounts
+      │    ├── Broker Connection
+      │    └── Orders
+      │
+      └── Portfolios
+           ├── Holdings
+           ├── Orders
+           └── Risk Limits
+
+Firm
+ └── Basket Orders
+      └── Client Orders
 ```
+
+Supporting domain concepts include restricted securities, allocation methods, order reservations, broker sessions, realized P&L, and broker execution metadata.
+
+## Authentication and Roles
+
+All protected API routes use bearer-token authentication.
+
+Available roles:
+
+```text
+ADMIN
+PORTFOLIO_MANAGER
+OPERATIONS
+VIEWER
+```
+
+Examples of role separation:
+
+- **ADMIN**: user administration and all management operations
+- **PORTFOLIO_MANAGER**: create/execute/modify orders, baskets, and manage broker connections
+- **OPERATIONS**: synchronize/cancel orders and inspect audit/broker operational state
+- **VIEWER**: read-only access where allowed
+
+Requests are scoped to the authenticated user's firm.
+
+## Broker Architecture
+
+The OMS core does not depend directly on Zerodha.
+
+```text
+OMS Services
+    ↓
+resolveBroker()
+    ↓
+BrokerAdapter
+    ├── MockBroker
+    └── ZerodhaBroker
+```
+
+The base adapter covers the order lifecycle:
+
+```text
+placeOrder
+getOrderStatus
+modifyOrder
+cancelOrder
+```
+
+Additional functionality is modeled as optional capabilities:
+
+```text
+BrokerOrderRecoveryCapability
+BrokerHoldingsCapability
+BrokerPositionsCapability
+BrokerFundsCapability
+```
+
+This allows future brokers to implement only the capabilities they support without changing the OMS core.
+
+## Zerodha Integration
+
+The current Zerodha integration supports:
+
+- API credential configuration
+- Encrypted credential storage
+- Zerodha login URL generation
+- Request-token to access-token session exchange
+- Session-expiry tracking
+- Broker-account identity verification
+- Place MARKET and LIMIT orders
+- Modify open orders
+- Cancel orders
+- Fetch broker order status
+- Partial/full fill handling
+- Recover uncertain submissions using deterministic order tags
+- Normalize broker errors into generic OMS errors
+- Fetch holdings
+- Fetch positions
+- Fetch equity funds/margins
+
+Market data is intentionally separate from the broker adapter.
 
 ## Order Flow
 
-The current order flow is:
+### Individual Order
 
 ```text
-Create Order Request
-        ↓
-Validate Input
-        ↓
-Validate Portfolio
-        ↓
-Validate Broker Account
-        ↓
-Verify Client Ownership
-        ↓
-Create PENDING Order
-        ↓
-Broker Execution Service
-        ↓
-Broker Adapter
-        ↓
-Mock / Real Broker
+Create order
+    ↓
+Validate firm / portfolio / broker account
+    ↓
+Create PENDING order
+    ↓
+Pre-trade checks
+    ↓
+Risk checks and reservations
+    ↓
+Resolve broker
+    ↓
+Submit order
+    ↓
+Store broker order ID
+    ↓
+Synchronize broker status
+    ↓
+Apply incremental fills
+    ↓
+Update holdings / cash / P&L
+    ↓
+Audit log
 ```
 
-The broker abstraction allows the OMS to support multiple brokers without coupling the application directly to a single broker API.
+### Failure Safety
 
-Future adapters may include:
+The execution path distinguishes between:
 
-```text
-BrokerAdapter
-├── MockBroker
-├── ZerodhaAdapter
-├── UpstoxAdapter
-└── OtherBrokerAdapter
-```
+- **Definitive broker rejection** — safe to mark the PMS order rejected and release reservations
+- **Uncertain submission/transport failure** — do not blindly retry; attempt recovery through the broker using the client order ID/tag
 
-## Prerequisites
-
-Install:
-
-* Bun
-* Docker
-* Docker Compose
-
-
-## Start PostgreSQL
-
-From the project root:
-
-```bash
-docker compose up -d
-```
-
-Check the container:
-
-```bash
-docker compose ps
-```
-
-## Install Dependencies
-
-From the project root:
-
-```bash
-bun install
-```
-
-## Prisma Setup
-
-Go to the database package:
-
-```bash
-cd packages/db
-```
-
-Validate the schema:
-
-```bash
-bunx prisma validate
-```
-
-Apply migrations:
-
-```bash
-bunx prisma migrate dev
-```
-
-Generate Prisma Client:
-
-```bash
-bunx prisma generate
-```
-
-Seed development data:
-
-```bash
-bun run seed
-```
-
-## Run the API
-
-From the project root:
-
-```bash
-bun run dev:api
-```
-
-Or directly:
-
-```bash
-cd apps/api
-bun run dev
-```
-
-The API runs at:
-
-```text
-http://localhost:3000
-```
-
-## Health Endpoints
-
-API health:
-
-```bash
-curl http://127.0.0.1:3000/health
-```
-
-Database health:
-
-```bash
-curl http://127.0.0.1:3000/health/db
-```
-
-Expected database response:
-
-```json
-{
-  "status": "ok",
-  "database": "connected"
-}
-```
-
-## Current API Endpoints
-
-### Clients
-
-Get all clients:
-
-```http
-GET /api/clients
-```
-
-Get a client:
-
-```http
-GET /api/clients/:id
-```
-
-Client responses can include broker accounts, portfolios, and holdings.
-
-### Orders
-
-Create an order:
-
-```http
-POST /api/orders
-```
-
-Example request:
-
-```json
-{
-  "portfolioId": "demo-portfolio-1",
-  "brokerAccountId": "BROKER_ACCOUNT_ID",
-  "symbol": "RELIANCE",
-  "exchange": "NSE",
-  "side": "BUY",
-  "orderType": "MARKET",
-  "quantity": 10
-}
-```
-
-Get orders:
-
-```http
-GET /api/orders
-```
-
-Order execution support is being implemented through the broker adapter layer.
+This prevents duplicate real-money orders after ambiguous network failures.
 
 ## Order States
 
-Current order states include:
+Current order states are:
 
 ```text
 PENDING
 SUBMITTED
 OPEN
+PARTIALLY_FILLED
 FILLED
 CANCELLED
 REJECTED
 ```
 
+The original architecture also defines richer pre-submission and cancellation states such as `DRAFT`, `VALIDATING`, `APPROVED`, `QUEUED`, and `CANCEL_PENDING`. Those are not yet represented in the current database state machine.
+
+## Order Operations
+
+The current OMS supports:
+
+- Create
+- Execute
+- Synchronize
+- Modify quantity
+- Modify limit price
+- Cancel
+- Partial fills
+- Full fills
+- Broker rejection
+- Safe uncertain-submission recovery
+
+## Multi-Client Basket Orders
+
+A `BasketOrder` currently acts as the master-order abstraction.
+
+Supported allocation methods:
+
+```text
+FIXED_QUANTITY
+EQUAL_QUANTITY
+PERCENTAGE
+```
+
+A basket creates separate child orders for each target portfolio and broker account.
+
+Basket functionality includes:
+
+- Create
+- Allocate
+- Execute child orders
+- Track partial submission
+- Synchronize child orders
+- Derive aggregate basket status
+- Audit basket operations
+
+## Risk Engine
+
+Pre-trade risk checks currently include:
+
+- Portfolio / broker ownership validation
+- Positive quantity validation
+- SELL holdings validation
+- Available cash validation
+- Active cash reservations
+- Active quantity reservations
+- Restricted-security checks
+- Maximum order quantity
+- Maximum order value
+- Maximum position quantity
+- Maximum position value
+
+Risk calculations use the application's market-data service for estimated prices.
+
+> The current market-data service is still a development implementation with hardcoded prices. Replacing it with a real independent market-data provider remains pending.
+
+## Accounting and Portfolio State
+
+Order synchronization updates PMS accounting incrementally.
+
+For fills the system currently handles:
+
+- Weighted holding average price for buys
+- Holding quantity changes
+- Cash debits and credits
+- Realized P&L on sells
+- Reserved cash release
+- Reserved quantity release
+- Portfolio valuation
+- Unrealized P&L calculation
+
+The current schema stores cumulative fill information on the order. Persisting each broker execution/fill as its own record remains part of the planned architecture.
+
+## Broker Snapshot
+
+Connected brokers can expose a read-only snapshot through optional capabilities.
+
+The current Zerodha snapshot includes:
+
+- Holdings
+- Net positions
+- Available cash
+- Net available funds
+- Used margin
+
+The snapshot is intentionally read-only. Automatic PMS repair/reconciliation from broker truth is not implemented yet.
+
+## Dashboard and Frontend
+
+The React application currently contains:
+
+- Login
+- Portfolio-manager dashboard
+- Client list
+- Client detail/overview
+- Portfolio summaries
+- Broker-account management
+- Zerodha connection flow
+- Broker snapshot view
+- Individual order placement
+- Order blotter
+- Execute / Sync / Cancel / Modify order actions
+- Basket orders
+- User administration
+
+Dashboard metrics include:
+
+- Total AUM
+- Cash
+- Market value
+- Unrealized P&L
+- Realized P&L
+- Client count
+- Portfolio count
+- Active orders
+- Filled orders
+- Client breakdown
+- Top holdings
+
+## Audit Logging
+
+Audit logs currently record order and basket actions, including:
+
+```text
+ORDER_CREATED
+ORDER_SUBMITTED
+ORDER_MODIFIED
+ORDER_FILLED
+ORDER_CANCELLED
+ORDER_REJECTED
+ORDER_SYNCED
+
+BASKET_CREATED
+BASKET_SUBMITTED
+BASKET_CANCELLED
+```
+
+Audit records are firm-scoped and can include structured metadata.
+
+The original architecture includes explicit actor/user attribution on audit records; that is still pending.
+
+## API Overview
+
+All routes below are under `/api` unless otherwise noted.
+
+### Authentication
+
+```http
+POST /api/auth/login
+```
+
+### Clients
+
+```http
+GET /api/clients
+GET /api/clients/:id
+GET /api/clients/:id/overview
+GET /api/clients/:id/portfolio-summary
+```
+
+### Portfolios
+
+```http
+GET /api/portfolios/:id/valuation
+```
+
+### Orders
+
+```http
+GET   /api/orders
+POST  /api/orders
+PATCH /api/orders/:id
+
+POST /api/orders/:id/execute
+POST /api/orders/:id/sync
+POST /api/orders/:id/cancel
+```
+
+### Basket Orders
+
+```http
+GET  /api/basket-orders
+POST /api/basket-orders
+
+POST /api/basket-orders/:id/execute
+POST /api/basket-orders/:id/sync
+```
+
+### Broker Accounts
+
+```http
+POST /api/clients/:clientId/broker-accounts
+GET  /api/broker-accounts/:id/snapshot
+```
+
+### Broker Connections
+
+```http
+GET  /api/broker-connections/:brokerAccountId
+
+PUT  /api/broker-connections/:brokerAccountId/zerodha/configure
+GET  /api/broker-connections/:brokerAccountId/zerodha/login-url
+POST /api/broker-connections/:brokerAccountId/zerodha/session
+```
+
+### Dashboard
+
+```http
+GET /api/dashboard
+```
+
+### Audit Logs
+
+```http
+GET /api/audit-logs
+```
+
+### Users
+
+```http
+GET   /api/users
+POST  /api/users
+PATCH /api/users/:id/role
+```
+
+### Health
+
+```http
+GET /health
+GET /health/db
+```
+
+## Local Development
+
+### Prerequisites
+
+Install:
+
+- Bun
+- Docker
+- Docker Compose
+
+### Install dependencies
+
+From the repository root:
+
+```bash
+bun install
+```
+
+### Start PostgreSQL
+
+```bash
+docker compose up -d
+```
+
+Check it:
+
+```bash
+docker compose ps
+```
+
+### Database setup
+
+```bash
+cd packages/db
+
+bunx prisma validate
+bunx prisma migrate dev
+bunx prisma generate
+bun run seed
+```
+
+Return to the repository root afterward.
+
+### Run the project
+
+Run all workspace development processes:
+
+```bash
+bun run dev
+```
+
+Or run only the API:
+
+```bash
+bun run dev:api
+```
+
+The API defaults to:
+
+```text
+http://localhost:3000
+```
+
+The Vite frontend normally runs on:
+
+```text
+http://localhost:5173
+```
+
+## Validation
+
+Run the repository checks from the root:
+
+```bash
+bun run typecheck
+bun test
+```
+
 ## Development Roadmap
 
-### Sprint 1
+### Implemented
 
-* [x] Monorepo setup
-* [x] Express API
-* [x] PostgreSQL
-* [x] Prisma integration
-* [x] Firm and user models
-* [x] Client management
-* [x] Broker accounts
-* [x] Portfolio model
-* [x] Holdings model
-* [x] Order model
-* [x] Order creation API
-* [x] Order listing API
-* [x] Broker adapter abstraction
-* [x] Mock broker execution
-* [x] Pre-trade validation
-* [x] Order lifecycle simulation
-* Authentication and RBAC
+- [x] Bun + TypeScript monorepo
+- [x] Express API
+- [x] PostgreSQL + Prisma
+- [x] React frontend
+- [x] Authentication
+- [x] RBAC
+- [x] Firm/tenant scoping
+- [x] Client and portfolio data model
+- [x] Broker accounts
+- [x] Holdings
+- [x] Order creation and listing
+- [x] Broker abstraction
+- [x] Mock broker
+- [x] Zerodha integration
+- [x] Encrypted broker credentials/session handling
+- [x] Pre-trade validation
+- [x] Risk engine
+- [x] Cash/quantity reservations
+- [x] Order execution
+- [x] Order modification
+- [x] Order cancellation
+- [x] Partial-fill reconciliation
+- [x] Failure recovery for uncertain submissions
+- [x] Multi-client basket allocation
+- [x] Basket execution and synchronization
+- [x] Portfolio accounting and valuation
+- [x] Realized/unrealized P&L
+- [x] Audit logging
+- [x] Portfolio-manager dashboard
+- [x] Broker holdings/positions/funds snapshot
 
-* Portfolio manager dashboard
-### Upcoming
+### Remaining from the original architecture
 
-* Real-time order updates using WebSockets
-* Pre-trade risk engine
-* Order allocation across multiple clients
-* Audit logging
-* Broker reconciliation
-* Zerodha integration
-* Frontend dashboard
-* Production deployment
+- [ ] Complete broker-to-PMS reconciliation diff and repair flow
+- [ ] Attribute holdings cleanly to broker accounts for multi-broker reconciliation
+- [ ] Persist individual broker executions/fills
+- [ ] Add execution queue / worker
+- [ ] Implement automatic broker status monitoring/event ingestion
+- [ ] Add WebSocket live updates to the frontend
+- [ ] Expand the order state machine with pre-submission and cancel-pending states
+- [ ] Persist explicit allocation records if the original database design is retained
+- [ ] Add instrument master / canonical instrument validation
+- [ ] Add audit actor/user attribution
+- [ ] Replace mock market-data service with a real provider
+- [ ] Production deployment and fixed outbound IP for real broker traffic
 
-## Important Note
+## Architecture Documentation
 
-The current broker integration is intended for development and simulation.
+The original system diagrams are under:
 
-Real broker execution will only be added after the OMS order validation, security, authentication, audit logging, and execution safeguards are properly implemented.
+```text
+docs/system-architecture/
+```
+
+They cover:
+
+- Overall system
+- Order flow
+- Order lifecycle
+- Multi-client allocation
+- Broker update flow
+- Failure recovery
+- Database design
+
+These documents remain the target architecture. The README describes the current implementation and explicitly calls out the remaining gaps.
+
+## Safety Note
+
+This system can submit orders to real broker accounts.
+
+Real-broker execution should only be used with:
+
+- correct broker credentials
+- valid session state
+- tested risk controls
+- secure production secrets
+- broker-required network/IP configuration
+- deliberate operational monitoring
 
 ## Status
 
-The project is under active development.
+The project is under active development. Core PMS/OMS functionality and Zerodha execution are operational; the next development phase focuses on reconciliation, automation, event-driven updates, execution persistence, and production hardening.
