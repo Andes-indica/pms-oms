@@ -314,11 +314,11 @@ REJECTED
 * [x] Mock broker execution
 * [x] Pre-trade validation
 * [x] Order lifecycle simulation
+* Authentication and RBAC
 
+* Portfolio manager dashboard
 ### Upcoming
 
-* Authentication and RBAC
-* Portfolio manager dashboard
 * Real-time order updates using WebSockets
 * Pre-trade risk engine
 * Order allocation across multiple clients
