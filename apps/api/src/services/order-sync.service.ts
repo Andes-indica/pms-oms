@@ -200,11 +200,15 @@ export async function syncOrderService(
           await tx.holding.findUnique(
             {
               where: {
-                portfolioId_symbol_exchange:
+                portfolioId_brokerAccountId_symbol_exchange:
                   {
                     portfolioId:
                       freshOrder
                         .portfolioId,
+
+                    brokerAccountId:
+                      freshOrder
+                        .brokerAccountId,
 
                     symbol:
                       freshOrder
@@ -228,6 +232,10 @@ export async function syncOrderService(
                 portfolioId:
                   freshOrder
                     .portfolioId,
+
+                brokerAccountId:
+                  freshOrder
+                    .brokerAccountId,
 
                 symbol:
                   freshOrder.symbol,

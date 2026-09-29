@@ -74,6 +74,44 @@ async function main() {
     },
   });
 
+  const brokerAccount1 = await prisma.brokerAccount.upsert({
+    where: {
+      broker_accountId: {
+        broker: "MOCK",
+        accountId: "MOCK001",
+      },
+    },
+    update: {
+      accountLabel: "Primary",
+      clientId: client1.id,
+    },
+    create: {
+      broker: "MOCK",
+      accountId: "MOCK001",
+      accountLabel: "Primary",
+      clientId: client1.id,
+    },
+  });
+
+  const brokerAccount2 = await prisma.brokerAccount.upsert({
+    where: {
+      broker_accountId: {
+        broker: "MOCK",
+        accountId: "MOCK002",
+      },
+    },
+    update: {
+      accountLabel: "Primary",
+      clientId: client2.id,
+    },
+    create: {
+      broker: "MOCK",
+      accountId: "MOCK002",
+      accountLabel: "Primary",
+      clientId: client2.id,
+    },
+  });
+
   // 4. Portfolios
   const portfolio1 = await prisma.portfolio.upsert({
     where: {
@@ -102,8 +140,9 @@ async function main() {
   // 5. Holdings
   await prisma.holding.upsert({
     where: {
-      portfolioId_symbol_exchange: {
+      portfolioId_brokerAccountId_symbol_exchange: {
         portfolioId: portfolio1.id,
+        brokerAccountId: brokerAccount1.id,
         symbol: "RELIANCE",
         exchange: "NSE",
       },
@@ -115,13 +154,15 @@ async function main() {
       quantity: 50,
       averagePrice: 1400,
       portfolioId: portfolio1.id,
+      brokerAccountId: brokerAccount1.id,
     },
   });
 
   await prisma.holding.upsert({
     where: {
-      portfolioId_symbol_exchange: {
+      portfolioId_brokerAccountId_symbol_exchange: {
         portfolioId: portfolio1.id,
+        brokerAccountId: brokerAccount1.id,
         symbol: "INFY",
         exchange: "NSE",
       },
@@ -133,6 +174,7 @@ async function main() {
       quantity: 100,
       averagePrice: 1550,
       portfolioId: portfolio1.id,
+      brokerAccountId: brokerAccount1.id,
     },
   });
 
@@ -210,6 +252,7 @@ await prisma.restrictedSecurity.upsert({
     firm,
     manager,
     clients: [client1, client2],
+    brokerAccounts: [brokerAccount1, brokerAccount2],
     portfolios: [portfolio1, portfolio2],
   });
 }

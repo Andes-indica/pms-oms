@@ -41,6 +41,7 @@ export async function runPreTradeChecks(
       where: {
         portfolioId_brokerAccountId_symbol_exchange: {
           portfolioId: order.portfolioId,
+          brokerAccountId: order.brokerAccountId,
           symbol: order.symbol,
           exchange: order.exchange,
         },
