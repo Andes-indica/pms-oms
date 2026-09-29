@@ -39,7 +39,7 @@ export async function runPreTradeChecks(
   if (order.side === "SELL") {
     const holding = await database.holding.findUnique({
       where: {
-        portfolioId_symbol_exchange: {
+        portfolioId_brokerAccountId_symbol_exchange: {
           portfolioId: order.portfolioId,
           symbol: order.symbol,
           exchange: order.exchange,

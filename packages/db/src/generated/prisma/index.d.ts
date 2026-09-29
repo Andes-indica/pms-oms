@@ -2118,10 +2118,12 @@ export namespace Prisma {
 
   export type BrokerAccountCountOutputType = {
     orders: number
+    holdings: number
   }
 
   export type BrokerAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | BrokerAccountCountOutputTypeCountOrdersArgs
+    holdings?: boolean | BrokerAccountCountOutputTypeCountHoldingsArgs
   }
 
   // Custom InputTypes
@@ -2140,6 +2142,13 @@ export namespace Prisma {
    */
   export type BrokerAccountCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+  /**
+   * BrokerAccountCountOutputType without action
+   */
+  export type BrokerAccountCountOutputTypeCountHoldingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: HoldingWhereInput
   }
 
 
@@ -5782,6 +5791,7 @@ export namespace Prisma {
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
     orders?: boolean | BrokerAccount$ordersArgs<ExtArgs>
+    holdings?: boolean | BrokerAccount$holdingsArgs<ExtArgs>
     connection?: boolean | BrokerAccount$connectionArgs<ExtArgs>
     _count?: boolean | BrokerAccountCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["brokerAccount"]>
@@ -5822,6 +5832,7 @@ export namespace Prisma {
   export type BrokerAccountInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     orders?: boolean | BrokerAccount$ordersArgs<ExtArgs>
+    holdings?: boolean | BrokerAccount$holdingsArgs<ExtArgs>
     connection?: boolean | BrokerAccount$connectionArgs<ExtArgs>
     _count?: boolean | BrokerAccountCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -5837,6 +5848,7 @@ export namespace Prisma {
     objects: {
       client: Prisma.$ClientPayload<ExtArgs>
       orders: Prisma.$OrderPayload<ExtArgs>[]
+      holdings: Prisma.$HoldingPayload<ExtArgs>[]
       connection: Prisma.$BrokerConnectionPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -6243,6 +6255,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     orders<T extends BrokerAccount$ordersArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    holdings<T extends BrokerAccount$holdingsArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$holdingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HoldingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     connection<T extends BrokerAccount$connectionArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$connectionArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -6702,6 +6715,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: OrderScalarFieldEnum | OrderScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerAccount.holdings
+   */
+  export type BrokerAccount$holdingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Holding
+     */
+    select?: HoldingSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Holding
+     */
+    omit?: HoldingOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: HoldingInclude<ExtArgs> | null
+    where?: HoldingWhereInput
+    orderBy?: HoldingOrderByWithRelationInput | HoldingOrderByWithRelationInput[]
+    cursor?: HoldingWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: HoldingScalarFieldEnum | HoldingScalarFieldEnum[]
   }
 
   /**
@@ -7962,6 +7999,7 @@ export namespace Prisma {
     quantity: number | null
     averagePrice: Decimal | null
     portfolioId: string | null
+    brokerAccountId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7973,6 +8011,7 @@ export namespace Prisma {
     quantity: number | null
     averagePrice: Decimal | null
     portfolioId: string | null
+    brokerAccountId: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -7984,6 +8023,7 @@ export namespace Prisma {
     quantity: number
     averagePrice: number
     portfolioId: number
+    brokerAccountId: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -8007,6 +8047,7 @@ export namespace Prisma {
     quantity?: true
     averagePrice?: true
     portfolioId?: true
+    brokerAccountId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8018,6 +8059,7 @@ export namespace Prisma {
     quantity?: true
     averagePrice?: true
     portfolioId?: true
+    brokerAccountId?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -8029,6 +8071,7 @@ export namespace Prisma {
     quantity?: true
     averagePrice?: true
     portfolioId?: true
+    brokerAccountId?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -8127,6 +8170,7 @@ export namespace Prisma {
     quantity: number
     averagePrice: Decimal
     portfolioId: string
+    brokerAccountId: string | null
     createdAt: Date
     updatedAt: Date
     _count: HoldingCountAggregateOutputType | null
@@ -8157,9 +8201,11 @@ export namespace Prisma {
     quantity?: boolean
     averagePrice?: boolean
     portfolioId?: boolean
+    brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
   }, ExtArgs["result"]["holding"]>
 
   export type HoldingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8169,9 +8215,11 @@ export namespace Prisma {
     quantity?: boolean
     averagePrice?: boolean
     portfolioId?: boolean
+    brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
   }, ExtArgs["result"]["holding"]>
 
   export type HoldingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8181,9 +8229,11 @@ export namespace Prisma {
     quantity?: boolean
     averagePrice?: boolean
     portfolioId?: boolean
+    brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
   }, ExtArgs["result"]["holding"]>
 
   export type HoldingSelectScalar = {
@@ -8193,25 +8243,30 @@ export namespace Prisma {
     quantity?: boolean
     averagePrice?: boolean
     portfolioId?: boolean
+    brokerAccountId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type HoldingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "quantity" | "averagePrice" | "portfolioId" | "createdAt" | "updatedAt", ExtArgs["result"]["holding"]>
+  export type HoldingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "quantity" | "averagePrice" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["holding"]>
   export type HoldingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
   }
   export type HoldingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
   }
   export type HoldingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
+    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
   }
 
   export type $HoldingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Holding"
     objects: {
       portfolio: Prisma.$PortfolioPayload<ExtArgs>
+      brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8220,6 +8275,7 @@ export namespace Prisma {
       quantity: number
       averagePrice: Prisma.Decimal
       portfolioId: string
+      brokerAccountId: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["holding"]>
@@ -8617,6 +8673,7 @@ export namespace Prisma {
   export interface Prisma__HoldingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     portfolio<T extends PortfolioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioDefaultArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    brokerAccount<T extends Holding$brokerAccountArgs<ExtArgs> = {}>(args?: Subset<T, Holding$brokerAccountArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -8652,6 +8709,7 @@ export namespace Prisma {
     readonly quantity: FieldRef<"Holding", 'Int'>
     readonly averagePrice: FieldRef<"Holding", 'Decimal'>
     readonly portfolioId: FieldRef<"Holding", 'String'>
+    readonly brokerAccountId: FieldRef<"Holding", 'String'>
     readonly createdAt: FieldRef<"Holding", 'DateTime'>
     readonly updatedAt: FieldRef<"Holding", 'DateTime'>
   }
@@ -9052,6 +9110,25 @@ export namespace Prisma {
      * Limit how many Holdings to delete.
      */
     limit?: number
+  }
+
+  /**
+   * Holding.brokerAccount
+   */
+  export type Holding$brokerAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerAccount
+     */
+    select?: BrokerAccountSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerAccount
+     */
+    omit?: BrokerAccountOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerAccountInclude<ExtArgs> | null
+    where?: BrokerAccountWhereInput
   }
 
   /**
@@ -16141,6 +16218,7 @@ export namespace Prisma {
     quantity: 'quantity',
     averagePrice: 'averagePrice',
     portfolioId: 'portfolioId',
+    brokerAccountId: 'brokerAccountId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -16703,6 +16781,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BrokerAccount"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     orders?: OrderListRelationFilter
+    holdings?: HoldingListRelationFilter
     connection?: XOR<BrokerConnectionNullableScalarRelationFilter, BrokerConnectionWhereInput> | null
   }
 
@@ -16716,6 +16795,7 @@ export namespace Prisma {
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
     orders?: OrderOrderByRelationAggregateInput
+    holdings?: HoldingOrderByRelationAggregateInput
     connection?: BrokerConnectionOrderByWithRelationInput
   }
 
@@ -16733,6 +16813,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"BrokerAccount"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     orders?: OrderListRelationFilter
+    holdings?: HoldingListRelationFilter
     connection?: XOR<BrokerConnectionNullableScalarRelationFilter, BrokerConnectionWhereInput> | null
   }, "id" | "broker_accountId">
 
@@ -16843,9 +16924,11 @@ export namespace Prisma {
     quantity?: IntFilter<"Holding"> | number
     averagePrice?: DecimalFilter<"Holding"> | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFilter<"Holding"> | string
+    brokerAccountId?: StringNullableFilter<"Holding"> | string | null
     createdAt?: DateTimeFilter<"Holding"> | Date | string
     updatedAt?: DateTimeFilter<"Holding"> | Date | string
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
+    brokerAccount?: XOR<BrokerAccountNullableScalarRelationFilter, BrokerAccountWhereInput> | null
   }
 
   export type HoldingOrderByWithRelationInput = {
@@ -16855,14 +16938,16 @@ export namespace Prisma {
     quantity?: SortOrder
     averagePrice?: SortOrder
     portfolioId?: SortOrder
+    brokerAccountId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     portfolio?: PortfolioOrderByWithRelationInput
+    brokerAccount?: BrokerAccountOrderByWithRelationInput
   }
 
   export type HoldingWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    portfolioId_symbol_exchange?: HoldingPortfolioIdSymbolExchangeCompoundUniqueInput
+    portfolioId_brokerAccountId_symbol_exchange?: HoldingPortfolioIdBrokerAccountIdSymbolExchangeCompoundUniqueInput
     AND?: HoldingWhereInput | HoldingWhereInput[]
     OR?: HoldingWhereInput[]
     NOT?: HoldingWhereInput | HoldingWhereInput[]
@@ -16871,10 +16956,12 @@ export namespace Prisma {
     quantity?: IntFilter<"Holding"> | number
     averagePrice?: DecimalFilter<"Holding"> | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFilter<"Holding"> | string
+    brokerAccountId?: StringNullableFilter<"Holding"> | string | null
     createdAt?: DateTimeFilter<"Holding"> | Date | string
     updatedAt?: DateTimeFilter<"Holding"> | Date | string
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
-  }, "id" | "portfolioId_symbol_exchange">
+    brokerAccount?: XOR<BrokerAccountNullableScalarRelationFilter, BrokerAccountWhereInput> | null
+  }, "id" | "portfolioId_brokerAccountId_symbol_exchange">
 
   export type HoldingOrderByWithAggregationInput = {
     id?: SortOrder
@@ -16883,6 +16970,7 @@ export namespace Prisma {
     quantity?: SortOrder
     averagePrice?: SortOrder
     portfolioId?: SortOrder
+    brokerAccountId?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: HoldingCountOrderByAggregateInput
@@ -16902,6 +16990,7 @@ export namespace Prisma {
     quantity?: IntWithAggregatesFilter<"Holding"> | number
     averagePrice?: DecimalWithAggregatesFilter<"Holding"> | Decimal | DecimalJsLike | number | string
     portfolioId?: StringWithAggregatesFilter<"Holding"> | string
+    brokerAccountId?: StringNullableWithAggregatesFilter<"Holding"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Holding"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Holding"> | Date | string
   }
@@ -17649,6 +17738,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
 
@@ -17661,6 +17751,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
 
@@ -17673,6 +17764,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
 
@@ -17685,6 +17777,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
@@ -17800,6 +17893,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     portfolio: PortfolioCreateNestedOneWithoutHoldingsInput
+    brokerAccount?: BrokerAccountCreateNestedOneWithoutHoldingsInput
   }
 
   export type HoldingUncheckedCreateInput = {
@@ -17809,6 +17903,7 @@ export namespace Prisma {
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
     portfolioId: string
+    brokerAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17822,6 +17917,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolio?: PortfolioUpdateOneRequiredWithoutHoldingsNestedInput
+    brokerAccount?: BrokerAccountUpdateOneWithoutHoldingsNestedInput
   }
 
   export type HoldingUncheckedUpdateInput = {
@@ -17831,6 +17927,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17842,6 +17939,7 @@ export namespace Prisma {
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
     portfolioId: string
+    brokerAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17863,6 +17961,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18722,12 +18821,22 @@ export namespace Prisma {
     none?: OrderWhereInput
   }
 
+  export type HoldingListRelationFilter = {
+    every?: HoldingWhereInput
+    some?: HoldingWhereInput
+    none?: HoldingWhereInput
+  }
+
   export type BrokerConnectionNullableScalarRelationFilter = {
     is?: BrokerConnectionWhereInput | null
     isNot?: BrokerConnectionWhereInput | null
   }
 
   export type OrderOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type HoldingOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -18777,19 +18886,9 @@ export namespace Prisma {
     not?: NestedDecimalFilter<$PrismaModel> | Decimal | DecimalJsLike | number | string
   }
 
-  export type HoldingListRelationFilter = {
-    every?: HoldingWhereInput
-    some?: HoldingWhereInput
-    none?: HoldingWhereInput
-  }
-
   export type RiskLimitNullableScalarRelationFilter = {
     is?: RiskLimitWhereInput | null
     isNot?: RiskLimitWhereInput | null
-  }
-
-  export type HoldingOrderByRelationAggregateInput = {
-    _count?: SortOrder
   }
 
   export type PortfolioCountOrderByAggregateInput = {
@@ -18859,8 +18958,14 @@ export namespace Prisma {
     isNot?: PortfolioWhereInput
   }
 
-  export type HoldingPortfolioIdSymbolExchangeCompoundUniqueInput = {
+  export type BrokerAccountNullableScalarRelationFilter = {
+    is?: BrokerAccountWhereInput | null
+    isNot?: BrokerAccountWhereInput | null
+  }
+
+  export type HoldingPortfolioIdBrokerAccountIdSymbolExchangeCompoundUniqueInput = {
     portfolioId: string
+    brokerAccountId: string
     symbol: string
     exchange: string
   }
@@ -18872,6 +18977,7 @@ export namespace Prisma {
     quantity?: SortOrder
     averagePrice?: SortOrder
     portfolioId?: SortOrder
+    brokerAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18888,6 +18994,7 @@ export namespace Prisma {
     quantity?: SortOrder
     averagePrice?: SortOrder
     portfolioId?: SortOrder
+    brokerAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -18899,6 +19006,7 @@ export namespace Prisma {
     quantity?: SortOrder
     averagePrice?: SortOrder
     portfolioId?: SortOrder
+    brokerAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -19789,6 +19897,13 @@ export namespace Prisma {
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
   }
 
+  export type HoldingCreateNestedManyWithoutBrokerAccountInput = {
+    create?: XOR<HoldingCreateWithoutBrokerAccountInput, HoldingUncheckedCreateWithoutBrokerAccountInput> | HoldingCreateWithoutBrokerAccountInput[] | HoldingUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: HoldingCreateOrConnectWithoutBrokerAccountInput | HoldingCreateOrConnectWithoutBrokerAccountInput[]
+    createMany?: HoldingCreateManyBrokerAccountInputEnvelope
+    connect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+  }
+
   export type BrokerConnectionCreateNestedOneWithoutBrokerAccountInput = {
     create?: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
     connectOrCreate?: BrokerConnectionCreateOrConnectWithoutBrokerAccountInput
@@ -19800,6 +19915,13 @@ export namespace Prisma {
     connectOrCreate?: OrderCreateOrConnectWithoutBrokerAccountInput | OrderCreateOrConnectWithoutBrokerAccountInput[]
     createMany?: OrderCreateManyBrokerAccountInputEnvelope
     connect?: OrderWhereUniqueInput | OrderWhereUniqueInput[]
+  }
+
+  export type HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput = {
+    create?: XOR<HoldingCreateWithoutBrokerAccountInput, HoldingUncheckedCreateWithoutBrokerAccountInput> | HoldingCreateWithoutBrokerAccountInput[] | HoldingUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: HoldingCreateOrConnectWithoutBrokerAccountInput | HoldingCreateOrConnectWithoutBrokerAccountInput[]
+    createMany?: HoldingCreateManyBrokerAccountInputEnvelope
+    connect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
   }
 
   export type BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput = {
@@ -19830,6 +19952,20 @@ export namespace Prisma {
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
   }
 
+  export type HoldingUpdateManyWithoutBrokerAccountNestedInput = {
+    create?: XOR<HoldingCreateWithoutBrokerAccountInput, HoldingUncheckedCreateWithoutBrokerAccountInput> | HoldingCreateWithoutBrokerAccountInput[] | HoldingUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: HoldingCreateOrConnectWithoutBrokerAccountInput | HoldingCreateOrConnectWithoutBrokerAccountInput[]
+    upsert?: HoldingUpsertWithWhereUniqueWithoutBrokerAccountInput | HoldingUpsertWithWhereUniqueWithoutBrokerAccountInput[]
+    createMany?: HoldingCreateManyBrokerAccountInputEnvelope
+    set?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    disconnect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    delete?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    connect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    update?: HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput | HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput[]
+    updateMany?: HoldingUpdateManyWithWhereWithoutBrokerAccountInput | HoldingUpdateManyWithWhereWithoutBrokerAccountInput[]
+    deleteMany?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
+  }
+
   export type BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput = {
     create?: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
     connectOrCreate?: BrokerConnectionCreateOrConnectWithoutBrokerAccountInput
@@ -19852,6 +19988,20 @@ export namespace Prisma {
     update?: OrderUpdateWithWhereUniqueWithoutBrokerAccountInput | OrderUpdateWithWhereUniqueWithoutBrokerAccountInput[]
     updateMany?: OrderUpdateManyWithWhereWithoutBrokerAccountInput | OrderUpdateManyWithWhereWithoutBrokerAccountInput[]
     deleteMany?: OrderScalarWhereInput | OrderScalarWhereInput[]
+  }
+
+  export type HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput = {
+    create?: XOR<HoldingCreateWithoutBrokerAccountInput, HoldingUncheckedCreateWithoutBrokerAccountInput> | HoldingCreateWithoutBrokerAccountInput[] | HoldingUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: HoldingCreateOrConnectWithoutBrokerAccountInput | HoldingCreateOrConnectWithoutBrokerAccountInput[]
+    upsert?: HoldingUpsertWithWhereUniqueWithoutBrokerAccountInput | HoldingUpsertWithWhereUniqueWithoutBrokerAccountInput[]
+    createMany?: HoldingCreateManyBrokerAccountInputEnvelope
+    set?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    disconnect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    delete?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    connect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+    update?: HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput | HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput[]
+    updateMany?: HoldingUpdateManyWithWhereWithoutBrokerAccountInput | HoldingUpdateManyWithWhereWithoutBrokerAccountInput[]
+    deleteMany?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
   }
 
   export type BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput = {
@@ -20008,6 +20158,12 @@ export namespace Prisma {
     connect?: PortfolioWhereUniqueInput
   }
 
+  export type BrokerAccountCreateNestedOneWithoutHoldingsInput = {
+    create?: XOR<BrokerAccountCreateWithoutHoldingsInput, BrokerAccountUncheckedCreateWithoutHoldingsInput>
+    connectOrCreate?: BrokerAccountCreateOrConnectWithoutHoldingsInput
+    connect?: BrokerAccountWhereUniqueInput
+  }
+
   export type IntFieldUpdateOperationsInput = {
     set?: number
     increment?: number
@@ -20022,6 +20178,16 @@ export namespace Prisma {
     upsert?: PortfolioUpsertWithoutHoldingsInput
     connect?: PortfolioWhereUniqueInput
     update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutHoldingsInput, PortfolioUpdateWithoutHoldingsInput>, PortfolioUncheckedUpdateWithoutHoldingsInput>
+  }
+
+  export type BrokerAccountUpdateOneWithoutHoldingsNestedInput = {
+    create?: XOR<BrokerAccountCreateWithoutHoldingsInput, BrokerAccountUncheckedCreateWithoutHoldingsInput>
+    connectOrCreate?: BrokerAccountCreateOrConnectWithoutHoldingsInput
+    upsert?: BrokerAccountUpsertWithoutHoldingsInput
+    disconnect?: BrokerAccountWhereInput | boolean
+    delete?: BrokerAccountWhereInput | boolean
+    connect?: BrokerAccountWhereUniqueInput
+    update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutHoldingsInput, BrokerAccountUpdateWithoutHoldingsInput>, BrokerAccountUncheckedUpdateWithoutHoldingsInput>
   }
 
   export type BasketOrderCreateNestedOneWithoutOrdersInput = {
@@ -20959,6 +21125,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
 
@@ -20970,6 +21137,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
 
@@ -21184,6 +21352,38 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type HoldingCreateWithoutBrokerAccountInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    quantity: number
+    averagePrice: Decimal | DecimalJsLike | number | string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    portfolio: PortfolioCreateNestedOneWithoutHoldingsInput
+  }
+
+  export type HoldingUncheckedCreateWithoutBrokerAccountInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    quantity: number
+    averagePrice: Decimal | DecimalJsLike | number | string
+    portfolioId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HoldingCreateOrConnectWithoutBrokerAccountInput = {
+    where: HoldingWhereUniqueInput
+    create: XOR<HoldingCreateWithoutBrokerAccountInput, HoldingUncheckedCreateWithoutBrokerAccountInput>
+  }
+
+  export type HoldingCreateManyBrokerAccountInputEnvelope = {
+    data: HoldingCreateManyBrokerAccountInput | HoldingCreateManyBrokerAccountInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BrokerConnectionCreateWithoutBrokerAccountInput = {
     id?: string
     credentialsEncrypted?: string | null
@@ -21289,6 +21489,37 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"Order"> | Date | string
   }
 
+  export type HoldingUpsertWithWhereUniqueWithoutBrokerAccountInput = {
+    where: HoldingWhereUniqueInput
+    update: XOR<HoldingUpdateWithoutBrokerAccountInput, HoldingUncheckedUpdateWithoutBrokerAccountInput>
+    create: XOR<HoldingCreateWithoutBrokerAccountInput, HoldingUncheckedCreateWithoutBrokerAccountInput>
+  }
+
+  export type HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput = {
+    where: HoldingWhereUniqueInput
+    data: XOR<HoldingUpdateWithoutBrokerAccountInput, HoldingUncheckedUpdateWithoutBrokerAccountInput>
+  }
+
+  export type HoldingUpdateManyWithWhereWithoutBrokerAccountInput = {
+    where: HoldingScalarWhereInput
+    data: XOR<HoldingUpdateManyMutationInput, HoldingUncheckedUpdateManyWithoutBrokerAccountInput>
+  }
+
+  export type HoldingScalarWhereInput = {
+    AND?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
+    OR?: HoldingScalarWhereInput[]
+    NOT?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
+    id?: StringFilter<"Holding"> | string
+    symbol?: StringFilter<"Holding"> | string
+    exchange?: StringFilter<"Holding"> | string
+    quantity?: IntFilter<"Holding"> | number
+    averagePrice?: DecimalFilter<"Holding"> | Decimal | DecimalJsLike | number | string
+    portfolioId?: StringFilter<"Holding"> | string
+    brokerAccountId?: StringNullableFilter<"Holding"> | string | null
+    createdAt?: DateTimeFilter<"Holding"> | Date | string
+    updatedAt?: DateTimeFilter<"Holding"> | Date | string
+  }
+
   export type BrokerConnectionUpsertWithoutBrokerAccountInput = {
     update: XOR<BrokerConnectionUpdateWithoutBrokerAccountInput, BrokerConnectionUncheckedUpdateWithoutBrokerAccountInput>
     create: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
@@ -21359,6 +21590,7 @@ export namespace Prisma {
     averagePrice: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
+    brokerAccount?: BrokerAccountCreateNestedOneWithoutHoldingsInput
   }
 
   export type HoldingUncheckedCreateWithoutPortfolioInput = {
@@ -21367,6 +21599,7 @@ export namespace Prisma {
     exchange: string
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
+    brokerAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -21509,20 +21742,6 @@ export namespace Prisma {
     data: XOR<HoldingUpdateManyMutationInput, HoldingUncheckedUpdateManyWithoutPortfolioInput>
   }
 
-  export type HoldingScalarWhereInput = {
-    AND?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
-    OR?: HoldingScalarWhereInput[]
-    NOT?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
-    id?: StringFilter<"Holding"> | string
-    symbol?: StringFilter<"Holding"> | string
-    exchange?: StringFilter<"Holding"> | string
-    quantity?: IntFilter<"Holding"> | number
-    averagePrice?: DecimalFilter<"Holding"> | Decimal | DecimalJsLike | number | string
-    portfolioId?: StringFilter<"Holding"> | string
-    createdAt?: DateTimeFilter<"Holding"> | Date | string
-    updatedAt?: DateTimeFilter<"Holding"> | Date | string
-  }
-
   export type OrderUpsertWithWhereUniqueWithoutPortfolioInput = {
     where: OrderWhereUniqueInput
     update: XOR<OrderUpdateWithoutPortfolioInput, OrderUncheckedUpdateWithoutPortfolioInput>
@@ -21597,6 +21816,35 @@ export namespace Prisma {
     create: XOR<PortfolioCreateWithoutHoldingsInput, PortfolioUncheckedCreateWithoutHoldingsInput>
   }
 
+  export type BrokerAccountCreateWithoutHoldingsInput = {
+    id?: string
+    broker: string
+    accountId: string
+    accountLabel?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client: ClientCreateNestedOneWithoutBrokerAccountsInput
+    orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
+  }
+
+  export type BrokerAccountUncheckedCreateWithoutHoldingsInput = {
+    id?: string
+    broker: string
+    accountId: string
+    accountLabel?: string | null
+    clientId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
+  }
+
+  export type BrokerAccountCreateOrConnectWithoutHoldingsInput = {
+    where: BrokerAccountWhereUniqueInput
+    create: XOR<BrokerAccountCreateWithoutHoldingsInput, BrokerAccountUncheckedCreateWithoutHoldingsInput>
+  }
+
   export type PortfolioUpsertWithoutHoldingsInput = {
     update: XOR<PortfolioUpdateWithoutHoldingsInput, PortfolioUncheckedUpdateWithoutHoldingsInput>
     create: XOR<PortfolioCreateWithoutHoldingsInput, PortfolioUncheckedCreateWithoutHoldingsInput>
@@ -21628,6 +21876,41 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
     riskLimit?: RiskLimitUncheckedUpdateOneWithoutPortfolioNestedInput
+  }
+
+  export type BrokerAccountUpsertWithoutHoldingsInput = {
+    update: XOR<BrokerAccountUpdateWithoutHoldingsInput, BrokerAccountUncheckedUpdateWithoutHoldingsInput>
+    create: XOR<BrokerAccountCreateWithoutHoldingsInput, BrokerAccountUncheckedCreateWithoutHoldingsInput>
+    where?: BrokerAccountWhereInput
+  }
+
+  export type BrokerAccountUpdateToOneWithWhereWithoutHoldingsInput = {
+    where?: BrokerAccountWhereInput
+    data: XOR<BrokerAccountUpdateWithoutHoldingsInput, BrokerAccountUncheckedUpdateWithoutHoldingsInput>
+  }
+
+  export type BrokerAccountUpdateWithoutHoldingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    broker?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    accountLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
+    orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
+  }
+
+  export type BrokerAccountUncheckedUpdateWithoutHoldingsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    broker?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    accountLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
   export type BasketOrderCreateWithoutOrdersInput = {
@@ -21702,6 +21985,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
+    holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
 
@@ -21713,6 +21997,7 @@ export namespace Prisma {
     clientId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
 
@@ -21816,6 +22101,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
+    holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
 
@@ -21827,6 +22113,7 @@ export namespace Prisma {
     clientId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
@@ -22083,6 +22370,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
   }
 
   export type BrokerAccountUncheckedCreateWithoutConnectionInput = {
@@ -22094,6 +22382,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
   }
 
   export type BrokerAccountCreateOrConnectWithoutConnectionInput = {
@@ -22121,6 +22410,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
   }
 
   export type BrokerAccountUncheckedUpdateWithoutConnectionInput = {
@@ -22132,6 +22422,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
   }
 
   export type UserCreateManyFirmInput = {
@@ -22337,6 +22628,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
 
@@ -22348,6 +22640,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
@@ -22408,6 +22701,17 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    portfolioId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type HoldingCreateManyBrokerAccountInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    quantity: number
+    averagePrice: Decimal | DecimalJsLike | number | string
     portfolioId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -22482,12 +22786,46 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type HoldingUpdateWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    portfolio?: PortfolioUpdateOneRequiredWithoutHoldingsNestedInput
+  }
+
+  export type HoldingUncheckedUpdateWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type HoldingUncheckedUpdateManyWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type HoldingCreateManyPortfolioInput = {
     id?: string
     symbol: string
     exchange: string
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
+    brokerAccountId?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22523,6 +22861,7 @@ export namespace Prisma {
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brokerAccount?: BrokerAccountUpdateOneWithoutHoldingsNestedInput
   }
 
   export type HoldingUncheckedUpdateWithoutPortfolioInput = {
@@ -22531,6 +22870,7 @@ export namespace Prisma {
     exchange?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22541,6 +22881,7 @@ export namespace Prisma {
     exchange?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

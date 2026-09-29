@@ -1,7 +1,7 @@
 generator client {
   provider = "prisma-client-js"
-  output = "../src/generated/prisma"
-  runtime="bun"
+  output   = "../src/generated/prisma"
+  runtime  = "bun"
 }
 
 datasource db {
@@ -21,10 +21,10 @@ model Firm {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users   User[]
-  clients Client[]
+  users        User[]
+  clients      Client[]
   basketOrders BasketOrder[]
-  auditLogs AuditLog[]
+  auditLogs    AuditLog[]
 }
 
 model User {
@@ -42,7 +42,7 @@ model User {
 }
 
 model Client {
-  id    String @id @default(cuid())
+  id    String  @id @default(cuid())
   name  String
   email String?
 
@@ -50,7 +50,7 @@ model Client {
   firm   Firm   @relation(fields: [firmId], references: [id])
 
   brokerAccounts BrokerAccount[]
-  portfolios Portfolio[]
+  portfolios     Portfolio[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -66,7 +66,8 @@ model BrokerAccount {
   clientId String
   client   Client @relation(fields: [clientId], references: [id])
 
-  orders Order[]
+  orders   Order[]
+  holdings Holding[]
 
   connection BrokerConnection?
 
@@ -75,6 +76,7 @@ model BrokerAccount {
 
   @@unique([broker, accountId])
 }
+
 enum OrderSide {
   BUY
   SELL
@@ -110,8 +112,8 @@ enum AuditAction {
 }
 
 model Portfolio {
-  id       String @id @default(cuid())
-  name     String
+  id   String @id @default(cuid())
+  name String
 
   clientId String
   client   Client @relation(fields: [clientId], references: [id])
@@ -128,7 +130,7 @@ model Portfolio {
 }
 
 model Holding {
-  id       String @id @default(cuid())
+  id String @id @default(cuid())
 
   symbol   String
   exchange String
@@ -139,10 +141,15 @@ model Holding {
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
 
+  brokerAccountId String?
+  brokerAccount   BrokerAccount? @relation(fields: [brokerAccountId], references: [id])
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([portfolioId, symbol, exchange])
+  @@unique([portfolioId,brokerAccountId, symbol, exchange ])
+
+  @@index([brokerAccountId])
 }
 
 model Order {
@@ -159,13 +166,13 @@ model Order {
 
   limitPrice Decimal? @db.Decimal(18, 4)
 
-  brokerOrderId String? @unique
+  brokerOrderId String?      @unique
   basketOrderId String?
-  basketOrder BasketOrder? @relation(fields: [basketOrderId], references: [id])
+  basketOrder   BasketOrder? @relation(fields: [basketOrderId], references: [id])
 
-  filledQuantity   Int      @default(0)
-  averageFillPrice Decimal? @db.Decimal(18, 4)
-  realizedPnl      Decimal? @db.Decimal(18,4)
+  filledQuantity   Int       @default(0)
+  averageFillPrice Decimal?  @db.Decimal(18, 4)
+  realizedPnl      Decimal?  @db.Decimal(18, 4)
   filledAt         DateTime?
 
   estimatedPrice   Decimal? @db.Decimal(18, 4)
@@ -244,7 +251,7 @@ model BasketOrder {
 model RiskLimit {
   id String @id @default(cuid())
 
-  portfolioId String @unique
+  portfolioId String    @unique
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
 
   maxOrderQuantity Int?
@@ -269,12 +276,14 @@ model RestrictedSecurity {
 
   @@unique([symbol, exchange])
 }
+
 enum BrokerConnectionStatus {
   DISCONNECTED
   CONNECTED
   EXPIRED
   ERROR
 }
+
 model BrokerConnection {
   id String @id @default(cuid())
 

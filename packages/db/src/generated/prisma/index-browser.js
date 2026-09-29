@@ -173,6 +173,7 @@ exports.Prisma.HoldingScalarFieldEnum = {
   quantity: 'quantity',
   averagePrice: 'averagePrice',
   portfolioId: 'portfolioId',
+  brokerAccountId: 'brokerAccountId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
