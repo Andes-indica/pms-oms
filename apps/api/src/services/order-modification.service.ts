@@ -174,6 +174,7 @@ export async function modifyOrderService(
             },
 
             select: {
+                brokerAccountId: true,
                 side: true,
                 symbol: true,
                 exchange: true,
@@ -228,6 +229,8 @@ export async function modifyOrderService(
         const holding =
             order.portfolio.holdings.find(
                 (holding) =>
+                    holding.brokerAccountId ===
+                    order.brokerAccountId &&
                     holding.symbol ===
                     order.symbol &&
                     holding.exchange ===
@@ -246,7 +249,9 @@ export async function modifyOrderService(
                         other.symbol ===
                         order.symbol &&
                         other.exchange ===
-                        order.exchange,
+                        order.exchange&&
+                        other.brokerAccountId ===
+                        order.brokerAccountId,
                 )
                 .reduce(
                     (total, other) =>

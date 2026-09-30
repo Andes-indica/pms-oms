@@ -211,6 +211,7 @@ export async function executeOrderService(
               portfolioId:
                 checkedOrder
                   .portfolioId,
+                  brokerAccountId:checkedOrder.brokerAccountId,
 
               symbol:
                 checkedOrder.symbol,

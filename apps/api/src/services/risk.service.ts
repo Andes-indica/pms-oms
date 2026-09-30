@@ -3,6 +3,7 @@ import { prisma } from "@pms-oms/db";
 type RiskCheckInput = {
   currentOrderId: string;
   portfolioId: string;
+  brokerAccountId: string;
   symbol: string;
   exchange: string;
   side: "BUY" | "SELL";
@@ -107,7 +108,12 @@ export async function runRiskChecks(
   const holding = portfolio.holdings[0];
 
   const currentQuantity =
-    holding?.quantity ?? 0;
+    portfolio.holdings.reduce(
+      (total, holding) => total + holding.quantity, 0,
+    );
+  const brokerHoldingQuantity = portfolio.holdings.filter((holding) => holding.brokerAccountId === input.brokerAccountId,).reduce(
+    (total, holding) => total + holding.quantity, 0,
+  );
 
   const sellReservations = await database.order.aggregate({
     where: {
@@ -125,6 +131,47 @@ export async function runRiskChecks(
       reservedQuantity: true,
     },
   });
+  const brokerSellReservations =
+    await database.order.aggregate({
+      where: {
+        portfolioId:
+          input.portfolioId,
+
+        brokerAccountId:
+          input.brokerAccountId,
+
+        symbol:
+          input.symbol,
+
+        exchange:
+          input.exchange,
+
+        side: "SELL",
+
+        id: {
+          not:
+            input.currentOrderId,
+        },
+
+        status: {
+          in: [
+            "SUBMITTED",
+            "OPEN",
+            "PARTIALLY_FILLED",
+          ],
+        },
+      },
+
+      _sum: {
+        reservedQuantity:
+          true,
+      },
+    });
+
+  const brokerReservedQuantity =
+    brokerSellReservations
+      ._sum
+      .reservedQuantity ?? 0;
 
   const reservedQuantity =
     sellReservations._sum.reservedQuantity ?? 0;
@@ -151,7 +198,16 @@ export async function runRiskChecks(
   const reservedBuyQuantity =
     (buyReservations._sum.quantity ?? 0) -
     (buyReservations._sum.filledQuantity ?? 0);
-
+  if (
+    input.side === "SELL" &&
+    brokerHoldingQuantity -
+    brokerReservedQuantity <
+    input.quantity
+  ) {
+    throw new Error(
+      "INSUFFICIENT_HOLDINGS",
+    );
+  }
   let projectedQuantity = currentQuantity;
 
   if (input.side === "BUY") {
