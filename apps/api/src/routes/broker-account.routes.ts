@@ -4,7 +4,8 @@ import {
 
 import {
   createBrokerAccount,
-  getBrokerSnapshot
+  getBrokerSnapshot,
+  getBrokerReconciliation
 } from "../controllers/broker-account.controller";
 
 import {
@@ -44,5 +45,17 @@ router.get(
   ),
 
   getBrokerSnapshot,
+);
+router.get(
+  "/broker-accounts/:id/reconciliation",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+    "VIEWER",
+  ),
+
+  getBrokerReconciliation,
 );
 export default router;

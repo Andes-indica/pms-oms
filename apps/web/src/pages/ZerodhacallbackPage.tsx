@@ -24,6 +24,7 @@ type SessionResponse = {
       | null;
   };
 };
+    let zerodhaCallbackConsumed = false;
 
 export function ZerodhaCallbackPage() {
   const [
@@ -40,8 +41,11 @@ export function ZerodhaCallbackPage() {
   useEffect(() => {
     let cancelled =
       false;
-
     async function completeLogin() {
+      if(zerodhaCallbackConsumed) {
+        return;
+      }
+      zerodhaCallbackConsumed=true;
       const requestToken =
         searchParams.get(
           "request_token",
@@ -87,6 +91,7 @@ export function ZerodhaCallbackPage() {
       }
 
       if (!requestToken) {
+        zerodhaCallbackConsumed=false;
         setError(
           "Zerodha did not return a request token.",
         );

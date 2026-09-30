@@ -24,6 +24,9 @@ import {
   resolveBroker,
 } from "../brokers/broker-registry";
 
+import {
+  reconcileBrokerHoldings,
+} from "../services/broker-reconciliation.service";
 type CreateBrokerAccountBody = {
   broker?: unknown;
   accountId?: unknown;
@@ -341,6 +344,84 @@ export async function createBrokerAccount(
       .json({
         error:
           "Failed to create broker account",
+      });
+  }
+}
+export async function getBrokerReconciliation(
+  req: BrokerAccountRequest,
+  res: Response,
+) {
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({
+        error:
+          "Authentication required",
+      });
+  }
+
+  try {
+    const reconciliation =
+      await reconcileBrokerHoldings(
+        req.params.id,
+        req.user.firmId,
+      );
+
+    return res.json({
+      data:
+        reconciliation,
+    });
+  } catch (error) {
+    console.error(
+      "Broker reconciliation failed:",
+      error,
+    );
+
+    if (
+      error instanceof Error
+    ) {
+      switch (
+        error.message
+      ) {
+        case "BROKER_ACCOUNT_NOT_FOUND":
+          return res
+            .status(404)
+            .json({
+              error:
+                "Broker account not found",
+            });
+
+        case "BROKER_NOT_CONNECTED":
+          return res
+            .status(409)
+            .json({
+              error:
+                "Broker account is not connected",
+            });
+
+        case "BROKER_SESSION_EXPIRED":
+          return res
+            .status(409)
+            .json({
+              error:
+                "Broker session has expired",
+            });
+
+        case "BROKER_HOLDINGS_UNSUPPORTED":
+          return res
+            .status(400)
+            .json({
+              error:
+                "Broker does not support holdings reconciliation",
+            });
+      }
+    }
+
+    return res
+      .status(502)
+      .json({
+        error:
+          "Failed to reconcile broker holdings",
       });
   }
 }
