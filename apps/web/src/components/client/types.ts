@@ -137,3 +137,49 @@ export type BrokerSnapshot = {
 
   fetchedAt: string;
 };
+export type HoldingReconciliationStatus =
+  | "MATCH"
+  | "MISSING_IN_PMS"
+  | "MISSING_AT_BROKER"
+  | "QUANTITY_MISMATCH"
+  | "AVERAGE_PRICE_MISMATCH";
+
+export type HoldingReconciliationItem = {
+  symbol: string;
+  exchange: string;
+
+  status:
+    HoldingReconciliationStatus;
+
+  brokerQuantity: number;
+  pmsQuantity: number;
+
+  brokerAveragePrice:
+    number | null;
+
+  pmsAveragePrice:
+    number | null;
+
+  quantityDifference: number;
+
+  averagePriceDifference:
+    number | null;
+};
+
+export type BrokerReconciliation = {
+  brokerAccountId: string;
+  broker: string;
+  accountId: string;
+
+  status:
+    | "MATCH"
+    | "MISMATCH";
+
+  matchedCount: number;
+  mismatchCount: number;
+
+  items:
+    HoldingReconciliationItem[];
+
+  fetchedAt: string;
+};

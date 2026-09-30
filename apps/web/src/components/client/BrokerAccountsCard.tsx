@@ -8,7 +8,8 @@ import {
 
 import type {
     BrokerAccount,
-    BrokerSnapshot
+    BrokerSnapshot,
+    BrokerReconciliation
 } from "./types";
 
 type Props = {
@@ -172,7 +173,29 @@ export function BrokerAccountsCard({
         useState<BrokerSnapshot | null>(
             null,
         );
+    const [
+        reconciliationAccountId,
+        setReconciliationAccountId,
+    ] =
+        useState<string | null>(
+            null,
+        );
 
+    const [
+        reconciliation,
+        setReconciliation,
+    ] =
+        useState<BrokerReconciliation | null>(
+            null,
+        );
+
+    const [
+        loadingReconciliationId,
+        setLoadingReconciliationId,
+    ] =
+        useState<string | null>(
+            null,
+        );
     const [
         loadingSnapshotId,
         setLoadingSnapshotId,
@@ -372,6 +395,43 @@ export function BrokerAccountsCard({
             );
         } finally {
             setLoadingSnapshotId(
+                null,
+            );
+        }
+    }
+    async function loadReconciliation(
+        account: BrokerAccount,
+    ) {
+        try {
+            setError("");
+
+            setLoadingReconciliationId(
+                account.id,
+            );
+
+            const response =
+                await apiFetch<{
+                    data:
+                    BrokerReconciliation;
+                }>(
+                    `/api/broker-accounts/${account.id}/reconciliation`,
+                );
+
+            setReconciliationAccountId(
+                account.id,
+            );
+
+            setReconciliation(
+                response.data,
+            );
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to load broker reconciliation",
+            );
+        } finally {
+            setLoadingReconciliationId(
                 null,
             );
         }
@@ -676,9 +736,30 @@ export function BrokerAccountsCard({
                                                                 className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
                                                             >
                                                                 {loadingSnapshotId ===
-                                                                account.id
+                                                                    account.id
                                                                     ? "Loading..."
                                                                     : "Broker Snapshot"}
+                                                            </button>
+                                                        )}
+                                                    {status ===
+                                                        "CONNECTED" && (
+                                                            <button
+                                                                type="button"
+                                                                disabled={
+                                                                    loadingReconciliationId ===
+                                                                    account.id
+                                                                }
+                                                                onClick={() =>
+                                                                    loadReconciliation(
+                                                                        account,
+                                                                    )
+                                                                }
+                                                                className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                                                            >
+                                                                {loadingReconciliationId ===
+                                                                    account.id
+                                                                    ? "Checking..."
+                                                                    : "Reconcile"}
                                                             </button>
                                                         )}
                                                 </div>
@@ -888,6 +969,96 @@ export function BrokerAccountsCard({
 
                                                 <p className="mt-4 text-xs text-slate-400">
                                                     Broker data only. PMS state has not been changed.
+                                                </p>
+                                            </div>
+                                        )}
+                                    {reconciliationAccountId ===
+                                        account.id &&
+                                        reconciliation && (
+                                            <div className="mt-5 rounded-lg border bg-slate-50 p-4">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <p className="font-medium text-slate-900">
+                                                            Broker Reconciliation
+                                                        </p>
+
+                                                        <p className="mt-1 text-xs text-slate-500">
+                                                            {reconciliation.matchedCount} matched ·{" "}
+                                                            {reconciliation.mismatchCount} mismatched
+                                                        </p>
+                                                    </div>
+
+                                                    <span
+                                                        className={`rounded-full px-2 py-1 text-xs font-medium ${reconciliation.status ===
+                                                                "MATCH"
+                                                                ? "bg-emerald-50 text-emerald-700"
+                                                                : "bg-amber-50 text-amber-700"
+                                                            }`}
+                                                    >
+                                                        {reconciliation.status}
+                                                    </span>
+                                                </div>
+
+                                                <div className="mt-4 space-y-2">
+                                                    {reconciliation.items.map(
+                                                        (item) => (
+                                                            <div
+                                                                key={`${item.exchange}:${item.symbol}`}
+                                                                className="rounded-md border bg-white p-3"
+                                                            >
+                                                                <div className="flex items-center justify-between">
+                                                                    <div>
+                                                                        <p className="text-sm font-medium">
+                                                                            {item.exchange}:
+                                                                            {item.symbol}
+                                                                        </p>
+
+                                                                        <p className="mt-1 text-xs text-slate-500">
+                                                                            Broker qty{" "}
+                                                                            {item.brokerQuantity}
+                                                                            {" · "}
+                                                                            PMS qty{" "}
+                                                                            {item.pmsQuantity}
+                                                                        </p>
+                                                                    </div>
+
+                                                                    <span
+                                                                        className={`rounded-full px-2 py-1 text-xs ${item.status ===
+                                                                                "MATCH"
+                                                                                ? "bg-emerald-50 text-emerald-700"
+                                                                                : "bg-red-50 text-red-700"
+                                                                            }`}
+                                                                    >
+                                                                        {item.status}
+                                                                    </span>
+                                                                </div>
+
+                                                                {item.status !==
+                                                                    "MATCH" && (
+                                                                        <div className="mt-2 text-xs text-slate-600">
+                                                                            <p>
+                                                                                Quantity difference:{" "}
+                                                                                {item.quantityDifference}
+                                                                            </p>
+
+                                                                            {item.averagePriceDifference !==
+                                                                                null && (
+                                                                                    <p>
+                                                                                        Average-price difference: ₹
+                                                                                        {item.averagePriceDifference.toFixed(
+                                                                                            2,
+                                                                                        )}
+                                                                                    </p>
+                                                                                )}
+                                                                        </div>
+                                                                    )}
+                                                            </div>
+                                                        ),
+                                                    )}
+                                                </div>
+
+                                                <p className="mt-4 text-xs text-slate-400">
+                                                    Comparison only. PMS holdings have not been changed.
                                                 </p>
                                             </div>
                                         )}
