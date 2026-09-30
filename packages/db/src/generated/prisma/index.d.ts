@@ -127,7 +127,8 @@ export const AuditAction: {
   ORDER_SYNCED: 'ORDER_SYNCED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
-  BASKET_CANCELLED: 'BASKET_CANCELLED'
+  BASKET_CANCELLED: 'BASKET_CANCELLED',
+  Broker_RECONCILED: 'Broker_RECONCILED'
 };
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -8170,7 +8171,7 @@ export namespace Prisma {
     quantity: number
     averagePrice: Decimal
     portfolioId: string
-    brokerAccountId: string | null
+    brokerAccountId: string
     createdAt: Date
     updatedAt: Date
     _count: HoldingCountAggregateOutputType | null
@@ -8205,7 +8206,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["holding"]>
 
   export type HoldingSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8219,7 +8220,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["holding"]>
 
   export type HoldingSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -8233,7 +8234,7 @@ export namespace Prisma {
     createdAt?: boolean
     updatedAt?: boolean
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["holding"]>
 
   export type HoldingSelectScalar = {
@@ -8251,22 +8252,22 @@ export namespace Prisma {
   export type HoldingOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "quantity" | "averagePrice" | "portfolioId" | "brokerAccountId" | "createdAt" | "updatedAt", ExtArgs["result"]["holding"]>
   export type HoldingInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }
   export type HoldingIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }
   export type HoldingIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
-    brokerAccount?: boolean | Holding$brokerAccountArgs<ExtArgs>
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
   }
 
   export type $HoldingPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Holding"
     objects: {
       portfolio: Prisma.$PortfolioPayload<ExtArgs>
-      brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs> | null
+      brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs>
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -8275,7 +8276,7 @@ export namespace Prisma {
       quantity: number
       averagePrice: Prisma.Decimal
       portfolioId: string
-      brokerAccountId: string | null
+      brokerAccountId: string
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["holding"]>
@@ -8673,7 +8674,7 @@ export namespace Prisma {
   export interface Prisma__HoldingClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     portfolio<T extends PortfolioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioDefaultArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    brokerAccount<T extends Holding$brokerAccountArgs<ExtArgs> = {}>(args?: Subset<T, Holding$brokerAccountArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    brokerAccount<T extends BrokerAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccountDefaultArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -9110,25 +9111,6 @@ export namespace Prisma {
      * Limit how many Holdings to delete.
      */
     limit?: number
-  }
-
-  /**
-   * Holding.brokerAccount
-   */
-  export type Holding$brokerAccountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BrokerAccount
-     */
-    select?: BrokerAccountSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BrokerAccount
-     */
-    omit?: BrokerAccountOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BrokerAccountInclude<ExtArgs> | null
-    where?: BrokerAccountWhereInput
   }
 
   /**
@@ -16924,11 +16906,11 @@ export namespace Prisma {
     quantity?: IntFilter<"Holding"> | number
     averagePrice?: DecimalFilter<"Holding"> | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFilter<"Holding"> | string
-    brokerAccountId?: StringNullableFilter<"Holding"> | string | null
+    brokerAccountId?: StringFilter<"Holding"> | string
     createdAt?: DateTimeFilter<"Holding"> | Date | string
     updatedAt?: DateTimeFilter<"Holding"> | Date | string
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
-    brokerAccount?: XOR<BrokerAccountNullableScalarRelationFilter, BrokerAccountWhereInput> | null
+    brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
   }
 
   export type HoldingOrderByWithRelationInput = {
@@ -16938,7 +16920,7 @@ export namespace Prisma {
     quantity?: SortOrder
     averagePrice?: SortOrder
     portfolioId?: SortOrder
-    brokerAccountId?: SortOrderInput | SortOrder
+    brokerAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     portfolio?: PortfolioOrderByWithRelationInput
@@ -16956,11 +16938,11 @@ export namespace Prisma {
     quantity?: IntFilter<"Holding"> | number
     averagePrice?: DecimalFilter<"Holding"> | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFilter<"Holding"> | string
-    brokerAccountId?: StringNullableFilter<"Holding"> | string | null
+    brokerAccountId?: StringFilter<"Holding"> | string
     createdAt?: DateTimeFilter<"Holding"> | Date | string
     updatedAt?: DateTimeFilter<"Holding"> | Date | string
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
-    brokerAccount?: XOR<BrokerAccountNullableScalarRelationFilter, BrokerAccountWhereInput> | null
+    brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
   }, "id" | "portfolioId_brokerAccountId_symbol_exchange">
 
   export type HoldingOrderByWithAggregationInput = {
@@ -16970,7 +16952,7 @@ export namespace Prisma {
     quantity?: SortOrder
     averagePrice?: SortOrder
     portfolioId?: SortOrder
-    brokerAccountId?: SortOrderInput | SortOrder
+    brokerAccountId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: HoldingCountOrderByAggregateInput
@@ -16990,7 +16972,7 @@ export namespace Prisma {
     quantity?: IntWithAggregatesFilter<"Holding"> | number
     averagePrice?: DecimalWithAggregatesFilter<"Holding"> | Decimal | DecimalJsLike | number | string
     portfolioId?: StringWithAggregatesFilter<"Holding"> | string
-    brokerAccountId?: StringNullableWithAggregatesFilter<"Holding"> | string | null
+    brokerAccountId?: StringWithAggregatesFilter<"Holding"> | string
     createdAt?: DateTimeWithAggregatesFilter<"Holding"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Holding"> | Date | string
   }
@@ -17893,7 +17875,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     portfolio: PortfolioCreateNestedOneWithoutHoldingsInput
-    brokerAccount?: BrokerAccountCreateNestedOneWithoutHoldingsInput
+    brokerAccount: BrokerAccountCreateNestedOneWithoutHoldingsInput
   }
 
   export type HoldingUncheckedCreateInput = {
@@ -17903,7 +17885,7 @@ export namespace Prisma {
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
     portfolioId: string
-    brokerAccountId?: string | null
+    brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17917,7 +17899,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolio?: PortfolioUpdateOneRequiredWithoutHoldingsNestedInput
-    brokerAccount?: BrokerAccountUpdateOneWithoutHoldingsNestedInput
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutHoldingsNestedInput
   }
 
   export type HoldingUncheckedUpdateInput = {
@@ -17927,7 +17909,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFieldUpdateOperationsInput | string
-    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -17939,7 +17921,7 @@ export namespace Prisma {
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
     portfolioId: string
-    brokerAccountId?: string | null
+    brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -17961,7 +17943,7 @@ export namespace Prisma {
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFieldUpdateOperationsInput | string
-    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -18958,9 +18940,9 @@ export namespace Prisma {
     isNot?: PortfolioWhereInput
   }
 
-  export type BrokerAccountNullableScalarRelationFilter = {
-    is?: BrokerAccountWhereInput | null
-    isNot?: BrokerAccountWhereInput | null
+  export type BrokerAccountScalarRelationFilter = {
+    is?: BrokerAccountWhereInput
+    isNot?: BrokerAccountWhereInput
   }
 
   export type HoldingPortfolioIdBrokerAccountIdSymbolExchangeCompoundUniqueInput = {
@@ -19078,11 +19060,6 @@ export namespace Prisma {
   export type BasketOrderNullableScalarRelationFilter = {
     is?: BasketOrderWhereInput | null
     isNot?: BasketOrderWhereInput | null
-  }
-
-  export type BrokerAccountScalarRelationFilter = {
-    is?: BrokerAccountWhereInput
-    isNot?: BrokerAccountWhereInput
   }
 
   export type OrderCountOrderByAggregateInput = {
@@ -20180,12 +20157,10 @@ export namespace Prisma {
     update?: XOR<XOR<PortfolioUpdateToOneWithWhereWithoutHoldingsInput, PortfolioUpdateWithoutHoldingsInput>, PortfolioUncheckedUpdateWithoutHoldingsInput>
   }
 
-  export type BrokerAccountUpdateOneWithoutHoldingsNestedInput = {
+  export type BrokerAccountUpdateOneRequiredWithoutHoldingsNestedInput = {
     create?: XOR<BrokerAccountCreateWithoutHoldingsInput, BrokerAccountUncheckedCreateWithoutHoldingsInput>
     connectOrCreate?: BrokerAccountCreateOrConnectWithoutHoldingsInput
     upsert?: BrokerAccountUpsertWithoutHoldingsInput
-    disconnect?: BrokerAccountWhereInput | boolean
-    delete?: BrokerAccountWhereInput | boolean
     connect?: BrokerAccountWhereUniqueInput
     update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutHoldingsInput, BrokerAccountUpdateWithoutHoldingsInput>, BrokerAccountUncheckedUpdateWithoutHoldingsInput>
   }
@@ -21515,7 +21490,7 @@ export namespace Prisma {
     quantity?: IntFilter<"Holding"> | number
     averagePrice?: DecimalFilter<"Holding"> | Decimal | DecimalJsLike | number | string
     portfolioId?: StringFilter<"Holding"> | string
-    brokerAccountId?: StringNullableFilter<"Holding"> | string | null
+    brokerAccountId?: StringFilter<"Holding"> | string
     createdAt?: DateTimeFilter<"Holding"> | Date | string
     updatedAt?: DateTimeFilter<"Holding"> | Date | string
   }
@@ -21590,7 +21565,7 @@ export namespace Prisma {
     averagePrice: Decimal | DecimalJsLike | number | string
     createdAt?: Date | string
     updatedAt?: Date | string
-    brokerAccount?: BrokerAccountCreateNestedOneWithoutHoldingsInput
+    brokerAccount: BrokerAccountCreateNestedOneWithoutHoldingsInput
   }
 
   export type HoldingUncheckedCreateWithoutPortfolioInput = {
@@ -21599,7 +21574,7 @@ export namespace Prisma {
     exchange: string
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
-    brokerAccountId?: string | null
+    brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22825,7 +22800,7 @@ export namespace Prisma {
     exchange: string
     quantity: number
     averagePrice: Decimal | DecimalJsLike | number | string
-    brokerAccountId?: string | null
+    brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -22861,7 +22836,7 @@ export namespace Prisma {
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
-    brokerAccount?: BrokerAccountUpdateOneWithoutHoldingsNestedInput
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutHoldingsNestedInput
   }
 
   export type HoldingUncheckedUpdateWithoutPortfolioInput = {
@@ -22870,7 +22845,7 @@ export namespace Prisma {
     exchange?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -22881,7 +22856,7 @@ export namespace Prisma {
     exchange?: StringFieldUpdateOperationsInput | string
     quantity?: IntFieldUpdateOperationsInput | number
     averagePrice?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    brokerAccountId?: NullableStringFieldUpdateOperationsInput | string | null
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

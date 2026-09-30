@@ -26,7 +26,9 @@ import {
 
 import {
   reconcileBrokerHoldings,
+  repairBrokerHolding
 } from "../services/broker-reconciliation.service";
+
 type CreateBrokerAccountBody = {
   broker?: unknown;
   accountId?: unknown;
@@ -40,14 +42,20 @@ type RequestWithClientId =
     };
 
     body:
-      CreateBrokerAccountBody;
+    CreateBrokerAccountBody;
   };
-  type BrokerAccountRequest =
+type BrokerAccountRequest =
   AuthenticatedRequest & {
     params: {
       id: string;
     };
   };
+
+type RepairReconciliationBody = {
+  symbol?: unknown;
+  exchange?: unknown;
+  portfolioId?: unknown;
+};
 
 export async function getBrokerSnapshot(
   req: BrokerAccountRequest,
@@ -116,7 +124,7 @@ export async function getBrokerSnapshot(
       error instanceof Error
     ) {
       switch (
-        error.message
+      error.message
       ) {
         case "BROKER_ACCOUNT_NOT_FOUND":
           return res
@@ -172,7 +180,7 @@ export async function createBrokerAccount(
 
   if (
     typeof broker !==
-      "string" ||
+    "string" ||
     !broker.trim()
   ) {
     return res
@@ -185,7 +193,7 @@ export async function createBrokerAccount(
 
   if (
     typeof accountId !==
-      "string" ||
+    "string" ||
     !accountId.trim()
   ) {
     return res
@@ -198,11 +206,11 @@ export async function createBrokerAccount(
 
   if (
     accountLabel !==
-      undefined &&
+    undefined &&
     accountLabel !==
-      null &&
+    null &&
     typeof accountLabel !==
-      "string"
+    "string"
   ) {
     return res
       .status(400)
@@ -296,7 +304,7 @@ export async function createBrokerAccount(
             accountLabel:
               typeof accountLabel ===
                 "string" &&
-              accountLabel.trim()
+                accountLabel.trim()
                 ? accountLabel.trim()
                 : null,
 
@@ -323,7 +331,7 @@ export async function createBrokerAccount(
   } catch (error) {
     if (
       error instanceof
-        Prisma.PrismaClientKnownRequestError &&
+      Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
     ) {
       return res
@@ -381,7 +389,7 @@ export async function getBrokerReconciliation(
       error instanceof Error
     ) {
       switch (
-        error.message
+      error.message
       ) {
         case "BROKER_ACCOUNT_NOT_FOUND":
           return res
@@ -422,6 +430,132 @@ export async function getBrokerReconciliation(
       .json({
         error:
           "Failed to reconcile broker holdings",
+      });
+  }
+}
+
+export async function repairBrokerReconciliation(
+  req:
+    BrokerAccountRequest & {
+      body:
+        RepairReconciliationBody;
+    },
+  res: Response,
+) {
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({
+        error:
+          "Authentication required",
+      });
+  }
+
+  const {
+    symbol,
+    exchange,
+    portfolioId,
+  } = req.body ?? {};
+
+  if (
+    typeof symbol !==
+      "string" ||
+    typeof exchange !==
+      "string" ||
+    typeof portfolioId !==
+      "string"
+  ) {
+    return res
+      .status(400)
+      .json({
+        error:
+          "symbol, exchange and portfolioId are required",
+      });
+  }
+
+  try {
+    const result =
+      await repairBrokerHolding(
+        req.params.id,
+        req.user.firmId,
+        {
+          symbol,
+          exchange,
+          portfolioId,
+        },
+      );
+
+    return res.json({
+      data: result,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error
+    ) {
+      switch (
+        error.message
+      ) {
+        case "BROKER_ACCOUNT_NOT_FOUND":
+          return res
+            .status(404)
+            .json({
+              error:
+                "Broker account not found",
+            });
+
+        case "RECONCILIATION_PORTFOLIO_INVALID":
+          return res
+            .status(400)
+            .json({
+              error:
+                "Selected portfolio does not belong to this broker account's client",
+            });
+
+        case "RECONCILIATION_PORTFOLIO_MISMATCH":
+          return res
+            .status(409)
+            .json({
+              error:
+                "This holding already belongs to a different PMS portfolio",
+            });
+
+        case "RECONCILIATION_ALLOCATION_REQUIRED":
+          return res
+            .status(409)
+            .json({
+              error:
+                "Holding is split across multiple PMS portfolios and requires manual allocation",
+            });
+
+        case "BROKER_HOLDINGS_UNSUPPORTED":
+          return res
+            .status(400)
+            .json({
+              error:
+                "Broker does not support holdings reconciliation",
+            });
+
+        case "BROKER_NOT_CONNECTED":
+        case "BROKER_SESSION_EXPIRED":
+          return res
+            .status(409)
+            .json({
+              error:
+                error.message,
+            });
+      }
+    }
+
+    console.error(
+      "Broker reconciliation repair failed:",
+      error,
+    );
+
+    return res
+      .status(502)
+      .json({
+        error:
+          "Failed to repair broker reconciliation",
       });
   }
 }

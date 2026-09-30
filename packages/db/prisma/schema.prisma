@@ -109,6 +109,8 @@ enum AuditAction {
   BASKET_CREATED
   BASKET_SUBMITTED
   BASKET_CANCELLED
+  
+  Broker_RECONCILED
 }
 
 model Portfolio {

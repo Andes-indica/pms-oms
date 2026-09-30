@@ -109,6 +109,8 @@ enum AuditAction {
   BASKET_CREATED
   BASKET_SUBMITTED
   BASKET_CANCELLED
+
+  Broker_RECONCILED
 }
 
 model Portfolio {
@@ -141,8 +143,8 @@ model Holding {
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
 
-  brokerAccountId String?
-  brokerAccount   BrokerAccount? @relation(fields: [brokerAccountId], references: [id])
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -324,7 +324,8 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   ORDER_SYNCED: 'ORDER_SYNCED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
-  BASKET_CANCELLED: 'BASKET_CANCELLED'
+  BASKET_CANCELLED: 'BASKET_CANCELLED',
+  Broker_RECONCILED: 'Broker_RECONCILED'
 };
 
 exports.AllocationMethod = exports.$Enums.AllocationMethod = {
