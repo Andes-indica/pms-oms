@@ -73,6 +73,11 @@ export type RestrictedSecurity = $Result.DefaultSelection<Prisma.$RestrictedSecu
  * 
  */
 export type BrokerConnection = $Result.DefaultSelection<Prisma.$BrokerConnectionPayload>
+/**
+ * Model Execution
+ * 
+ */
+export type Execution = $Result.DefaultSelection<Prisma.$ExecutionPayload>
 
 /**
  * Enums
@@ -128,7 +133,7 @@ export const AuditAction: {
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',
-  Broker_RECONCILED: 'Broker_RECONCILED'
+  BROKER_RECONCILED: 'BROKER_RECONCILED'
 };
 
 export type AuditAction = (typeof AuditAction)[keyof typeof AuditAction]
@@ -439,6 +444,16 @@ export class PrismaClient<
     * ```
     */
   get brokerConnection(): Prisma.BrokerConnectionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.execution`: Exposes CRUD operations for the **Execution** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more Executions
+    * const executions = await prisma.execution.findMany()
+    * ```
+    */
+  get execution(): Prisma.ExecutionDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -897,7 +912,8 @@ export namespace Prisma {
     BasketOrder: 'BasketOrder',
     RiskLimit: 'RiskLimit',
     RestrictedSecurity: 'RestrictedSecurity',
-    BrokerConnection: 'BrokerConnection'
+    BrokerConnection: 'BrokerConnection',
+    Execution: 'Execution'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -913,7 +929,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder" | "riskLimit" | "restrictedSecurity" | "brokerConnection"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder" | "riskLimit" | "restrictedSecurity" | "brokerConnection" | "execution"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1805,6 +1821,80 @@ export namespace Prisma {
           }
         }
       }
+      Execution: {
+        payload: Prisma.$ExecutionPayload<ExtArgs>
+        fields: Prisma.ExecutionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExecutionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExecutionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          findFirst: {
+            args: Prisma.ExecutionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExecutionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          findMany: {
+            args: Prisma.ExecutionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>[]
+          }
+          create: {
+            args: Prisma.ExecutionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          createMany: {
+            args: Prisma.ExecutionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExecutionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>[]
+          }
+          delete: {
+            args: Prisma.ExecutionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          update: {
+            args: Prisma.ExecutionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExecutionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExecutionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExecutionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExecutionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionPayload>
+          }
+          aggregate: {
+            args: Prisma.ExecutionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExecution>
+          }
+          groupBy: {
+            args: Prisma.ExecutionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExecutionCountArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -1940,6 +2030,7 @@ export namespace Prisma {
     riskLimit?: RiskLimitOmit
     restrictedSecurity?: RestrictedSecurityOmit
     brokerConnection?: BrokerConnectionOmit
+    execution?: ExecutionOmit
   }
 
   /* Types for Logging */
@@ -2190,6 +2281,37 @@ export namespace Prisma {
    */
   export type PortfolioCountOutputTypeCountOrdersArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: OrderWhereInput
+  }
+
+
+  /**
+   * Count Type OrderCountOutputType
+   */
+
+  export type OrderCountOutputType = {
+    executions: number
+  }
+
+  export type OrderCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    executions?: boolean | OrderCountOutputTypeCountExecutionsArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the OrderCountOutputType
+     */
+    select?: OrderCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * OrderCountOutputType without action
+   */
+  export type OrderCountOutputTypeCountExecutionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionWhereInput
   }
 
 
@@ -9489,6 +9611,8 @@ export namespace Prisma {
     basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+    executions?: boolean | Order$executionsArgs<ExtArgs>
+    _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
   export type OrderSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -9574,6 +9698,8 @@ export namespace Prisma {
     basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+    executions?: boolean | Order$executionsArgs<ExtArgs>
+    _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
@@ -9592,6 +9718,7 @@ export namespace Prisma {
       basketOrder: Prisma.$BasketOrderPayload<ExtArgs> | null
       portfolio: Prisma.$PortfolioPayload<ExtArgs>
       brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs>
+      executions: Prisma.$ExecutionPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10012,6 +10139,7 @@ export namespace Prisma {
     basketOrder<T extends Order$basketOrderArgs<ExtArgs> = {}>(args?: Subset<T, Order$basketOrderArgs<ExtArgs>>): Prisma__BasketOrderClient<$Result.GetResult<Prisma.$BasketOrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     portfolio<T extends PortfolioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioDefaultArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     brokerAccount<T extends BrokerAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccountDefaultArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    executions<T extends Order$executionsArgs<ExtArgs> = {}>(args?: Subset<T, Order$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10479,6 +10607,30 @@ export namespace Prisma {
      */
     include?: BasketOrderInclude<ExtArgs> | null
     where?: BasketOrderWhereInput
+  }
+
+  /**
+   * Order.executions
+   */
+  export type Order$executionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    where?: ExecutionWhereInput
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    cursor?: ExecutionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
   }
 
   /**
@@ -16119,6 +16271,1133 @@ export namespace Prisma {
 
 
   /**
+   * Model Execution
+   */
+
+  export type AggregateExecution = {
+    _count: ExecutionCountAggregateOutputType | null
+    _avg: ExecutionAvgAggregateOutputType | null
+    _sum: ExecutionSumAggregateOutputType | null
+    _min: ExecutionMinAggregateOutputType | null
+    _max: ExecutionMaxAggregateOutputType | null
+  }
+
+  export type ExecutionAvgAggregateOutputType = {
+    quantity: number | null
+    price: Decimal | null
+  }
+
+  export type ExecutionSumAggregateOutputType = {
+    quantity: number | null
+    price: Decimal | null
+  }
+
+  export type ExecutionMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    brokerExecutionId: string | null
+    quantity: number | null
+    price: Decimal | null
+    executedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ExecutionMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    brokerExecutionId: string | null
+    quantity: number | null
+    price: Decimal | null
+    executedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type ExecutionCountAggregateOutputType = {
+    id: number
+    orderId: number
+    brokerExecutionId: number
+    quantity: number
+    price: number
+    executedAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type ExecutionAvgAggregateInputType = {
+    quantity?: true
+    price?: true
+  }
+
+  export type ExecutionSumAggregateInputType = {
+    quantity?: true
+    price?: true
+  }
+
+  export type ExecutionMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    brokerExecutionId?: true
+    quantity?: true
+    price?: true
+    executedAt?: true
+    createdAt?: true
+  }
+
+  export type ExecutionMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    brokerExecutionId?: true
+    quantity?: true
+    price?: true
+    executedAt?: true
+    createdAt?: true
+  }
+
+  export type ExecutionCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    brokerExecutionId?: true
+    quantity?: true
+    price?: true
+    executedAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type ExecutionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Execution to aggregate.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned Executions
+    **/
+    _count?: true | ExecutionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExecutionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExecutionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExecutionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExecutionMaxAggregateInputType
+  }
+
+  export type GetExecutionAggregateType<T extends ExecutionAggregateArgs> = {
+        [P in keyof T & keyof AggregateExecution]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExecution[P]>
+      : GetScalarType<T[P], AggregateExecution[P]>
+  }
+
+
+
+
+  export type ExecutionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionWhereInput
+    orderBy?: ExecutionOrderByWithAggregationInput | ExecutionOrderByWithAggregationInput[]
+    by: ExecutionScalarFieldEnum[] | ExecutionScalarFieldEnum
+    having?: ExecutionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExecutionCountAggregateInputType | true
+    _avg?: ExecutionAvgAggregateInputType
+    _sum?: ExecutionSumAggregateInputType
+    _min?: ExecutionMinAggregateInputType
+    _max?: ExecutionMaxAggregateInputType
+  }
+
+  export type ExecutionGroupByOutputType = {
+    id: string
+    orderId: string
+    brokerExecutionId: string
+    quantity: number
+    price: Decimal
+    executedAt: Date
+    createdAt: Date
+    _count: ExecutionCountAggregateOutputType | null
+    _avg: ExecutionAvgAggregateOutputType | null
+    _sum: ExecutionSumAggregateOutputType | null
+    _min: ExecutionMinAggregateOutputType | null
+    _max: ExecutionMaxAggregateOutputType | null
+  }
+
+  type GetExecutionGroupByPayload<T extends ExecutionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExecutionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExecutionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExecutionGroupByOutputType[P]>
+            : GetScalarType<T[P], ExecutionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExecutionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    brokerExecutionId?: boolean
+    quantity?: boolean
+    price?: boolean
+    executedAt?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["execution"]>
+
+  export type ExecutionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    brokerExecutionId?: boolean
+    quantity?: boolean
+    price?: boolean
+    executedAt?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["execution"]>
+
+  export type ExecutionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    brokerExecutionId?: boolean
+    quantity?: boolean
+    price?: boolean
+    executedAt?: boolean
+    createdAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["execution"]>
+
+  export type ExecutionSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    brokerExecutionId?: boolean
+    quantity?: boolean
+    price?: boolean
+    executedAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type ExecutionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "brokerExecutionId" | "quantity" | "price" | "executedAt" | "createdAt", ExtArgs["result"]["execution"]>
+  export type ExecutionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type ExecutionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type ExecutionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+
+  export type $ExecutionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "Execution"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      brokerExecutionId: string
+      quantity: number
+      price: Prisma.Decimal
+      executedAt: Date
+      createdAt: Date
+    }, ExtArgs["result"]["execution"]>
+    composites: {}
+  }
+
+  type ExecutionGetPayload<S extends boolean | null | undefined | ExecutionDefaultArgs> = $Result.GetResult<Prisma.$ExecutionPayload, S>
+
+  type ExecutionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExecutionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExecutionCountAggregateInputType | true
+    }
+
+  export interface ExecutionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['Execution'], meta: { name: 'Execution' } }
+    /**
+     * Find zero or one Execution that matches the filter.
+     * @param {ExecutionFindUniqueArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExecutionFindUniqueArgs>(args: SelectSubset<T, ExecutionFindUniqueArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one Execution that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExecutionFindUniqueOrThrowArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExecutionFindUniqueOrThrowArgs>(args: SelectSubset<T, ExecutionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Execution that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionFindFirstArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExecutionFindFirstArgs>(args?: SelectSubset<T, ExecutionFindFirstArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first Execution that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionFindFirstOrThrowArgs} args - Arguments to find a Execution
+     * @example
+     * // Get one Execution
+     * const execution = await prisma.execution.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExecutionFindFirstOrThrowArgs>(args?: SelectSubset<T, ExecutionFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more Executions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all Executions
+     * const executions = await prisma.execution.findMany()
+     * 
+     * // Get first 10 Executions
+     * const executions = await prisma.execution.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const executionWithIdOnly = await prisma.execution.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExecutionFindManyArgs>(args?: SelectSubset<T, ExecutionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a Execution.
+     * @param {ExecutionCreateArgs} args - Arguments to create a Execution.
+     * @example
+     * // Create one Execution
+     * const Execution = await prisma.execution.create({
+     *   data: {
+     *     // ... data to create a Execution
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExecutionCreateArgs>(args: SelectSubset<T, ExecutionCreateArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many Executions.
+     * @param {ExecutionCreateManyArgs} args - Arguments to create many Executions.
+     * @example
+     * // Create many Executions
+     * const execution = await prisma.execution.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExecutionCreateManyArgs>(args?: SelectSubset<T, ExecutionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many Executions and returns the data saved in the database.
+     * @param {ExecutionCreateManyAndReturnArgs} args - Arguments to create many Executions.
+     * @example
+     * // Create many Executions
+     * const execution = await prisma.execution.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many Executions and only return the `id`
+     * const executionWithIdOnly = await prisma.execution.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExecutionCreateManyAndReturnArgs>(args?: SelectSubset<T, ExecutionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a Execution.
+     * @param {ExecutionDeleteArgs} args - Arguments to delete one Execution.
+     * @example
+     * // Delete one Execution
+     * const Execution = await prisma.execution.delete({
+     *   where: {
+     *     // ... filter to delete one Execution
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExecutionDeleteArgs>(args: SelectSubset<T, ExecutionDeleteArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one Execution.
+     * @param {ExecutionUpdateArgs} args - Arguments to update one Execution.
+     * @example
+     * // Update one Execution
+     * const execution = await prisma.execution.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExecutionUpdateArgs>(args: SelectSubset<T, ExecutionUpdateArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more Executions.
+     * @param {ExecutionDeleteManyArgs} args - Arguments to filter Executions to delete.
+     * @example
+     * // Delete a few Executions
+     * const { count } = await prisma.execution.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExecutionDeleteManyArgs>(args?: SelectSubset<T, ExecutionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Executions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many Executions
+     * const execution = await prisma.execution.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExecutionUpdateManyArgs>(args: SelectSubset<T, ExecutionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more Executions and returns the data updated in the database.
+     * @param {ExecutionUpdateManyAndReturnArgs} args - Arguments to update many Executions.
+     * @example
+     * // Update many Executions
+     * const execution = await prisma.execution.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more Executions and only return the `id`
+     * const executionWithIdOnly = await prisma.execution.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExecutionUpdateManyAndReturnArgs>(args: SelectSubset<T, ExecutionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one Execution.
+     * @param {ExecutionUpsertArgs} args - Arguments to update or create a Execution.
+     * @example
+     * // Update or create a Execution
+     * const execution = await prisma.execution.upsert({
+     *   create: {
+     *     // ... data to create a Execution
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the Execution we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExecutionUpsertArgs>(args: SelectSubset<T, ExecutionUpsertArgs<ExtArgs>>): Prisma__ExecutionClient<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of Executions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionCountArgs} args - Arguments to filter Executions to count.
+     * @example
+     * // Count the number of Executions
+     * const count = await prisma.execution.count({
+     *   where: {
+     *     // ... the filter for the Executions we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExecutionCountArgs>(
+      args?: Subset<T, ExecutionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExecutionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a Execution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExecutionAggregateArgs>(args: Subset<T, ExecutionAggregateArgs>): Prisma.PrismaPromise<GetExecutionAggregateType<T>>
+
+    /**
+     * Group by Execution.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExecutionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExecutionGroupByArgs['orderBy'] }
+        : { orderBy?: ExecutionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExecutionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExecutionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the Execution model
+   */
+  readonly fields: ExecutionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for Execution.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExecutionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the Execution model
+   */
+  interface ExecutionFieldRefs {
+    readonly id: FieldRef<"Execution", 'String'>
+    readonly orderId: FieldRef<"Execution", 'String'>
+    readonly brokerExecutionId: FieldRef<"Execution", 'String'>
+    readonly quantity: FieldRef<"Execution", 'Int'>
+    readonly price: FieldRef<"Execution", 'Decimal'>
+    readonly executedAt: FieldRef<"Execution", 'DateTime'>
+    readonly createdAt: FieldRef<"Execution", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * Execution findUnique
+   */
+  export type ExecutionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution findUniqueOrThrow
+   */
+  export type ExecutionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution findFirst
+   */
+  export type ExecutionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Executions.
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Executions.
+     */
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Execution findFirstOrThrow
+   */
+  export type ExecutionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Execution to fetch.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for Executions.
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Executions.
+     */
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Execution findMany
+   */
+  export type ExecutionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter, which Executions to fetch.
+     */
+    where?: ExecutionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of Executions to fetch.
+     */
+    orderBy?: ExecutionOrderByWithRelationInput | ExecutionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing Executions.
+     */
+    cursor?: ExecutionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` Executions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` Executions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of Executions.
+     */
+    distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Execution create
+   */
+  export type ExecutionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a Execution.
+     */
+    data: XOR<ExecutionCreateInput, ExecutionUncheckedCreateInput>
+  }
+
+  /**
+   * Execution createMany
+   */
+  export type ExecutionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many Executions.
+     */
+    data: ExecutionCreateManyInput | ExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * Execution createManyAndReturn
+   */
+  export type ExecutionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to create many Executions.
+     */
+    data: ExecutionCreateManyInput | ExecutionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Execution update
+   */
+  export type ExecutionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a Execution.
+     */
+    data: XOR<ExecutionUpdateInput, ExecutionUncheckedUpdateInput>
+    /**
+     * Choose, which Execution to update.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution updateMany
+   */
+  export type ExecutionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update Executions.
+     */
+    data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which Executions to update
+     */
+    where?: ExecutionWhereInput
+    /**
+     * Limit how many Executions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * Execution updateManyAndReturn
+   */
+  export type ExecutionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * The data used to update Executions.
+     */
+    data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyInput>
+    /**
+     * Filter which Executions to update
+     */
+    where?: ExecutionWhereInput
+    /**
+     * Limit how many Executions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * Execution upsert
+   */
+  export type ExecutionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the Execution to update in case it exists.
+     */
+    where: ExecutionWhereUniqueInput
+    /**
+     * In case the Execution found by the `where` argument doesn't exist, create a new Execution with this data.
+     */
+    create: XOR<ExecutionCreateInput, ExecutionUncheckedCreateInput>
+    /**
+     * In case the Execution was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExecutionUpdateInput, ExecutionUncheckedUpdateInput>
+  }
+
+  /**
+   * Execution delete
+   */
+  export type ExecutionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+    /**
+     * Filter which Execution to delete.
+     */
+    where: ExecutionWhereUniqueInput
+  }
+
+  /**
+   * Execution deleteMany
+   */
+  export type ExecutionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which Executions to delete
+     */
+    where?: ExecutionWhereInput
+    /**
+     * Limit how many Executions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * Execution without action
+   */
+  export type ExecutionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Execution
+     */
+    select?: ExecutionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Execution
+     */
+    omit?: ExecutionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -16308,6 +17587,19 @@ export namespace Prisma {
   };
 
   export type BrokerConnectionScalarFieldEnum = (typeof BrokerConnectionScalarFieldEnum)[keyof typeof BrokerConnectionScalarFieldEnum]
+
+
+  export const ExecutionScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    brokerExecutionId: 'brokerExecutionId',
+    quantity: 'quantity',
+    price: 'price',
+    executedAt: 'executedAt',
+    createdAt: 'createdAt'
+  };
+
+  export type ExecutionScalarFieldEnum = (typeof ExecutionScalarFieldEnum)[keyof typeof ExecutionScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -17005,6 +18297,7 @@ export namespace Prisma {
     basketOrder?: XOR<BasketOrderNullableScalarRelationFilter, BasketOrderWhereInput> | null
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
     brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
+    executions?: ExecutionListRelationFilter
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -17032,6 +18325,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderOrderByWithRelationInput
     portfolio?: PortfolioOrderByWithRelationInput
     brokerAccount?: BrokerAccountOrderByWithRelationInput
+    executions?: ExecutionOrderByRelationAggregateInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -17062,6 +18356,7 @@ export namespace Prisma {
     basketOrder?: XOR<BasketOrderNullableScalarRelationFilter, BasketOrderWhereInput> | null
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
     brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
+    executions?: ExecutionListRelationFilter
   }, "id" | "brokerOrderId">
 
   export type OrderOrderByWithAggregationInput = {
@@ -17498,6 +18793,74 @@ export namespace Prisma {
     lastConnectedAt?: DateTimeNullableWithAggregatesFilter<"BrokerConnection"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"BrokerConnection"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BrokerConnection"> | Date | string
+  }
+
+  export type ExecutionWhereInput = {
+    AND?: ExecutionWhereInput | ExecutionWhereInput[]
+    OR?: ExecutionWhereInput[]
+    NOT?: ExecutionWhereInput | ExecutionWhereInput[]
+    id?: StringFilter<"Execution"> | string
+    orderId?: StringFilter<"Execution"> | string
+    brokerExecutionId?: StringFilter<"Execution"> | string
+    quantity?: IntFilter<"Execution"> | number
+    price?: DecimalFilter<"Execution"> | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFilter<"Execution"> | Date | string
+    createdAt?: DateTimeFilter<"Execution"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }
+
+  export type ExecutionOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    brokerExecutionId?: SortOrder
+    quantity?: SortOrder
+    price?: SortOrder
+    executedAt?: SortOrder
+    createdAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type ExecutionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    orderId_brokerExecutionId?: ExecutionOrderIdBrokerExecutionIdCompoundUniqueInput
+    AND?: ExecutionWhereInput | ExecutionWhereInput[]
+    OR?: ExecutionWhereInput[]
+    NOT?: ExecutionWhereInput | ExecutionWhereInput[]
+    orderId?: StringFilter<"Execution"> | string
+    brokerExecutionId?: StringFilter<"Execution"> | string
+    quantity?: IntFilter<"Execution"> | number
+    price?: DecimalFilter<"Execution"> | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFilter<"Execution"> | Date | string
+    createdAt?: DateTimeFilter<"Execution"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }, "id" | "orderId_brokerExecutionId">
+
+  export type ExecutionOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    brokerExecutionId?: SortOrder
+    quantity?: SortOrder
+    price?: SortOrder
+    executedAt?: SortOrder
+    createdAt?: SortOrder
+    _count?: ExecutionCountOrderByAggregateInput
+    _avg?: ExecutionAvgOrderByAggregateInput
+    _max?: ExecutionMaxOrderByAggregateInput
+    _min?: ExecutionMinOrderByAggregateInput
+    _sum?: ExecutionSumOrderByAggregateInput
+  }
+
+  export type ExecutionScalarWhereWithAggregatesInput = {
+    AND?: ExecutionScalarWhereWithAggregatesInput | ExecutionScalarWhereWithAggregatesInput[]
+    OR?: ExecutionScalarWhereWithAggregatesInput[]
+    NOT?: ExecutionScalarWhereWithAggregatesInput | ExecutionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"Execution"> | string
+    orderId?: StringWithAggregatesFilter<"Execution"> | string
+    brokerExecutionId?: StringWithAggregatesFilter<"Execution"> | string
+    quantity?: IntWithAggregatesFilter<"Execution"> | number
+    price?: DecimalWithAggregatesFilter<"Execution"> | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeWithAggregatesFilter<"Execution"> | Date | string
+    createdAt?: DateTimeWithAggregatesFilter<"Execution"> | Date | string
   }
 
   export type FirmCreateInput = {
@@ -17970,6 +19333,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+    executions?: ExecutionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -17994,6 +19358,7 @@ export namespace Prisma {
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -18018,6 +19383,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+    executions?: ExecutionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -18042,6 +19408,7 @@ export namespace Prisma {
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -18531,6 +19898,75 @@ export namespace Prisma {
     lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionCreateInput = {
+    id?: string
+    brokerExecutionId: string
+    quantity: number
+    price: Decimal | DecimalJsLike | number | string
+    executedAt: Date | string
+    createdAt?: Date | string
+    order: OrderCreateNestedOneWithoutExecutionsInput
+  }
+
+  export type ExecutionUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    brokerExecutionId: string
+    quantity: number
+    price: Decimal | DecimalJsLike | number | string
+    executedAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ExecutionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerExecutionId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutExecutionsNestedInput
+  }
+
+  export type ExecutionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    brokerExecutionId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionCreateManyInput = {
+    id?: string
+    orderId: string
+    brokerExecutionId: string
+    quantity: number
+    price: Decimal | DecimalJsLike | number | string
+    executedAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ExecutionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerExecutionId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    brokerExecutionId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type StringFilter<$PrismaModel = never> = {
@@ -19062,6 +20498,16 @@ export namespace Prisma {
     isNot?: BasketOrderWhereInput | null
   }
 
+  export type ExecutionListRelationFilter = {
+    every?: ExecutionWhereInput
+    some?: ExecutionWhereInput
+    none?: ExecutionWhereInput
+  }
+
+  export type ExecutionOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type OrderCountOrderByAggregateInput = {
     id?: SortOrder
     symbol?: SortOrder
@@ -19563,6 +21009,56 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
     _max?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
+  }
+
+  export type OrderScalarRelationFilter = {
+    is?: OrderWhereInput
+    isNot?: OrderWhereInput
+  }
+
+  export type ExecutionOrderIdBrokerExecutionIdCompoundUniqueInput = {
+    orderId: string
+    brokerExecutionId: string
+  }
+
+  export type ExecutionCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    brokerExecutionId?: SortOrder
+    quantity?: SortOrder
+    price?: SortOrder
+    executedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ExecutionAvgOrderByAggregateInput = {
+    quantity?: SortOrder
+    price?: SortOrder
+  }
+
+  export type ExecutionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    brokerExecutionId?: SortOrder
+    quantity?: SortOrder
+    price?: SortOrder
+    executedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ExecutionMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    brokerExecutionId?: SortOrder
+    quantity?: SortOrder
+    price?: SortOrder
+    executedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type ExecutionSumOrderByAggregateInput = {
+    quantity?: SortOrder
+    price?: SortOrder
   }
 
   export type UserCreateNestedManyWithoutFirmInput = {
@@ -20183,6 +21679,20 @@ export namespace Prisma {
     connect?: BrokerAccountWhereUniqueInput
   }
 
+  export type ExecutionCreateNestedManyWithoutOrderInput = {
+    create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
+    createMany?: ExecutionCreateManyOrderInputEnvelope
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+  }
+
+  export type ExecutionUncheckedCreateNestedManyWithoutOrderInput = {
+    create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
+    createMany?: ExecutionCreateManyOrderInputEnvelope
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+  }
+
   export type EnumOrderSideFieldUpdateOperationsInput = {
     set?: $Enums.OrderSide
   }
@@ -20231,6 +21741,34 @@ export namespace Prisma {
     upsert?: BrokerAccountUpsertWithoutOrdersInput
     connect?: BrokerAccountWhereUniqueInput
     update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutOrdersInput, BrokerAccountUpdateWithoutOrdersInput>, BrokerAccountUncheckedUpdateWithoutOrdersInput>
+  }
+
+  export type ExecutionUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
+    upsert?: ExecutionUpsertWithWhereUniqueWithoutOrderInput | ExecutionUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: ExecutionCreateManyOrderInputEnvelope
+    set?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    disconnect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    delete?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    update?: ExecutionUpdateWithWhereUniqueWithoutOrderInput | ExecutionUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: ExecutionUpdateManyWithWhereWithoutOrderInput | ExecutionUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+  }
+
+  export type ExecutionUncheckedUpdateManyWithoutOrderNestedInput = {
+    create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
+    connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
+    upsert?: ExecutionUpsertWithWhereUniqueWithoutOrderInput | ExecutionUpsertWithWhereUniqueWithoutOrderInput[]
+    createMany?: ExecutionCreateManyOrderInputEnvelope
+    set?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    disconnect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    delete?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+    update?: ExecutionUpdateWithWhereUniqueWithoutOrderInput | ExecutionUpdateWithWhereUniqueWithoutOrderInput[]
+    updateMany?: ExecutionUpdateManyWithWhereWithoutOrderInput | ExecutionUpdateManyWithWhereWithoutOrderInput[]
+    deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
   }
 
   export type FirmCreateNestedOneWithoutAuditLogsInput = {
@@ -20353,6 +21891,20 @@ export namespace Prisma {
     upsert?: BrokerAccountUpsertWithoutConnectionInput
     connect?: BrokerAccountWhereUniqueInput
     update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutConnectionInput, BrokerAccountUpdateWithoutConnectionInput>, BrokerAccountUncheckedUpdateWithoutConnectionInput>
+  }
+
+  export type OrderCreateNestedOneWithoutExecutionsInput = {
+    create?: XOR<OrderCreateWithoutExecutionsInput, OrderUncheckedCreateWithoutExecutionsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutExecutionsInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type OrderUpdateOneRequiredWithoutExecutionsNestedInput = {
+    create?: XOR<OrderCreateWithoutExecutionsInput, OrderUncheckedCreateWithoutExecutionsInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutExecutionsInput
+    upsert?: OrderUpsertWithoutExecutionsInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutExecutionsInput, OrderUpdateWithoutExecutionsInput>, OrderUncheckedUpdateWithoutExecutionsInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -21292,6 +22844,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
+    executions?: ExecutionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutBrokerAccountInput = {
@@ -21315,6 +22868,7 @@ export namespace Prisma {
     portfolioId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutBrokerAccountInput = {
@@ -21610,6 +23164,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+    executions?: ExecutionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutPortfolioInput = {
@@ -21633,6 +23188,7 @@ export namespace Prisma {
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutPortfolioInput = {
@@ -21981,6 +23537,34 @@ export namespace Prisma {
     create: XOR<BrokerAccountCreateWithoutOrdersInput, BrokerAccountUncheckedCreateWithoutOrdersInput>
   }
 
+  export type ExecutionCreateWithoutOrderInput = {
+    id?: string
+    brokerExecutionId: string
+    quantity: number
+    price: Decimal | DecimalJsLike | number | string
+    executedAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ExecutionUncheckedCreateWithoutOrderInput = {
+    id?: string
+    brokerExecutionId: string
+    quantity: number
+    price: Decimal | DecimalJsLike | number | string
+    executedAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ExecutionCreateOrConnectWithoutOrderInput = {
+    where: ExecutionWhereUniqueInput
+    create: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput>
+  }
+
+  export type ExecutionCreateManyOrderInputEnvelope = {
+    data: ExecutionCreateManyOrderInput | ExecutionCreateManyOrderInput[]
+    skipDuplicates?: boolean
+  }
+
   export type BasketOrderUpsertWithoutOrdersInput = {
     update: XOR<BasketOrderUpdateWithoutOrdersInput, BasketOrderUncheckedUpdateWithoutOrdersInput>
     create: XOR<BasketOrderCreateWithoutOrdersInput, BasketOrderUncheckedCreateWithoutOrdersInput>
@@ -22092,6 +23676,35 @@ export namespace Prisma {
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
 
+  export type ExecutionUpsertWithWhereUniqueWithoutOrderInput = {
+    where: ExecutionWhereUniqueInput
+    update: XOR<ExecutionUpdateWithoutOrderInput, ExecutionUncheckedUpdateWithoutOrderInput>
+    create: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput>
+  }
+
+  export type ExecutionUpdateWithWhereUniqueWithoutOrderInput = {
+    where: ExecutionWhereUniqueInput
+    data: XOR<ExecutionUpdateWithoutOrderInput, ExecutionUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type ExecutionUpdateManyWithWhereWithoutOrderInput = {
+    where: ExecutionScalarWhereInput
+    data: XOR<ExecutionUpdateManyMutationInput, ExecutionUncheckedUpdateManyWithoutOrderInput>
+  }
+
+  export type ExecutionScalarWhereInput = {
+    AND?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+    OR?: ExecutionScalarWhereInput[]
+    NOT?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+    id?: StringFilter<"Execution"> | string
+    orderId?: StringFilter<"Execution"> | string
+    brokerExecutionId?: StringFilter<"Execution"> | string
+    quantity?: IntFilter<"Execution"> | number
+    price?: DecimalFilter<"Execution"> | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFilter<"Execution"> | Date | string
+    createdAt?: DateTimeFilter<"Execution"> | Date | string
+  }
+
   export type FirmCreateWithoutAuditLogsInput = {
     id?: string
     name: string
@@ -22194,6 +23807,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+    executions?: ExecutionCreateNestedManyWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutBasketOrderInput = {
@@ -22217,6 +23831,7 @@ export namespace Prisma {
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutBasketOrderInput = {
@@ -22398,6 +24013,118 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+  }
+
+  export type OrderCreateWithoutExecutionsInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
+    portfolio: PortfolioCreateNestedOneWithoutOrdersInput
+    brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+  }
+
+  export type OrderUncheckedCreateWithoutExecutionsInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    basketOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
+    portfolioId: string
+    brokerAccountId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type OrderCreateOrConnectWithoutExecutionsInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutExecutionsInput, OrderUncheckedCreateWithoutExecutionsInput>
+  }
+
+  export type OrderUpsertWithoutExecutionsInput = {
+    update: XOR<OrderUpdateWithoutExecutionsInput, OrderUncheckedUpdateWithoutExecutionsInput>
+    create: XOR<OrderCreateWithoutExecutionsInput, OrderUncheckedCreateWithoutExecutionsInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutExecutionsInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutExecutionsInput, OrderUncheckedUpdateWithoutExecutionsInput>
+  }
+
+  export type OrderUpdateWithoutExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
+    portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutExecutionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UserCreateManyFirmInput = {
@@ -22713,6 +24440,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
+    executions?: ExecutionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutBrokerAccountInput = {
@@ -22736,6 +24464,7 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutBrokerAccountInput = {
@@ -22882,6 +24611,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+    executions?: ExecutionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutPortfolioInput = {
@@ -22905,6 +24635,7 @@ export namespace Prisma {
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutPortfolioInput = {
@@ -22928,6 +24659,42 @@ export namespace Prisma {
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionCreateManyOrderInput = {
+    id?: string
+    brokerExecutionId: string
+    quantity: number
+    price: Decimal | DecimalJsLike | number | string
+    executedAt: Date | string
+    createdAt?: Date | string
+  }
+
+  export type ExecutionUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerExecutionId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerExecutionId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionUncheckedUpdateManyWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerExecutionId?: StringFieldUpdateOperationsInput | string
+    quantity?: IntFieldUpdateOperationsInput | number
+    price?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    executedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type OrderCreateManyBasketOrderInput = {
@@ -22974,6 +24741,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+    executions?: ExecutionUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutBasketOrderInput = {
@@ -22997,6 +24765,7 @@ export namespace Prisma {
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutBasketOrderInput = {

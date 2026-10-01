@@ -6,12 +6,14 @@ import type {
   BrokerOrderUpdate,
   BrokerCancellationResult,
   BrokerOrderStatus,
-  BrokerOrderModification
+  BrokerOrderModification,
+  BrokerExecution
 } from "./types";
 
 type StoredMockOrder = {
   request: BrokerOrderRequest;
   status: BrokerOrderStatus;
+  executedAt?: Date;
 };
 
 export class MockBroker implements BrokerAdapter {
@@ -99,7 +101,16 @@ export class MockBroker implements BrokerAdapter {
         averageFillPrice: null,
       };
     }
+    if (
+      storedOrder.status !==
+      "FILLED"
+    ) {
+      storedOrder.executedAt =
+        new Date();
+    }
 
+    storedOrder.status =
+      "FILLED";
     const averageFillPrice =
       request.orderType === "LIMIT"
         ? request.limitPrice ?? null
@@ -136,8 +147,8 @@ export class MockBroker implements BrokerAdapter {
     };
   }
 
- 
-  
+
+
   private getMockMarketPrice(symbol: string): number {
     const prices: Record<string, number> = {
       RELIANCE: 1450,
@@ -245,4 +256,64 @@ export class MockBroker implements BrokerAdapter {
       status: order.status,
     };
   }
+  async getExecutions(
+  brokerOrderId: string,
+): Promise<BrokerExecution[]> {
+  const storedOrder =
+    this.orders.get(
+      brokerOrderId,
+    );
+
+  if (!storedOrder) {
+    throw new Error(
+      "BROKER_ORDER_NOT_FOUND",
+    );
+  }
+
+  if (
+    storedOrder.status !==
+      "FILLED"
+  ) {
+    return [];
+  }
+
+  const price =
+    storedOrder.request
+      .orderType ===
+    "LIMIT"
+      ? storedOrder.request
+          .limitPrice
+      : this.getMockMarketPrice(
+          storedOrder.request
+            .symbol,
+        );
+
+  if (
+    price === null ||
+    price === undefined
+  ) {
+    throw new Error(
+      "BROKER_FILL_DETAILS_UNAVAILABLE",
+    );
+  }
+
+  return [
+    {
+      brokerExecutionId:
+        `${brokerOrderId}:fill:1`,
+
+      brokerOrderId,
+
+      quantity:
+        storedOrder.request
+          .quantity,
+
+      price,
+
+      executedAt:
+        storedOrder.executedAt ??
+        new Date(),
+    },
+  ];
+}
 }

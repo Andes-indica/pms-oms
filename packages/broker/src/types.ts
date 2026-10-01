@@ -61,3 +61,14 @@ export type BrokerFunds = {
   usedMargin: number;
   netAvailable: number;
 };
+export type BrokerExecution = {
+  brokerExecutionId: string;
+
+  brokerOrderId: string;
+
+  quantity: number;
+
+  price: number;
+
+  executedAt: Date;
+};

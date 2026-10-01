@@ -13,7 +13,8 @@ import type {
   BrokerOrderModification,
   BrokerHolding,
   BrokerFunds,
-  BrokerPosition
+  BrokerPosition,
+  BrokerExecution
 } from "../../types";
 
 import type {
@@ -21,6 +22,7 @@ import type {
   BrokerHoldingsCapability,
   BrokerPositionsCapability,
   BrokerFundsCapability,
+  BrokerExecutionsCapability
 } from "../../broker-capabilities"
 
 import type {
@@ -132,7 +134,13 @@ function normalizeZerodhaError(
 }
 
 export class ZerodhaBroker
-  implements BrokerAdapter, BrokerOrderRecoveryCapability,BrokerHoldingsCapability,BrokerHoldingsCapability,BrokerFundsCapability {
+  implements
+  BrokerAdapter,
+  BrokerOrderRecoveryCapability,
+  BrokerHoldingsCapability,
+  BrokerPositionsCapability,
+  BrokerFundsCapability,
+  BrokerExecutionsCapability {
   private kite: Connect;
   private mapExchange(
     exchange: string,
@@ -164,71 +172,59 @@ export class ZerodhaBroker
   }
 
   private async getAverageFillPrice(
-    brokerOrderId: string,
-    filledQuantity: number,
-  ): Promise<number | null> {
-    if (filledQuantity <= 0) {
-      return null;
-    }
+  brokerOrderId: string,
+  filledQuantity: number,
+): Promise<number | null> {
+  if (
+    filledQuantity <= 0
+  ) {
+    return null;
+  }
 
-    const trades =
-      await this.kite.getOrderTrades(
-        brokerOrderId,
-      );
+  const executions =
+    await this.getExecutions(
+      brokerOrderId,
+    );
 
-    if (
-      !Array.isArray(trades) ||
-      trades.length === 0
-    ) {
-      throw new Error(
-        "BROKER_FILL_DETAILS_UNAVAILABLE",
-      );
-    }
-
-    let totalQuantity = 0;
-    let totalValue = 0;
-
-    for (const trade of trades) {
-      const quantity =
-        Number(
-          trade.quantity ?? 0,
-        );
-
-      const price =
-        Number(
-          trade.average_price ?? 0,
-        );
-
-      if (
-        !Number.isFinite(quantity) ||
-        quantity <= 0 ||
-        !Number.isFinite(price) ||
-        price <= 0
-      ) {
-        continue;
-      }
-
-      totalQuantity += quantity;
-
-      totalValue +=
-        quantity * price;
-    }
-
-    if (
-      totalQuantity <= 0 ||
-      totalQuantity <
-      filledQuantity
-    ) {
-      throw new Error(
-        "BROKER_FILL_DETAILS_UNAVAILABLE",
-      );
-    }
-
-    return (
-      totalValue /
-      totalQuantity
+  if (
+    executions.length === 0
+  ) {
+    throw new Error(
+      "BROKER_FILL_DETAILS_UNAVAILABLE",
     );
   }
+
+  const totalQuantity =
+    executions.reduce(
+      (total, execution) =>
+        total +
+        execution.quantity,
+      0,
+    );
+
+  const totalValue =
+    executions.reduce(
+      (total, execution) =>
+        total +
+        execution.quantity *
+          execution.price,
+      0,
+    );
+
+  if (
+    totalQuantity <
+      filledQuantity
+  ) {
+    throw new Error(
+      "BROKER_FILL_DETAILS_UNAVAILABLE",
+    );
+  }
+
+  return (
+    totalValue /
+    totalQuantity
+  );
+}
 
   async placeOrder(
     order: BrokerOrderRequest,
@@ -488,240 +484,328 @@ export class ZerodhaBroker
     };
   }
   async getHoldings():
-  Promise<BrokerHolding[]> {
-  try {
-    const holdings =
-      await this.kite.getHoldings();
+    Promise<BrokerHolding[]> {
+    try {
+      const holdings =
+        await this.kite.getHoldings();
 
-    if (!Array.isArray(holdings)) {
-      throw new Error(
-        "BROKER_INVALID_HOLDINGS_RESPONSE",
-      );
-    }
+      if (!Array.isArray(holdings)) {
+        throw new Error(
+          "BROKER_INVALID_HOLDINGS_RESPONSE",
+        );
+      }
 
-    return holdings.map(
-      (holding: any) => {
-        const quantity =
-          Number(
-            holding.quantity ??
+      return holdings.map(
+        (holding: any) => {
+          const quantity =
+            Number(
+              holding.quantity ??
               0,
-          );
+            );
 
-        const averagePrice =
-          Number(
-            holding.average_price ??
+          const averagePrice =
+            Number(
+              holding.average_price ??
               0,
-          );
+            );
 
-        if (
-          !Number.isFinite(
-            quantity,
-          ) ||
-          quantity < 0 ||
-          !Number.isFinite(
-            averagePrice,
-          ) ||
-          averagePrice < 0 ||
-          typeof holding
+          if (
+            !Number.isFinite(
+              quantity,
+            ) ||
+            quantity < 0 ||
+            !Number.isFinite(
+              averagePrice,
+            ) ||
+            averagePrice < 0 ||
+            typeof holding
               .tradingsymbol !==
             "string" ||
-          typeof holding
+            typeof holding
               .exchange !==
             "string"
-        ) {
-          throw new Error(
-            "BROKER_INVALID_HOLDINGS_RESPONSE",
-          );
-        }
+          ) {
+            throw new Error(
+              "BROKER_INVALID_HOLDINGS_RESPONSE",
+            );
+          }
 
-        return {
-          symbol:
-            holding.tradingsymbol,
+          return {
+            symbol:
+              holding.tradingsymbol,
 
-          exchange:
-            holding.exchange,
+            exchange:
+              holding.exchange,
 
-          quantity,
+            quantity,
 
-          averagePrice,
-        };
-      },
-    );
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message ===
+            averagePrice,
+          };
+        },
+      );
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
         "BROKER_INVALID_HOLDINGS_RESPONSE"
-    ) {
-      throw error;
-    }
+      ) {
+        throw error;
+      }
 
-    throw normalizeZerodhaError(
-      error,
-    );
-  }
-}
-async getPositions():
-  Promise<BrokerPosition[]> {
-  try {
-    const positions =
-      await this.kite.getPositions();
-
-    const net =
-      positions?.net;
-
-    if (!Array.isArray(net)) {
-      throw new Error(
-        "BROKER_INVALID_POSITIONS_RESPONSE",
+      throw normalizeZerodhaError(
+        error,
       );
     }
+  }
+  async getPositions():
+    Promise<BrokerPosition[]> {
+    try {
+      const positions =
+        await this.kite.getPositions();
 
-    return net.map(
-      (position: any) => {
-        const quantity =
-          Number(
-            position.quantity ??
+      const net =
+        positions?.net;
+
+      if (!Array.isArray(net)) {
+        throw new Error(
+          "BROKER_INVALID_POSITIONS_RESPONSE",
+        );
+      }
+
+      return net.map(
+        (position: any) => {
+          const quantity =
+            Number(
+              position.quantity ??
               0,
-          );
+            );
 
-        const averagePrice =
-          Number(
-            position.average_price ??
+          const averagePrice =
+            Number(
+              position.average_price ??
               0,
-          );
+            );
 
-        const realizedPnl =
-          Number(
-            position.realised ??
+          const realizedPnl =
+            Number(
+              position.realised ??
               0,
-          );
+            );
 
-        const unrealizedPnl =
-          Number(
-            position.unrealised ??
+          const unrealizedPnl =
+            Number(
+              position.unrealised ??
               0,
-          );
+            );
 
-        if (
-          !Number.isFinite(
-            quantity,
-          ) ||
-          !Number.isFinite(
-            averagePrice,
-          ) ||
-          averagePrice < 0 ||
-          !Number.isFinite(
-            realizedPnl,
-          ) ||
-          !Number.isFinite(
-            unrealizedPnl,
-          ) ||
-          typeof position
+          if (
+            !Number.isFinite(
+              quantity,
+            ) ||
+            !Number.isFinite(
+              averagePrice,
+            ) ||
+            averagePrice < 0 ||
+            !Number.isFinite(
+              realizedPnl,
+            ) ||
+            !Number.isFinite(
+              unrealizedPnl,
+            ) ||
+            typeof position
               .tradingsymbol !==
             "string" ||
-          typeof position
+            typeof position
               .exchange !==
             "string"
-        ) {
-          throw new Error(
-            "BROKER_INVALID_POSITIONS_RESPONSE",
-          );
-        }
+          ) {
+            throw new Error(
+              "BROKER_INVALID_POSITIONS_RESPONSE",
+            );
+          }
 
-        return {
-          symbol:
-            position.tradingsymbol,
+          return {
+            symbol:
+              position.tradingsymbol,
 
-          exchange:
-            position.exchange,
+            exchange:
+              position.exchange,
 
-          quantity,
+            quantity,
 
-          averagePrice,
+            averagePrice,
 
-          realizedPnl,
+            realizedPnl,
 
-          unrealizedPnl,
-        };
-      },
-    );
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message ===
+            unrealizedPnl,
+          };
+        },
+      );
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
         "BROKER_INVALID_POSITIONS_RESPONSE"
-    ) {
-      throw error;
-    }
+      ) {
+        throw error;
+      }
 
-    throw normalizeZerodhaError(
-      error,
-    );
+      throw normalizeZerodhaError(
+        error,
+      );
+    }
   }
-}
-async getFunds():
-  Promise<BrokerFunds> {
-  try {
-    const margins =
-      await this.kite.getMargins();
-      const equity=margins.equity;
-      if(!equity) {
+  async getFunds():
+    Promise<BrokerFunds> {
+    try {
+      const margins =
+        await this.kite.getMargins();
+      const equity = margins.equity;
+      if (!equity) {
         throw new Error(
           "BROKER_INVALID_FUNDS_RESPONSE"
         );
       }
 
-    const availableCash =
-      Number(
-        equity.available?.cash ??
+      const availableCash =
+        Number(
+          equity.available?.cash ??
           0,
-      );
+        );
 
-    const netAvailable =
-      Number(
-        equity.net ?? 0,
-      );
+      const netAvailable =
+        Number(
+          equity.net ?? 0,
+        );
 
-    const usedMargin =
-      Number(
-        equity.utilised?.debits ??
+      const usedMargin =
+        Number(
+          equity.utilised?.debits ??
           0,
-      );
+        );
 
-    if (
-      !Number.isFinite(
+      if (
+        !Number.isFinite(
+          availableCash,
+        ) ||
+        !Number.isFinite(
+          netAvailable,
+        ) ||
+        !Number.isFinite(
+          usedMargin,
+        )
+      ) {
+        throw new Error(
+          "BROKER_INVALID_FUNDS_RESPONSE",
+        );
+      }
+
+      return {
         availableCash,
-      ) ||
-      !Number.isFinite(
         netAvailable,
-      ) ||
-      !Number.isFinite(
         usedMargin,
-      )
-    ) {
-      throw new Error(
-        "BROKER_INVALID_FUNDS_RESPONSE",
+      };
+    } catch (error) {
+      if (
+        error instanceof Error &&
+        error.message ===
+        "BROKER_INVALID_FUNDS_RESPONSE"
+      ) {
+        throw error;
+      }
+
+      throw normalizeZerodhaError(
+        error,
+      );
+    }
+  }
+  async getExecutions(
+    brokerOrderId: string,
+  ): Promise<BrokerExecution[]> {
+    let trades;
+
+    try {
+      trades =
+        await this.kite.getOrderTrades(
+          brokerOrderId,
+        );
+    } catch (error) {
+      throw normalizeZerodhaError(
+        error,
       );
     }
 
-    return {
-      availableCash,
-      netAvailable,
-      usedMargin,
-    };
-  } catch (error) {
-    if (
-      error instanceof Error &&
-      error.message ===
-        "BROKER_INVALID_FUNDS_RESPONSE"
-    ) {
-      throw error;
+    if (!Array.isArray(trades)) {
+      throw new Error(
+        "BROKER_INVALID_EXECUTIONS_RESPONSE",
+      );
     }
 
-    throw normalizeZerodhaError(
-      error,
+    return trades.map(
+      (trade: any) => {
+        const brokerExecutionId =
+          String(
+            trade.trade_id ?? "",
+          );
+
+        const returnedOrderId =
+          String(
+            trade.order_id ?? "",
+          );
+
+        const quantity =
+          Number(
+            trade.quantity ?? 0,
+          );
+
+        const price =
+          Number(
+            trade.average_price ?? 0,
+          );
+
+        const rawTimestamp =
+          trade.fill_timestamp ??
+          trade.exchange_timestamp;
+
+        const executedAt =
+          rawTimestamp
+            ? new Date(
+              rawTimestamp,
+            )
+            : new Date();
+
+        if (
+          !brokerExecutionId ||
+          returnedOrderId !==
+          brokerOrderId ||
+          !Number.isInteger(
+            quantity,
+          ) ||
+          quantity <= 0 ||
+          !Number.isFinite(
+            price,
+          ) ||
+          price <= 0 ||
+          Number.isNaN(
+            executedAt.getTime(),
+          )
+        ) {
+          throw new Error(
+            "BROKER_INVALID_EXECUTIONS_RESPONSE",
+          );
+        }
+
+        return {
+          brokerExecutionId,
+          brokerOrderId:
+            returnedOrderId,
+
+          quantity,
+          price,
+          executedAt,
+        };
+      },
     );
   }
-}
 
 }

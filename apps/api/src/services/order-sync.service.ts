@@ -12,6 +12,9 @@ import {
   mockBroker,
   resolveBroker,
 } from "../brokers/broker-registry";
+import {
+  supportsExecutions,
+} from "@pms-oms/broker";
 
 export async function syncOrderService(
   orderId: string,
@@ -62,7 +65,7 @@ export async function syncOrderService(
       firmId,
     );
 
-  
+
   if (broker === mockBroker) {
     ensureMockBrokerOrder(
       order,
@@ -74,10 +77,35 @@ export async function syncOrderService(
     await broker.getOrderStatus(
       order.brokerOrderId,
     );
+  const brokerExecutions =
+    supportsExecutions(
+      broker,
+    )
+      ? await broker.getExecutions(
+        order.brokerOrderId,
+      )
+      : null;
+  if (brokerExecutions) {
+    const executionQuantity =
+      brokerExecutions.reduce(
+        (total, execution) =>
+          total +
+          execution.quantity,
+        0,
+      );
 
+    if (
+      executionQuantity !==
+      brokerUpdate.filledQuantity
+    ) {
+      throw new Error(
+        "BROKER_EXECUTION_QUANTITY_MISMATCH",
+      );
+    }
+  }
   return prisma.$transaction(
     async (tx) => {
-      
+
       await tx.$queryRaw`
         SELECT "id"
         FROM "Portfolio"
@@ -85,7 +113,7 @@ export async function syncOrderService(
         FOR UPDATE
       `;
 
-      
+
       await tx.$queryRaw`
         SELECT "id"
         FROM "Order"
@@ -112,7 +140,7 @@ export async function syncOrderService(
         );
       }
 
-    
+
       if (
         [
           "FILLED",
@@ -125,7 +153,7 @@ export async function syncOrderService(
         return freshOrder;
       }
 
-      
+    
       const cumulativeFillQuantity =
         brokerUpdate.filledQuantity;
 
@@ -134,13 +162,52 @@ export async function syncOrderService(
           cumulativeFillQuantity,
         ) ||
         cumulativeFillQuantity <
-          freshOrder.filledQuantity ||
+        freshOrder.filledQuantity ||
         cumulativeFillQuantity >
-          freshOrder.quantity
+        freshOrder.quantity
       ) {
         throw new Error(
           "INVALID_FILL_QUANTITY",
         );
+      }
+      if (brokerExecutions) {
+        for (
+          const execution of
+          brokerExecutions
+        ) {
+          await tx.execution.upsert({
+            where: {
+              orderId_brokerExecutionId: {
+                orderId:
+                  freshOrder.id,
+
+                brokerExecutionId:
+                  execution
+                    .brokerExecutionId,
+              },
+            },
+
+            update: {},
+
+            create: {
+              orderId:
+                freshOrder.id,
+
+              brokerExecutionId:
+                execution
+                  .brokerExecutionId,
+
+              quantity:
+                execution.quantity,
+
+              price:
+                execution.price,
+
+              executedAt:
+                execution.executedAt,
+            },
+          });
+        }
       }
 
       const incrementalFillQuantity =
@@ -155,33 +222,33 @@ export async function syncOrderService(
         | number
         | null = null;
 
-      
+
       if (
         incrementalFillQuantity > 0
       ) {
         if (
           brokerUpdate
             .averageFillPrice ===
-            null ||
+          null ||
           !Number.isFinite(
             brokerUpdate
               .averageFillPrice,
           ) ||
           brokerUpdate
-              .averageFillPrice <= 0
+            .averageFillPrice <= 0
         ) {
           throw new Error(
             "INVALID_FILL_PRICE",
           );
         }
 
-        
+
         const previousFillValue =
           freshOrder.filledQuantity *
           Number(
             freshOrder
               .averageFillPrice ??
-              0,
+            0,
           );
 
         const cumulativeFillValue =
@@ -201,23 +268,23 @@ export async function syncOrderService(
             {
               where: {
                 portfolioId_brokerAccountId_symbol_exchange:
-                  {
-                    portfolioId:
-                      freshOrder
-                        .portfolioId,
+                {
+                  portfolioId:
+                    freshOrder
+                      .portfolioId,
 
-                    brokerAccountId:
-                      freshOrder
-                        .brokerAccountId,
+                  brokerAccountId:
+                    freshOrder
+                      .brokerAccountId,
 
-                    symbol:
-                      freshOrder
-                        .symbol,
+                  symbol:
+                    freshOrder
+                      .symbol,
 
-                    exchange:
-                      freshOrder
-                        .exchange,
-                  },
+                  exchange:
+                    freshOrder
+                      .exchange,
+                },
               },
             },
           );
@@ -258,11 +325,11 @@ export async function syncOrderService(
             const newAveragePrice =
               (
                 holding.quantity *
-                  Number(
-                    holding.averagePrice,
-                  ) +
+                Number(
+                  holding.averagePrice,
+                ) +
                 incrementalFillQuantity *
-                  incrementalFillPrice
+                incrementalFillPrice
               ) /
               newQuantity;
 
@@ -297,11 +364,11 @@ export async function syncOrderService(
             },
           });
         } else {
-          
+
           if (
             !holding ||
             holding.quantity <
-              incrementalFillQuantity
+            incrementalFillQuantity
           ) {
             throw new Error(
               "INSUFFICIENT_HOLDINGS",
@@ -356,7 +423,7 @@ export async function syncOrderService(
         }
       }
 
-      
+
       const terminal =
         [
           "FILLED",
@@ -383,27 +450,27 @@ export async function syncOrderService(
         | number
         | null =
         freshOrder.realizedPnl ===
-        null
+          null
           ? null
           : Number(
-              freshOrder
-                .realizedPnl,
-            );
+            freshOrder
+              .realizedPnl,
+          );
 
-      
+
       if (
         freshOrder.side ===
-          "SELL" &&
+        "SELL" &&
         incrementalFillQuantity >
-          0 &&
+        0 &&
         incrementalFillPrice !==
-          null
+        null
       ) {
         realizedPnl =
           Number(
             freshOrder
               .realizedPnl ??
-              0,
+            0,
           ) +
           (
             incrementalFillPrice -
@@ -412,7 +479,7 @@ export async function syncOrderService(
               incrementalFillPrice
             )
           ) *
-            incrementalFillQuantity;
+          incrementalFillQuantity;
       }
 
       const updatedOrder =
@@ -436,25 +503,25 @@ export async function syncOrderService(
 
             filledAt:
               brokerUpdate.status ===
-              "FILLED"
+                "FILLED"
                 ? freshOrder
-                    .filledAt ??
-                  new Date()
+                  .filledAt ??
+                new Date()
                 : freshOrder
-                    .filledAt,
+                  .filledAt,
 
-            
+
             reservedCash:
               !terminal &&
-              freshOrder.side ===
+                freshOrder.side ===
                 "BUY"
                 ? remainingQuantity *
-                  estimatedPrice
+                estimatedPrice
                 : 0,
 
             reservedQuantity:
               !terminal &&
-              freshOrder.side ===
+                freshOrder.side ===
                 "SELL"
                 ? remainingQuantity
                 : 0,
@@ -463,13 +530,13 @@ export async function syncOrderService(
 
       const action =
         updatedOrder.status ===
-        "FILLED"
+          "FILLED"
           ? "ORDER_FILLED"
           : updatedOrder.status ===
-              "REJECTED"
+            "REJECTED"
             ? "ORDER_REJECTED"
             : updatedOrder.status ===
-                "CANCELLED"
+              "CANCELLED"
               ? "ORDER_CANCELLED"
               : "ORDER_SYNCED";
 
@@ -505,6 +572,7 @@ export async function syncOrderService(
               updatedOrder
                 .realizedPnl
                 ?.toString(),
+            executionCount: brokerExecutions ?.length ?? null,
           },
         },
 

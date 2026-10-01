@@ -653,7 +653,7 @@ export async function repairBrokerHolding(
                         firmId,
 
                         action:
-                            "Broker_RECONCILED",
+                            "BROKER_RECONCILED",
 
                         entityType:
                             "BROKER_ACCOUNT",
@@ -751,7 +751,7 @@ export async function repairBrokerHolding(
                         firmId,
 
                         action:
-                            "Broker_RECONCILED",
+                            "BROKER_RECONCILED",
 
                         entityType:
                             "BROKER_ACCOUNT",
@@ -862,7 +862,7 @@ export async function repairBrokerHolding(
                     firmId,
 
                     action:
-                        "Broker_RECONCILED",
+                        "BROKER_RECONCILED",
 
                     entityType:
                         "BROKER_ACCOUNT",

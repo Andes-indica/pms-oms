@@ -7,6 +7,7 @@ import type {
   BrokerPosition,
   BrokerFunds,
   BrokerOrderResult,
+  BrokerExecution
 } from "./types";
 
 export interface BrokerOrderRecoveryCapability {
@@ -27,6 +28,13 @@ export interface BrokerPositionsCapability {
 export interface BrokerFundsCapability {
   getFunds():
     Promise<BrokerFunds>;
+}
+export interface BrokerExecutionsCapability {
+  getExecutions(
+    brokerOrderId: string,
+  ): Promise<
+    BrokerExecution[]
+  >;
 }
 
 export function supportsOrderRecovery(
@@ -74,5 +82,17 @@ export function supportsFunds(
     typeof (
       broker as BrokerFundsCapability
     ).getFunds === "function"
+  );
+}
+export function supportsExecutions(
+  broker: BrokerAdapter,
+): broker is BrokerAdapter &
+  BrokerExecutionsCapability {
+  return (
+    "getExecutions" in broker &&
+    typeof (
+      broker as BrokerExecutionsCapability
+    ).getExecutions ===
+      "function"
   );
 }

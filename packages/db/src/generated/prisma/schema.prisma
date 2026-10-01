@@ -110,7 +110,7 @@ enum AuditAction {
   BASKET_SUBMITTED
   BASKET_CANCELLED
 
-  Broker_RECONCILED
+  BROKER_RECONCILED
 }
 
 model Portfolio {
@@ -185,6 +185,8 @@ model Order {
 
   brokerAccountId String
   brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
+
+  executions Execution[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -307,4 +309,24 @@ model BrokerConnection {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Execution {
+  id String @id @default(cuid())
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  brokerExecutionId String
+
+  quantity Int
+
+  price Decimal @db.Decimal(18, 4)
+
+  executedAt DateTime
+
+  createdAt DateTime @default(now())
+
+  @@unique([orderId, brokerExecutionId])
+  @@index([orderId])
 }

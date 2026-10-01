@@ -262,6 +262,16 @@ exports.Prisma.BrokerConnectionScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.ExecutionScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  brokerExecutionId: 'brokerExecutionId',
+  quantity: 'quantity',
+  price: 'price',
+  executedAt: 'executedAt',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -325,7 +335,7 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',
-  Broker_RECONCILED: 'Broker_RECONCILED'
+  BROKER_RECONCILED: 'BROKER_RECONCILED'
 };
 
 exports.AllocationMethod = exports.$Enums.AllocationMethod = {
@@ -363,7 +373,8 @@ exports.Prisma.ModelName = {
   BasketOrder: 'BasketOrder',
   RiskLimit: 'RiskLimit',
   RestrictedSecurity: 'RestrictedSecurity',
-  BrokerConnection: 'BrokerConnection'
+  BrokerConnection: 'BrokerConnection',
+  Execution: 'Execution'
 };
 
 /**
