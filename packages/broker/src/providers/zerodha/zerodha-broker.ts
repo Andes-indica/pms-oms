@@ -767,12 +767,12 @@ export class ZerodhaBroker
           trade.fill_timestamp ??
           trade.exchange_timestamp;
 
-        const executedAt =
-          rawTimestamp
-            ? new Date(
-              rawTimestamp,
-            )
-            : new Date();
+        if(!rawTimestamp){
+          throw new Error(
+            "BR0KER_INVALID_EXECUTIONS_RESPONSE",
+          );
+        }
+        const executedAt = new Date(rawTimestamp);
 
         if (
           !brokerExecutionId ||

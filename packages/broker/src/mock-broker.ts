@@ -109,14 +109,12 @@ export class MockBroker implements BrokerAdapter {
         new Date();
     }
 
-    storedOrder.status =
-      "FILLED";
+    storedOrder.status = "FILLED";
     const averageFillPrice =
       request.orderType === "LIMIT"
         ? request.limitPrice ?? null
         : this.getMockMarketPrice(request.symbol);
 
-    storedOrder.status = "FILLED";
 
     return {
       brokerOrderId,
