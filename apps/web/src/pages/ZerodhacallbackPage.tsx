@@ -24,8 +24,9 @@ type SessionResponse = {
       | null;
   };
 };
-    let zerodhaCallbackConsumed = false;
-
+let zerodhaCallbackPromise:
+  Promise<void> | null =
+    null;
 export function ZerodhaCallbackPage() {
   const [
     searchParams,
@@ -39,123 +40,114 @@ export function ZerodhaCallbackPage() {
     useState("");
 
   useEffect(() => {
-    let cancelled =
-      false;
-    async function completeLogin() {
-      if(zerodhaCallbackConsumed) {
-        return;
-      }
-      zerodhaCallbackConsumed=true;
-      const requestToken =
-        searchParams.get(
-          "request_token",
-        );
+  let cancelled = false;
 
-      const zerodhaStatus =
-        searchParams.get(
-          "status",
-        );
+  const requestToken =
+    searchParams.get(
+      "request_token",
+    );
 
-      const brokerAccountId =
-        sessionStorage.getItem(
-          "pendingZerodhaBrokerAccountId",
-        );
+  const zerodhaStatus =
+    searchParams.get(
+      "status",
+    );
 
-      const storedReturnPath =
-        sessionStorage.getItem(
-          "pendingZerodhaReturnPath",
-        );
+  const brokerAccountId =
+    sessionStorage.getItem(
+      "pendingZerodhaBrokerAccountId",
+    );
 
-      /*
-       * Only allow an internal return
-       * path from our own application.
-       */
-      const returnPath =
-        storedReturnPath &&
-        storedReturnPath.startsWith(
-          "/clients/",
-        )
-          ? storedReturnPath
-          : "/clients";
+  const storedReturnPath =
+    sessionStorage.getItem(
+      "pendingZerodhaReturnPath",
+    );
 
-      if (
-        zerodhaStatus &&
-        zerodhaStatus !==
-          "success"
-      ) {
-        setError(
-          "Zerodha login was not successful.",
-        );
+  const returnPath =
+    storedReturnPath &&
+    storedReturnPath.startsWith(
+      "/clients/",
+    )
+      ? storedReturnPath
+      : "/clients";
 
-        return;
-      }
-
-      if (!requestToken) {
-        zerodhaCallbackConsumed=false;
-        setError(
-          "Zerodha did not return a request token.",
-        );
-
-        return;
-      }
-
-      if (!brokerAccountId) {
-        setError(
-          "Broker connection context was lost. Start the Zerodha connection again.",
-        );
-
-        return;
-      }
-
-      try {
-        await apiFetch<SessionResponse>(
-          `/api/broker-connections/${brokerAccountId}/zerodha/session`,
-          {
-            method: "POST",
-
-            body:
-              JSON.stringify({
-                requestToken,
-              }),
-          },
-        );
-
-        sessionStorage.removeItem(
-          "pendingZerodhaBrokerAccountId",
-        );
-
-        sessionStorage.removeItem(
-          "pendingZerodhaReturnPath",
-        );
-
-        if (!cancelled) {
-          navigate(
-            returnPath,
-            {
-              replace: true,
-            },
-          );
-        }
-      } catch (error) {
-        if (!cancelled) {
-          setError(
-            error instanceof Error
-              ? error.message
-              : "Failed to connect Zerodha",
-          );
-        }
-      }
+  async function completeLogin() {
+    if (
+      zerodhaStatus &&
+      zerodhaStatus !== "success"
+    ) {
+      throw new Error(
+        "Zerodha login was not successful.",
+      );
     }
 
-    completeLogin();
+    if (!requestToken) {
+      throw new Error(
+        "Zerodha did not return a request token.",
+      );
+    }
 
-    return () => {
-      cancelled = true;
-    };
-  }, [
-    navigate,
-    searchParams,
-  ]);
+    if (!brokerAccountId) {
+      throw new Error(
+        "Broker connection context was lost. Start the Zerodha connection again.",
+      );
+    }
+
+    await apiFetch<SessionResponse>(
+      `/api/broker-connections/${brokerAccountId}/zerodha/session`,
+      {
+        method: "POST",
+
+        body:
+          JSON.stringify({
+            requestToken,
+          }),
+      },
+    );
+
+    sessionStorage.removeItem(
+      "pendingZerodhaBrokerAccountId",
+    );
+
+    sessionStorage.removeItem(
+      "pendingZerodhaReturnPath",
+    );
+  }
+
+  if (!zerodhaCallbackPromise) {
+    zerodhaCallbackPromise =
+      completeLogin();
+  }
+
+  zerodhaCallbackPromise
+    .then(() => {
+      zerodhaCallbackPromise=null;
+      if (!cancelled) {
+        navigate(
+          returnPath,
+          {
+            replace: true,
+          },
+        );
+      }
+    })
+    .catch((error) => {
+      zerodhaCallbackPromise=null;
+      if (!cancelled) {
+        setError(
+          error instanceof Error
+            ? error.message
+            : "Failed to connect Zerodha",
+        );
+      }
+    });
+
+  return () => {
+    cancelled = true;
+  };
+}, [
+  navigate,
+  searchParams,
+]);
 
   if (error) {
     return (
