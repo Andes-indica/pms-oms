@@ -215,6 +215,13 @@ export async function getClientOverview(
               riskLimit: true,
 
               orders: {
+                include: {
+                  executions:{
+                    orderBy:{
+                      executedAt :"asc",
+                    },
+                  },
+                },
                 orderBy: {
                   createdAt: "desc",
                 },

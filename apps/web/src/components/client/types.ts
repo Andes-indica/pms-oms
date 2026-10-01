@@ -13,9 +13,18 @@ export type Order = {
   orderType: string;
   quantity: number;
   status: string;
-  averageFillPrice?: string | null;
-  realizedPnl?: string | null;
+
+  filledQuantity?: number;
+
+  averageFillPrice?:
+    string | null;
+
+  realizedPnl?:
+    string | null;
+
   createdAt: string;
+
+  executions?: Execution[];
 };
 
 export type RiskLimit = {
@@ -182,4 +191,17 @@ export type BrokerReconciliation = {
     HoldingReconciliationItem[];
 
   fetchedAt: string;
+};
+export type Execution = {
+  id: string;
+
+  brokerExecutionId: string;
+
+  quantity: number;
+
+  price: string;
+
+  executedAt: string;
+
+  createdAt: string;
 };
