@@ -127,7 +127,9 @@ export function ClientDetailPage() {
       clientId={client.id}
         accounts={
           client.brokerAccounts
-        } onChanged={()=>
+        } 
+        portfolios={client.portfolios}
+        onChanged={()=>
           setRefreshKey(
             (current)=> current+1
           )

@@ -9,12 +9,14 @@ import {
 import type {
     BrokerAccount,
     BrokerSnapshot,
-    BrokerReconciliation
+    BrokerReconciliation,
+    Portfolio
 } from "./types";
 
 type Props = {
     clientId: string;
     accounts: BrokerAccount[];
+    portfolios: Portfolio[];
     onChanged?: () => void;
 };
 
@@ -103,9 +105,35 @@ function canManageBrokerAccounts() {
         return false;
     }
 }
+function canRepairReconciliation() {
+    const rawUser =
+        localStorage.getItem(
+            "user",
+        );
+
+    if (!rawUser) {
+        return false;
+    }
+
+    try {
+        const user =
+            JSON.parse(rawUser);
+
+        return (
+            user?.role ===
+            "ADMIN" ||
+            user?.role ===
+            "PORTFOLIO_MANAGER" ||
+            user?.role ===
+            "OPERATIONS"
+        );
+    } catch {
+        return false;
+    }
+}
 
 export function BrokerAccountsCard({
-    clientId, accounts, onChanged
+    clientId, accounts, portfolios, onChanged
 }: Props) {
     const [editingId, setEditingId] =
         useState<string | null>(
@@ -158,6 +186,8 @@ export function BrokerAccountsCard({
 
     const canManage =
         canManageBrokerAccounts();
+        const canRepair =
+    canRepairReconciliation();
     const [
         snapshotAccountId,
         setSnapshotAccountId,
@@ -203,6 +233,21 @@ export function BrokerAccountsCard({
         useState<string | null>(
             null,
         );
+    const [
+        repairPortfolioByInstrument,
+        setRepairPortfolioByInstrument,
+    ] =
+        useState<
+            Record<string, string>
+        >({});
+
+    const [
+        repairingInstrument,
+        setRepairingInstrument,
+    ] =
+        useState<string | null>(
+            null,
+        );
 
     function startConfigure(
         brokerAccountId: string,
@@ -234,7 +279,12 @@ export function BrokerAccountsCard({
         setMessage("");
         setError("");
     }
-
+    function getInstrumentKey(
+        exchange: string,
+        symbol: string,
+    ) {
+        return `${exchange}:${symbol}`;
+    }
     async function createBrokerAccount() {
         setError("");
         setMessage("");
@@ -990,9 +1040,9 @@ export function BrokerAccountsCard({
 
                                                     <span
                                                         className={`rounded-full px-2 py-1 text-xs font-medium ${reconciliation.status ===
-                                                                "MATCH"
-                                                                ? "bg-emerald-50 text-emerald-700"
-                                                                : "bg-amber-50 text-amber-700"
+                                                            "MATCH"
+                                                            ? "bg-emerald-50 text-emerald-700"
+                                                            : "bg-amber-50 text-amber-700"
                                                             }`}
                                                     >
                                                         {reconciliation.status}
@@ -1024,9 +1074,9 @@ export function BrokerAccountsCard({
 
                                                                     <span
                                                                         className={`rounded-full px-2 py-1 text-xs ${item.status ===
-                                                                                "MATCH"
-                                                                                ? "bg-emerald-50 text-emerald-700"
-                                                                                : "bg-red-50 text-red-700"
+                                                                            "MATCH"
+                                                                            ? "bg-emerald-50 text-emerald-700"
+                                                                            : "bg-red-50 text-red-700"
                                                                             }`}
                                                                     >
                                                                         {item.status}
@@ -1035,21 +1085,112 @@ export function BrokerAccountsCard({
 
                                                                 {item.status !==
                                                                     "MATCH" && (
-                                                                        <div className="mt-2 text-xs text-slate-600">
-                                                                            <p>
-                                                                                Quantity difference:{" "}
-                                                                                {item.quantityDifference}
-                                                                            </p>
+                                                                        <div className="mt-3">
+                                                                            <div className="text-xs text-slate-600">
+                                                                                <p>
+                                                                                    Quantity difference:{" "}
+                                                                                    {item.quantityDifference}
+                                                                                </p>
 
-                                                                            {item.averagePriceDifference !==
-                                                                                null && (
-                                                                                    <p>
-                                                                                        Average-price difference: ₹
-                                                                                        {item.averagePriceDifference.toFixed(
-                                                                                            2,
-                                                                                        )}
-                                                                                    </p>
-                                                                                )}
+                                                                                {item.averagePriceDifference !==
+                                                                                    null && (
+                                                                                        <p>
+                                                                                            Average-price difference: ₹
+                                                                                            {item.averagePriceDifference.toFixed(
+                                                                                                2,
+                                                                                            )}
+                                                                                        </p>
+                                                                                    )}
+                                                                            </div>
+
+                                                                            {canRepair && (
+                                                                                <div className="mt-3 flex flex-wrap items-end gap-2">
+                                                                                    <label className="text-xs">
+                                                                                        <span className="block text-slate-500">
+                                                                                            PMS portfolio
+                                                                                        </span>
+
+                                                                                        <select
+                                                                                            value={
+                                                                                                repairPortfolioByInstrument[
+                                                                                                getInstrumentKey(
+                                                                                                    item.exchange,
+                                                                                                    item.symbol,
+                                                                                                )
+                                                                                                ] ?? ""
+                                                                                            }
+                                                                                            onChange={(
+                                                                                                event,
+                                                                                            ) =>
+                                                                                                setRepairPortfolioByInstrument(
+                                                                                                    (
+                                                                                                        current,
+                                                                                                    ) => ({
+                                                                                                        ...current,
+
+                                                                                                        [getInstrumentKey(
+                                                                                                            item.exchange,
+                                                                                                            item.symbol,
+                                                                                                        )]:
+                                                                                                            event.target
+                                                                                                                .value,
+                                                                                                    }),
+                                                                                                )
+                                                                                            }
+                                                                                            className="mt-1 rounded-lg border bg-white px-2 py-1.5 text-sm"
+                                                                                        >
+                                                                                            <option value="">
+                                                                                                Select portfolio
+                                                                                            </option>
+
+                                                                                            {portfolios.map(
+                                                                                                (
+                                                                                                    portfolio,
+                                                                                                ) => (
+                                                                                                    <option
+                                                                                                        key={
+                                                                                                            portfolio.id
+                                                                                                        }
+                                                                                                        value={
+                                                                                                            portfolio.id
+                                                                                                        }
+                                                                                                    >
+                                                                                                        {
+                                                                                                            portfolio.name
+                                                                                                        }
+                                                                                                    </option>
+                                                                                                ),
+                                                                                            )}
+                                                                                        </select>
+                                                                                    </label>
+
+                                                                                    <button
+                                                                                        type="button"
+                                                                                        disabled={
+                                                                                            repairingInstrument ===
+                                                                                            getInstrumentKey(
+                                                                                                item.exchange,
+                                                                                                item.symbol,
+                                                                                            )
+                                                                                        }
+                                                                                        onClick={() =>
+                                                                                            repairReconciliationItem(
+                                                                                                account,
+                                                                                                item,
+                                                                                            )
+                                                                                        }
+                                                                                        className="rounded-lg bg-slate-900 px-3 py-2 text-xs font-medium text-white disabled:opacity-50"
+                                                                                    >
+                                                                                        {repairingInstrument ===
+                                                                                            getInstrumentKey(
+                                                                                                item.exchange,
+                                                                                                item.symbol,
+                                                                                            )
+                                                                                            ? "Repairing..."
+                                                                                            : "Repair PMS"}
+                                                                                    </button>
+                                                                                </div>
+                                                                            )}
                                                                         </div>
                                                                     )}
                                                             </div>
@@ -1182,6 +1323,83 @@ export function BrokerAccountsCard({
             )}
         </section>
     );
+    async function repairReconciliationItem(
+        account: BrokerAccount,
+        item: BrokerReconciliation["items"][number],
+    ) {
+        const instrumentKey =
+            getInstrumentKey(
+                item.exchange,
+                item.symbol,
+            );
+
+        const portfolioId =
+            repairPortfolioByInstrument[
+            instrumentKey
+            ];
+
+        if (!portfolioId) {
+            setError(
+                "Select a portfolio before repairing.",
+            );
+
+            return;
+        }
+
+        try {
+            setError("");
+            setMessage("");
+
+            setRepairingInstrument(
+                instrumentKey,
+            );
+
+            await apiFetch(
+                `/api/broker-accounts/${account.id}/reconciliation/repair`,
+                {
+                    method: "POST",
+
+                    body:
+                        JSON.stringify({
+                            symbol:
+                                item.symbol,
+
+                            exchange:
+                                item.exchange,
+
+                            portfolioId,
+                        }),
+                },
+            );
+
+            setMessage(
+                `${item.exchange}:${item.symbol} reconciled successfully.`,
+            );
+
+            /*
+             * Refresh broker/PMS diff immediately.
+             */
+            await loadReconciliation(
+                account,
+            );
+
+            /*
+             * Refresh client overview because PMS
+             * holdings may have changed.
+             */
+            onChanged?.();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to repair reconciliation",
+            );
+        } finally {
+            setRepairingInstrument(
+                null,
+            );
+        }
+    }
     async function connectZerodha(
         account: BrokerAccount,
     ) {
@@ -1232,3 +1450,4 @@ export function BrokerAccountsCard({
         }
     }
 }
+
