@@ -154,8 +154,8 @@ export function PlaceOrderForm({
       const payload = {
         portfolioId,
         brokerAccountId,
-        symbol: symbol.toUpperCase(),
-        exchange: exchange.toUpperCase(),
+        symbol: symbol.trim().toUpperCase(),
+        exchange: exchange.trim().toUpperCase(),
         side,
         orderType,
         quantity,

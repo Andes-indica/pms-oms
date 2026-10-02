@@ -367,6 +367,11 @@ export async function executeOrder(
           return res.status(400).json({
             error: "security is restricted",
           });
+        case "HOLDING_IN_DIFFERENT_PORTFOLIO":
+          return res.status(409).json({
+            error:
+              "This broker holding belongs to a different PMS portfolio. Select the portfolio it was imported into.",
+          });
       }
     }
 

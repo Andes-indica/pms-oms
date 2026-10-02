@@ -37,21 +37,61 @@ export async function runPreTradeChecks(
   }
 
   if (order.side === "SELL") {
-    const holding = await database.holding.findUnique({
+  const holding =
+    await database.holding.findUnique({
       where: {
-        portfolioId_brokerAccountId_symbol_exchange: {
-          portfolioId: order.portfolioId,
-          brokerAccountId: order.brokerAccountId,
-          symbol: order.symbol,
-          exchange: order.exchange,
-        },
+        portfolioId_brokerAccountId_symbol_exchange:
+          {
+            portfolioId:
+              order.portfolioId,
+
+            brokerAccountId:
+              order.brokerAccountId,
+
+            symbol:
+              order.symbol,
+
+            exchange:
+              order.exchange,
+          },
       },
     });
 
-    if (!holding || holding.quantity < order.quantity) {
-      throw new Error("INSUFFICIENT_HOLDINGS");
+  if (!holding) {
+    const brokerHolding =
+      await database.holding.findFirst({
+        where: {
+          brokerAccountId:
+            order.brokerAccountId,
+
+          symbol:
+            order.symbol,
+
+          exchange:
+            order.exchange,
+        },
+      });
+
+    if (brokerHolding) {
+      throw new Error(
+        "HOLDING_IN_DIFFERENT_PORTFOLIO",
+      );
     }
+
+    throw new Error(
+      "INSUFFICIENT_HOLDINGS",
+    );
   }
+
+  if (
+    holding.quantity <
+    order.quantity
+  ) {
+    throw new Error(
+      "INSUFFICIENT_HOLDINGS",
+    );
+  }
+}
 
   return order;
 }
