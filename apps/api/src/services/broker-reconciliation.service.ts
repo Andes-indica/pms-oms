@@ -46,7 +46,9 @@ export type HoldingReconciliationItem = {
     averagePriceDifference:
     number | null;
 };
-
+export type ImportBrokerHoldingsInput = {
+    portfolioId: string;
+};
 function key(
     exchange: string,
     symbol: string,
@@ -923,6 +925,258 @@ export async function repairBrokerHolding(
 
                 portfolioId:
                     updated.portfolioId,
+            };
+        },
+    );
+}
+export async function importBrokerHoldings(
+    brokerAccountId: string,
+    firmId: string,
+    input: ImportBrokerHoldingsInput,
+) {
+    if (!input.portfolioId) {
+        throw new Error(
+            "INVALID_RECONCILIATION_INPUT",
+        );
+    }
+
+    const brokerAccount =
+        await prisma.brokerAccount.findFirst({
+            where: {
+                id: brokerAccountId,
+
+                client: {
+                    firmId,
+                },
+            },
+
+            select: {
+                id: true,
+                clientId: true,
+            },
+        });
+
+    if (!brokerAccount) {
+        throw new Error(
+            "BROKER_ACCOUNT_NOT_FOUND",
+        );
+    }
+
+    const portfolio =
+        await prisma.portfolio.findFirst({
+            where: {
+                id: input.portfolioId,
+
+                clientId:
+                    brokerAccount.clientId,
+
+                client: {
+                    firmId,
+                },
+            },
+
+            select: {
+                id: true,
+            },
+        });
+
+    if (!portfolio) {
+        throw new Error(
+            "RECONCILIATION_PORTFOLIO_INVALID",
+        );
+    }
+
+    const broker =
+        await resolveBroker(
+            brokerAccountId,
+            firmId,
+        );
+
+    if (!supportsHoldings(broker)) {
+        throw new Error(
+            "BROKER_HOLDINGS_UNSUPPORTED",
+        );
+    }
+
+    const brokerHoldings =
+        await broker.getHoldings();
+
+    const existingHoldings =
+        await prisma.holding.findMany({
+            where: {
+                brokerAccountId,
+
+                portfolio: {
+                    client: {
+                        firmId,
+                    },
+                },
+            },
+
+            select: {
+                symbol: true,
+                exchange: true,
+            },
+        });
+
+    const existingKeys =
+        new Set(
+            existingHoldings.map(
+                (holding) =>
+                    key(
+                        holding.exchange,
+                        holding.symbol,
+                    ),
+            ),
+        );
+
+    const missingHoldings =
+        brokerHoldings.filter(
+            (holding) =>
+                holding.quantity > 0 &&
+                !existingKeys.has(
+                    key(
+                        holding.exchange,
+                        holding.symbol,
+                    ),
+                ),
+        );
+
+    return prisma.$transaction(
+        async (tx) => {
+            const imported = [];
+
+            for (
+                const holding of
+                missingHoldings
+            ) {
+                const symbol =
+                    holding.symbol
+                        .trim()
+                        .toUpperCase();
+
+                const exchange =
+                    holding.exchange
+                        .trim()
+                        .toUpperCase();
+
+                if (
+                    !Number.isInteger(
+                        holding.quantity,
+                    ) ||
+                    holding.quantity <= 0 ||
+                    !Number.isFinite(
+                        holding.averagePrice,
+                    ) ||
+                    holding.averagePrice < 0
+                ) {
+                    throw new Error(
+                        "BROKER_INVALID_HOLDINGS_RESPONSE",
+                    );
+                }
+                const existingAllocation =
+                    await tx.holding.findFirst({
+                        where: {
+                            brokerAccountId:
+                                brokerAccount.id,
+
+                            symbol,
+                            exchange,
+                        },
+                    });
+
+                if (existingAllocation) {
+                    continue;
+                }
+                const created =
+                    await tx.holding.upsert({
+                        where: {
+                            portfolioId_brokerAccountId_symbol_exchange:
+                            {
+                                portfolioId:
+                                    portfolio.id,
+
+                                brokerAccountId:
+                                    brokerAccount.id,
+
+                                symbol,
+                                exchange,
+                            },
+                        },
+
+                        update: {},
+
+                        create: {
+                            portfolioId:
+                                portfolio.id,
+
+                            brokerAccountId:
+                                brokerAccount.id,
+
+                            symbol,
+                            exchange,
+
+                            quantity:
+                                holding.quantity,
+
+                            averagePrice:
+                                holding.averagePrice,
+                        },
+                    });
+
+                imported.push(
+                    created,
+                );
+
+                await createAuditLog(
+                    {
+                        firmId,
+
+                        action:
+                            "BROKER_RECONCILED",
+
+                        entityType:
+                            "BROKER_ACCOUNT",
+
+                        entityId:
+                            brokerAccount.id,
+
+                        message:
+                            "Broker holding imported into PMS",
+
+                        metadata: {
+                            repair:
+                                "IMPORT_EXISTING_BROKER_HOLDING",
+
+                            symbol,
+                            exchange,
+
+                            quantity:
+                                created.quantity,
+
+                            averagePrice:
+                                Number(
+                                    created.averagePrice,
+                                ),
+
+                            portfolioId:
+                                portfolio.id,
+                        },
+                    },
+
+                    tx,
+                );
+            }
+
+            return {
+                importedCount:
+                    imported.length,
+
+                portfolioId:
+                    portfolio.id,
+
+                holdings:
+                    imported,
             };
         },
     );

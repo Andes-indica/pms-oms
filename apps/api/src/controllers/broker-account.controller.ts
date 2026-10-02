@@ -29,6 +29,10 @@ import {
   repairBrokerHolding
 } from "../services/broker-reconciliation.service";
 
+import {
+    importBrokerHoldings,
+} from "../services/broker-reconciliation.service";
+
 type CreateBrokerAccountBody = {
   broker?: unknown;
   accountId?: unknown;
@@ -558,4 +562,70 @@ export async function repairBrokerReconciliation(
           "Failed to repair broker reconciliation",
       });
   }
+}
+export async function importBrokerAccountHoldings(
+    req: AuthenticatedRequest & {
+        params: {
+            id: string;
+        };
+    },
+    res: Response,
+) {
+    try {
+        if (!req.user) {
+            return res.status(401).json({
+                error:
+                    "Authentication required",
+            });
+        }
+
+        const result =
+            await importBrokerHoldings(
+                req.params.id,
+                req.user.firmId,
+                req.body,
+            );
+
+        return res.status(200).json({
+            data: result,
+        });
+    } catch (error) {
+        if (error instanceof Error) {
+            switch (error.message) {
+                case "BROKER_ACCOUNT_NOT_FOUND":
+                    return res.status(404).json({
+                        error:
+                            "Broker account not found",
+                    });
+
+                case "RECONCILIATION_PORTFOLIO_INVALID":
+                    return res.status(400).json({
+                        error:
+                            "Invalid portfolio for broker account",
+                    });
+
+                case "BROKER_HOLDINGS_UNSUPPORTED":
+                    return res.status(400).json({
+                        error:
+                            "Broker does not support holdings",
+                    });
+
+                case "BROKER_INVALID_HOLDINGS_RESPONSE":
+                    return res.status(502).json({
+                        error:
+                            "Broker returned invalid holdings data",
+                    });
+            }
+        }
+
+        console.error(
+            "Broker holdings import failed:",
+            error,
+        );
+
+        return res.status(500).json({
+            error:
+                "Failed to import broker holdings",
+        });
+    }
 }

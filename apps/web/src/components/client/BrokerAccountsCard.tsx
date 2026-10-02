@@ -186,8 +186,8 @@ export function BrokerAccountsCard({
 
     const canManage =
         canManageBrokerAccounts();
-        const canRepair =
-    canRepairReconciliation();
+    const canRepair =
+        canRepairReconciliation();
     const [
         snapshotAccountId,
         setSnapshotAccountId,
@@ -244,6 +244,22 @@ export function BrokerAccountsCard({
     const [
         repairingInstrument,
         setRepairingInstrument,
+    ] =
+        useState<string | null>(
+            null,
+        );
+
+    const [
+        importPortfolioByAccount,
+        setImportPortfolioByAccount,
+    ] =
+        useState<Record<string, string>>(
+            {},
+        );
+
+    const [
+        importingAccountId,
+        setImportingAccountId,
     ] =
         useState<string | null>(
             null,
@@ -482,6 +498,69 @@ export function BrokerAccountsCard({
             );
         } finally {
             setLoadingReconciliationId(
+                null,
+            );
+        }
+    }
+    async function importBrokerHoldings(
+        account: BrokerAccount,
+    ) {
+        const portfolioId =
+            importPortfolioByAccount[
+            account.id
+            ];
+
+        if (!portfolioId) {
+            setError(
+                "Select a portfolio before importing holdings.",
+            );
+
+            return;
+        }
+
+        try {
+            setError("");
+            setMessage("");
+
+            setImportingAccountId(
+                account.id,
+            );
+
+            const response =
+                await apiFetch<{
+                    data: {
+                        importedCount:
+                        number;
+                    };
+                }>(
+                    `/api/broker-accounts/${account.id}/holdings/import`,
+                    {
+                        method: "POST",
+
+                        body:
+                            JSON.stringify({
+                                portfolioId,
+                            }),
+                    },
+                );
+
+            setMessage(
+                `${response.data.importedCount} broker holding(s) imported into PMS.`,
+            );
+
+            await loadReconciliation(
+                account,
+            );
+
+            onChanged?.();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to import broker holdings",
+            );
+        } finally {
+            setImportingAccountId(
                 null,
             );
         }
@@ -1198,6 +1277,83 @@ export function BrokerAccountsCard({
                                                     )}
                                                 </div>
 
+                                                {reconciliation.items.some(
+                                                    (item) =>
+                                                        item.status ===
+                                                        "MISSING_IN_PMS",
+                                                ) && (
+                                                    <div className="mt-4 rounded-lg border bg-white p-3">
+                                                        <p className="text-sm font-medium">
+                                                            Import existing broker holdings
+                                                        </p>
+
+                                                        <p className="mt-1 text-xs text-slate-500">
+                                                            Import holdings that exist at the broker but are missing from PMS.
+                                                        </p>
+
+                                                        <div className="mt-3 flex flex-wrap gap-2">
+                                                            <select
+                                                                value={
+                                                                    importPortfolioByAccount[
+                                                                    account.id
+                                                                    ] ?? ""
+                                                                }
+                                                                onChange={(event) =>
+                                                                    setImportPortfolioByAccount(
+                                                                        (current) => ({
+                                                                            ...current,
+
+                                                                            [account.id]:
+                                                                                event.target.value,
+                                                                        }),
+                                                                    )
+                                                                }
+                                                                className="rounded-lg border bg-white px-3 py-2 text-sm"
+                                                            >
+                                                                <option value="">
+                                                                    Select portfolio
+                                                                </option>
+
+                                                                {portfolios.map(
+                                                                    (portfolio) => (
+                                                                        <option
+                                                                            key={
+                                                                                portfolio.id
+                                                                            }
+                                                                            value={
+                                                                                portfolio.id
+                                                                            }
+                                                                        >
+                                                                            {
+                                                                                portfolio.name
+                                                                            }
+                                                                        </option>
+                                                                    ),
+                                                                )}
+                                                            </select>
+
+                                                            <button
+                                                                type="button"
+                                                                disabled={
+                                                                    importingAccountId ===
+                                                                    account.id
+                                                                }
+                                                                onClick={() =>
+                                                                    importBrokerHoldings(
+                                                                        account,
+                                                                    )
+                                                                }
+                                                                className="rounded-lg bg-slate-900 px-3 py-2 text-sm font-medium text-white disabled:opacity-50"
+                                                            >
+                                                                {importingAccountId ===
+                                                                    account.id
+                                                                    ? "Importing..."
+                                                                    : "Import Missing Holdings"}
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                )}
+
                                                 <p className="mt-4 text-xs text-slate-400">
                                                     Comparison only. PMS holdings have not been changed.
                                                 </p>
@@ -1450,4 +1606,3 @@ export function BrokerAccountsCard({
         }
     }
 }
-

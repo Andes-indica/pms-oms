@@ -6,7 +6,8 @@ import {
   createBrokerAccount,
   getBrokerSnapshot,
   getBrokerReconciliation,
-  repairBrokerReconciliation
+  repairBrokerReconciliation,
+  importBrokerAccountHoldings
 } from "../controllers/broker-account.controller";
 
 import {
@@ -70,5 +71,16 @@ router.post(
   ),
 
   repairBrokerReconciliation,
+);
+router.post(
+    "/broker-accounts/:id/holdings/import",
+
+    requireRole(
+        "ADMIN",
+        "PORTFOLIO_MANAGER",
+        "OPERATIONS",
+    ),
+
+    importBrokerAccountHoldings,
 );
 export default router;
