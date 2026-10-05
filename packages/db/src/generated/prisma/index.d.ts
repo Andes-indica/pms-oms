@@ -78,6 +78,11 @@ export type BrokerConnection = $Result.DefaultSelection<Prisma.$BrokerConnection
  * 
  */
 export type Execution = $Result.DefaultSelection<Prisma.$ExecutionPayload>
+/**
+ * Model ExecutionJob
+ * 
+ */
+export type ExecutionJob = $Result.DefaultSelection<Prisma.$ExecutionJobPayload>
 
 /**
  * Enums
@@ -170,6 +175,16 @@ export const BrokerConnectionStatus: {
 
 export type BrokerConnectionStatus = (typeof BrokerConnectionStatus)[keyof typeof BrokerConnectionStatus]
 
+
+export const ExecutionJobStatus: {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+};
+
+export type ExecutionJobStatus = (typeof ExecutionJobStatus)[keyof typeof ExecutionJobStatus]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -203,6 +218,10 @@ export const BasketOrderStatus: typeof $Enums.BasketOrderStatus
 export type BrokerConnectionStatus = $Enums.BrokerConnectionStatus
 
 export const BrokerConnectionStatus: typeof $Enums.BrokerConnectionStatus
+
+export type ExecutionJobStatus = $Enums.ExecutionJobStatus
+
+export const ExecutionJobStatus: typeof $Enums.ExecutionJobStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -454,6 +473,16 @@ export class PrismaClient<
     * ```
     */
   get execution(): Prisma.ExecutionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.executionJob`: Exposes CRUD operations for the **ExecutionJob** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ExecutionJobs
+    * const executionJobs = await prisma.executionJob.findMany()
+    * ```
+    */
+  get executionJob(): Prisma.ExecutionJobDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -913,7 +942,8 @@ export namespace Prisma {
     RiskLimit: 'RiskLimit',
     RestrictedSecurity: 'RestrictedSecurity',
     BrokerConnection: 'BrokerConnection',
-    Execution: 'Execution'
+    Execution: 'Execution',
+    ExecutionJob: 'ExecutionJob'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -929,7 +959,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder" | "riskLimit" | "restrictedSecurity" | "brokerConnection" | "execution"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "holding" | "order" | "auditLog" | "basketOrder" | "riskLimit" | "restrictedSecurity" | "brokerConnection" | "execution" | "executionJob"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1895,6 +1925,80 @@ export namespace Prisma {
           }
         }
       }
+      ExecutionJob: {
+        payload: Prisma.$ExecutionJobPayload<ExtArgs>
+        fields: Prisma.ExecutionJobFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ExecutionJobFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ExecutionJobFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>
+          }
+          findFirst: {
+            args: Prisma.ExecutionJobFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ExecutionJobFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>
+          }
+          findMany: {
+            args: Prisma.ExecutionJobFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>[]
+          }
+          create: {
+            args: Prisma.ExecutionJobCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>
+          }
+          createMany: {
+            args: Prisma.ExecutionJobCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ExecutionJobCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>[]
+          }
+          delete: {
+            args: Prisma.ExecutionJobDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>
+          }
+          update: {
+            args: Prisma.ExecutionJobUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>
+          }
+          deleteMany: {
+            args: Prisma.ExecutionJobDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ExecutionJobUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ExecutionJobUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>[]
+          }
+          upsert: {
+            args: Prisma.ExecutionJobUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ExecutionJobPayload>
+          }
+          aggregate: {
+            args: Prisma.ExecutionJobAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateExecutionJob>
+          }
+          groupBy: {
+            args: Prisma.ExecutionJobGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionJobGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ExecutionJobCountArgs<ExtArgs>
+            result: $Utils.Optional<ExecutionJobCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -2031,6 +2135,7 @@ export namespace Prisma {
     restrictedSecurity?: RestrictedSecurityOmit
     brokerConnection?: BrokerConnectionOmit
     execution?: ExecutionOmit
+    executionJob?: ExecutionJobOmit
   }
 
   /* Types for Logging */
@@ -9612,6 +9717,7 @@ export namespace Prisma {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
     executions?: boolean | Order$executionsArgs<ExtArgs>
+    executionJob?: boolean | Order$executionJobArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -9699,6 +9805,7 @@ export namespace Prisma {
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
     brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
     executions?: boolean | Order$executionsArgs<ExtArgs>
+    executionJob?: boolean | Order$executionJobArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -9719,6 +9826,7 @@ export namespace Prisma {
       portfolio: Prisma.$PortfolioPayload<ExtArgs>
       brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs>
       executions: Prisma.$ExecutionPayload<ExtArgs>[]
+      executionJob: Prisma.$ExecutionJobPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -10140,6 +10248,7 @@ export namespace Prisma {
     portfolio<T extends PortfolioDefaultArgs<ExtArgs> = {}>(args?: Subset<T, PortfolioDefaultArgs<ExtArgs>>): Prisma__PortfolioClient<$Result.GetResult<Prisma.$PortfolioPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     brokerAccount<T extends BrokerAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccountDefaultArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     executions<T extends Order$executionsArgs<ExtArgs> = {}>(args?: Subset<T, Order$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    executionJob<T extends Order$executionJobArgs<ExtArgs> = {}>(args?: Subset<T, Order$executionJobArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -10631,6 +10740,25 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ExecutionScalarFieldEnum | ExecutionScalarFieldEnum[]
+  }
+
+  /**
+   * Order.executionJob
+   */
+  export type Order$executionJobArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    where?: ExecutionJobWhereInput
   }
 
   /**
@@ -17398,6 +17526,1155 @@ export namespace Prisma {
 
 
   /**
+   * Model ExecutionJob
+   */
+
+  export type AggregateExecutionJob = {
+    _count: ExecutionJobCountAggregateOutputType | null
+    _avg: ExecutionJobAvgAggregateOutputType | null
+    _sum: ExecutionJobSumAggregateOutputType | null
+    _min: ExecutionJobMinAggregateOutputType | null
+    _max: ExecutionJobMaxAggregateOutputType | null
+  }
+
+  export type ExecutionJobAvgAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type ExecutionJobSumAggregateOutputType = {
+    attempts: number | null
+  }
+
+  export type ExecutionJobMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    status: $Enums.ExecutionJobStatus | null
+    attempts: number | null
+    lastError: string | null
+    availableAt: Date | null
+    lockedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionJobMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    status: $Enums.ExecutionJobStatus | null
+    attempts: number | null
+    lastError: string | null
+    availableAt: Date | null
+    lockedAt: Date | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ExecutionJobCountAggregateOutputType = {
+    id: number
+    orderId: number
+    status: number
+    attempts: number
+    lastError: number
+    availableAt: number
+    lockedAt: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ExecutionJobAvgAggregateInputType = {
+    attempts?: true
+  }
+
+  export type ExecutionJobSumAggregateInputType = {
+    attempts?: true
+  }
+
+  export type ExecutionJobMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    status?: true
+    attempts?: true
+    lastError?: true
+    availableAt?: true
+    lockedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionJobMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    status?: true
+    attempts?: true
+    lastError?: true
+    availableAt?: true
+    lockedAt?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ExecutionJobCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    status?: true
+    attempts?: true
+    lastError?: true
+    availableAt?: true
+    lockedAt?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ExecutionJobAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionJob to aggregate.
+     */
+    where?: ExecutionJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionJobs to fetch.
+     */
+    orderBy?: ExecutionJobOrderByWithRelationInput | ExecutionJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ExecutionJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ExecutionJobs
+    **/
+    _count?: true | ExecutionJobCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: ExecutionJobAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: ExecutionJobSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ExecutionJobMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ExecutionJobMaxAggregateInputType
+  }
+
+  export type GetExecutionJobAggregateType<T extends ExecutionJobAggregateArgs> = {
+        [P in keyof T & keyof AggregateExecutionJob]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateExecutionJob[P]>
+      : GetScalarType<T[P], AggregateExecutionJob[P]>
+  }
+
+
+
+
+  export type ExecutionJobGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ExecutionJobWhereInput
+    orderBy?: ExecutionJobOrderByWithAggregationInput | ExecutionJobOrderByWithAggregationInput[]
+    by: ExecutionJobScalarFieldEnum[] | ExecutionJobScalarFieldEnum
+    having?: ExecutionJobScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ExecutionJobCountAggregateInputType | true
+    _avg?: ExecutionJobAvgAggregateInputType
+    _sum?: ExecutionJobSumAggregateInputType
+    _min?: ExecutionJobMinAggregateInputType
+    _max?: ExecutionJobMaxAggregateInputType
+  }
+
+  export type ExecutionJobGroupByOutputType = {
+    id: string
+    orderId: string
+    status: $Enums.ExecutionJobStatus
+    attempts: number
+    lastError: string | null
+    availableAt: Date
+    lockedAt: Date | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ExecutionJobCountAggregateOutputType | null
+    _avg: ExecutionJobAvgAggregateOutputType | null
+    _sum: ExecutionJobSumAggregateOutputType | null
+    _min: ExecutionJobMinAggregateOutputType | null
+    _max: ExecutionJobMaxAggregateOutputType | null
+  }
+
+  type GetExecutionJobGroupByPayload<T extends ExecutionJobGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ExecutionJobGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ExecutionJobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ExecutionJobGroupByOutputType[P]>
+            : GetScalarType<T[P], ExecutionJobGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ExecutionJobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    status?: boolean
+    attempts?: boolean
+    lastError?: boolean
+    availableAt?: boolean
+    lockedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionJob"]>
+
+  export type ExecutionJobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    status?: boolean
+    attempts?: boolean
+    lastError?: boolean
+    availableAt?: boolean
+    lockedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionJob"]>
+
+  export type ExecutionJobSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    status?: boolean
+    attempts?: boolean
+    lastError?: boolean
+    availableAt?: boolean
+    lockedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["executionJob"]>
+
+  export type ExecutionJobSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    status?: boolean
+    attempts?: boolean
+    lastError?: boolean
+    availableAt?: boolean
+    lockedAt?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ExecutionJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "status" | "attempts" | "lastError" | "availableAt" | "lockedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["executionJob"]>
+  export type ExecutionJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type ExecutionJobIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type ExecutionJobIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+
+  export type $ExecutionJobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ExecutionJob"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      status: $Enums.ExecutionJobStatus
+      attempts: number
+      lastError: string | null
+      availableAt: Date
+      lockedAt: Date | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["executionJob"]>
+    composites: {}
+  }
+
+  type ExecutionJobGetPayload<S extends boolean | null | undefined | ExecutionJobDefaultArgs> = $Result.GetResult<Prisma.$ExecutionJobPayload, S>
+
+  type ExecutionJobCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ExecutionJobFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ExecutionJobCountAggregateInputType | true
+    }
+
+  export interface ExecutionJobDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ExecutionJob'], meta: { name: 'ExecutionJob' } }
+    /**
+     * Find zero or one ExecutionJob that matches the filter.
+     * @param {ExecutionJobFindUniqueArgs} args - Arguments to find a ExecutionJob
+     * @example
+     * // Get one ExecutionJob
+     * const executionJob = await prisma.executionJob.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ExecutionJobFindUniqueArgs>(args: SelectSubset<T, ExecutionJobFindUniqueArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ExecutionJob that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ExecutionJobFindUniqueOrThrowArgs} args - Arguments to find a ExecutionJob
+     * @example
+     * // Get one ExecutionJob
+     * const executionJob = await prisma.executionJob.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ExecutionJobFindUniqueOrThrowArgs>(args: SelectSubset<T, ExecutionJobFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionJob that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionJobFindFirstArgs} args - Arguments to find a ExecutionJob
+     * @example
+     * // Get one ExecutionJob
+     * const executionJob = await prisma.executionJob.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ExecutionJobFindFirstArgs>(args?: SelectSubset<T, ExecutionJobFindFirstArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ExecutionJob that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionJobFindFirstOrThrowArgs} args - Arguments to find a ExecutionJob
+     * @example
+     * // Get one ExecutionJob
+     * const executionJob = await prisma.executionJob.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ExecutionJobFindFirstOrThrowArgs>(args?: SelectSubset<T, ExecutionJobFindFirstOrThrowArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ExecutionJobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionJobFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ExecutionJobs
+     * const executionJobs = await prisma.executionJob.findMany()
+     * 
+     * // Get first 10 ExecutionJobs
+     * const executionJobs = await prisma.executionJob.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const executionJobWithIdOnly = await prisma.executionJob.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ExecutionJobFindManyArgs>(args?: SelectSubset<T, ExecutionJobFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ExecutionJob.
+     * @param {ExecutionJobCreateArgs} args - Arguments to create a ExecutionJob.
+     * @example
+     * // Create one ExecutionJob
+     * const ExecutionJob = await prisma.executionJob.create({
+     *   data: {
+     *     // ... data to create a ExecutionJob
+     *   }
+     * })
+     * 
+     */
+    create<T extends ExecutionJobCreateArgs>(args: SelectSubset<T, ExecutionJobCreateArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ExecutionJobs.
+     * @param {ExecutionJobCreateManyArgs} args - Arguments to create many ExecutionJobs.
+     * @example
+     * // Create many ExecutionJobs
+     * const executionJob = await prisma.executionJob.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ExecutionJobCreateManyArgs>(args?: SelectSubset<T, ExecutionJobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ExecutionJobs and returns the data saved in the database.
+     * @param {ExecutionJobCreateManyAndReturnArgs} args - Arguments to create many ExecutionJobs.
+     * @example
+     * // Create many ExecutionJobs
+     * const executionJob = await prisma.executionJob.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ExecutionJobs and only return the `id`
+     * const executionJobWithIdOnly = await prisma.executionJob.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ExecutionJobCreateManyAndReturnArgs>(args?: SelectSubset<T, ExecutionJobCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ExecutionJob.
+     * @param {ExecutionJobDeleteArgs} args - Arguments to delete one ExecutionJob.
+     * @example
+     * // Delete one ExecutionJob
+     * const ExecutionJob = await prisma.executionJob.delete({
+     *   where: {
+     *     // ... filter to delete one ExecutionJob
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ExecutionJobDeleteArgs>(args: SelectSubset<T, ExecutionJobDeleteArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ExecutionJob.
+     * @param {ExecutionJobUpdateArgs} args - Arguments to update one ExecutionJob.
+     * @example
+     * // Update one ExecutionJob
+     * const executionJob = await prisma.executionJob.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ExecutionJobUpdateArgs>(args: SelectSubset<T, ExecutionJobUpdateArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ExecutionJobs.
+     * @param {ExecutionJobDeleteManyArgs} args - Arguments to filter ExecutionJobs to delete.
+     * @example
+     * // Delete a few ExecutionJobs
+     * const { count } = await prisma.executionJob.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ExecutionJobDeleteManyArgs>(args?: SelectSubset<T, ExecutionJobDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionJobUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ExecutionJobs
+     * const executionJob = await prisma.executionJob.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ExecutionJobUpdateManyArgs>(args: SelectSubset<T, ExecutionJobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ExecutionJobs and returns the data updated in the database.
+     * @param {ExecutionJobUpdateManyAndReturnArgs} args - Arguments to update many ExecutionJobs.
+     * @example
+     * // Update many ExecutionJobs
+     * const executionJob = await prisma.executionJob.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ExecutionJobs and only return the `id`
+     * const executionJobWithIdOnly = await prisma.executionJob.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ExecutionJobUpdateManyAndReturnArgs>(args: SelectSubset<T, ExecutionJobUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ExecutionJob.
+     * @param {ExecutionJobUpsertArgs} args - Arguments to update or create a ExecutionJob.
+     * @example
+     * // Update or create a ExecutionJob
+     * const executionJob = await prisma.executionJob.upsert({
+     *   create: {
+     *     // ... data to create a ExecutionJob
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ExecutionJob we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ExecutionJobUpsertArgs>(args: SelectSubset<T, ExecutionJobUpsertArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ExecutionJobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionJobCountArgs} args - Arguments to filter ExecutionJobs to count.
+     * @example
+     * // Count the number of ExecutionJobs
+     * const count = await prisma.executionJob.count({
+     *   where: {
+     *     // ... the filter for the ExecutionJobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends ExecutionJobCountArgs>(
+      args?: Subset<T, ExecutionJobCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ExecutionJobCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ExecutionJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionJobAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ExecutionJobAggregateArgs>(args: Subset<T, ExecutionJobAggregateArgs>): Prisma.PrismaPromise<GetExecutionJobAggregateType<T>>
+
+    /**
+     * Group by ExecutionJob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ExecutionJobGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ExecutionJobGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ExecutionJobGroupByArgs['orderBy'] }
+        : { orderBy?: ExecutionJobGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ExecutionJobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetExecutionJobGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ExecutionJob model
+   */
+  readonly fields: ExecutionJobFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ExecutionJob.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ExecutionJobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ExecutionJob model
+   */
+  interface ExecutionJobFieldRefs {
+    readonly id: FieldRef<"ExecutionJob", 'String'>
+    readonly orderId: FieldRef<"ExecutionJob", 'String'>
+    readonly status: FieldRef<"ExecutionJob", 'ExecutionJobStatus'>
+    readonly attempts: FieldRef<"ExecutionJob", 'Int'>
+    readonly lastError: FieldRef<"ExecutionJob", 'String'>
+    readonly availableAt: FieldRef<"ExecutionJob", 'DateTime'>
+    readonly lockedAt: FieldRef<"ExecutionJob", 'DateTime'>
+    readonly createdAt: FieldRef<"ExecutionJob", 'DateTime'>
+    readonly updatedAt: FieldRef<"ExecutionJob", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ExecutionJob findUnique
+   */
+  export type ExecutionJobFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionJob to fetch.
+     */
+    where: ExecutionJobWhereUniqueInput
+  }
+
+  /**
+   * ExecutionJob findUniqueOrThrow
+   */
+  export type ExecutionJobFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionJob to fetch.
+     */
+    where: ExecutionJobWhereUniqueInput
+  }
+
+  /**
+   * ExecutionJob findFirst
+   */
+  export type ExecutionJobFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionJob to fetch.
+     */
+    where?: ExecutionJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionJobs to fetch.
+     */
+    orderBy?: ExecutionJobOrderByWithRelationInput | ExecutionJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionJobs.
+     */
+    cursor?: ExecutionJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionJobs.
+     */
+    distinct?: ExecutionJobScalarFieldEnum | ExecutionJobScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionJob findFirstOrThrow
+   */
+  export type ExecutionJobFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionJob to fetch.
+     */
+    where?: ExecutionJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionJobs to fetch.
+     */
+    orderBy?: ExecutionJobOrderByWithRelationInput | ExecutionJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ExecutionJobs.
+     */
+    cursor?: ExecutionJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionJobs.
+     */
+    distinct?: ExecutionJobScalarFieldEnum | ExecutionJobScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionJob findMany
+   */
+  export type ExecutionJobFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * Filter, which ExecutionJobs to fetch.
+     */
+    where?: ExecutionJobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ExecutionJobs to fetch.
+     */
+    orderBy?: ExecutionJobOrderByWithRelationInput | ExecutionJobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ExecutionJobs.
+     */
+    cursor?: ExecutionJobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ExecutionJobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ExecutionJobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ExecutionJobs.
+     */
+    distinct?: ExecutionJobScalarFieldEnum | ExecutionJobScalarFieldEnum[]
+  }
+
+  /**
+   * ExecutionJob create
+   */
+  export type ExecutionJobCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ExecutionJob.
+     */
+    data: XOR<ExecutionJobCreateInput, ExecutionJobUncheckedCreateInput>
+  }
+
+  /**
+   * ExecutionJob createMany
+   */
+  export type ExecutionJobCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ExecutionJobs.
+     */
+    data: ExecutionJobCreateManyInput | ExecutionJobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ExecutionJob createManyAndReturn
+   */
+  export type ExecutionJobCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * The data used to create many ExecutionJobs.
+     */
+    data: ExecutionJobCreateManyInput | ExecutionJobCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionJob update
+   */
+  export type ExecutionJobUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ExecutionJob.
+     */
+    data: XOR<ExecutionJobUpdateInput, ExecutionJobUncheckedUpdateInput>
+    /**
+     * Choose, which ExecutionJob to update.
+     */
+    where: ExecutionJobWhereUniqueInput
+  }
+
+  /**
+   * ExecutionJob updateMany
+   */
+  export type ExecutionJobUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ExecutionJobs.
+     */
+    data: XOR<ExecutionJobUpdateManyMutationInput, ExecutionJobUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionJobs to update
+     */
+    where?: ExecutionJobWhereInput
+    /**
+     * Limit how many ExecutionJobs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionJob updateManyAndReturn
+   */
+  export type ExecutionJobUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * The data used to update ExecutionJobs.
+     */
+    data: XOR<ExecutionJobUpdateManyMutationInput, ExecutionJobUncheckedUpdateManyInput>
+    /**
+     * Filter which ExecutionJobs to update
+     */
+    where?: ExecutionJobWhereInput
+    /**
+     * Limit how many ExecutionJobs to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ExecutionJob upsert
+   */
+  export type ExecutionJobUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ExecutionJob to update in case it exists.
+     */
+    where: ExecutionJobWhereUniqueInput
+    /**
+     * In case the ExecutionJob found by the `where` argument doesn't exist, create a new ExecutionJob with this data.
+     */
+    create: XOR<ExecutionJobCreateInput, ExecutionJobUncheckedCreateInput>
+    /**
+     * In case the ExecutionJob was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ExecutionJobUpdateInput, ExecutionJobUncheckedUpdateInput>
+  }
+
+  /**
+   * ExecutionJob delete
+   */
+  export type ExecutionJobDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+    /**
+     * Filter which ExecutionJob to delete.
+     */
+    where: ExecutionJobWhereUniqueInput
+  }
+
+  /**
+   * ExecutionJob deleteMany
+   */
+  export type ExecutionJobDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ExecutionJobs to delete
+     */
+    where?: ExecutionJobWhereInput
+    /**
+     * Limit how many ExecutionJobs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ExecutionJob without action
+   */
+  export type ExecutionJobDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ExecutionJob
+     */
+    select?: ExecutionJobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ExecutionJob
+     */
+    omit?: ExecutionJobOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ExecutionJobInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -17600,6 +18877,21 @@ export namespace Prisma {
   };
 
   export type ExecutionScalarFieldEnum = (typeof ExecutionScalarFieldEnum)[keyof typeof ExecutionScalarFieldEnum]
+
+
+  export const ExecutionJobScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    status: 'status',
+    attempts: 'attempts',
+    lastError: 'lastError',
+    availableAt: 'availableAt',
+    lockedAt: 'lockedAt',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ExecutionJobScalarFieldEnum = (typeof ExecutionJobScalarFieldEnum)[keyof typeof ExecutionJobScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -17827,6 +19119,20 @@ export namespace Prisma {
    * Reference to a field of type 'BrokerConnectionStatus[]'
    */
   export type ListEnumBrokerConnectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BrokerConnectionStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionJobStatus'
+   */
+  export type EnumExecutionJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionJobStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExecutionJobStatus[]'
+   */
+  export type ListEnumExecutionJobStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExecutionJobStatus[]'>
     
 
 
@@ -18298,6 +19604,7 @@ export namespace Prisma {
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
     brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
     executions?: ExecutionListRelationFilter
+    executionJob?: XOR<ExecutionJobNullableScalarRelationFilter, ExecutionJobWhereInput> | null
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -18326,6 +19633,7 @@ export namespace Prisma {
     portfolio?: PortfolioOrderByWithRelationInput
     brokerAccount?: BrokerAccountOrderByWithRelationInput
     executions?: ExecutionOrderByRelationAggregateInput
+    executionJob?: ExecutionJobOrderByWithRelationInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -18357,6 +19665,7 @@ export namespace Prisma {
     portfolio?: XOR<PortfolioScalarRelationFilter, PortfolioWhereInput>
     brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
     executions?: ExecutionListRelationFilter
+    executionJob?: XOR<ExecutionJobNullableScalarRelationFilter, ExecutionJobWhereInput> | null
   }, "id" | "brokerOrderId">
 
   export type OrderOrderByWithAggregationInput = {
@@ -18863,6 +20172,83 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Execution"> | Date | string
   }
 
+  export type ExecutionJobWhereInput = {
+    AND?: ExecutionJobWhereInput | ExecutionJobWhereInput[]
+    OR?: ExecutionJobWhereInput[]
+    NOT?: ExecutionJobWhereInput | ExecutionJobWhereInput[]
+    id?: StringFilter<"ExecutionJob"> | string
+    orderId?: StringFilter<"ExecutionJob"> | string
+    status?: EnumExecutionJobStatusFilter<"ExecutionJob"> | $Enums.ExecutionJobStatus
+    attempts?: IntFilter<"ExecutionJob"> | number
+    lastError?: StringNullableFilter<"ExecutionJob"> | string | null
+    availableAt?: DateTimeFilter<"ExecutionJob"> | Date | string
+    lockedAt?: DateTimeNullableFilter<"ExecutionJob"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExecutionJob"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionJob"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }
+
+  export type ExecutionJobOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    lastError?: SortOrderInput | SortOrder
+    availableAt?: SortOrder
+    lockedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type ExecutionJobWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    orderId?: string
+    AND?: ExecutionJobWhereInput | ExecutionJobWhereInput[]
+    OR?: ExecutionJobWhereInput[]
+    NOT?: ExecutionJobWhereInput | ExecutionJobWhereInput[]
+    status?: EnumExecutionJobStatusFilter<"ExecutionJob"> | $Enums.ExecutionJobStatus
+    attempts?: IntFilter<"ExecutionJob"> | number
+    lastError?: StringNullableFilter<"ExecutionJob"> | string | null
+    availableAt?: DateTimeFilter<"ExecutionJob"> | Date | string
+    lockedAt?: DateTimeNullableFilter<"ExecutionJob"> | Date | string | null
+    createdAt?: DateTimeFilter<"ExecutionJob"> | Date | string
+    updatedAt?: DateTimeFilter<"ExecutionJob"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }, "id" | "orderId">
+
+  export type ExecutionJobOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    lastError?: SortOrderInput | SortOrder
+    availableAt?: SortOrder
+    lockedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ExecutionJobCountOrderByAggregateInput
+    _avg?: ExecutionJobAvgOrderByAggregateInput
+    _max?: ExecutionJobMaxOrderByAggregateInput
+    _min?: ExecutionJobMinOrderByAggregateInput
+    _sum?: ExecutionJobSumOrderByAggregateInput
+  }
+
+  export type ExecutionJobScalarWhereWithAggregatesInput = {
+    AND?: ExecutionJobScalarWhereWithAggregatesInput | ExecutionJobScalarWhereWithAggregatesInput[]
+    OR?: ExecutionJobScalarWhereWithAggregatesInput[]
+    NOT?: ExecutionJobScalarWhereWithAggregatesInput | ExecutionJobScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ExecutionJob"> | string
+    orderId?: StringWithAggregatesFilter<"ExecutionJob"> | string
+    status?: EnumExecutionJobStatusWithAggregatesFilter<"ExecutionJob"> | $Enums.ExecutionJobStatus
+    attempts?: IntWithAggregatesFilter<"ExecutionJob"> | number
+    lastError?: StringNullableWithAggregatesFilter<"ExecutionJob"> | string | null
+    availableAt?: DateTimeWithAggregatesFilter<"ExecutionJob"> | Date | string
+    lockedAt?: DateTimeNullableWithAggregatesFilter<"ExecutionJob"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ExecutionJob"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ExecutionJob"> | Date | string
+  }
+
   export type FirmCreateInput = {
     id?: string
     name: string
@@ -19334,6 +20720,7 @@ export namespace Prisma {
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -19359,6 +20746,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -19384,6 +20772,7 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -19409,6 +20798,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -19969,6 +21359,89 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ExecutionJobCreateInput = {
+    id?: string
+    status?: $Enums.ExecutionJobStatus
+    attempts?: number
+    lastError?: string | null
+    availableAt?: Date | string
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order: OrderCreateNestedOneWithoutExecutionJobInput
+  }
+
+  export type ExecutionJobUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    status?: $Enums.ExecutionJobStatus
+    attempts?: number
+    lastError?: string | null
+    availableAt?: Date | string
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionJobUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumExecutionJobStatusFieldUpdateOperationsInput | $Enums.ExecutionJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutExecutionJobNestedInput
+  }
+
+  export type ExecutionJobUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    status?: EnumExecutionJobStatusFieldUpdateOperationsInput | $Enums.ExecutionJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionJobCreateManyInput = {
+    id?: string
+    orderId: string
+    status?: $Enums.ExecutionJobStatus
+    attempts?: number
+    lastError?: string | null
+    availableAt?: Date | string
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionJobUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumExecutionJobStatusFieldUpdateOperationsInput | $Enums.ExecutionJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionJobUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    status?: EnumExecutionJobStatusFieldUpdateOperationsInput | $Enums.ExecutionJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -20502,6 +21975,11 @@ export namespace Prisma {
     every?: ExecutionWhereInput
     some?: ExecutionWhereInput
     none?: ExecutionWhereInput
+  }
+
+  export type ExecutionJobNullableScalarRelationFilter = {
+    is?: ExecutionJobWhereInput | null
+    isNot?: ExecutionJobWhereInput | null
   }
 
   export type ExecutionOrderByRelationAggregateInput = {
@@ -21059,6 +22537,67 @@ export namespace Prisma {
   export type ExecutionSumOrderByAggregateInput = {
     quantity?: SortOrder
     price?: SortOrder
+  }
+
+  export type EnumExecutionJobStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionJobStatus | EnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionJobStatusFilter<$PrismaModel> | $Enums.ExecutionJobStatus
+  }
+
+  export type ExecutionJobCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    lastError?: SortOrder
+    availableAt?: SortOrder
+    lockedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionJobAvgOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+
+  export type ExecutionJobMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    lastError?: SortOrder
+    availableAt?: SortOrder
+    lockedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionJobMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    status?: SortOrder
+    attempts?: SortOrder
+    lastError?: SortOrder
+    availableAt?: SortOrder
+    lockedAt?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ExecutionJobSumOrderByAggregateInput = {
+    attempts?: SortOrder
+  }
+
+  export type EnumExecutionJobStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionJobStatus | EnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionJobStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionJobStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionJobStatusFilter<$PrismaModel>
+    _max?: NestedEnumExecutionJobStatusFilter<$PrismaModel>
   }
 
   export type UserCreateNestedManyWithoutFirmInput = {
@@ -21686,11 +23225,23 @@ export namespace Prisma {
     connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
   }
 
+  export type ExecutionJobCreateNestedOneWithoutOrderInput = {
+    create?: XOR<ExecutionJobCreateWithoutOrderInput, ExecutionJobUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ExecutionJobCreateOrConnectWithoutOrderInput
+    connect?: ExecutionJobWhereUniqueInput
+  }
+
   export type ExecutionUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
     createMany?: ExecutionCreateManyOrderInputEnvelope
     connect?: ExecutionWhereUniqueInput | ExecutionWhereUniqueInput[]
+  }
+
+  export type ExecutionJobUncheckedCreateNestedOneWithoutOrderInput = {
+    create?: XOR<ExecutionJobCreateWithoutOrderInput, ExecutionJobUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ExecutionJobCreateOrConnectWithoutOrderInput
+    connect?: ExecutionJobWhereUniqueInput
   }
 
   export type EnumOrderSideFieldUpdateOperationsInput = {
@@ -21757,6 +23308,16 @@ export namespace Prisma {
     deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
   }
 
+  export type ExecutionJobUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<ExecutionJobCreateWithoutOrderInput, ExecutionJobUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ExecutionJobCreateOrConnectWithoutOrderInput
+    upsert?: ExecutionJobUpsertWithoutOrderInput
+    disconnect?: ExecutionJobWhereInput | boolean
+    delete?: ExecutionJobWhereInput | boolean
+    connect?: ExecutionJobWhereUniqueInput
+    update?: XOR<XOR<ExecutionJobUpdateToOneWithWhereWithoutOrderInput, ExecutionJobUpdateWithoutOrderInput>, ExecutionJobUncheckedUpdateWithoutOrderInput>
+  }
+
   export type ExecutionUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
@@ -21769,6 +23330,16 @@ export namespace Prisma {
     update?: ExecutionUpdateWithWhereUniqueWithoutOrderInput | ExecutionUpdateWithWhereUniqueWithoutOrderInput[]
     updateMany?: ExecutionUpdateManyWithWhereWithoutOrderInput | ExecutionUpdateManyWithWhereWithoutOrderInput[]
     deleteMany?: ExecutionScalarWhereInput | ExecutionScalarWhereInput[]
+  }
+
+  export type ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<ExecutionJobCreateWithoutOrderInput, ExecutionJobUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ExecutionJobCreateOrConnectWithoutOrderInput
+    upsert?: ExecutionJobUpsertWithoutOrderInput
+    disconnect?: ExecutionJobWhereInput | boolean
+    delete?: ExecutionJobWhereInput | boolean
+    connect?: ExecutionJobWhereUniqueInput
+    update?: XOR<XOR<ExecutionJobUpdateToOneWithWhereWithoutOrderInput, ExecutionJobUpdateWithoutOrderInput>, ExecutionJobUncheckedUpdateWithoutOrderInput>
   }
 
   export type FirmCreateNestedOneWithoutAuditLogsInput = {
@@ -21905,6 +23476,24 @@ export namespace Prisma {
     upsert?: OrderUpsertWithoutExecutionsInput
     connect?: OrderWhereUniqueInput
     update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutExecutionsInput, OrderUpdateWithoutExecutionsInput>, OrderUncheckedUpdateWithoutExecutionsInput>
+  }
+
+  export type OrderCreateNestedOneWithoutExecutionJobInput = {
+    create?: XOR<OrderCreateWithoutExecutionJobInput, OrderUncheckedCreateWithoutExecutionJobInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutExecutionJobInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type EnumExecutionJobStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ExecutionJobStatus
+  }
+
+  export type OrderUpdateOneRequiredWithoutExecutionJobNestedInput = {
+    create?: XOR<OrderCreateWithoutExecutionJobInput, OrderUncheckedCreateWithoutExecutionJobInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutExecutionJobInput
+    upsert?: OrderUpsertWithoutExecutionJobInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutExecutionJobInput, OrderUpdateWithoutExecutionJobInput>, OrderUncheckedUpdateWithoutExecutionJobInput>
   }
 
   export type NestedStringFilter<$PrismaModel = never> = {
@@ -22306,6 +23895,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
     _max?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumExecutionJobStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionJobStatus | EnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionJobStatusFilter<$PrismaModel> | $Enums.ExecutionJobStatus
+  }
+
+  export type NestedEnumExecutionJobStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExecutionJobStatus | EnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExecutionJobStatus[] | ListEnumExecutionJobStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumExecutionJobStatusWithAggregatesFilter<$PrismaModel> | $Enums.ExecutionJobStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExecutionJobStatusFilter<$PrismaModel>
+    _max?: NestedEnumExecutionJobStatusFilter<$PrismaModel>
   }
 
   export type UserCreateWithoutFirmInput = {
@@ -22845,6 +24451,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutBrokerAccountInput = {
@@ -22869,6 +24476,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutBrokerAccountInput = {
@@ -23165,6 +24773,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutPortfolioInput = {
@@ -23189,6 +24798,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutPortfolioInput = {
@@ -23565,6 +25175,33 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ExecutionJobCreateWithoutOrderInput = {
+    id?: string
+    status?: $Enums.ExecutionJobStatus
+    attempts?: number
+    lastError?: string | null
+    availableAt?: Date | string
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionJobUncheckedCreateWithoutOrderInput = {
+    id?: string
+    status?: $Enums.ExecutionJobStatus
+    attempts?: number
+    lastError?: string | null
+    availableAt?: Date | string
+    lockedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ExecutionJobCreateOrConnectWithoutOrderInput = {
+    where: ExecutionJobWhereUniqueInput
+    create: XOR<ExecutionJobCreateWithoutOrderInput, ExecutionJobUncheckedCreateWithoutOrderInput>
+  }
+
   export type BasketOrderUpsertWithoutOrdersInput = {
     update: XOR<BasketOrderUpdateWithoutOrdersInput, BasketOrderUncheckedUpdateWithoutOrdersInput>
     create: XOR<BasketOrderCreateWithoutOrdersInput, BasketOrderUncheckedCreateWithoutOrdersInput>
@@ -23705,6 +25342,39 @@ export namespace Prisma {
     createdAt?: DateTimeFilter<"Execution"> | Date | string
   }
 
+  export type ExecutionJobUpsertWithoutOrderInput = {
+    update: XOR<ExecutionJobUpdateWithoutOrderInput, ExecutionJobUncheckedUpdateWithoutOrderInput>
+    create: XOR<ExecutionJobCreateWithoutOrderInput, ExecutionJobUncheckedCreateWithoutOrderInput>
+    where?: ExecutionJobWhereInput
+  }
+
+  export type ExecutionJobUpdateToOneWithWhereWithoutOrderInput = {
+    where?: ExecutionJobWhereInput
+    data: XOR<ExecutionJobUpdateWithoutOrderInput, ExecutionJobUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type ExecutionJobUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumExecutionJobStatusFieldUpdateOperationsInput | $Enums.ExecutionJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ExecutionJobUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    status?: EnumExecutionJobStatusFieldUpdateOperationsInput | $Enums.ExecutionJobStatus
+    attempts?: IntFieldUpdateOperationsInput | number
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type FirmCreateWithoutAuditLogsInput = {
     id?: string
     name: string
@@ -23808,6 +25478,7 @@ export namespace Prisma {
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutBasketOrderInput = {
@@ -23832,6 +25503,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutBasketOrderInput = {
@@ -24037,6 +25709,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+    executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutExecutionsInput = {
@@ -24061,6 +25734,7 @@ export namespace Prisma {
     brokerAccountId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutExecutionsInput = {
@@ -24101,6 +25775,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+    executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutExecutionsInput = {
@@ -24125,6 +25800,123 @@ export namespace Prisma {
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderCreateWithoutExecutionJobInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
+    portfolio: PortfolioCreateNestedOneWithoutOrdersInput
+    brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+    executions?: ExecutionCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutExecutionJobInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    basketOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
+    portfolioId: string
+    brokerAccountId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutExecutionJobInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutExecutionJobInput, OrderUncheckedCreateWithoutExecutionJobInput>
+  }
+
+  export type OrderUpsertWithoutExecutionJobInput = {
+    update: XOR<OrderUpdateWithoutExecutionJobInput, OrderUncheckedUpdateWithoutExecutionJobInput>
+    create: XOR<OrderCreateWithoutExecutionJobInput, OrderUncheckedCreateWithoutExecutionJobInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutExecutionJobInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutExecutionJobInput, OrderUncheckedUpdateWithoutExecutionJobInput>
+  }
+
+  export type OrderUpdateWithoutExecutionJobInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
+    portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+    executions?: ExecutionUpdateManyWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutExecutionJobInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
   }
 
   export type UserCreateManyFirmInput = {
@@ -24441,6 +26233,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutBrokerAccountInput = {
@@ -24465,6 +26258,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutBrokerAccountInput = {
@@ -24612,6 +26406,7 @@ export namespace Prisma {
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutPortfolioInput = {
@@ -24636,6 +26431,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutPortfolioInput = {
@@ -24742,6 +26538,7 @@ export namespace Prisma {
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutBasketOrderInput = {
@@ -24766,6 +26563,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutBasketOrderInput = {

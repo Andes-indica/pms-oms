@@ -13,7 +13,10 @@
     "test": "bun test ./apps ./packages",
     "typecheck": "bunx tsc --noEmit -p apps/api/tsconfig.json && bunx tsc --noEmit -p packages/db/tsconfig.json && bunx tsc --noEmit -p packages/broker/tsconfig.json",
     "lint": "bun run typecheck",
-    "dev:api": "cd apps/api && bun run dev"
+    "dev:api": "cd apps/api && bun run dev",
+    "test:unit": "bun test ./apps ./packages",
+    "test:integration": "NODE_ENV=test bun --env-file=.env.test test ./apps/api/src/**/*.integration.test.ts",
+    "test:all": "bun run test:unit && bun run test:integration"
   },
   "dependencies": {
     "@pms-oms/broker": "workspace:*"

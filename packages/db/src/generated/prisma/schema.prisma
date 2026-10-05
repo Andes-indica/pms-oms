@@ -186,10 +186,10 @@ model Order {
   brokerAccountId String
   brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
 
-  executions Execution[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  executions   Execution[]
+  executionJob ExecutionJob?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model AuditLog {
@@ -329,4 +329,32 @@ model Execution {
 
   @@unique([orderId, brokerExecutionId])
   @@index([orderId])
+}
+
+enum ExecutionJobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+model ExecutionJob {
+  id String @id @default(cuid())
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  status ExecutionJobStatus @default(PENDING)
+
+  attempts Int @default(0)
+
+  lastError String?
+
+  availableAt DateTime  @default(now())
+  lockedAt    DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, availableAt])
 }

@@ -272,6 +272,18 @@ exports.Prisma.ExecutionScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.ExecutionJobScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  status: 'status',
+  attempts: 'attempts',
+  lastError: 'lastError',
+  availableAt: 'availableAt',
+  lockedAt: 'lockedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -361,6 +373,13 @@ exports.BrokerConnectionStatus = exports.$Enums.BrokerConnectionStatus = {
   ERROR: 'ERROR'
 };
 
+exports.ExecutionJobStatus = exports.$Enums.ExecutionJobStatus = {
+  PENDING: 'PENDING',
+  PROCESSING: 'PROCESSING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+};
+
 exports.Prisma.ModelName = {
   Firm: 'Firm',
   User: 'User',
@@ -374,7 +393,8 @@ exports.Prisma.ModelName = {
   RiskLimit: 'RiskLimit',
   RestrictedSecurity: 'RestrictedSecurity',
   BrokerConnection: 'BrokerConnection',
-  Execution: 'Execution'
+  Execution: 'Execution',
+  ExecutionJob: 'ExecutionJob'
 };
 
 /**

@@ -27,4 +27,52 @@ describe("deriveBasketStatus", () => {
   test("rejects empty baskets", () => {
     expect(() => deriveBasketStatus([])).toThrow("BASKET_HAS_NO_ORDERS");
   });
+  test("reports all filled children as filled", () => {
+    expect(
+      deriveBasketStatus([
+        "FILLED",
+        "FILLED",
+      ]),
+    ).toBe("FILLED");
+  });
+
+  test("reports all rejected children as rejected", () => {
+    expect(
+      deriveBasketStatus([
+        "REJECTED",
+        "REJECTED",
+      ]),
+    ).toBe("REJECTED");
+  });
+
+  test("reports submitted and open children as submitted", () => {
+    expect(
+      deriveBasketStatus([
+        "SUBMITTED",
+        "OPEN",
+      ]),
+    ).toBe("SUBMITTED");
+  });
+
+  test("reports mixed rejected and submitted children as partially submitted", () => {
+    expect(
+      deriveBasketStatus([
+        "REJECTED",
+        "SUBMITTED",
+      ]),
+    ).toBe(
+      "PARTIALLY_SUBMITTED",
+    );
+  });
+
+  test("filled child dominates cancelled sibling as partially filled", () => {
+    expect(
+      deriveBasketStatus([
+        "FILLED",
+        "CANCELLED",
+      ]),
+    ).toBe(
+      "PARTIALLY_FILLED",
+    );
+  });
 });
