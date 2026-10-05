@@ -4,7 +4,9 @@ import {
 import type { Request, Response } from "express";
 import { createOrderService } from "../services/order.service";
 import { prisma } from "@pms-oms/db";
-import { executeOrderService } from "../services/order-execution.service";
+import {
+  enqueueOrderExecution,
+} from "../services/order-execution-queue.service";
 import { syncOrderService } from "@/services/order-sync.service";
 import { cancelOrderService } from "../services/order-cancellation.service";
 import type { AuthenticatedRequest as BaseAuthenticatedRequest } from "../middleware/auth.middleware";
@@ -184,10 +186,14 @@ export async function executeOrder(
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    const order = await executeOrderService(req.params.id, req.user.firmId);
+    const job =
+      await enqueueOrderExecution(
+        req.params.id,
+        req.user.firmId,
+      );
 
-    return res.status(200).json({
-      data: order,
+    return res.status(202).json({
+      data: job,
     });
   } catch (error) {
     const brokerError =

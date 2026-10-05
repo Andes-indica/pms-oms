@@ -3,14 +3,29 @@ import {
   startOrderMonitor,
   stopOrderMonitor,
 } from "./services/order-monitor.service";
+import {
+  startOrderExecutionWorker,
+  stopOrderExecutionWorker,
+} from "./services/order-execution-worker.service";
 
 const PORT = Number(process.env.PORT) || 3000;
 
 export const server = app.listen(PORT, () => {
   console.log(`API running on http://localhost:${PORT}`,
-);
+); 
+if (
+  process.env
+    .ORDER_EXECUTION_WORKER_ENABLED !==
+  "false"
+) {
+  startOrderExecutionWorker();
 
-if(process.env.ORDER_MONITER_ENABLED !=="false"){
+  console.log(
+    "Order execution worker started",
+  );
+}
+
+if(process.env.ORDER_MONITOR_ENABLED !=="false"){
   startOrderMonitor();
   console.log("Order moniter started",
 
@@ -24,6 +39,7 @@ server.ref();
 export const serverKeepAlive = setInterval(() => {}, 2_147_483_647);
 
 function shutdown() {
+  stopOrderExecutionWorker();
   stopOrderMonitor();
 
   clearInterval(
