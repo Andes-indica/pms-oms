@@ -1,6 +1,6 @@
 import {
-  BrokerError,
-} from "@pms-oms/broker";
+  handleBrokerError,
+} from "./broker-error-response";
 import type { Request, Response } from "express";
 import { createOrderService } from "../services/order.service";
 import { prisma } from "@pms-oms/db";
@@ -25,118 +25,7 @@ type CreateOrderBody = {
 
 type AuthenticatedRequest = BaseAuthenticatedRequest & Request<{}, {}, CreateOrderBody>;
 
-function handleBrokerError(
-  res: Response,
-  error: unknown,
-): Response | null {
-  if (!(error instanceof Error)) {
-    return null;
-  }
-  if (
-    error instanceof BrokerError
-  ) {
-    switch (error.code) {
-      case "BROKER_INSUFFICIENT_FUNDS":
-        return res.status(409).json({
-          error:
-            error.brokerMessage,
-        });
 
-      case "BROKER_ORDER_REJECTED":
-        return res.status(400).json({
-          error:
-            error.brokerMessage,
-        });
-
-      case "BROKER_PERMISSION_DENIED":
-        return res.status(403).json({
-          error:
-            error.brokerMessage,
-        });
-
-      case "BROKER_SESSION_INVALID":
-        return res.status(401).json({
-          error:
-            "Broker session is invalid or expired. Reconnect the broker account.",
-        });
-
-      case "BROKER_ORDER_NOT_FOUND":
-        return res.status(409).json({
-          error:
-            error.brokerMessage,
-        });
-
-      case "BROKER_OPERATION_UNCERTAIN":
-        return res.status(502).json({
-          error:
-            "Broker operation result is uncertain. Reconcile before retrying.",
-        });
-    }
-  }
-  switch (error.message) {
-    case "BROKER_ACCOUNT_NOT_FOUND":
-      return res.status(404).json({
-        error:
-          "Broker account not found",
-      });
-
-    case "UNSUPPORTED_BROKER":
-      return res.status(400).json({
-        error:
-          "Broker is not supported",
-      });
-
-    case "BROKER_NOT_CONNECTED":
-      return res.status(409).json({
-        error:
-          "Broker account is not connected",
-      });
-
-    case "BROKER_SESSION_EXPIRED":
-      return res.status(409).json({
-        error:
-          "Broker session has expired. Reconnect the broker account.",
-      });
-
-    case "BROKER_UNSUPPORTED_EXCHANGE":
-      return res.status(400).json({
-        error:
-          "This broker does not support the requested exchange",
-      });
-
-    case "MARKET_PRICE_UNAVAILABLE":
-      return res.status(502).json({
-        error:
-          "Unable to fetch market price from broker",
-      });
-
-    case "BROKER_ORDER_NOT_FOUND":
-      return res.status(409).json({
-        error:
-          "Broker order could not be found",
-      });
-
-    case "BROKER_ORDER_ID_MISSING":
-      return res.status(502).json({
-        error:
-          "Broker accepted the request without returning an order ID",
-      });
-    case "BROKER_FILL_DETAILS_UNAVAILABLE":
-      return res.status(502).json({
-        error:
-          "Broker reported fills but fill details are not yet available. Retry synchronization.",
-      });
-
-    case "BROKER_INVALID_ORDER_STATE":
-      return res.status(502).json({
-        error:
-          "Broker returned an invalid order state",
-      });
-
-    default:
-      return null;
-  }
-}
 
 export async function createOrder(
   req: AuthenticatedRequest,
@@ -403,22 +292,40 @@ export async function syncOrder(
       return brokerError;
     }
     if (error instanceof Error) {
-      if (error.message === "ORDER_NOT_FOUND") {
-        return res.status(404).json({
-          error: "Order not found",
-        });
-      }
+      switch (error.message) {
+        case "ORDER_NOT_FOUND":
+          return res.status(404).json({
+            error: "Order not found",
+          });
 
-      if (error.message === "ORDER_NOT_SUBMITTED") {
-        return res.status(409).json({
-          error: "Order has not been submitted to a broker",
-        });
-      }
+        case "ORDER_NOT_SUBMITTED":
+          return res.status(409).json({
+            error: "Order has not been submitted to a broker",
+          });
 
-      if (error.message === "INSUFFICIENT_HOLDINGS") {
-        return res.status(409).json({
-          error: "Insufficient holdings",
-        });
+        case "INSUFFICIENT_HOLDINGS":
+          return res.status(409).json({
+            error: "Insufficient holdings",
+          });
+
+        case "BROKER_EXECUTION_QUANTITY_MISMATCH":
+          return res.status(409).json({
+            error:
+              "Broker executions changed during synchronization. Retry synchronization.",
+          });
+
+        case "BROKER_INVALID_EXECUTIONS_RESPONSE":
+          return res.status(502).json({
+            error:
+              "Broker returned invalid execution data",
+          });
+
+        case "INVALID_FILL_QUANTITY":
+        case "INVALID_FILL_PRICE":
+          return res.status(502).json({
+            error:
+              "Broker returned invalid fill data",
+          });
       }
     }
 

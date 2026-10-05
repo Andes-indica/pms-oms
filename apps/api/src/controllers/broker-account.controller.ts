@@ -30,8 +30,12 @@ import {
 } from "../services/broker-reconciliation.service";
 
 import {
-    importBrokerHoldings,
+  importBrokerHoldings,
 } from "../services/broker-reconciliation.service";
+
+import {
+  handleBrokerError,
+} from "./broker-error-response";
 
 type CreateBrokerAccountBody = {
   broker?: unknown;
@@ -118,7 +122,19 @@ export async function getBrokerSnapshot(
             .toISOString(),
       },
     });
-  } catch (error) {
+
+  }
+
+  catch (error) {
+    const brokerError =
+      handleBrokerError(
+        res,
+        error,
+      );
+
+    if (brokerError) {
+      return brokerError;
+    }
     console.error(
       "Failed to fetch broker snapshot:",
       error,
@@ -383,7 +399,17 @@ export async function getBrokerReconciliation(
       data:
         reconciliation,
     });
+
   } catch (error) {
+    const brokerError =
+      handleBrokerError(
+        res,
+        error,
+      );
+
+    if (brokerError) {
+      return brokerError;
+    }
     console.error(
       "Broker reconciliation failed:",
       error,
@@ -442,7 +468,7 @@ export async function repairBrokerReconciliation(
   req:
     BrokerAccountRequest & {
       body:
-        RepairReconciliationBody;
+      RepairReconciliationBody;
     },
   res: Response,
 ) {
@@ -463,11 +489,11 @@ export async function repairBrokerReconciliation(
 
   if (
     typeof symbol !==
-      "string" ||
+    "string" ||
     typeof exchange !==
-      "string" ||
+    "string" ||
     typeof portfolioId !==
-      "string"
+    "string"
   ) {
     return res
       .status(400)
@@ -492,12 +518,22 @@ export async function repairBrokerReconciliation(
     return res.json({
       data: result,
     });
+
   } catch (error) {
+    const brokerError =
+      handleBrokerError(
+        res,
+        error,
+      );
+
+    if (brokerError) {
+      return brokerError;
+    }
     if (
       error instanceof Error
     ) {
       switch (
-        error.message
+      error.message
       ) {
         case "BROKER_ACCOUNT_NOT_FOUND":
           return res
@@ -564,68 +600,90 @@ export async function repairBrokerReconciliation(
   }
 }
 export async function importBrokerAccountHoldings(
-    req: AuthenticatedRequest & {
-        params: {
-            id: string;
-        };
-    },
-    res: Response,
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
 ) {
-    try {
-        if (!req.user) {
-            return res.status(401).json({
-                error:
-                    "Authentication required",
-            });
-        }
-
-        const result =
-            await importBrokerHoldings(
-                req.params.id,
-                req.user.firmId,
-                req.body,
-            );
-
-        return res.status(200).json({
-            data: result,
-        });
-    } catch (error) {
-        if (error instanceof Error) {
-            switch (error.message) {
-                case "BROKER_ACCOUNT_NOT_FOUND":
-                    return res.status(404).json({
-                        error:
-                            "Broker account not found",
-                    });
-
-                case "RECONCILIATION_PORTFOLIO_INVALID":
-                    return res.status(400).json({
-                        error:
-                            "Invalid portfolio for broker account",
-                    });
-
-                case "BROKER_HOLDINGS_UNSUPPORTED":
-                    return res.status(400).json({
-                        error:
-                            "Broker does not support holdings",
-                    });
-
-                case "BROKER_INVALID_HOLDINGS_RESPONSE":
-                    return res.status(502).json({
-                        error:
-                            "Broker returned invalid holdings data",
-                    });
-            }
-        }
-
-        console.error(
-            "Broker holdings import failed:",
-            error,
-        );
-
-        return res.status(500).json({
-            error:
-                "Failed to import broker holdings",
-        });
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
     }
+    const {
+      portfolioId,
+    } = req.body ?? {};
+    if (
+      typeof portfolioId !== "string" || !portfolioId.trim()
+    ) {
+      return res.status(400).json({
+        error:
+          "portfolioId is required",
+      });
+    }
+    const result =
+      await importBrokerHoldings(
+        req.params.id,
+        req.user.firmId,
+        {
+          portfolioId:
+            portfolioId.trim(),
+        },
+      );
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    const brokerError = handleBrokerError(res, error,);
+    if (brokerError) {
+      return brokerError;
+    }
+    if (error instanceof Error) {
+      switch (error.message) {
+        case "INVALID_RECONCILIATION_INPUT":
+          return res.status(400).json({
+            error:
+              "Invalid holdings import request",
+          });
+        case "BROKER_ACCOUNT_NOT_FOUND":
+          return res.status(404).json({
+            error:
+              "Broker account not found",
+          });
+
+        case "RECONCILIATION_PORTFOLIO_INVALID":
+          return res.status(400).json({
+            error:
+              "Invalid portfolio for broker account",
+          });
+
+        case "BROKER_HOLDINGS_UNSUPPORTED":
+          return res.status(400).json({
+            error:
+              "Broker does not support holdings",
+          });
+
+        case "BROKER_INVALID_HOLDINGS_RESPONSE":
+          return res.status(502).json({
+            error:
+              "Broker returned invalid holdings data",
+          });
+      }
+    }
+
+    console.error(
+      "Broker holdings import failed:",
+      error,
+    );
+
+    return res.status(500).json({
+      error:
+        "Failed to import broker holdings",
+    });
+  }
 }

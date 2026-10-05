@@ -271,6 +271,7 @@ export async function executeOrderService(
       new Set([
         "INVALID_QUANTITY",
         "INSUFFICIENT_HOLDINGS",
+        "HOLDING_IN_DIFFERENT_PORTFOLIO",
         "INSUFFICIENT_CASH",
         "RESTRICTED_SECURITY",
         "MAX_ORDER_QUANTITY_EXCEEDED",
