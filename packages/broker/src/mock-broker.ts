@@ -14,6 +14,9 @@ type StoredMockOrder = {
   request: BrokerOrderRequest;
   status: BrokerOrderStatus;
   executedAt?: Date;
+
+  simulatedUpdate?: BrokerOrderUpdate;
+  simulatedExecutions?: BrokerExecution[];
 };
 
 export class MockBroker implements BrokerAdapter {
@@ -92,6 +95,14 @@ export class MockBroker implements BrokerAdapter {
     }
 
     const { request } = storedOrder;
+    if (
+      storedOrder.simulatedUpdate
+    ) {
+      return {
+        ...storedOrder
+          .simulatedUpdate,
+      };
+    }
 
     if (storedOrder.status === "CANCELLED") {
       return {
@@ -144,7 +155,37 @@ export class MockBroker implements BrokerAdapter {
       status: "CANCELLED",
     };
   }
+  clear() {
+    this.orders.clear();
 
+    this.brokerOrderIdsByClientOrderId.clear();
+  }
+
+  setOrderSimulation(
+    brokerOrderId: string,
+    update: BrokerOrderUpdate,
+    executions: BrokerExecution[],
+  ) {
+    const storedOrder =
+      this.orders.get(
+        brokerOrderId,
+      );
+
+    if (!storedOrder) {
+      throw new Error(
+        "BROKER_ORDER_NOT_FOUND",
+      );
+    }
+
+    storedOrder.status =
+      update.status;
+
+    storedOrder.simulatedUpdate =
+      update;
+
+    storedOrder.simulatedExecutions =
+      executions;
+  }
 
 
   private getMockMarketPrice(symbol: string): number {
@@ -255,63 +296,71 @@ export class MockBroker implements BrokerAdapter {
     };
   }
   async getExecutions(
-  brokerOrderId: string,
-): Promise<BrokerExecution[]> {
-  const storedOrder =
-    this.orders.get(
-      brokerOrderId,
-    );
+    brokerOrderId: string,
+  ): Promise<BrokerExecution[]> {
+    const storedOrder =
+      this.orders.get(
+        brokerOrderId,
+      );
 
-  if (!storedOrder) {
-    throw new Error(
-      "BROKER_ORDER_NOT_FOUND",
-    );
-  }
-
-  if (
-    storedOrder.status !==
+    if (!storedOrder) {
+      throw new Error(
+        "BROKER_ORDER_NOT_FOUND",
+      );
+    }
+    if (
+      storedOrder
+        .simulatedExecutions
+    ) {
+      return [
+        ...storedOrder
+          .simulatedExecutions,
+      ];
+    }
+    if (
+      storedOrder.status !==
       "FILLED"
-  ) {
-    return [];
-  }
+    ) {
+      return [];
+    }
 
-  const price =
-    storedOrder.request
-      .orderType ===
-    "LIMIT"
-      ? storedOrder.request
+    const price =
+      storedOrder.request
+        .orderType ===
+        "LIMIT"
+        ? storedOrder.request
           .limitPrice
-      : this.getMockMarketPrice(
+        : this.getMockMarketPrice(
           storedOrder.request
             .symbol,
         );
 
-  if (
-    price === null ||
-    price === undefined
-  ) {
-    throw new Error(
-      "BROKER_FILL_DETAILS_UNAVAILABLE",
-    );
+    if (
+      price === null ||
+      price === undefined
+    ) {
+      throw new Error(
+        "BROKER_FILL_DETAILS_UNAVAILABLE",
+      );
+    }
+
+    return [
+      {
+        brokerExecutionId:
+          `${brokerOrderId}:fill:1`,
+
+        brokerOrderId,
+
+        quantity:
+          storedOrder.request
+            .quantity,
+
+        price,
+
+        executedAt:
+          storedOrder.executedAt ??
+          new Date(),
+      },
+    ];
   }
-
-  return [
-    {
-      brokerExecutionId:
-        `${brokerOrderId}:fill:1`,
-
-      brokerOrderId,
-
-      quantity:
-        storedOrder.request
-          .quantity,
-
-      price,
-
-      executedAt:
-        storedOrder.executedAt ??
-        new Date(),
-    },
-  ];
-}
 }
