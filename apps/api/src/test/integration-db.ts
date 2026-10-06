@@ -5,6 +5,7 @@ import {
 export async function clearTestDatabase() {
   await prisma.$transaction([
     prisma.execution.deleteMany(),
+    prisma.executionJob.deleteMany(),
     prisma.auditLog.deleteMany(),
 
     prisma.order.deleteMany(),
