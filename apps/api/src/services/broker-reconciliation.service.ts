@@ -426,6 +426,7 @@ export async function repairBrokerHolding(
     brokerAccountId: string,
     firmId: string,
     input: RepairBrokerHoldingInput,
+    actorUserId?: string,
 ) {
     const symbol =
         input.symbol
@@ -666,6 +667,8 @@ export async function repairBrokerHolding(
                         message:
                             "Broker holding reconciliation repaired PMS state",
 
+                        actorUserId,
+
                         metadata: {
                             symbol,
                             exchange,
@@ -763,6 +766,8 @@ export async function repairBrokerHolding(
 
                         message:
                             "Broker holding reconciliation repaired PMS state",
+
+                        actorUserId,
 
                         metadata: {
                             symbol,
@@ -933,6 +938,7 @@ export async function importBrokerHoldings(
     brokerAccountId: string,
     firmId: string,
     input: ImportBrokerHoldingsInput,
+    actorUserId?: string,
 ) {
     if (!input.portfolioId) {
         throw new Error(
@@ -1143,6 +1149,8 @@ export async function importBrokerHoldings(
 
                         message:
                             "Broker holding imported into PMS",
+
+                        actorUserId,
 
                         metadata: {
                             repair:
