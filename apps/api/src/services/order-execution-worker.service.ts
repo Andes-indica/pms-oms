@@ -345,6 +345,48 @@ export async function processNextExecutionJob() {
           },
     });
 
+    publishLiveUpdate(
+      firmId,
+      {
+        type: "order.updated",
+        entityType: "ORDER",
+        entityId: job.orderId,
+      },
+    );
+
+    if (
+      job.order.basketOrderId
+    ) {
+      try {
+        const basket =
+          await refreshBasketOrderStatus(
+            job.order.basketOrderId,
+            firmId,
+          );
+
+        if (basket) {
+          publishLiveUpdate(
+            firmId,
+            {
+              type:
+                "basket.updated",
+              entityType:
+                "BASKET_ORDER",
+              entityId:
+                basket.id,
+            },
+          );
+        }
+      } catch (
+        basketError
+      ) {
+        console.error(
+          `Failed to refresh basket status after execution failure for order ${job.orderId}:`,
+          basketError,
+        );
+      }
+    }
+
     return {
       processed: true,
       succeeded: false,
