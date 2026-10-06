@@ -6,6 +6,9 @@ import {
 } from "./allocation.service";
 
 import { createAuditLog } from "./audit.service";
+import {
+  validateInstrument,
+} from "./instrument-master.service";
 
 type CreateBasketOrderInput = {
   firmId: string;
@@ -64,6 +67,12 @@ export async function createBasketOrderService(
   if (!Array.isArray(input.targets)) {
     throw new Error("NO_ALLOCATION_TARGETS");
   }
+
+  const instrument =
+    await validateInstrument(
+      input.symbol,
+      input.exchange,
+    );
 
   const allocations = allocateOrder({
     method: input.allocationMethod,
@@ -126,10 +135,10 @@ export async function createBasketOrderService(
               name: input.name,
 
               symbol:
-                input.symbol.toUpperCase(),
+                instrument.symbol,
 
               exchange:
-                input.exchange.toUpperCase(),
+                instrument.exchange,
 
               side: input.side,
 
@@ -165,10 +174,10 @@ export async function createBasketOrderService(
                 allocation.brokerAccountId,
 
               symbol:
-                input.symbol.toUpperCase(),
+                instrument.symbol,
 
               exchange:
-                input.exchange.toUpperCase(),
+                instrument.exchange,
 
               side: input.side,
 
