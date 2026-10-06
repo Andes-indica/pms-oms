@@ -103,6 +103,8 @@ export async function createOrder(
       orderType,
       quantity,
       limitPrice,
+      actorUserId:
+        req.user.userId,
     });
 
     publishLiveUpdate(
@@ -308,7 +310,12 @@ export async function syncOrder(
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    const order = await syncOrderService(req.params.id, req.user.firmId);
+    const order =
+      await syncOrderService(
+        req.params.id,
+        req.user.firmId,
+        req.user.userId,
+      );
 
     publishLiveUpdate(
       req.user.firmId,
@@ -385,6 +392,7 @@ export async function cancelOrder(
     const order = await cancelOrderService(
       req.params.id,
       req.user.firmId,
+      req.user.userId,
     );
 
     publishLiveUpdate(
@@ -470,6 +478,7 @@ export async function modifyOrder(
         orderId,
         req.user.firmId,
         req.body,
+        req.user.userId,
       );
 
     publishLiveUpdate(
