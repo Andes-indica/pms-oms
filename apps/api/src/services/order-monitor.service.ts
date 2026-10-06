@@ -8,6 +8,9 @@ import {
 import {
   publishLiveUpdate,
 } from "./live-update.service";
+import {
+  refreshBasketOrderStatus,
+} from "./basket-status-refresh.service";
 
 const ACTIVE_ORDER_STATUSES = [
   "SUBMITTED",
@@ -32,6 +35,7 @@ export async function monitorActiveOrdersOnce() {
 
       select: {
         id: true,
+        basketOrderId: true,
         status: true,
         filledQuantity: true,
         averageFillPrice: true,
@@ -105,6 +109,39 @@ export async function monitorActiveOrdersOnce() {
               updatedOrder.id,
           },
         );
+
+        if (
+          order.basketOrderId
+        ) {
+          try {
+            const basket =
+              await refreshBasketOrderStatus(
+                order.basketOrderId,
+                firmId,
+              );
+
+            if (basket) {
+              publishLiveUpdate(
+                firmId,
+                {
+                  type:
+                    "basket.updated",
+                  entityType:
+                    "BASKET_ORDER",
+                  entityId:
+                    basket.id,
+                },
+              );
+            }
+          } catch (
+            basketError
+          ) {
+            console.error(
+              `Failed to refresh basket status for order ${order.id}:`,
+              basketError,
+            );
+          }
+        }
       }
     } catch (error) {
       console.error(
