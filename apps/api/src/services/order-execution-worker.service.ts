@@ -17,6 +17,9 @@ type ClaimedJob = {
 const DEFAULT_INTERVAL_MS =
   1_000;
 
+const DEFAULT_LOCK_TIMEOUT_MS =
+  60_000;
+
 const MAX_ATTEMPTS =
   5;
 
@@ -69,6 +72,74 @@ let workerTimer:
 
 let workerStopped = true;
 
+function getLockTimeoutMs() {
+  const configured =
+    Number(
+      process.env
+        .ORDER_EXECUTION_LOCK_TIMEOUT_MS,
+    );
+
+  return (
+    Number.isFinite(configured) &&
+    configured >= 1_000
+  )
+    ? configured
+    : DEFAULT_LOCK_TIMEOUT_MS;
+}
+
+async function recoverStaleJobs() {
+  const lockTimeoutMs =
+    getLockTimeoutMs();
+
+  await prisma.$transaction(
+    async (tx) => {
+      await tx.$executeRaw`
+        UPDATE "ExecutionJob"
+        SET
+          "status" = 'FAILED',
+          "lockedAt" = NULL,
+          "lastError" =
+            COALESCE(
+              "lastError",
+              'WORKER_LEASE_EXPIRED'
+            ),
+          "updatedAt" = NOW()
+        WHERE
+          "status" = 'PROCESSING'
+          AND "lockedAt" IS NOT NULL
+          AND "lockedAt" <=
+            NOW() -
+            (
+              ${lockTimeoutMs} *
+              INTERVAL '1 millisecond'
+            )
+          AND "attempts" >= ${MAX_ATTEMPTS}
+      `;
+
+      await tx.$executeRaw`
+        UPDATE "ExecutionJob"
+        SET
+          "status" = 'PENDING',
+          "lockedAt" = NULL,
+          "availableAt" = NOW(),
+          "lastError" =
+            'WORKER_LEASE_EXPIRED',
+          "updatedAt" = NOW()
+        WHERE
+          "status" = 'PROCESSING'
+          AND "lockedAt" IS NOT NULL
+          AND "lockedAt" <=
+            NOW() -
+            (
+              ${lockTimeoutMs} *
+              INTERVAL '1 millisecond'
+            )
+          AND "attempts" < ${MAX_ATTEMPTS}
+      `;
+    },
+  );
+}
+
 async function claimNextJob():
   Promise<ClaimedJob | null> {
   return prisma.$transaction(
@@ -109,6 +180,8 @@ async function claimNextJob():
   );
 }
 export async function processNextExecutionJob() {
+  await recoverStaleJobs();
+
   const claimed =
     await claimNextJob();
 
