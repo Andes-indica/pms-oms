@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_USER: pms_user
+          POSTGRES_PASSWORD: pms_password
+          POSTGRES_DB: pms_oms_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pms_user -d pms_oms_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://pms_user:pms_password@localhost:5432/pms_oms_test?schema=public
+      JWT_SECRET: ci-test-secret
+      BROKER_CREDENTIAL_ENCRYPTION_KEY: ci-test-ci-test-ci-test-ci-test
+      ORDER_MONITOR_ENABLED: "false"
+      ORDER_EXECUTION_WORKER_ENABLED: "false"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.4.2"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Apply database migrations
+        working-directory: packages/db
+        run: bunx prisma migrate deploy
+
+      - name: Generate Prisma client
+        working-directory: packages/db
+        run: bunx prisma generate
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Run tests
+        run: bun test ./apps ./packages
