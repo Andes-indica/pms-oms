@@ -5,6 +5,7 @@ import { deriveBasketStatus } from "./basket-status";
 export async function syncBasketOrderService(
   basketOrderId: string,
   firmId: string,
+  actorUserId?: string,
 ) {
   const basket = await prisma.basketOrder.findFirst({
     where: {
@@ -38,7 +39,12 @@ export async function syncBasketOrderService(
       order.status === "PARTIALLY_FILLED"
     ) {
       try {
-        const synced = await syncOrderService(order.id, firmId);
+        const synced =
+          await syncOrderService(
+            order.id,
+            firmId,
+            actorUserId,
+          );
 
         results.push({
           orderId: order.id,
