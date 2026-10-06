@@ -100,8 +100,11 @@ describe(
 
         globalThis.fetch =
           (async (
-            input,
-            init,
+            input:
+              RequestInfo |
+              URL,
+            init?:
+              RequestInit,
           ) => {
             const url =
               new URL(
