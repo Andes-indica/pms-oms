@@ -197,6 +197,7 @@ export async function getOrders(
           },
         },
         brokerAccount: true,
+        executionJob: true,
       },
       orderBy: {
         createdAt: "desc",
