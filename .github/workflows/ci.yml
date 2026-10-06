@@ -6,6 +6,10 @@ on:
       - main
   pull_request:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -55,6 +59,16 @@ jobs:
 
       - name: Typecheck
         run: bun run typecheck
+
+      - name: Build API
+        working-directory: apps/api
+        run: bun run build
+
+      - name: Build web
+        working-directory: apps/web
+        env:
+          VITE_API_URL: http://127.0.0.1:3000
+        run: bun run build
 
       - name: Run tests
         run: bun test ./apps ./packages
