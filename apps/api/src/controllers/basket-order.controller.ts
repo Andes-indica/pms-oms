@@ -50,7 +50,13 @@ export async function createBasketOrder(
 
     const basket =
       await createBasketOrderService(
-        { ...req.body, firmId: req.user.firmId },
+        {
+          ...req.body,
+          firmId:
+            req.user.firmId,
+          actorUserId:
+            req.user.userId,
+        },
       );
 
     publishLiveUpdate(
@@ -148,6 +154,7 @@ export async function executeBasketOrder(
       await executeBasketOrderService(
         req.params.id,
         req.user.firmId,
+        req.user.userId,
       );
 
     publishLiveUpdate(
@@ -210,6 +217,7 @@ export async function syncBasketOrder(
       await syncBasketOrderService(
         req.params.id,
         req.user.firmId,
+        req.user.userId,
       );
 
     publishLiveUpdate(
