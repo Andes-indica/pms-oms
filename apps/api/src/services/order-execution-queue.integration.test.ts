@@ -855,5 +855,68 @@ describe(
                 }
             },
         );
+        test(
+            "explicit enqueue retries the same failed job",
+            async () => {
+                const {
+                    firm,
+                    order,
+                } =
+                    await createUnsupportedBrokerOrder();
+
+                const firstJob =
+                    await enqueueOrderExecution(
+                        order.id,
+                        firm.id,
+                    );
+
+                const failed =
+                    await processNextExecutionJob();
+
+                expect(
+                    failed.succeeded,
+                ).toBe(false);
+
+                expect(
+                    failed.retryable,
+                ).toBe(false);
+
+                const retriedJob =
+                    await enqueueOrderExecution(
+                        order.id,
+                        firm.id,
+                    );
+
+                expect(
+                    retriedJob.id,
+                ).toBe(firstJob.id);
+
+                expect(
+                    retriedJob.status,
+                ).toBe("PENDING");
+
+                expect(
+                    retriedJob.attempts,
+                ).toBe(0);
+
+                expect(
+                    retriedJob.lastError,
+                ).toBeNull();
+
+                expect(
+                    retriedJob.lockedAt,
+                ).toBeNull();
+
+                expect(
+                    await prisma.executionJob.count({
+                        where: {
+                            orderId:
+                                order.id,
+                        },
+                    }),
+                ).toBe(1);
+            },
+        );
+
     },
 );
