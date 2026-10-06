@@ -175,7 +175,13 @@ describe(
           "https://quotes.example";
 
         globalThis.fetch =
-          (async () =>
+          (async (
+            _input:
+              RequestInfo |
+              URL,
+            _init?:
+              RequestInit,
+          ) =>
             new Response(
               JSON.stringify({
                 price: 0,
