@@ -19,6 +19,10 @@ import {
 } from "./order-execution-worker.service";
 
 import {
+    cancelOrderService,
+} from "./order-cancellation.service";
+
+import {
     clearTestDatabase,
     createTestAccount,
 } from "../test/integration-db";
@@ -915,6 +919,58 @@ describe(
                         },
                     }),
                 ).toBe(1);
+            },
+        );
+
+        test(
+            "cancelling a queued pending order retires its job",
+            async () => {
+                const {
+                    firm,
+                    order,
+                } =
+                    await createPendingBuyOrder();
+
+                const job =
+                    await enqueueOrderExecution(
+                        order.id,
+                        firm.id,
+                    );
+
+                const cancelled =
+                    await cancelOrderService(
+                        order.id,
+                        firm.id,
+                    );
+
+                expect(
+                    cancelled.status,
+                ).toBe("CANCELLED");
+
+                const updatedJob =
+                    await prisma.executionJob
+                        .findUniqueOrThrow({
+                            where: {
+                                id: job.id,
+                            },
+                        });
+
+                expect(
+                    updatedJob.status,
+                ).toBe("FAILED");
+
+                expect(
+                    updatedJob.lastError,
+                ).toBe(
+                    "ORDER_CANCELLED",
+                );
+
+                const workerResult =
+                    await processNextExecutionJob();
+
+                expect(
+                    workerResult.processed,
+                ).toBe(false);
             },
         );
 
