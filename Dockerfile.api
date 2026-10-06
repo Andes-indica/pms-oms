@@ -15,6 +15,12 @@ COPY . .
 RUN cd packages/db && bunx prisma generate
 RUN cd apps/api && bun run build
 
+FROM build AS migrate
+
+WORKDIR /app/packages/db
+
+CMD ["bunx", "prisma", "migrate", "deploy"]
+
 FROM oven/bun:1.4.2 AS runtime
 
 WORKDIR /app
@@ -35,5 +41,8 @@ COPY --from=build /app/packages/broker/src packages/broker/src
 COPY --from=build /app/packages/db/src packages/db/src
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD bun -e 'fetch("http://127.0.0.1:3000/health/db").then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
 
 CMD ["bun", "apps/api/dist/server.js"]
