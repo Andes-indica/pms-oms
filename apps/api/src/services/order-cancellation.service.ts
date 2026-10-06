@@ -144,6 +144,28 @@ export async function cancelOrderService(
               },
             });
 
+          await tx.executionJob
+            .updateMany({
+              where: {
+                orderId:
+                  currentOrder.id,
+
+                status:
+                  "PENDING",
+              },
+
+              data: {
+                status:
+                  "FAILED",
+
+                lastError:
+                  "ORDER_CANCELLED",
+
+                lockedAt:
+                  null,
+              },
+            });
+
           await createAuditLog(
             {
               firmId,
