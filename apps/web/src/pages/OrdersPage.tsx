@@ -4,7 +4,10 @@ import {
   useState,
 } from "react";
 
-import { apiFetch } from "../lib/api";
+import {
+  apiFetch,
+  subscribeToLiveUpdates,
+} from "../lib/api";
 import { PlaceOrderForm } from "../components/PlaceOrderForm";
 
 type Order = {
@@ -67,6 +70,37 @@ export function OrdersPage() {
 
   useEffect(() => {
     loadOrders();
+  }, [loadOrders]);
+
+  useEffect(() => {
+    const controller =
+      new AbortController();
+
+    void subscribeToLiveUpdates(
+      (event) => {
+        if (
+          event.entityType ===
+          "ORDER"
+        ) {
+          void loadOrders();
+        }
+      },
+      controller.signal,
+    ).catch((error) => {
+      if (
+        !controller.signal
+          .aborted
+      ) {
+        console.error(
+          "Live order updates disconnected:",
+          error,
+        );
+      }
+    });
+
+    return () => {
+      controller.abort();
+    };
   }, [loadOrders]);
 
   return (
