@@ -1,5 +1,8 @@
 import { prisma } from "@pms-oms/db";
 import { createAuditLog } from "./audit.service";
+import {
+  validateInstrument,
+} from "./instrument-master.service";
 
 type CreateOrderInput = {
   firmId: string;
@@ -28,6 +31,12 @@ export async function createOrderService(input: CreateOrderInput) {
     limitPrice,
     actorUserId,
   } = input;
+
+  const instrument =
+    await validateInstrument(
+      symbol,
+      exchange,
+    );
 
   const portfolio = await prisma.portfolio.findFirst({
     where: {
@@ -59,8 +68,10 @@ export async function createOrderService(input: CreateOrderInput) {
       data: {
         portfolioId,
         brokerAccountId,
-        symbol: symbol.trim().toUpperCase(),
-        exchange: exchange.trim().toUpperCase(),
+        symbol:
+          instrument.symbol,
+        exchange:
+          instrument.exchange,
         side,
         orderType,
         quantity,
