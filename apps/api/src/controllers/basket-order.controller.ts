@@ -6,6 +6,9 @@ import { createBasketOrderService } from "../services/basket-order.service";
 import { executeBasketOrderService } from "../services/basket-execution.service";
 import { syncBasketOrderService } from "../services/basket-sync.service";
 import type { AuthenticatedRequest } from "../middleware/auth.middleware";
+import {
+  publishLiveUpdate,
+} from "../services/live-update.service";
 
 type BasketOrderBody = {
   name?: string;
@@ -49,6 +52,18 @@ export async function createBasketOrder(
       await createBasketOrderService(
         { ...req.body, firmId: req.user.firmId },
       );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "basket.created",
+        entityType:
+          "BASKET_ORDER",
+        entityId:
+          basket.id,
+      },
+    );
 
     return res.status(201).json({
       data: basket,
@@ -135,7 +150,19 @@ export async function executeBasketOrder(
         req.user.firmId,
       );
 
-    return res.status(200).json({
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "basket.updated",
+        entityType:
+          "BASKET_ORDER",
+        entityId:
+          req.params.id,
+      },
+    );
+
+    return res.status(202).json({
       data: result,
     });
   } catch (error) {
@@ -184,6 +211,18 @@ export async function syncBasketOrder(
         req.params.id,
         req.user.firmId,
       );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "basket.updated",
+        entityType:
+          "BASKET_ORDER",
+        entityId:
+          req.params.id,
+      },
+    );
 
     return res.status(200).json({
       data: result,
