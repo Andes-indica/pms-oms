@@ -32,8 +32,13 @@ The system currently includes:
 - Encrypted broker credentials and sessions
 - Zerodha order recovery using deterministic client-order tags
 - Broker holdings, positions, and funds snapshot capabilities
+- Broker-to-PMS holdings reconciliation and controlled repair/import
+- Persistent broker execution/fill records
+- Automatic broker order monitoring
+- Durable PostgreSQL-backed execution queue and worker
+- Worker crash recovery with stale-lease reclamation
 
-The major remaining architecture work is **broker reconciliation, automatic broker monitoring, persistent execution/fill records, the execution queue, real-time WebSocket updates, instrument master data, and production deployment**.
+The major remaining architecture work is **real-time WebSocket updates, instrument master data, richer order lifecycle states, audit actor attribution, real market data, and production deployment**.
 
 ## Tech Stack
 
@@ -221,6 +226,10 @@ Validate firm / portfolio / broker account
     ↓
 Create PENDING order
     ↓
+Enqueue durable execution job
+    ↓
+Execution worker claims job
+    ↓
 Pre-trade checks
     ↓
 Risk checks and reservations
@@ -339,7 +348,7 @@ For fills the system currently handles:
 - Portfolio valuation
 - Unrealized P&L calculation
 
-The current schema stores cumulative fill information on the order. Persisting each broker execution/fill as its own record remains part of the planned architecture.
+The schema stores cumulative fill information on the order and also persists individual broker executions with broker execution IDs, quantities, prices, and execution timestamps. Execution upserts are idempotent per order and broker execution ID.
 
 ## Broker Snapshot
 
@@ -353,7 +362,7 @@ The current Zerodha snapshot includes:
 - Net available funds
 - Used margin
 
-The snapshot is intentionally read-only. Automatic PMS repair/reconciliation from broker truth is not implemented yet.
+The snapshot is read-only by default. The API also supports explicit broker-to-PMS holdings reconciliation, controlled repair, and initial broker-holdings import into a selected PMS portfolio.
 
 ## Dashboard and Frontend
 
@@ -612,14 +621,15 @@ bun test
 - [x] Audit logging
 - [x] Portfolio-manager dashboard
 - [x] Broker holdings/positions/funds snapshot
+- [x] Broker-to-PMS reconciliation diff and controlled repair
+- [x] Broker-aware holdings attribution
+- [x] Persistent individual broker executions/fills
+- [x] Durable execution queue / worker
+- [x] Automatic broker status monitoring
+- [x] Worker crash recovery / stale-job reclamation
 
 ### Remaining from the original architecture
 
-- [ ] Complete broker-to-PMS reconciliation diff and repair flow
-- [ ] Attribute holdings cleanly to broker accounts for multi-broker reconciliation
-- [ ] Persist individual broker executions/fills
-- [ ] Add execution queue / worker
-- [ ] Implement automatic broker status monitoring/event ingestion
 - [ ] Add WebSocket live updates to the frontend
 - [ ] Expand the order state machine with pre-submission and cancel-pending states
 - [ ] Persist explicit allocation records if the original database design is retained
@@ -663,4 +673,4 @@ Real-broker execution should only be used with:
 
 ## Status
 
-The project is under active development. Core PMS/OMS functionality and Zerodha execution are operational; the next development phase focuses on reconciliation, automation, event-driven updates, execution persistence, and production hardening.
+The project is under active development. Core PMS/OMS functionality, Zerodha execution, reconciliation, persistent fills, automatic monitoring, and durable queued execution are operational; the next development phase focuses on event-driven updates, instrument master data, richer lifecycle state, real market data, and production hardening.
