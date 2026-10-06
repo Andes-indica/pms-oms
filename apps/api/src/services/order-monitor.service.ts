@@ -5,6 +5,9 @@ import {
 import {
   syncOrderService,
 } from "./order-sync.service";
+import {
+  publishLiveUpdate,
+} from "./live-update.service";
 
 const ACTIVE_ORDER_STATUSES = [
   "SUBMITTED",
@@ -29,6 +32,10 @@ export async function monitorActiveOrdersOnce() {
 
       select: {
         id: true,
+        status: true,
+        filledQuantity: true,
+        averageFillPrice: true,
+        realizedPnl: true,
 
         portfolio: {
           select: {
@@ -50,12 +57,55 @@ export async function monitorActiveOrdersOnce() {
 
   for (const order of orders) {
     try {
-      await syncOrderService(
-        order.id,
+      const firmId =
         order.portfolio
           .client
-          .firmId,
-      );
+          .firmId;
+
+      const updatedOrder =
+        await syncOrderService(
+          order.id,
+          firmId,
+        );
+
+      const changed =
+        updatedOrder.status !==
+          order.status ||
+        updatedOrder
+          .filledQuantity !==
+          order.filledQuantity ||
+        Number(
+          updatedOrder
+            .averageFillPrice ??
+          0,
+        ) !==
+          Number(
+            order.averageFillPrice ??
+            0,
+          ) ||
+        Number(
+          updatedOrder
+            .realizedPnl ??
+          0,
+        ) !==
+          Number(
+            order.realizedPnl ??
+            0,
+          );
+
+      if (changed) {
+        publishLiveUpdate(
+          firmId,
+          {
+            type:
+              "order.updated",
+            entityType:
+              "ORDER",
+            entityId:
+              updatedOrder.id,
+          },
+        );
+      }
     } catch (error) {
       console.error(
         `Failed to automatically sync order ${order.id}:`,
