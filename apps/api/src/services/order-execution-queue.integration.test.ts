@@ -151,6 +151,49 @@ async function createUnsupportedBrokerOrder() {
         order,
     };
 }
+
+async function createUncertainSubmissionOrder() {
+    const {
+        firm,
+        portfolio,
+        brokerAccount,
+    } =
+        await createTestAccount({
+            cashBalance:
+                100_000,
+        });
+
+    const order =
+        await prisma.order.create({
+            data: {
+                portfolioId:
+                    portfolio.id,
+
+                brokerAccountId:
+                    brokerAccount.id,
+
+                symbol: "INFY",
+                exchange: "NSE",
+
+                side: "BUY",
+                orderType: "LIMIT",
+
+                quantity: 10,
+
+                limitPrice: 1500,
+                estimatedPrice: 1500,
+                reservedCash: 15_000,
+
+                status: "SUBMITTED",
+            },
+        });
+
+    return {
+        firm,
+        order,
+    };
+}
+
 describe(
     "execution queue integration",
     () => {
@@ -349,13 +392,13 @@ describe(
             },
         );
         test(
-            "failed execution is rescheduled for retry",
+            "uncertain broker submission is rescheduled for retry",
             async () => {
                 const {
                     firm,
                     order,
                 } =
-                    await createUnsupportedBrokerOrder();
+                    await createUncertainSubmissionOrder();
 
                 const job =
                     await enqueueOrderExecution(
@@ -400,7 +443,7 @@ describe(
                 expect(
                     updatedJob.lastError,
                 ).toBe(
-                    "UNSUPPORTED_BROKER",
+                    "BROKER_SUBMISSION_UNCERTAIN",
                 );
 
                 expect(
@@ -414,14 +457,68 @@ describe(
                 );
             },
         );
+
         test(
-            "fifth failed execution marks job failed",
+            "terminal execution error fails without retry",
             async () => {
                 const {
                     firm,
                     order,
                 } =
                     await createUnsupportedBrokerOrder();
+
+                const job =
+                    await enqueueOrderExecution(
+                        order.id,
+                        firm.id,
+                    );
+
+                const result =
+                    await processNextExecutionJob();
+
+                expect(
+                    result.processed,
+                ).toBe(true);
+
+                expect(
+                    result.succeeded,
+                ).toBe(false);
+
+                expect(
+                    result.retryable,
+                ).toBe(false);
+
+                const updatedJob =
+                    await prisma.executionJob
+                        .findUniqueOrThrow({
+                            where: {
+                                id: job.id,
+                            },
+                        });
+
+                expect(
+                    updatedJob.status,
+                ).toBe("FAILED");
+
+                expect(
+                    updatedJob.attempts,
+                ).toBe(1);
+
+                expect(
+                    updatedJob.lastError,
+                ).toBe(
+                    "UNSUPPORTED_BROKER",
+                );
+            },
+        );
+        test(
+            "fifth uncertain submission failure marks job failed",
+            async () => {
+                const {
+                    firm,
+                    order,
+                } =
+                    await createUncertainSubmissionOrder();
 
                 const job =
                     await enqueueOrderExecution(
@@ -475,7 +572,7 @@ describe(
                 expect(
                     updatedJob.lastError,
                 ).toBe(
-                    "UNSUPPORTED_BROKER",
+                    "BROKER_SUBMISSION_UNCERTAIN",
                 );
 
                 expect(
