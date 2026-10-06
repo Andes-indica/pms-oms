@@ -180,4 +180,29 @@ export function subscribeLiveUpdates(
     "close",
     cleanup,
   );
+
+  response.on(
+    "finish",
+    cleanup,
+  );
+}
+
+export function closeLiveUpdateStreams() {
+  for (
+    const clients of
+    clientsByFirm.values()
+  ) {
+    for (
+      const response of
+      clients
+    ) {
+      if (
+        !response.writableEnded
+      ) {
+        response.end();
+      }
+    }
+  }
+
+  clientsByFirm.clear();
 }
