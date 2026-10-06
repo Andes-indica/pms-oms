@@ -15,6 +15,7 @@ COPY . .
 ARG VITE_API_URL
 ENV VITE_API_URL=${VITE_API_URL}
 
+RUN test -n "$VITE_API_URL"
 RUN cd apps/web && bun run build
 
 FROM nginx:1.27-alpine AS runtime
