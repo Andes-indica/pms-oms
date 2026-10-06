@@ -4,7 +4,10 @@ import {
   useState,
 } from "react";
 
-import { apiFetch } from "../lib/api";
+import {
+  apiFetch,
+  subscribeToLiveUpdates,
+} from "../lib/api";
 
 import {
   CreateBasketOrderForm,
@@ -77,6 +80,39 @@ export function BasketOrdersPage() {
 
   useEffect(() => {
     loadBaskets();
+  }, [loadBaskets]);
+
+  useEffect(() => {
+    const controller =
+      new AbortController();
+
+    void subscribeToLiveUpdates(
+      (event) => {
+        if (
+          event.entityType ===
+            "BASKET_ORDER" ||
+          event.entityType ===
+            "ORDER"
+        ) {
+          void loadBaskets();
+        }
+      },
+      controller.signal,
+    ).catch((error) => {
+      if (
+        !controller.signal
+          .aborted
+      ) {
+        console.error(
+          "Live basket updates disconnected:",
+          error,
+        );
+      }
+    });
+
+    return () => {
+      controller.abort();
+    };
   }, [loadBaskets]);
 
   return (
