@@ -1,55 +1,94 @@
-import { prisma } from "@pms-oms/db";
+import {
+  prisma,
+} from "@pms-oms/db";
 
-import { executeOrderService } from "./order-execution.service";
-import { createAuditLog } from "./audit.service";
+import {
+  createAuditLog,
+} from "./audit.service";
+
+import {
+  enqueueOrderExecution,
+} from "./order-execution-queue.service";
 
 export async function executeBasketOrderService(
   basketOrderId: string,
   firmId: string,
 ) {
-  const basket = await prisma.basketOrder.findFirst({
-    where: {
-      id: basketOrderId,
-      firmId,
-    },
-    include: {
-      orders: true,
-    },
-  });
+  const basket =
+    await prisma.basketOrder
+      .findFirst({
+        where: {
+          id: basketOrderId,
+          firmId,
+        },
+
+        include: {
+          orders: true,
+        },
+      });
 
   if (!basket) {
-    throw new Error("BASKET_NOT_FOUND");
+    throw new Error(
+      "BASKET_NOT_FOUND",
+    );
   }
 
-  if (basket.status !== "PENDING") {
-    throw new Error("BASKET_NOT_PENDING");
+  if (
+    basket.status !==
+    "PENDING"
+  ) {
+    throw new Error(
+      "BASKET_NOT_PENDING",
+    );
   }
 
-  if (basket.orders.length === 0) {
-    throw new Error("BASKET_HAS_NO_ORDERS");
+  if (
+    basket.orders.length ===
+    0
+  ) {
+    throw new Error(
+      "BASKET_HAS_NO_ORDERS",
+    );
   }
 
   const results: Array<{
     orderId: string;
     success: boolean;
+    jobId?: string;
     status?: string;
     error?: string;
   }> = [];
 
-  for (const childOrder of basket.orders) {
+  for (
+    const childOrder of
+    basket.orders
+  ) {
     try {
-      const executedOrder =
-        await executeOrderService(childOrder.id, firmId);
+      const job =
+        await enqueueOrderExecution(
+          childOrder.id,
+          firmId,
+        );
 
       results.push({
-        orderId: childOrder.id,
+        orderId:
+          childOrder.id,
+
         success: true,
-        status: executedOrder.status,
+
+        jobId:
+          job.id,
+
+        status:
+          job.status,
       });
     } catch (error) {
       results.push({
-        orderId: childOrder.id,
+        orderId:
+          childOrder.id,
+
         success: false,
+
         error:
           error instanceof Error
             ? error.message
@@ -58,55 +97,66 @@ export async function executeBasketOrderService(
     }
   }
 
-  const successfulCount = results.filter(
-    (result) => result.success,
-  ).length;
+  const successfulCount =
+    results.filter(
+      (result) =>
+        result.success,
+    ).length;
 
-  let basketStatus:
-    | "SUBMITTED"
-    | "PARTIALLY_SUBMITTED"
-    | "REJECTED";
+  await prisma.$transaction(
+    async (tx) => {
+      await createAuditLog(
+        {
+          firmId,
 
-  if (successfulCount === results.length) {
-    basketStatus = "SUBMITTED";
-  } else if (successfulCount === 0) {
-    basketStatus = "REJECTED";
-  } else {
-    basketStatus = "PARTIALLY_SUBMITTED";
-  }
+          action:
+            "BASKET_SUBMITTED",
 
-  const updatedBasket = await prisma.$transaction(async (tx) => {
-    const updated = await tx.basketOrder.update({
-      where: {
-        id: basket.id,
-      },
-      data: {
-        status: basketStatus,
-      },
-      include: {
-        orders: true,
-      },
-    });
+          entityType:
+            "BASKET_ORDER",
 
-    await createAuditLog({
-      firmId,
-      action: "BASKET_SUBMITTED",
-      entityType: "BASKET_ORDER",
-      entityId: basket.id,
-      message: "Basket execution attempted",
-      metadata: {
-        totalOrders: results.length,
-        successfulOrders: successfulCount,
-        failedOrders: results.length - successfulCount,
-        status: basketStatus,
-      },
-    }, tx);
+          entityId:
+            basket.id,
 
-    return updated;
-  });
+          message:
+            "Basket child orders queued for execution",
+
+          metadata: {
+            totalOrders:
+              results.length,
+
+            queuedOrders:
+              successfulCount,
+
+            failedOrders:
+              results.length -
+              successfulCount,
+          },
+        },
+
+        tx,
+      );
+    },
+  );
+
+  const refreshedBasket =
+    await prisma.basketOrder
+      .findFirst({
+        where: {
+          id: basket.id,
+          firmId,
+        },
+
+        include: {
+          orders: true,
+        },
+      });
 
   return {
-    basket: updatedBasket,
+    basket:
+      refreshedBasket ??
+      basket,
+
     results,
   };
 }
