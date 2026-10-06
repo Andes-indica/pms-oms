@@ -580,5 +580,280 @@ describe(
                 ).toBeNull();
             },
         );
+        test(
+            "stale processing job is recovered and processed",
+            async () => {
+                const previousTimeout =
+                    process.env
+                        .ORDER_EXECUTION_LOCK_TIMEOUT_MS;
+
+                process.env
+                    .ORDER_EXECUTION_LOCK_TIMEOUT_MS =
+                    "1000";
+
+                try {
+                    const {
+                        firm,
+                        order,
+                    } =
+                        await createPendingBuyOrder();
+
+                    const job =
+                        await enqueueOrderExecution(
+                            order.id,
+                            firm.id,
+                        );
+
+                    await prisma.executionJob.update({
+                        where: {
+                            id: job.id,
+                        },
+
+                        data: {
+                            status:
+                                "PROCESSING",
+
+                            attempts: 1,
+
+                            lockedAt:
+                                new Date(
+                                    Date.now() -
+                                    5_000,
+                                ),
+                        },
+                    });
+
+                    const result =
+                        await processNextExecutionJob();
+
+                    expect(
+                        result.processed,
+                    ).toBe(true);
+
+                    expect(
+                        result.succeeded,
+                    ).toBe(true);
+
+                    const updatedJob =
+                        await prisma.executionJob
+                            .findUniqueOrThrow({
+                                where: {
+                                    id: job.id,
+                                },
+                            });
+
+                    expect(
+                        updatedJob.status,
+                    ).toBe(
+                        "COMPLETED",
+                    );
+
+                    expect(
+                        updatedJob.attempts,
+                    ).toBe(2);
+
+                    expect(
+                        updatedJob.lockedAt,
+                    ).toBeNull();
+
+                    const updatedOrder =
+                        await prisma.order
+                            .findUniqueOrThrow({
+                                where: {
+                                    id:
+                                        order.id,
+                                },
+                            });
+
+                    expect(
+                        updatedOrder
+                            .brokerOrderId,
+                    ).not.toBeNull();
+                } finally {
+                    if (
+                        previousTimeout ===
+                        undefined
+                    ) {
+                        delete process.env
+                            .ORDER_EXECUTION_LOCK_TIMEOUT_MS;
+                    } else {
+                        process.env
+                            .ORDER_EXECUTION_LOCK_TIMEOUT_MS =
+                            previousTimeout;
+                    }
+                }
+            },
+        );
+
+        test(
+            "active processing lease is not stolen",
+            async () => {
+                const previousTimeout =
+                    process.env
+                        .ORDER_EXECUTION_LOCK_TIMEOUT_MS;
+
+                process.env
+                    .ORDER_EXECUTION_LOCK_TIMEOUT_MS =
+                    "60000";
+
+                try {
+                    const {
+                        firm,
+                        order,
+                    } =
+                        await createPendingBuyOrder();
+
+                    const job =
+                        await enqueueOrderExecution(
+                            order.id,
+                            firm.id,
+                        );
+
+                    await prisma.executionJob.update({
+                        where: {
+                            id: job.id,
+                        },
+
+                        data: {
+                            status:
+                                "PROCESSING",
+
+                            attempts: 1,
+
+                            lockedAt:
+                                new Date(),
+                        },
+                    });
+
+                    const result =
+                        await processNextExecutionJob();
+
+                    expect(
+                        result.processed,
+                    ).toBe(false);
+
+                    const updatedJob =
+                        await prisma.executionJob
+                            .findUniqueOrThrow({
+                                where: {
+                                    id: job.id,
+                                },
+                            });
+
+                    expect(
+                        updatedJob.status,
+                    ).toBe(
+                        "PROCESSING",
+                    );
+
+                    expect(
+                        updatedJob.attempts,
+                    ).toBe(1);
+                } finally {
+                    if (
+                        previousTimeout ===
+                        undefined
+                    ) {
+                        delete process.env
+                            .ORDER_EXECUTION_LOCK_TIMEOUT_MS;
+                    } else {
+                        process.env
+                            .ORDER_EXECUTION_LOCK_TIMEOUT_MS =
+                            previousTimeout;
+                    }
+                }
+            },
+        );
+
+        test(
+            "stale processing job at max attempts is failed",
+            async () => {
+                const previousTimeout =
+                    process.env
+                        .ORDER_EXECUTION_LOCK_TIMEOUT_MS;
+
+                process.env
+                    .ORDER_EXECUTION_LOCK_TIMEOUT_MS =
+                    "1000";
+
+                try {
+                    const {
+                        firm,
+                        order,
+                    } =
+                        await createPendingBuyOrder();
+
+                    const job =
+                        await enqueueOrderExecution(
+                            order.id,
+                            firm.id,
+                        );
+
+                    await prisma.executionJob.update({
+                        where: {
+                            id: job.id,
+                        },
+
+                        data: {
+                            status:
+                                "PROCESSING",
+
+                            attempts: 5,
+
+                            lockedAt:
+                                new Date(
+                                    Date.now() -
+                                    5_000,
+                                ),
+                        },
+                    });
+
+                    const result =
+                        await processNextExecutionJob();
+
+                    expect(
+                        result.processed,
+                    ).toBe(false);
+
+                    const updatedJob =
+                        await prisma.executionJob
+                            .findUniqueOrThrow({
+                                where: {
+                                    id: job.id,
+                                },
+                            });
+
+                    expect(
+                        updatedJob.status,
+                    ).toBe("FAILED");
+
+                    expect(
+                        updatedJob.attempts,
+                    ).toBe(5);
+
+                    expect(
+                        updatedJob.lastError,
+                    ).toBe(
+                        "WORKER_LEASE_EXPIRED",
+                    );
+
+                    expect(
+                        updatedJob.lockedAt,
+                    ).toBeNull();
+                } finally {
+                    if (
+                        previousTimeout ===
+                        undefined
+                    ) {
+                        delete process.env
+                            .ORDER_EXECUTION_LOCK_TIMEOUT_MS;
+                    } else {
+                        process.env
+                            .ORDER_EXECUTION_LOCK_TIMEOUT_MS =
+                            previousTimeout;
+                    }
+                }
+            },
+        );
     },
 );
