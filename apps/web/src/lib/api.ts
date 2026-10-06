@@ -58,118 +58,193 @@ export async function subscribeToLiveUpdates(
   ) => void,
   signal?: AbortSignal,
 ) {
-  const token =
-    localStorage.getItem(
-      "accessToken",
-    );
+  let retryDelayMs =
+    1_000;
 
-  const headers =
-    new Headers();
+  while (
+    !signal?.aborted
+  ) {
+    try {
+      const token =
+        localStorage.getItem(
+          "accessToken",
+        );
 
-  if (token) {
-    headers.set(
-      "Authorization",
-      `Bearer ${token}`,
-    );
-  }
+      const headers =
+        new Headers();
 
-  const response =
-    await fetch(
-      `${API_URL}/api/events`,
-      {
-        headers,
-        signal,
+      if (token) {
+        headers.set(
+          "Authorization",
+          `Bearer ${token}`,
+        );
+      }
+
+      const response =
+        await fetch(
+          `${API_URL}/api/events`,
+          {
+            headers,
+            signal,
+          },
+        );
+
+      if (
+        response.status ===
+          401 ||
+        response.status ===
+          403
+      ) {
+        throw new Error(
+          "LIVE_UPDATES_UNAUTHORIZED",
+        );
+      }
+
+      if (
+        !response.ok ||
+        !response.body
+      ) {
+        throw new Error(
+          "LIVE_UPDATES_CONNECTION_FAILED",
+        );
+      }
+
+      retryDelayMs =
+        1_000;
+
+      const reader =
+        response.body
+          .getReader();
+
+      const decoder =
+        new TextDecoder();
+
+      let buffer = "";
+
+      while (
+        !signal?.aborted
+      ) {
+        const {
+          value,
+          done,
+        } =
+          await reader.read();
+
+        if (done) {
+          break;
+        }
+
+        buffer +=
+          decoder.decode(
+            value,
+            {
+              stream: true,
+            },
+          );
+
+        let boundary =
+          buffer.indexOf(
+            "\n\n",
+          );
+
+        while (
+          boundary !== -1
+        ) {
+          const block =
+            buffer.slice(
+              0,
+              boundary,
+            );
+
+          buffer =
+            buffer.slice(
+              boundary + 2,
+            );
+
+          const data =
+            block
+              .split("\n")
+              .filter(
+                (line) =>
+                  line.startsWith(
+                    "data:",
+                  ),
+              )
+              .map(
+                (line) =>
+                  line.slice(5)
+                    .trimStart(),
+              )
+              .join("\n");
+
+          if (data) {
+            try {
+              onEvent(
+                JSON.parse(
+                  data,
+                ) as LiveUpdateEvent,
+              );
+            } catch {
+              // Ignore malformed stream events.
+            }
+          }
+
+          boundary =
+            buffer.indexOf(
+              "\n\n",
+            );
+        }
+      }
+    } catch (error) {
+      if (
+        signal?.aborted
+      ) {
+        return;
+      }
+
+      if (
+        error instanceof Error &&
+        error.message ===
+          "LIVE_UPDATES_UNAUTHORIZED"
+      ) {
+        throw error;
+      }
+    }
+
+    if (
+      signal?.aborted
+    ) {
+      return;
+    }
+
+    await new Promise<void>(
+      (resolve) => {
+        const timer =
+          window.setTimeout(
+            resolve,
+            retryDelayMs,
+          );
+
+        signal?.addEventListener(
+          "abort",
+          () => {
+            window.clearTimeout(
+              timer,
+            );
+
+            resolve();
+          },
+          {
+            once: true,
+          },
+        );
       },
     );
 
-  if (
-    !response.ok ||
-    !response.body
-  ) {
-    throw new Error(
-      "Failed to connect live updates",
-    );
-  }
-
-  const reader =
-    response.body
-      .getReader();
-
-  const decoder =
-    new TextDecoder();
-
-  let buffer = "";
-
-  while (true) {
-    const {
-      value,
-      done,
-    } =
-      await reader.read();
-
-    if (done) {
-      break;
-    }
-
-    buffer +=
-      decoder.decode(
-        value,
-        {
-          stream: true,
-        },
+    retryDelayMs =
+      Math.min(
+        retryDelayMs * 2,
+        15_000,
       );
-
-    let boundary =
-      buffer.indexOf(
-        "\n\n",
-      );
-
-    while (
-      boundary !== -1
-    ) {
-      const block =
-        buffer.slice(
-          0,
-          boundary,
-        );
-
-      buffer =
-        buffer.slice(
-          boundary + 2,
-        );
-
-      const data =
-        block
-          .split("\n")
-          .filter(
-            (line) =>
-              line.startsWith(
-                "data:",
-              ),
-          )
-          .map(
-            (line) =>
-              line.slice(5)
-                .trimStart(),
-          )
-          .join("\n");
-
-      if (data) {
-        try {
-          onEvent(
-            JSON.parse(
-              data,
-            ) as LiveUpdateEvent,
-          );
-        } catch {
-          // Ignore malformed stream events.
-        }
-      }
-
-      boundary =
-        buffer.indexOf(
-          "\n\n",
-        );
-    }
   }
 }
