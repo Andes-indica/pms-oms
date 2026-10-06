@@ -8,12 +8,25 @@ type CreateAuditLogInput = {
   entityId: string;
   message?: string;
   metadata?: Record<string, unknown>;
+  actorUserId?: string;
 };
 
 export async function createAuditLog(
   input: CreateAuditLogInput,
   database: Pick<typeof prisma, "auditLog"> = prisma,
 ) {
+  const metadata = {
+    ...(input.metadata ?? {}),
+
+    ...(input.actorUserId
+      ? {
+          actorUserId:
+            input.actorUserId,
+          actorType: "USER",
+        }
+      : {}),
+  };
+
   return database.auditLog.create({
     data: {
       firmId: input.firmId,
@@ -21,7 +34,12 @@ export async function createAuditLog(
       entityType: input.entityType,
       entityId: input.entityId,
       message: input.message,
-      metadata: input.metadata as Prisma.InputJsonValue | undefined,
+      metadata:
+        Object.keys(
+          metadata,
+        ).length > 0
+          ? metadata as Prisma.InputJsonValue
+          : undefined,
     },
   });
 }
