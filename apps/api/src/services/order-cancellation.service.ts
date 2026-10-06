@@ -25,6 +25,7 @@ import {
 export async function cancelOrderService(
   orderId: string,
   firmId: string,
+  actorUserId?: string,
 ) {
   const order =
     await prisma.order.findFirst({
@@ -159,6 +160,8 @@ export async function cancelOrderService(
               message:
                 "Order cancelled before broker submission",
 
+              actorUserId,
+
               metadata: {
                 previousStatus:
                   currentOrder.status,
@@ -267,6 +270,7 @@ export async function cancelOrderService(
     return syncOrderService(
       liveOrder.id,
       firmId,
+      actorUserId,
     );
   }
 
@@ -296,5 +300,6 @@ export async function cancelOrderService(
   return syncOrderService(
     liveOrder.id,
     firmId,
+    actorUserId,
   );
 }
