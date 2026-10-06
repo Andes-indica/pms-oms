@@ -1,3 +1,6 @@
+import {
+  prisma,
+} from "@pms-oms/db";
 import app from "./app";
 import {
   startOrderMonitor,
@@ -7,6 +10,9 @@ import {
   startOrderExecutionWorker,
   stopOrderExecutionWorker,
 } from "./services/order-execution-worker.service";
+import {
+  closeLiveUpdateStreams,
+} from "./services/live-update.service";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -38,16 +44,29 @@ server.ref();
 // Keep one referenced handle until that runtime issue is fixed.
 export const serverKeepAlive = setInterval(() => {}, 2_147_483_647);
 
+let shuttingDown = false;
+
 function shutdown() {
+  if (shuttingDown) {
+    return;
+  }
+
+  shuttingDown = true;
+
   stopOrderExecutionWorker();
   stopOrderMonitor();
+  closeLiveUpdateStreams();
 
   clearInterval(
     serverKeepAlive,
   );
 
   server.close(() => {
-    process.exit(0);
+    void prisma
+      .$disconnect()
+      .finally(() => {
+        process.exit(0);
+      });
   });
 }
 
