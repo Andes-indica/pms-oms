@@ -217,7 +217,7 @@ export async function createBasketOrderService(
       },
     );
 
-  return prisma.basketOrder.findUnique({
+  return prisma.basketOrder.findUniqueOrThrow({
     where: {
       id: basket.id,
     },
