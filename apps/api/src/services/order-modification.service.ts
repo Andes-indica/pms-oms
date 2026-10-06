@@ -31,6 +31,7 @@ export async function modifyOrderService(
     orderId: string,
     firmId: string,
     input: ModifyOrderInput,
+    actorUserId?: string,
 ) {
     const order =
         await prisma.order.findFirst({
@@ -347,6 +348,8 @@ export async function modifyOrderService(
 
                     message:
                         `Order modified: ${order.symbol}`,
+
+                    actorUserId,
 
                     metadata: {
                         oldQuantity:
