@@ -14,6 +14,8 @@ import brokerConnectionRoutes
   from "./routes/broker-connection.routes";
 import brokerAccountRoutes
   from "./routes/broker-account.routes";
+import liveUpdateRoutes
+  from "./routes/live-update.routes";
 const app = express();
 
 app.use(cors({
@@ -29,6 +31,10 @@ app.use("/api/broker-connections", brokerConnectionRoutes);
 app.use(
   "/api",
   brokerAccountRoutes,
+);
+app.use(
+  "/api/events",
+  liveUpdateRoutes,
 );
 app.get("/health", (_req, res) => {
   res.json({
