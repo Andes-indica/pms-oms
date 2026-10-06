@@ -3,6 +3,10 @@ import {
 } from "@pms-oms/db";
 
 import {
+  BrokerError,
+} from "@pms-oms/broker";
+
+import {
   executeOrderService,
 } from "./order-execution.service";
 
@@ -15,6 +19,48 @@ const DEFAULT_INTERVAL_MS =
 
 const MAX_ATTEMPTS =
   5;
+
+const TERMINAL_EXECUTION_ERRORS =
+  new Set([
+    "ORDER_NOT_FOUND",
+    "ORDER_NOT_PENDING",
+    "BROKER_ACCOUNT_NOT_FOUND",
+    "UNSUPPORTED_BROKER",
+    "BROKER_NOT_CONNECTED",
+    "BROKER_SESSION_EXPIRED",
+    "INVALID_QUANTITY",
+    "INSUFFICIENT_HOLDINGS",
+    "HOLDING_IN_DIFFERENT_PORTFOLIO",
+    "INSUFFICIENT_CASH",
+    "RESTRICTED_SECURITY",
+    "MAX_ORDER_QUANTITY_EXCEEDED",
+    "MAX_ORDER_VALUE_EXCEEDED",
+    "MAX_POSITION_QUANTITY_EXCEEDED",
+    "MAX_POSITION_VALUE_EXCEEDED",
+    "INVALID_ESTIMATED_PRICE",
+  ]);
+
+function isRetryableExecutionError(
+  error: unknown,
+): boolean {
+  if (
+    error instanceof BrokerError &&
+    error.definitive
+  ) {
+    return false;
+  }
+
+  if (
+    error instanceof Error &&
+    TERMINAL_EXECUTION_ERRORS.has(
+      error.message,
+    )
+  ) {
+    return false;
+  }
+
+  return true;
+}
 
 let workerTimer:
   ReturnType<
@@ -139,8 +185,11 @@ export async function processNextExecutionJob() {
         : "UNKNOWN_ERROR";
 
     const retryable =
+      isRetryableExecutionError(
+        error,
+      ) &&
       job.attempts <
-      MAX_ATTEMPTS;
+        MAX_ATTEMPTS;
 
     await prisma.executionJob.update({
       where: {
