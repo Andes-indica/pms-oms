@@ -9,6 +9,9 @@ import {
 import {
   executeOrderService,
 } from "./order-execution.service";
+import {
+  publishLiveUpdate,
+} from "./live-update.service";
 
 type ClaimedJob = {
   id: string;
@@ -224,10 +227,11 @@ export async function processNextExecutionJob() {
       .firmId;
 
   try {
-    await executeOrderService(
-      job.orderId,
-      firmId,
-    );
+    const order =
+      await executeOrderService(
+        job.orderId,
+        firmId,
+      );
 
     await prisma.executionJob.update({
       where: {
@@ -245,6 +249,15 @@ export async function processNextExecutionJob() {
           null,
       },
     });
+
+    publishLiveUpdate(
+      firmId,
+      {
+        type: "order.updated",
+        entityType: "ORDER",
+        entityId: order.id,
+      },
+    );
 
     return {
       processed: true,
