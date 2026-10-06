@@ -1,10 +1,12 @@
 import {
+  useCallback,
   useEffect,
   useState,
 } from "react";
 
 import {
   apiFetch,
+  subscribeToLiveUpdates,
 } from "../lib/api";
 
 type DashboardData = {
@@ -65,9 +67,11 @@ export function DashboardPage() {
   const [error, setError] =
     useState("");
 
-  useEffect(() => {
-    async function loadDashboard() {
+  const loadDashboard =
+    useCallback(async () => {
       try {
+        setError("");
+
         const response =
           await apiFetch<DashboardResponse>(
             "/api/dashboard",
@@ -83,10 +87,46 @@ export function DashboardPage() {
       } finally {
         setLoading(false);
       }
-    }
+    }, []);
 
-    loadDashboard();
-  }, []);
+  useEffect(() => {
+    void loadDashboard();
+  }, [loadDashboard]);
+
+  useEffect(() => {
+    const controller =
+      new AbortController();
+
+    void subscribeToLiveUpdates(
+      (event) => {
+        if (
+          event.entityType ===
+            "ORDER" ||
+          event.entityType ===
+            "PORTFOLIO" ||
+          event.entityType ===
+            "HOLDING"
+        ) {
+          void loadDashboard();
+        }
+      },
+      controller.signal,
+    ).catch((error) => {
+      if (
+        !controller.signal
+          .aborted
+      ) {
+        console.error(
+          "Live dashboard updates disconnected:",
+          error,
+        );
+      }
+    });
+
+    return () => {
+      controller.abort();
+    };
+  }, [loadDashboard]);
 
   if (loading) {
     return (
