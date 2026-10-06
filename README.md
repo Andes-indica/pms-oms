@@ -38,7 +38,7 @@ The system currently includes:
 - Durable PostgreSQL-backed execution queue and worker
 - Worker crash recovery with stale-lease reclamation
 
-The major remaining architecture work is **real-time WebSocket updates, instrument master data, richer order lifecycle states, audit actor attribution, real market data, and production deployment**.
+The major remaining architecture work is **richer persisted order lifecycle states, explicit allocation records, database-backed instrument master data, and production deployment/hardening**. Real-time UI updates are implemented with an authenticated SSE stream, and the current instrument master is a configurable canonical file-backed registry.
 
 ## Tech Stack
 
@@ -213,7 +213,7 @@ The current Zerodha integration supports:
 - Fetch positions
 - Fetch equity funds/margins
 
-Market data is intentionally separate from the broker adapter.
+Market data is intentionally separate from the broker adapter. The OMS now uses a configurable market-data provider boundary with a mock provider for local development and an HTTP quote-provider contract for real integrations.
 
 ## Order Flow
 
@@ -313,6 +313,14 @@ Basket functionality includes:
 - Derive aggregate basket status
 - Audit basket operations
 
+## Instrument Master
+
+Order and basket creation now pass through a canonical instrument registry.
+
+By default the repository includes a small development registry. A deployment can provide a complete JSON instrument universe using `INSTRUMENT_MASTER_PATH`. Setting `INSTRUMENT_MASTER_STRICT=true` rejects symbols that are not present in that registry. The authenticated `GET /api/instruments` endpoint exposes the canonical list to the order-entry UI.
+
+A database-backed instrument model remains a future schema migration if richer instrument metadata and lifecycle management are required.
+
 ## Risk Engine
 
 Pre-trade risk checks currently include:
@@ -331,7 +339,7 @@ Pre-trade risk checks currently include:
 
 Risk calculations use the application's market-data service for estimated prices.
 
-> The current market-data service is still a development implementation with hardcoded prices. Replacing it with a real independent market-data provider remains pending.
+> The default market-data provider is still the development mock. Production can switch to the HTTP provider through environment configuration; selecting and operating a concrete external quote vendor remains deployment-specific.
 
 ## Accounting and Portfolio State
 
@@ -363,6 +371,16 @@ The current Zerodha snapshot includes:
 - Used margin
 
 The snapshot is read-only by default. The API also supports explicit broker-to-PMS holdings reconciliation, controlled repair, and initial broker-holdings import into a selected PMS portfolio.
+
+## Real-Time Updates
+
+The API exposes an authenticated, firm-scoped Server-Sent Events stream at:
+
+```http
+GET /api/events
+```
+
+Order, basket, worker, and monitor changes publish lightweight invalidation events. The order blotter, basket page, and dashboard reconnect automatically and reload their authoritative API data after relevant events. SSE is used because the current update direction is server-to-UI only and does not require an additional WebSocket dependency.
 
 ## Dashboard and Frontend
 
@@ -416,7 +434,7 @@ BASKET_CANCELLED
 
 Audit records are firm-scoped and can include structured metadata.
 
-The original architecture includes explicit actor/user attribution on audit records; that is still pending.
+User-triggered order, basket, and reconciliation writes now include `actorUserId` and `actorType` in structured audit metadata. A dedicated relational actor column remains an optional future schema refinement.
 
 ## API Overview
 
@@ -630,12 +648,14 @@ bun test
 
 ### Remaining from the original architecture
 
-- [ ] Add WebSocket live updates to the frontend
-- [ ] Expand the order state machine with pre-submission and cancel-pending states
+- [x] Add real-time server-to-UI updates with authenticated SSE
+- [x] Add canonical instrument validation and instrument-list API
+- [x] Add user actor attribution to audit metadata
+- [x] Add configurable market-data provider boundary
+- [ ] Expand the persisted order state machine with pre-submission and cancel-pending states
 - [ ] Persist explicit allocation records if the original database design is retained
-- [ ] Add instrument master / canonical instrument validation
-- [ ] Add audit actor/user attribution
-- [ ] Replace mock market-data service with a real provider
+- [ ] Move the instrument master into the database if richer metadata/lifecycle management is needed
+- [ ] Configure a concrete production market-data vendor
 - [ ] Production deployment and fixed outbound IP for real broker traffic
 
 ## Architecture Documentation
@@ -673,4 +693,4 @@ Real-broker execution should only be used with:
 
 ## Status
 
-The project is under active development. Core PMS/OMS functionality, Zerodha execution, reconciliation, persistent fills, automatic monitoring, and durable queued execution are operational; the next development phase focuses on event-driven updates, instrument master data, richer lifecycle state, real market data, and production hardening.
+The project is under active development. Core PMS/OMS functionality, Zerodha execution, reconciliation, persistent fills, automatic monitoring, durable queued execution, live UI updates, canonical instrument validation, and actor-aware auditing are operational. Remaining work is primarily schema refinement and production deployment/hardening.
