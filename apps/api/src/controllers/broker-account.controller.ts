@@ -513,6 +513,7 @@ export async function repairBrokerReconciliation(
           exchange,
           portfolioId,
         },
+        req.user.userId,
       );
 
     return res.json({
@@ -633,6 +634,7 @@ export async function importBrokerAccountHoldings(
           portfolioId:
             portfolioId.trim(),
         },
+        req.user.userId,
       );
 
     return res.status(200).json({
