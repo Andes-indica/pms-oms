@@ -12,6 +12,9 @@ import {
 import {
   publishLiveUpdate,
 } from "./live-update.service";
+import {
+  refreshBasketOrderStatus,
+} from "./basket-status-refresh.service";
 
 type ClaimedJob = {
   id: string;
@@ -258,6 +261,37 @@ export async function processNextExecutionJob() {
         entityId: order.id,
       },
     );
+
+    if (
+      order.basketOrderId
+    ) {
+      try {
+        const basket =
+          await refreshBasketOrderStatus(
+            order.basketOrderId,
+            firmId,
+          );
+
+        if (basket) {
+          publishLiveUpdate(
+            firmId,
+            {
+              type:
+                "basket.updated",
+              entityType:
+                "BASKET_ORDER",
+              entityId:
+                basket.id,
+            },
+          );
+        }
+      } catch (error) {
+        console.error(
+          `Failed to refresh basket status for order ${order.id}:`,
+          error,
+        );
+      }
+    }
 
     return {
       processed: true,
