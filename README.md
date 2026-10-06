@@ -656,7 +656,18 @@ bun test
 - [ ] Persist explicit allocation records if the original database design is retained
 - [ ] Move the instrument master into the database if richer metadata/lifecycle management is needed
 - [ ] Configure a concrete production market-data vendor
-- [ ] Production deployment and fixed outbound IP for real broker traffic
+- [x] Add reproducible production API/web images and deployment runbook
+- [ ] Select deployment provider and provision fixed outbound IP for real broker traffic
+
+## Deployment
+
+Production containerization and rollout guidance is documented in:
+
+```text
+docs/deployment.md
+```
+
+The repository includes `Dockerfile.api` with a one-shot migration target and runtime health check, plus `Dockerfile.web` with SPA nginx serving. A concrete cloud provider and fixed egress IP still need to be selected for live broker traffic.
 
 ## Architecture Documentation
 
