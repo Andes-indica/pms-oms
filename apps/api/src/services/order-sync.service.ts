@@ -19,6 +19,7 @@ import {
 export async function syncOrderService(
   orderId: string,
   firmId: string,
+  actorUserId?: string,
 ) {
   const order =
     await prisma.order.findFirst({
@@ -554,6 +555,8 @@ export async function syncOrderService(
 
           message:
             "Order synchronized with broker",
+
+          actorUserId,
 
           metadata: {
             status:
