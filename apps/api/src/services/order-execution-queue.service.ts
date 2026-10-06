@@ -34,14 +34,41 @@ export async function enqueueOrderExecution(
     );
   }
 
-  return prisma.executionJob.upsert({
-    where: {
-      orderId,
-    },
+  const existingJob =
+    await prisma.executionJob
+      .findUnique({
+        where: {
+          orderId,
+        },
+      });
 
-    update: {},
+  if (existingJob) {
+    if (
+      existingJob.status ===
+      "FAILED"
+    ) {
+      return prisma.executionJob
+        .update({
+          where: {
+            id: existingJob.id,
+          },
 
-    create: {
+          data: {
+            status: "PENDING",
+            attempts: 0,
+            lastError: null,
+            availableAt:
+              new Date(),
+            lockedAt: null,
+          },
+        });
+    }
+
+    return existingJob;
+  }
+
+  return prisma.executionJob.create({
+    data: {
       orderId,
       status: "PENDING",
     },
