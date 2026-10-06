@@ -25,6 +25,16 @@ type Order = {
   averageFillPrice?: string | null;
   realizedPnl?: string | null;
 
+  executionJob?: {
+    status:
+      | "PENDING"
+      | "PROCESSING"
+      | "COMPLETED"
+      | "FAILED";
+    attempts: number;
+    lastError?: string | null;
+  } | null;
+
   portfolio: {
     client: {
       name: string;
@@ -338,6 +348,37 @@ function OrdersTable({
               actionOrderId ===
               order.id;
 
+            const jobStatus =
+              order.executionJob
+                ?.status;
+
+            const displayStatus =
+              order.status ===
+                "PENDING" &&
+              jobStatus ===
+                "PENDING"
+                ? "QUEUED"
+                : order.status ===
+                    "PENDING" &&
+                  jobStatus ===
+                    "PROCESSING"
+                  ? "PROCESSING"
+                  : order.status ===
+                      "PENDING" &&
+                    jobStatus ===
+                      "FAILED"
+                    ? "EXECUTION_FAILED"
+                    : order.status;
+
+            const canExecute =
+              order.status ===
+                "PENDING" &&
+              (
+                !jobStatus ||
+                jobStatus ===
+                  "FAILED"
+              );
+
             return (
               <tr
                 key={order.id}
@@ -367,7 +408,29 @@ function OrdersTable({
                 </td>
 
                 <td className="px-4 py-4">
-                  {order.status}
+                  <p>
+                    {displayStatus}
+                  </p>
+
+                  {displayStatus ===
+                    "EXECUTION_FAILED" &&
+                    order.executionJob
+                      ?.lastError && (
+                      <p
+                        className="mt-1 max-w-48 truncate text-xs text-red-600"
+                        title={
+                          order
+                            .executionJob
+                            .lastError
+                        }
+                      >
+                        {
+                          order
+                            .executionJob
+                            .lastError
+                        }
+                      </p>
+                    )}
                 </td>
 
                 <td className="px-4 py-4">
@@ -382,8 +445,7 @@ function OrdersTable({
 
                 <td className="px-4 py-4">
                   <div className="flex flex-wrap gap-2">
-                    {order.status ===
-                      "PENDING" && (
+                    {canExecute && (
                         <button
                           disabled={busy}
                           onClick={() =>
@@ -394,7 +456,10 @@ function OrdersTable({
                           }
                           className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white"
                         >
-                          Execute
+                          {jobStatus ===
+                            "FAILED"
+                            ? "Retry"
+                            : "Execute"}
                         </button>
                       )}
 
