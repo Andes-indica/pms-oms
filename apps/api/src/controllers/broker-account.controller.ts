@@ -349,10 +349,15 @@ export async function createBrokerAccount(
           brokerAccount,
       });
   } catch (error) {
+    const prismaCode =
+      error &&
+      typeof error === "object" &&
+      "code" in error
+        ? error.code
+        : null;
+
     if (
-      error instanceof
-      Prisma.PrismaClientKnownRequestError &&
-      error.code === "P2002"
+      prismaCode === "P2002"
     ) {
       return res
         .status(409)
