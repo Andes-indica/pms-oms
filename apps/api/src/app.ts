@@ -20,9 +20,49 @@ import instrumentRoutes
   from "./routes/instrument.routes";
 const app = express();
 
+const defaultCorsOrigins = [
+  "http://localhost:5173",
+  "http://127.0.0.1:5173",
+  "http://localhost:5174",
+];
+
+const corsOrigins =
+  process.env.CORS_ORIGINS
+    ?.split(",")
+    .map(
+      (origin) =>
+        origin.trim(),
+    )
+    .filter(Boolean) ??
+  defaultCorsOrigins;
+
 app.use(cors({
-  origin:["http://localhost:5173", "http://127.0.0.0:5173","http://localhost:5174"],
-  credentials:true,
+  origin(
+    origin,
+    callback,
+  ) {
+    if (
+      !origin ||
+      corsOrigins.includes(
+        origin,
+      )
+    ) {
+      callback(
+        null,
+        true,
+      );
+
+      return;
+    }
+
+    callback(
+      new Error(
+        "CORS_ORIGIN_NOT_ALLOWED",
+      ),
+    );
+  },
+
+  credentials: true,
 }));
 app.use(express.json());
 app.use("/api/auth", authRoutes);
