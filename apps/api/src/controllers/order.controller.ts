@@ -138,6 +138,29 @@ export async function createOrder(
           error: "Portfolio and broker account belong to different clients",
         });
       }
+
+      if (
+        error.message === "INVALID_INSTRUMENT" ||
+        error.message === "UNKNOWN_INSTRUMENT"
+      ) {
+        return res.status(400).json({
+          error:
+            error.message === "UNKNOWN_INSTRUMENT"
+              ? "Instrument is not present in the instrument master"
+              : "Invalid instrument",
+        });
+      }
+
+      if (
+        error.message === "INSTRUMENT_MASTER_UNAVAILABLE" ||
+        error.message === "INVALID_INSTRUMENT_MASTER" ||
+        error.message === "DUPLICATE_INSTRUMENT"
+      ) {
+        return res.status(503).json({
+          error:
+            "Instrument master is unavailable",
+        });
+      }
     }
 
     console.error("Failed to create order:", error);
