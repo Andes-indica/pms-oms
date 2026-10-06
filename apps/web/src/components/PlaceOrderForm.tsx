@@ -21,6 +21,16 @@ type ClientsResponse = {
   data: Client[];
 };
 
+type Instrument = {
+  symbol: string;
+  exchange: string;
+  name?: string;
+};
+
+type InstrumentsResponse = {
+  data: Instrument[];
+};
+
 type CreateOrderResponse = {
   data: {
     id: string;
@@ -40,6 +50,12 @@ export function PlaceOrderForm({
 }: Props) {
   const [clients, setClients] =
     useState<Client[]>([]);
+
+  const [
+    instruments,
+    setInstruments,
+  ] =
+    useState<Instrument[]>([]);
 
   const [clientId, setClientId] =
     useState("");
@@ -100,6 +116,25 @@ export function PlaceOrderForm({
     }
 
     loadClients();
+  }, []);
+
+  useEffect(() => {
+    async function loadInstruments() {
+      try {
+        const response =
+          await apiFetch<InstrumentsResponse>(
+            "/api/instruments",
+          );
+
+        setInstruments(
+          response.data,
+        );
+      } catch {
+        // Instrument suggestions are optional.
+      }
+    }
+
+    void loadInstruments();
   }, []);
 
   const selectedClient = useMemo(
@@ -294,15 +329,48 @@ export function PlaceOrderForm({
 
         <Field label="Symbol">
           <input
+            list="order-instruments"
             value={symbol}
-            onChange={(event) =>
-              setSymbol(
-                event.target.value,
-              )
-            }
+            onChange={(event) => {
+              const value =
+                event.target.value;
+
+              setSymbol(value);
+
+              const match =
+                instruments.find(
+                  (instrument) =>
+                    instrument.symbol ===
+                    value
+                      .trim()
+                      .toUpperCase(),
+                );
+
+              if (match) {
+                setExchange(
+                  match.exchange,
+                );
+              }
+            }}
             placeholder="RELIANCE"
             className="w-full rounded-lg border px-3 py-2 uppercase"
           />
+
+          <datalist id="order-instruments">
+            {instruments.map(
+              (instrument) => (
+                <option
+                  key={`${instrument.exchange}:${instrument.symbol}`}
+                  value={instrument.symbol}
+                >
+                  {instrument.exchange}
+                  {instrument.name
+                    ? ` — ${instrument.name}`
+                    : ""}
+                </option>
+              ),
+            )}
+          </datalist>
         </Field>
 
         <Field label="Exchange">
