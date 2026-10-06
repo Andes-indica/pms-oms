@@ -13,6 +13,9 @@ import type { AuthenticatedRequest as BaseAuthenticatedRequest } from "../middle
 import {
   modifyOrderService,
 } from "../services/order-modification.service";
+import {
+  publishLiveUpdate,
+} from "../services/live-update.service";
 
 type CreateOrderBody = {
   portfolioId: string;
@@ -101,6 +104,15 @@ export async function createOrder(
       quantity,
       limitPrice,
     });
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type: "order.created",
+        entityType: "ORDER",
+        entityId: order.id,
+      },
+    );
 
     return res.status(201).json({
       data: order,
@@ -191,6 +203,16 @@ export async function executeOrder(
         req.params.id,
         req.user.firmId,
       );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "order.execution_queued",
+        entityType: "ORDER",
+        entityId: req.params.id,
+      },
+    );
 
     return res.status(202).json({
       data: job,
@@ -288,6 +310,15 @@ export async function syncOrder(
 
     const order = await syncOrderService(req.params.id, req.user.firmId);
 
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type: "order.updated",
+        entityType: "ORDER",
+        entityId: order.id,
+      },
+    );
+
     return res.status(200).json({
       data: order,
     });
@@ -354,6 +385,15 @@ export async function cancelOrder(
     const order = await cancelOrderService(
       req.params.id,
       req.user.firmId,
+    );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type: "order.updated",
+        entityType: "ORDER",
+        entityId: order.id,
+      },
     );
 
     return res.status(200).json({
@@ -431,6 +471,15 @@ export async function modifyOrder(
         req.user.firmId,
         req.body,
       );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type: "order.updated",
+        entityType: "ORDER",
+        entityId: order.id,
+      },
+    );
 
     return res.json({
       data: order,
