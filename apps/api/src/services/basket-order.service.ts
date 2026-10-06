@@ -30,6 +30,8 @@ type CreateBasketOrderInput = {
     | "PERCENTAGE";
 
   targets: AllocationTarget[];
+
+  actorUserId?: string;
 };
 
 export async function createBasketOrderService(
@@ -192,6 +194,8 @@ export async function createBasketOrderService(
           entityType: "BASKET_ORDER",
           entityId: createdBasket.id,
           message: "Basket order created",
+          actorUserId:
+            input.actorUserId,
           metadata: {
             symbol: createdBasket.symbol,
             totalQuantity: createdBasket.totalQuantity,
