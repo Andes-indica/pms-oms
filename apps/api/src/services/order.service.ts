@@ -12,6 +12,7 @@ type CreateOrderInput = {
   orderType: "MARKET" | "LIMIT";
   quantity: number;
   limitPrice?: number;
+  actorUserId?: string;
 };
 
 export async function createOrderService(input: CreateOrderInput) {
@@ -25,6 +26,7 @@ export async function createOrderService(input: CreateOrderInput) {
     orderType,
     quantity,
     limitPrice,
+    actorUserId,
   } = input;
 
   const portfolio = await prisma.portfolio.findFirst({
@@ -76,6 +78,7 @@ export async function createOrderService(input: CreateOrderInput) {
       entityType: "ORDER",
       entityId: order.id,
       message: "Order created",
+      actorUserId,
       metadata: {
         portfolioId,
         brokerAccountId,
