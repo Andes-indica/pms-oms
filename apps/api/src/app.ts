@@ -16,6 +16,8 @@ import brokerAccountRoutes
   from "./routes/broker-account.routes";
 import liveUpdateRoutes
   from "./routes/live-update.routes";
+import instrumentRoutes
+  from "./routes/instrument.routes";
 const app = express();
 
 app.use(cors({
@@ -35,6 +37,10 @@ app.use(
 app.use(
   "/api/events",
   liveUpdateRoutes,
+);
+app.use(
+  "/api/instruments",
+  instrumentRoutes,
 );
 app.get("/health", (_req, res) => {
   res.json({
