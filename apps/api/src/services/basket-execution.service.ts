@@ -13,6 +13,7 @@ import {
 export async function executeBasketOrderService(
   basketOrderId: string,
   firmId: string,
+  actorUserId?: string,
 ) {
   const basket =
     await prisma.basketOrder
@@ -120,6 +121,8 @@ export async function executeBasketOrderService(
 
           message:
             "Basket child orders queued for execution",
+
+          actorUserId,
 
           metadata: {
             totalOrders:
