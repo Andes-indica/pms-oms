@@ -13,6 +13,11 @@ import {
 import {
   closeLiveUpdateStreams,
 } from "./services/live-update.service";
+import {
+  validateRuntimeConfig,
+} from "./services/runtime-config.service";
+
+validateRuntimeConfig();
 
 const PORT = Number(process.env.PORT) || 3000;
 
