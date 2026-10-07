@@ -59,6 +59,9 @@ export async function resolveBroker(
                 where: {
                     id: brokerAccountId,
 
+                    archivedAt:
+                        null,
+
                     client: {
                         firmId,
                     },
