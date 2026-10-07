@@ -10,6 +10,11 @@ import {
 } from "../controllers/portfolio.controller";
 
 import {
+  createPortfolioCashTransaction,
+  getPortfolioCashTransactions,
+} from "../controllers/cash-management.controller";
+
+import {
   requireAuth,
 } from "../middleware/auth.middleware";
 
@@ -48,6 +53,21 @@ router.delete(
     "ADMIN",
   ),
   deletePortfolio,
+);
+
+router.get(
+  "/:id/cash-transactions",
+  getPortfolioCashTransactions,
+);
+
+router.post(
+  "/:id/cash-transactions",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+  createPortfolioCashTransaction,
 );
 
 router.get(
