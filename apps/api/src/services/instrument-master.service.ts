@@ -49,40 +49,33 @@ let cachedSourceItems:
   null;
 
 function normalizeItem(
-  item: InstrumentMasterItem,
+  input: unknown,
 ): InstrumentMasterItem {
-  const symbol =
-    item.symbol
-      ?.trim()
-      .toUpperCase();
+  if (!input || typeof input !== "object") {
+    throw new Error("INVALID_INSTRUMENT_MASTER");
+  }
 
-  const exchange =
-    item.exchange
-      ?.trim()
-      .toUpperCase();
-
+  const item = input as Record<string, unknown>;
   if (
-    !symbol ||
-    !exchange
+    typeof item.symbol !== "string" ||
+    typeof item.exchange !== "string" ||
+    (item.instrumentToken !== undefined && typeof item.instrumentToken !== "string") ||
+    (item.name !== undefined && typeof item.name !== "string")
   ) {
-    throw new Error(
-      "INVALID_INSTRUMENT_MASTER",
-    );
+    throw new Error("INVALID_INSTRUMENT_MASTER");
+  }
+
+  const symbol = item.symbol.trim().toUpperCase();
+  const exchange = item.exchange.trim().toUpperCase();
+  if (!symbol || !exchange) {
+    throw new Error("INVALID_INSTRUMENT_MASTER");
   }
 
   return {
     symbol,
     exchange,
-
-    instrumentToken:
-      item.instrumentToken
-        ?.trim() ||
-      undefined,
-
-    name:
-      item.name
-        ?.trim() ||
-      undefined,
+    instrumentToken: (item.instrumentToken as string | undefined)?.trim() || undefined,
+    name: (item.name as string | undefined)?.trim() || undefined,
   };
 }
 
@@ -143,10 +136,7 @@ async function getConfiguredSourceItems():
   const seen =
     new Set<string>();
 
-  cachedPath =
-    configuredPath;
-
-  cachedSourceItems =
+  const items =
     parsed.map(
       (value) => {
         if (
@@ -183,7 +173,9 @@ async function getConfiguredSourceItems():
       },
     );
 
-  return cachedSourceItems;
+  cachedPath = configuredPath;
+  cachedSourceItems = items;
+  return items;
 }
 
 export async function getInstrumentMaster():
@@ -226,7 +218,9 @@ export async function getInstrumentMaster():
     );
   }
 
-  return getConfiguredSourceItems();
+  // An initialized database remains authoritative even when every row is inactive.
+  const storedCount = await prisma.instrument.count();
+  return storedCount > 0 ? [] : getConfiguredSourceItems();
 }
 
 export async function validateInstrument(
@@ -283,6 +277,21 @@ export async function validateInstrument(
         row.name ??
         undefined,
     } satisfies InstrumentMasterItem;
+  }
+
+  // Explicit deactivation must not be bypassed by permissive validation.
+  if (row) {
+    throw new Error("UNKNOWN_INSTRUMENT");
+  }
+
+  if (await prisma.instrument.count() === 0) {
+    const sourceItems = await getConfiguredSourceItems();
+    const configuredItem = sourceItems.find(
+      (item) => item.symbol === normalizedSymbol && item.exchange === normalizedExchange,
+    );
+    if (configuredItem) {
+      return configuredItem;
+    }
   }
 
   const strict =
@@ -388,6 +397,8 @@ export async function deactivateInstrument(
 export async function importConfiguredInstrumentMaster(
   replace = false,
 ) {
+  // Explicit imports must read edits to the configured file at the same path.
+  resetInstrumentMasterCache();
   const items =
     await getConfiguredSourceItems();
 
@@ -461,8 +472,10 @@ export async function importConfiguredInstrumentMaster(
   );
 }
 
-export function resetInstrumentMasterCacheForTests() {
+function resetInstrumentMasterCache() {
   cachedPath = null;
   cachedSourceItems =
     null;
 }
+
+export const resetInstrumentMasterCacheForTests = resetInstrumentMasterCache;
