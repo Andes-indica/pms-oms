@@ -52,7 +52,13 @@ export async function createOrderService(input: CreateOrderInput) {
   }
 
   const brokerAccount = await prisma.brokerAccount.findFirst({
-    where: { id: brokerAccountId, client:{ firmId, }, },
+    where: {
+      id: brokerAccountId,
+      archivedAt: null,
+      client: {
+        firmId,
+      },
+    },
   });
 
   if (!brokerAccount) {
