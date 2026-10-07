@@ -48,6 +48,10 @@ const user =
           <NavLink to="/basket-orders" className={navClass}>
             Basket Orders
           </NavLink>
+
+          <NavLink to="/risk" className={navClass}>
+            Risk
+          </NavLink>
           {user?.role === "ADMIN" && (
             <NavLink
             to="/users" 
