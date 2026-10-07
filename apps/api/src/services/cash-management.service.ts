@@ -127,6 +127,37 @@ export async function adjustPortfolioCash(
         );
       }
 
+      const allocations =
+        await tx.portfolioBrokerCash.aggregate({
+          where: {
+            portfolioId:
+              portfolio.id,
+          },
+
+          _sum: {
+            cashBalance:
+              true,
+          },
+        });
+
+      const allocatedCash =
+        Number(
+          allocations
+            ._sum
+            .cashBalance ??
+          0,
+        );
+
+      if (
+        nextBalance +
+          0.01 <
+        allocatedCash
+      ) {
+        throw new Error(
+          "CASH_BELOW_BROKER_ALLOCATIONS",
+        );
+      }
+
       const updated =
         await tx.portfolio.update({
           where: {
