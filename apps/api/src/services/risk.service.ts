@@ -15,7 +15,7 @@ export async function runRiskChecks(
   input: RiskCheckInput,
   database: Pick<
     typeof prisma,
-    "portfolio" | "restrictedSecurity" | "order"
+    "portfolio" | "restrictedSecurity" | "order" | "portfolioBrokerCash"
   > = prisma,
 ) {
   const portfolio =
@@ -71,6 +71,18 @@ export async function runRiskChecks(
   const orderValue =
     input.quantity * input.estimatedPrice;
 
+  const brokerCashAllocation =
+    await database.portfolioBrokerCash.findUnique({
+      where: {
+        portfolioId_brokerAccountId: {
+          portfolioId:
+            input.portfolioId,
+          brokerAccountId:
+            input.brokerAccountId,
+        },
+      },
+    });
+
   const activeReservations = await database.order.aggregate({
     where: {
       portfolioId: input.portfolioId,
@@ -95,6 +107,60 @@ export async function runRiskChecks(
     Number(portfolio.cashBalance) - reservedCash < orderValue
   ) {
     throw new Error("INSUFFICIENT_CASH");
+  }
+
+  if (
+    input.side === "BUY" &&
+    brokerCashAllocation
+  ) {
+    const brokerReservations =
+      await database.order.aggregate({
+        where: {
+          portfolioId:
+            input.portfolioId,
+
+          brokerAccountId:
+            input.brokerAccountId,
+
+          id: {
+            not:
+              input.currentOrderId,
+          },
+
+          status: {
+            in: [
+              "SUBMITTED",
+              "OPEN",
+              "PARTIALLY_FILLED",
+            ],
+          },
+        },
+
+        _sum: {
+          reservedCash: true,
+        },
+      });
+
+    const brokerReservedCash =
+      Number(
+        brokerReservations
+          ._sum
+          .reservedCash ??
+        0,
+      );
+
+    if (
+      Number(
+        brokerCashAllocation
+          .cashBalance,
+      ) -
+        brokerReservedCash <
+      orderValue
+    ) {
+      throw new Error(
+        "INSUFFICIENT_BROKER_CASH",
+      );
+    }
   }
 
   const limits = portfolio.riskLimit;
