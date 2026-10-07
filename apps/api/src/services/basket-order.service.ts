@@ -161,11 +161,49 @@ export async function createBasketOrderService(
             },
           });
 
-        for (const allocation of allocations) {
+        for (
+          const [
+            index,
+            allocation,
+          ] of allocations.entries()
+        ) {
+          const target =
+            input.targets[
+              index
+            ];
+
+          const allocationRecord =
+            await tx.allocation.create({
+              data: {
+                basketOrderId:
+                  createdBasket.id,
+
+                portfolioId:
+                  allocation
+                    .portfolioId,
+
+                brokerAccountId:
+                  allocation
+                    .brokerAccountId,
+
+                allocatedQuantity:
+                  allocation
+                    .quantity,
+
+                targetPercentage:
+                  target
+                    ?.percentage ??
+                  null,
+              },
+            });
+
           await tx.order.create({
             data: {
               basketOrderId:
                 createdBasket.id,
+
+              allocationId:
+                allocationRecord.id,
 
               portfolioId:
                 allocation.portfolioId,
@@ -222,6 +260,17 @@ export async function createBasketOrderService(
       id: basket.id,
     },
     include: {
+      allocations: {
+        include: {
+          portfolio: {
+            include: {
+              client: true,
+            },
+          },
+          brokerAccount: true,
+        },
+      },
+
       orders: {
         include: {
           portfolio: {
