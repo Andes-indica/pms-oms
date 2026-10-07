@@ -104,6 +104,7 @@ export async function createBasketOrderService(
       await prisma.brokerAccount.findFirst({
         where: {
           id: allocation.brokerAccountId,
+          archivedAt: null,
           client: {
             firmId: input.firmId,
           },
