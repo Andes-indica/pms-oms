@@ -357,6 +357,24 @@ model RiskLimit {
   updatedAt DateTime @updatedAt
 }
 
+model Instrument {
+  id String @id @default(cuid())
+
+  symbol   String
+  exchange String
+
+  instrumentToken String?
+  name            String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([symbol, exchange])
+  @@index([instrumentToken])
+}
+
 model RestrictedSecurity {
   id String @id @default(cuid())
 
