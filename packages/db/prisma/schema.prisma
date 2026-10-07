@@ -78,6 +78,15 @@ model BrokerAccount {
   @@unique([broker, accountId])
 }
 
+enum CashTransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  ADJUSTMENT
+  BUY_FILL
+  SELL_FILL
+  BROKER_RECONCILIATION
+}
+
 enum OrderSide {
   BUY
   SELL
@@ -125,11 +134,34 @@ model Portfolio {
 
   holdings Holding[]
   orders   Order[]
+  cashTransactions CashTransaction[]
 
   riskLimit RiskLimit?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CashTransaction {
+  id String @id @default(cuid())
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  type CashTransactionType
+
+  amount       Decimal @db.Decimal(18, 4)
+  balanceAfter Decimal @db.Decimal(18, 4)
+
+  referenceType String?
+  referenceId   String?
+  note          String?
+  actorUserId   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([portfolioId, createdAt])
+  @@index([referenceType, referenceId])
 }
 
 model Holding {
