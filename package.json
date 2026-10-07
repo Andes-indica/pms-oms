@@ -18,8 +18,8 @@
     "test:integration": "bun scripts/test.ts integration",
     "test:all": "bun scripts/test.ts all",
     "db:generate": "cd packages/db && bunx prisma generate",
-    "db:migrate:test": "NODE_ENV=test bun --cwd packages/db x prisma migrate deploy",
-    "db:status:test": "NODE_ENV=test bun --cwd packages/db x prisma migrate status"
+    "db:migrate:test": "cd packages/db && NODE_ENV=test bunx prisma migrate deploy",
+    "db:status:test": "cd packages/db && NODE_ENV=test bunx prisma migrate status"
   },
   "dependencies": {
     "@pms-oms/broker": "workspace:*"
