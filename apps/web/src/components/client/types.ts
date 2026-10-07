@@ -150,8 +150,7 @@ export type HoldingReconciliationStatus =
   | "MATCH"
   | "MISSING_IN_PMS"
   | "MISSING_AT_BROKER"
-  | "QUANTITY_MISMATCH"
-  | "AVERAGE_PRICE_MISMATCH";
+  | "QUANTITY_MISMATCH";
 
 export type HoldingReconciliationItem = {
   symbol: string;
