@@ -113,6 +113,16 @@ export async function createPortfolioCashTransaction(
       });
     }
 
+    if (
+      errorMessage ===
+      "CASH_BELOW_BROKER_ALLOCATIONS"
+    ) {
+      return res.status(409).json({
+        error:
+          "Reduce broker cash allocations before withdrawing this cash",
+      });
+    }
+
     throw error;
   }
 }
