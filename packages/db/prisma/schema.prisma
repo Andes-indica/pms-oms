@@ -70,6 +70,7 @@ model BrokerAccount {
   orders   Order[]
   holdings Holding[]
   portfolioCashAllocations PortfolioBrokerCash[]
+  allocations Allocation[]
 
   connection BrokerConnection?
 
@@ -137,6 +138,7 @@ model Portfolio {
   orders   Order[]
   cashTransactions CashTransaction[]
   brokerCashAllocations PortfolioBrokerCash[]
+  allocations Allocation[]
 
   riskLimit RiskLimit?
 
@@ -240,6 +242,9 @@ model Order {
   brokerAccountId String
   brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
 
+  allocationId String? @unique
+  allocation   Allocation? @relation(fields: [allocationId], references: [id], onDelete: SetNull)
+
   executions Execution[]
   executionJob ExecutionJob?
   createdAt DateTime @default(now())
@@ -298,11 +303,36 @@ model BasketOrder {
   firm   Firm   @relation(fields: [firmId], references: [id])
 
   orders Order[]
+  allocations Allocation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([firmId])
+}
+
+model Allocation {
+  id String @id @default(cuid())
+
+  basketOrderId String
+  basketOrder   BasketOrder @relation(fields: [basketOrderId], references: [id], onDelete: Cascade)
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
+
+  allocatedQuantity Int
+  targetPercentage  Decimal? @db.Decimal(8, 4)
+
+  order Order?
+
+  createdAt DateTime @default(now())
+
+  @@index([basketOrderId])
+  @@index([portfolioId])
+  @@index([brokerAccountId])
 }
 
 model RiskLimit {
