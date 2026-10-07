@@ -290,6 +290,34 @@ export async function syncOrderService(
             },
           );
 
+        const brokerCashAllocation =
+          await tx.portfolioBrokerCash
+            .findUnique({
+              where: {
+                portfolioId_brokerAccountId: {
+                  portfolioId:
+                    freshOrder
+                      .portfolioId,
+
+                  brokerAccountId:
+                    freshOrder
+                      .brokerAccountId,
+                },
+              },
+            });
+
+        if (
+          brokerCashAllocation
+        ) {
+          await tx.$queryRaw`
+            SELECT "id"
+            FROM "PortfolioBrokerCash"
+            WHERE "id" =
+              ${brokerCashAllocation.id}
+            FOR UPDATE
+          `;
+        }
+
         if (
           freshOrder.side ===
           "BUY"
@@ -399,6 +427,26 @@ export async function syncOrderService(
                 null,
             },
           });
+
+          if (
+            brokerCashAllocation
+          ) {
+            await tx.portfolioBrokerCash
+              .update({
+                where: {
+                  id:
+                    brokerCashAllocation
+                      .id,
+                },
+
+                data: {
+                  cashBalance: {
+                    decrement:
+                      cashAmount,
+                  },
+                },
+              });
+          }
         } else {
 
           if (
@@ -491,6 +539,26 @@ export async function syncOrderService(
                 null,
             },
           });
+
+          if (
+            brokerCashAllocation
+          ) {
+            await tx.portfolioBrokerCash
+              .update({
+                where: {
+                  id:
+                    brokerCashAllocation
+                      .id,
+                },
+
+                data: {
+                  cashBalance: {
+                    increment:
+                      cashAmount,
+                  },
+                },
+              });
+          }
         }
       }
 
