@@ -71,6 +71,9 @@ export async function reconcileBrokerHoldings(
             where: {
                 id: brokerAccountId,
 
+                archivedAt:
+                    null,
+
                 client: {
                     firmId,
                 },
@@ -423,6 +426,9 @@ export async function repairBrokerHolding(
         await prisma.brokerAccount.findFirst({
             where: {
                 id: brokerAccountId,
+
+                archivedAt:
+                    null,
 
                 client: {
                     firmId,
@@ -911,6 +917,9 @@ export async function importBrokerHoldings(
         await prisma.brokerAccount.findFirst({
             where: {
                 id: brokerAccountId,
+
+                archivedAt:
+                    null,
 
                 client: {
                     firmId,
