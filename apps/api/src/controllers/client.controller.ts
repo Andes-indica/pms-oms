@@ -25,7 +25,11 @@ export async function getClients(
         firmId: req.user.firmId,
       },
       include: {
-        brokerAccounts: true,
+        brokerAccounts: {
+          where: {
+            archivedAt: null,
+          },
+        },
       portfolios:{
         include:{
           holdings:true,
@@ -70,7 +74,11 @@ export async function getClientById(
         firmId: req.user.firmId,
       },
       include: {
-        brokerAccounts: true,
+        brokerAccounts: {
+          where: {
+            archivedAt: null,
+          },
+        },
         portfolios: {
           include: {
             holdings: true,
@@ -196,6 +204,10 @@ export async function getClientOverview(
 
         include: {
           brokerAccounts: {
+            where: {
+              archivedAt: null,
+            },
+
             select :{
               id:true,
               broker:true,
