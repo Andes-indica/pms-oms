@@ -27,6 +27,12 @@ export async function runRiskChecks(
       include: {
         riskLimit: true,
 
+        client: {
+          select: {
+            firmId: true,
+          },
+        },
+
         holdings: {
           where: {
             symbol: input.symbol,
@@ -35,22 +41,31 @@ export async function runRiskChecks(
         },
       },
     });
+  if (!portfolio) {
+    throw new Error("PORTFOLIO_NOT_FOUND");
+  }
+
   const restrictedSecurity =
-    await database.restrictedSecurity.findUnique({
+    await database.restrictedSecurity.findFirst({
       where: {
-        symbol_exchange: {
-          symbol: input.symbol,
-          exchange: input.exchange,
-        },
+        symbol: input.symbol,
+        exchange: input.exchange,
+
+        OR: [
+          {
+            firmId:
+              portfolio.client
+                .firmId,
+          },
+          {
+            firmId: null,
+          },
+        ],
       },
     });
 
   if (restrictedSecurity) {
     throw new Error("RESTRICTED_SECURITY");
-  }
-
-  if (!portfolio) {
-    throw new Error("PORTFOLIO_NOT_FOUND");
   }
 
   const orderValue =
