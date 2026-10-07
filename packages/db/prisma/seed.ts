@@ -223,6 +223,28 @@ await prisma.portfolio.update({
   },
 });
 
+await prisma.cashTransaction.deleteMany({
+  where: {
+    portfolioId: portfolio1.id,
+    referenceType:
+      "SEED_OPENING_BALANCE",
+  },
+});
+
+await prisma.cashTransaction.create({
+  data: {
+    portfolioId: portfolio1.id,
+    type: "DEPOSIT",
+    amount: 500000,
+    balanceAfter: 500000,
+    referenceType:
+      "SEED_OPENING_BALANCE",
+    referenceId: portfolio1.id,
+    note:
+      "Seed opening cash balance",
+  },
+});
+
 await prisma.portfolio.update({
   where: {
     id: portfolio2.id,
@@ -232,15 +254,39 @@ await prisma.portfolio.update({
   },
 });
 
+await prisma.cashTransaction.deleteMany({
+  where: {
+    portfolioId: portfolio2.id,
+    referenceType:
+      "SEED_OPENING_BALANCE",
+  },
+});
+
+await prisma.cashTransaction.create({
+  data: {
+    portfolioId: portfolio2.id,
+    type: "DEPOSIT",
+    amount: 200000,
+    balanceAfter: 200000,
+    referenceType:
+      "SEED_OPENING_BALANCE",
+    referenceId: portfolio2.id,
+    note:
+      "Seed opening cash balance",
+  },
+});
+
 await prisma.restrictedSecurity.upsert({
   where: {
-    symbol_exchange: {
+    firmId_symbol_exchange: {
+      firmId: firm.id,
       symbol: "XYZ",
       exchange: "NSE",
     },
   },
   update: {},
   create: {
+    firmId: firm.id,
     symbol: "XYZ",
     exchange: "NSE",
     reason: "Internal restricted list",
