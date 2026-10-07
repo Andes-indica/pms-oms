@@ -12,6 +12,9 @@ import {
 import {
     createAuditLog,
 } from "./audit.service";
+import {
+    classifyInventoryReconciliation,
+} from "./holding-reconciliation-policy";
 
 export type RepairBrokerHoldingInput = {
     symbol: string;
@@ -22,8 +25,7 @@ export type HoldingReconciliationStatus =
     | "MATCH"
     | "MISSING_IN_PMS"
     | "MISSING_AT_BROKER"
-    | "QUANTITY_MISMATCH"
-    | "AVERAGE_PRICE_MISMATCH";
+    | "QUANTITY_MISMATCH";
 
 export type HoldingReconciliationItem = {
     symbol: string;
@@ -54,17 +56,6 @@ function key(
     symbol: string,
 ) {
     return `${exchange.toUpperCase()}:${symbol.toUpperCase()}`;
-}
-
-function nearlyEqual(
-    left: number,
-    right: number,
-    tolerance = 0.01,
-) {
-    return (
-        Math.abs(left - right) <=
-        tolerance
-    );
 }
 
 export async function reconcileBrokerHoldings(
@@ -284,42 +275,22 @@ export async function reconcileBrokerHoldings(
                     .quantity
                 : null;
 
-        let status:
-            HoldingReconciliationStatus;
+        const status:
+            HoldingReconciliationStatus =
+            classifyInventoryReconciliation({
+                brokerPresent:
+                    Boolean(
+                        brokerHolding,
+                    ),
 
-        if (
-            brokerHolding &&
-            !pmsHolding
-        ) {
-            status =
-                "MISSING_IN_PMS";
-        } else if (
-            !brokerHolding &&
-            pmsHolding
-        ) {
-            status =
-                "MISSING_AT_BROKER";
-        } else if (
-            brokerQuantity !==
-            pmsQuantity
-        ) {
-            status =
-                "QUANTITY_MISMATCH";
-        } else if (
-            brokerAveragePrice !==
-            null &&
-            pmsAveragePrice !==
-            null &&
-            !nearlyEqual(
-                brokerAveragePrice,
-                pmsAveragePrice,
-            )
-        ) {
-            status =
-                "AVERAGE_PRICE_MISMATCH";
-        } else {
-            status = "MATCH";
-        }
+                pmsPresent:
+                    Boolean(
+                        pmsHolding,
+                    ),
+
+                brokerQuantity,
+                pmsQuantity,
+            });
 
         items.push({
             symbol:
@@ -830,14 +801,7 @@ export async function repairBrokerHolding(
              */
             const changed =
                 existingHolding.quantity !==
-                brokerQuantity ||
-                Math.abs(
-                    Number(
-                        existingHolding
-                            .averagePrice,
-                    ) -
-                    brokerAveragePrice,
-                ) > 0.01;
+                brokerQuantity;
 
             if (!changed) {
                 return {
@@ -858,9 +822,6 @@ export async function repairBrokerHolding(
                     data: {
                         quantity:
                             brokerQuantity,
-
-                        averagePrice:
-                            brokerAveragePrice,
                     },
                 });
 
