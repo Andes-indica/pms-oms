@@ -349,19 +349,54 @@ export async function syncOrderService(
             });
           }
 
-          await tx.portfolio.update({
-            where: {
-              id:
+          const cashAmount =
+            incrementalFillQuantity *
+            incrementalFillPrice;
+
+          const updatedPortfolio =
+            await tx.portfolio.update({
+              where: {
+                id:
+                  freshOrder
+                    .portfolioId,
+              },
+
+              data: {
+                cashBalance: {
+                  decrement:
+                    cashAmount,
+                },
+              },
+            });
+
+          await tx.cashTransaction.create({
+            data: {
+              portfolioId:
                 freshOrder
                   .portfolioId,
-            },
 
-            data: {
-              cashBalance: {
-                decrement:
-                  incrementalFillQuantity *
-                  incrementalFillPrice,
-              },
+              type:
+                "BUY_FILL",
+
+              amount:
+                -cashAmount,
+
+              balanceAfter:
+                updatedPortfolio
+                  .cashBalance,
+
+              referenceType:
+                "ORDER",
+
+              referenceId:
+                freshOrder.id,
+
+              note:
+                "Cash debit for broker fill",
+
+              actorUserId:
+                actorUserId ??
+                null,
             },
           });
         } else {
@@ -406,19 +441,54 @@ export async function syncOrderService(
             });
           }
 
-          await tx.portfolio.update({
-            where: {
-              id:
+          const cashAmount =
+            incrementalFillQuantity *
+            incrementalFillPrice;
+
+          const updatedPortfolio =
+            await tx.portfolio.update({
+              where: {
+                id:
+                  freshOrder
+                    .portfolioId,
+              },
+
+              data: {
+                cashBalance: {
+                  increment:
+                    cashAmount,
+                },
+              },
+            });
+
+          await tx.cashTransaction.create({
+            data: {
+              portfolioId:
                 freshOrder
                   .portfolioId,
-            },
 
-            data: {
-              cashBalance: {
-                increment:
-                  incrementalFillQuantity *
-                  incrementalFillPrice,
-              },
+              type:
+                "SELL_FILL",
+
+              amount:
+                cashAmount,
+
+              balanceAfter:
+                updatedPortfolio
+                  .cashBalance,
+
+              referenceType:
+                "ORDER",
+
+              referenceId:
+                freshOrder.id,
+
+              note:
+                "Cash credit for broker fill",
+
+              actorUserId:
+                actorUserId ??
+                null,
             },
           });
         }
