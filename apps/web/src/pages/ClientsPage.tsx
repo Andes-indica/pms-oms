@@ -30,9 +30,50 @@ type ClientsResponse = {
     data: Client[];
 };
 
+function getCurrentRole() {
+    const raw =
+        localStorage.getItem(
+            "user",
+        );
+
+    if (!raw) {
+        return null;
+    }
+
+    try {
+        return JSON.parse(raw)
+            ?.role as string | undefined;
+    } catch {
+        return null;
+    }
+}
+
+function canManageClients() {
+    const role =
+        getCurrentRole();
+
+    return (
+        role === "ADMIN" ||
+        role ===
+            "PORTFOLIO_MANAGER"
+    );
+}
+
 export function ClientsPage() {
     const [clients, setClients] =
         useState<Client[]>([]);
+
+    const [name, setName] =
+        useState("");
+
+    const [email, setEmail] =
+        useState("");
+
+    const [creating, setCreating] =
+        useState(false);
+
+    const canManage =
+        canManageClients();
 
     const [loading, setLoading] =
         useState(true);
@@ -40,28 +81,70 @@ export function ClientsPage() {
     const [error, setError] =
         useState("");
 
-    useEffect(() => {
-        async function loadClients() {
-            try {
-                const response =
-                    await apiFetch<ClientsResponse>(
-                        "/api/clients",
-                    );
-
-                setClients(response.data);
-            } catch (error) {
-                setError(
-                    error instanceof Error
-                        ? error.message
-                        : "Failed to load clients",
+    async function loadClients() {
+        try {
+            const response =
+                await apiFetch<ClientsResponse>(
+                    "/api/clients",
                 );
-            } finally {
-                setLoading(false);
-            }
+
+            setClients(response.data);
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to load clients",
+            );
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    useEffect(() => {
+        void loadClients();
+    }, []);
+
+    async function createClient() {
+        if (!name.trim()) {
+            setError(
+                "Client name is required.",
+            );
+
+            return;
         }
 
-        loadClients();
-    }, []);
+        try {
+            setCreating(true);
+            setError("");
+
+            await apiFetch(
+                "/api/clients",
+                {
+                    method: "POST",
+                    body: JSON.stringify({
+                        name:
+                            name.trim(),
+                        email:
+                            email.trim() ||
+                            undefined,
+                    }),
+                },
+            );
+
+            setName("");
+            setEmail("");
+
+            await loadClients();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to create client",
+            );
+        } finally {
+            setCreating(false);
+        }
+    }
 
     if (loading) {
         return <p>Loading clients...</p>;
@@ -86,6 +169,52 @@ export function ClientsPage() {
                     Manage client portfolios and broker accounts.
                 </p>
             </div>
+
+            {canManage && (
+                <div className="mt-6 rounded-xl border bg-white p-5">
+                    <h3 className="font-medium text-slate-900">
+                        Add client
+                    </h3>
+
+                    <div className="mt-4 grid gap-3 md:grid-cols-[1fr_1fr_auto]">
+                        <input
+                            value={name}
+                            onChange={(event) =>
+                                setName(
+                                    event.target.value,
+                                )
+                            }
+                            placeholder="Client name"
+                            className="rounded-lg border px-3 py-2"
+                        />
+
+                        <input
+                            value={email}
+                            onChange={(event) =>
+                                setEmail(
+                                    event.target.value,
+                                )
+                            }
+                            placeholder="Email (optional)"
+                            type="email"
+                            className="rounded-lg border px-3 py-2"
+                        />
+
+                        <button
+                            type="button"
+                            disabled={creating}
+                            onClick={() =>
+                                void createClient()
+                            }
+                            className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+                        >
+                            {creating
+                                ? "Adding..."
+                                : "Add Client"}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <div className="mt-6 overflow-hidden rounded-xl border bg-white">
                 <table className="w-full text-left text-sm">
