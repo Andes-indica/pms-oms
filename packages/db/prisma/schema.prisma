@@ -38,6 +38,8 @@ model User {
   firmId String
   firm   Firm   @relation(fields: [firmId], references: [id])
 
+  auditLogs AuditLog[] @relation("AuditActor")
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -264,11 +266,15 @@ model AuditLog {
 
   message String?
 
+  actorUserId String?
+  actor       User? @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
   metadata Json?
 
   createdAt DateTime @default(now())
 
   @@index([firmId])
+  @@index([actorUserId])
 }
 
 enum AllocationMethod {
