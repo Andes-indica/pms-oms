@@ -26,6 +26,10 @@ import {
   RecentOrdersTable,
 } from "./RecentOrdersTable";
 
+import {
+  CashLedgerCard,
+} from "./CashLedgerCard";
+
 type Props = {
   portfolio: Portfolio;
 };
@@ -106,6 +110,11 @@ export function PortfolioSection({
           />
         </>
       )}
+
+      <CashLedgerCard
+        portfolioId={portfolio.id}
+        cashBalance={portfolio.cashBalance}
+      />
 
       <RiskLimitCard
         portfolioId={portfolio.id}
