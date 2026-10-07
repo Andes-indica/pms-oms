@@ -108,6 +108,7 @@ export function PortfolioSection({
       )}
 
       <RiskLimitCard
+        portfolioId={portfolio.id}
         riskLimit={portfolio.riskLimit}
       />
 
