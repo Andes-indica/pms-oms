@@ -301,7 +301,10 @@ export async function createBrokerAccount(
           },
         });
 
-    if (existing) {
+    if (
+      existing &&
+      !existing.archivedAt
+    ) {
       return res
         .status(409)
         .json({
@@ -310,37 +313,81 @@ export async function createBrokerAccount(
         });
     }
 
-    const brokerAccount =
-      await prisma
-        .brokerAccount
-        .create({
-          data: {
-            broker:
-              normalizedBroker,
-
-            accountId:
-              normalizedAccountId,
-
-            accountLabel:
-              typeof accountLabel ===
-                "string" &&
-                accountLabel.trim()
-                ? accountLabel.trim()
-                : null,
-
-            clientId:
-              client.id,
-          },
-
-          select: {
-            id: true,
-            broker: true,
-            accountId: true,
-            accountLabel: true,
-            clientId: true,
-            createdAt: true,
-          },
+    if (
+      existing &&
+      existing.clientId !==
+        client.id
+    ) {
+      return res
+        .status(409)
+        .json({
+          error:
+            "Broker account belongs to a different client",
         });
+    }
+
+    const brokerAccount =
+      existing
+        ? await prisma
+            .brokerAccount
+            .update({
+              where: {
+                id:
+                  existing.id,
+              },
+
+              data: {
+                archivedAt:
+                  null,
+
+                accountLabel:
+                  typeof accountLabel ===
+                    "string" &&
+                    accountLabel.trim()
+                    ? accountLabel.trim()
+                    : existing
+                      .accountLabel,
+              },
+
+              select: {
+                id: true,
+                broker: true,
+                accountId: true,
+                accountLabel: true,
+                clientId: true,
+                createdAt: true,
+              },
+            })
+        : await prisma
+            .brokerAccount
+            .create({
+              data: {
+                broker:
+                  normalizedBroker,
+
+                accountId:
+                  normalizedAccountId,
+
+                accountLabel:
+                  typeof accountLabel ===
+                    "string" &&
+                    accountLabel.trim()
+                    ? accountLabel.trim()
+                    : null,
+
+                clientId:
+                  client.id,
+              },
+
+              select: {
+                id: true,
+                broker: true,
+                accountId: true,
+                accountLabel: true,
+                clientId: true,
+                createdAt: true,
+              },
+            });
 
     return res
       .status(201)
