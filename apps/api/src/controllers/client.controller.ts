@@ -3,6 +3,11 @@ import { prisma } from "@pms-oms/db";
 import type {
   AuthenticatedRequest,
 } from "../middleware/auth.middleware";
+import {
+  createClientService,
+  updateClientService,
+  deleteClientService,
+} from "../services/client-management.service";
 
 export async function getClients(
   req: AuthenticatedRequest,
@@ -302,6 +307,182 @@ export async function getClientOverview(
     return res.status(500).json({
       error:
         "Failed to fetch client overview",
+    });
+  }
+}
+
+export async function createClient(
+  req: AuthenticatedRequest,
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
+    }
+
+    const client =
+      await createClientService(
+        req.user.firmId,
+        req.body,
+      );
+
+    return res.status(201).json({
+      data: client,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "UNKNOWN_ERROR";
+
+    if (
+      message ===
+      "CLIENT_NAME_REQUIRED"
+    ) {
+      return res.status(400).json({
+        error:
+          "Client name is required",
+      });
+    }
+
+    console.error(
+      "Failed to create client:",
+      error,
+    );
+
+    return res.status(500).json({
+      error:
+        "Failed to create client",
+    });
+  }
+}
+
+export async function updateClient(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
+    }
+
+    const client =
+      await updateClientService(
+        req.params.id,
+        req.user.firmId,
+        req.body,
+      );
+
+    return res.status(200).json({
+      data: client,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "UNKNOWN_ERROR";
+
+    if (
+      message ===
+      "CLIENT_NOT_FOUND"
+    ) {
+      return res.status(404).json({
+        error:
+          "Client not found",
+      });
+    }
+
+    if (
+      message ===
+      "CLIENT_NAME_REQUIRED"
+    ) {
+      return res.status(400).json({
+        error:
+          "Client name is required",
+      });
+    }
+
+    console.error(
+      "Failed to update client:",
+      error,
+    );
+
+    return res.status(500).json({
+      error:
+        "Failed to update client",
+    });
+  }
+}
+
+export async function deleteClient(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
+    }
+
+    const result =
+      await deleteClientService(
+        req.params.id,
+        req.user.firmId,
+      );
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "UNKNOWN_ERROR";
+
+    if (
+      message ===
+      "CLIENT_NOT_FOUND"
+    ) {
+      return res.status(404).json({
+        error:
+          "Client not found",
+      });
+    }
+
+    if (
+      message ===
+      "CLIENT_NOT_EMPTY"
+    ) {
+      return res.status(409).json({
+        error:
+          "Remove portfolios and broker accounts before deleting this client",
+      });
+    }
+
+    console.error(
+      "Failed to delete client:",
+      error,
+    );
+
+    return res.status(500).json({
+      error:
+        "Failed to delete client",
     });
   }
 }
