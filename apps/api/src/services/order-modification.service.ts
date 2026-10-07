@@ -157,6 +157,20 @@ export async function modifyOrderService(
      * so we don't count its old reservation
      * against itself.
      */
+    const brokerCashAllocation =
+        await prisma.portfolioBrokerCash
+            .findUnique({
+                where: {
+                    portfolioId_brokerAccountId: {
+                        portfolioId:
+                            order.portfolioId,
+
+                        brokerAccountId:
+                            order.brokerAccountId,
+                    },
+                },
+            });
+
     const otherOrders =
         await prisma.order.findMany({
             where: {
@@ -215,6 +229,48 @@ export async function modifyOrderService(
             throw new Error(
                 "INSUFFICIENT_CASH",
             );
+        }
+
+        if (
+            brokerCashAllocation
+        ) {
+            const brokerReservedByOthers =
+                otherOrders
+                    .filter(
+                        (other) =>
+                            other
+                                .brokerAccountId ===
+                            order
+                                .brokerAccountId,
+                    )
+                    .reduce(
+                        (
+                            total,
+                            other,
+                        ) =>
+                            total +
+                            Number(
+                                other
+                                    .reservedCash,
+                            ),
+                        0,
+                    );
+
+            const brokerAvailableCash =
+                Number(
+                    brokerCashAllocation
+                        .cashBalance,
+                ) -
+                brokerReservedByOthers;
+
+            if (
+                brokerAvailableCash <
+                estimatedValue
+            ) {
+                throw new Error(
+                    "INSUFFICIENT_BROKER_CASH",
+                );
+            }
         }
 
         newReservedCash =
