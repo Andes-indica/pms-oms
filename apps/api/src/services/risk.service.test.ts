@@ -16,6 +16,10 @@ function makePortfolio(
 
     cashBalance: 100_000,
 
+    client: {
+      firmId: "firm-1",
+    },
+
     holdings: [
       {
         brokerAccountId:
@@ -67,7 +71,7 @@ function fakeDatabase({
     },
 
     restrictedSecurity: {
-      findUnique: async () =>
+      findFirst: async () =>
         restrictedSecurity,
     },
 
