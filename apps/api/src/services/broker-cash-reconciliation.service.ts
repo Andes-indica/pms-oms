@@ -32,6 +32,9 @@ export async function getBrokerCashReconciliation(
         id:
           brokerAccountId,
 
+        archivedAt:
+          null,
+
         client: {
           firmId,
         },
@@ -221,6 +224,9 @@ export async function setBrokerCashAllocation(
             id:
               brokerAccountId,
 
+            archivedAt:
+              null,
+
             client: {
               firmId,
             },
@@ -339,6 +345,9 @@ export async function removeBrokerCashAllocation(
         portfolioId,
 
         brokerAccount: {
+          archivedAt:
+            null,
+
           client: {
             firmId,
           },
