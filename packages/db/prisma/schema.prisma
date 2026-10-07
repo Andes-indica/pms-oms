@@ -25,6 +25,7 @@ model Firm {
   clients      Client[]
   basketOrders BasketOrder[]
   auditLogs    AuditLog[]
+  restrictedSecurities RestrictedSecurity[]
 }
 
 model User {
@@ -276,9 +277,13 @@ model RestrictedSecurity {
 
   reason String?
 
+  firmId String?
+  firm   Firm? @relation(fields: [firmId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
 
-  @@unique([symbol, exchange])
+  @@unique([firmId, symbol, exchange])
+  @@index([symbol, exchange])
 }
 
 enum BrokerConnectionStatus {
