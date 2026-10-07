@@ -18,6 +18,8 @@ import liveUpdateRoutes
   from "./routes/live-update.routes";
 import instrumentRoutes
   from "./routes/instrument.routes";
+import riskRoutes
+  from "./routes/risk.routes";
 const app = express();
 
 const defaultCorsOrigins = [
@@ -81,6 +83,10 @@ app.use(
 app.use(
   "/api/instruments",
   instrumentRoutes,
+);
+app.use(
+  "/api/risk",
+  riskRoutes,
 );
 app.get("/health", (_req, res) => {
   res.json({
