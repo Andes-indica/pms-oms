@@ -67,14 +67,48 @@ export async function createPortfolioService(
     );
   }
 
-  return prisma.portfolio.create({
-    data: {
-      clientId,
-      name,
-      cashBalance:
-        initialCash,
+  return prisma.$transaction(
+    async (tx) => {
+      const portfolio =
+        await tx.portfolio.create({
+          data: {
+            clientId,
+            name,
+            cashBalance:
+              initialCash,
+          },
+        });
+
+      if (initialCash > 0) {
+        await tx.cashTransaction.create({
+          data: {
+            portfolioId:
+              portfolio.id,
+
+            type:
+              "DEPOSIT",
+
+            amount:
+              initialCash,
+
+            balanceAfter:
+              portfolio.cashBalance,
+
+            referenceType:
+              "PORTFOLIO_OPENING_BALANCE",
+
+            referenceId:
+              portfolio.id,
+
+            note:
+              "Opening cash balance",
+          },
+        });
+      }
+
+      return portfolio;
     },
-  });
+  );
 }
 
 export async function updatePortfolioService(
