@@ -306,6 +306,12 @@ export async function executeOrder(
           return res.status(400).json({
             error: "Insufficient cash Balance",
           });
+
+        case "INSUFFICIENT_BROKER_CASH":
+          return res.status(409).json({
+            error:
+              "Insufficient cash allocated to this broker account",
+          });
         case "RESTRICTED_SECURITY":
           return res.status(400).json({
             error: "security is restricted",
@@ -556,6 +562,7 @@ export async function modifyOrder(
           });
 
       case "INSUFFICIENT_CASH":
+      case "INSUFFICIENT_BROKER_CASH":
       case "INSUFFICIENT_HOLDINGS":
         return res
           .status(409)
