@@ -34,6 +34,10 @@ export async function createAuditLog(
       entityType: input.entityType,
       entityId: input.entityId,
       message: input.message,
+      actorUserId:
+        input.actorUserId ??
+        null,
+
       metadata:
         Object.keys(
           metadata,
