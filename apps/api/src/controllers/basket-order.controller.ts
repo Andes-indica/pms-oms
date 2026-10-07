@@ -5,6 +5,9 @@ import { prisma } from "@pms-oms/db";
 import { createBasketOrderService } from "../services/basket-order.service";
 import { executeBasketOrderService } from "../services/basket-execution.service";
 import { syncBasketOrderService } from "../services/basket-sync.service";
+import {
+  cancelBasketOrderService,
+} from "../services/basket-cancellation.service";
 import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 import {
   publishLiveUpdate,
@@ -257,6 +260,99 @@ export async function syncBasketOrder(
 
     return res.status(500).json({
       error: "Basket sync failed",
+    });
+  }
+}
+
+
+export async function cancelBasketOrder(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
+    }
+
+    const result =
+      await cancelBasketOrderService(
+        req.params.id,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "basket.updated",
+        entityType:
+          "BASKET_ORDER",
+        entityId:
+          req.params.id,
+      },
+    );
+
+    for (
+      const child of
+      result.results
+    ) {
+      publishLiveUpdate(
+        req.user.firmId,
+        {
+          type:
+            "order.updated",
+          entityType:
+            "ORDER",
+          entityId:
+            child.orderId,
+        },
+      );
+    }
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    if (
+      error instanceof Error
+    ) {
+      if (
+        error.message ===
+        "BASKET_NOT_FOUND"
+      ) {
+        return res.status(404).json({
+          error:
+            "Basket order not found",
+        });
+      }
+
+      if (
+        error.message ===
+        "BASKET_HAS_NO_ORDERS"
+      ) {
+        return res.status(409).json({
+          error:
+            "Basket contains no child orders",
+        });
+      }
+    }
+
+    console.error(
+      "Basket cancellation failed:",
+      error,
+    );
+
+    return res.status(500).json({
+      error:
+        "Basket cancellation failed",
     });
   }
 }
