@@ -20,6 +20,9 @@ import {
 import {
   ZerodhaCallbackPage,
 } from "./pages/ZerodhacallbackPage";
+import {
+  RiskPage,
+} from "./pages/RiskPage";
 
 function App() {
   const token = localStorage.getItem("accessToken");
@@ -57,6 +60,11 @@ function App() {
           <Route
             path="/basket-orders"
             element={<BasketOrdersPage />}
+          />
+
+          <Route
+            path="/risk"
+            element={<RiskPage />}
           />
 
           <Route
