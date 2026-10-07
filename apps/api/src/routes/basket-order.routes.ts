@@ -1,6 +1,7 @@
 import { Router } from "express";
 
 import {
+  cancelBasketOrder,
   createBasketOrder,
   executeBasketOrder,
   getBasketOrders,
@@ -40,6 +41,16 @@ router.post(
     "PORTFOLIO_MANAGER",
   ),
   executeBasketOrder,
+);
+
+router.post(
+  "/:id/cancel",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+  cancelBasketOrder,
 );
 
 router.post(
