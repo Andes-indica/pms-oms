@@ -111,6 +111,18 @@ export async function getBasketOrders(
           firmId: req.user.firmId,
         },
         include: {
+          allocations: {
+            include: {
+              portfolio: {
+                include: {
+                  client: true,
+                },
+              },
+              brokerAccount:
+                true,
+            },
+          },
+
           orders: {
             include: {
               portfolio: {
