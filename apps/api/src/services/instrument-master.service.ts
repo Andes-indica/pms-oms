@@ -2,6 +2,10 @@ import {
   readFile,
 } from "node:fs/promises";
 
+import {
+  prisma,
+} from "@pms-oms/db";
+
 export type InstrumentMasterItem = {
   symbol: string;
   exchange: string;
@@ -40,7 +44,7 @@ const defaultInstruments:
 let cachedPath:
   string | null = null;
 
-let cachedItems:
+let cachedSourceItems:
   InstrumentMasterItem[] | null =
   null;
 
@@ -82,7 +86,7 @@ function normalizeItem(
   };
 }
 
-export async function getInstrumentMaster():
+async function getConfiguredSourceItems():
   Promise<InstrumentMasterItem[]> {
   const configuredPath =
     process.env
@@ -91,22 +95,22 @@ export async function getInstrumentMaster():
     null;
 
   if (
-    cachedItems &&
+    cachedSourceItems &&
     cachedPath ===
       configuredPath
   ) {
-    return cachedItems;
+    return cachedSourceItems;
   }
 
   if (!configuredPath) {
     cachedPath = null;
 
-    cachedItems =
+    cachedSourceItems =
       defaultInstruments.map(
         normalizeItem,
       );
 
-    return cachedItems;
+    return cachedSourceItems;
   }
 
   let parsed:
@@ -139,7 +143,10 @@ export async function getInstrumentMaster():
   const seen =
     new Set<string>();
 
-  const items =
+  cachedPath =
+    configuredPath;
+
+  cachedSourceItems =
     parsed.map(
       (value) => {
         if (
@@ -158,7 +165,9 @@ export async function getInstrumentMaster():
           );
 
         const key =
-          `${item.exchange}:${item.symbol}`;
+          item.exchange +
+          ":" +
+          item.symbol;
 
         if (
           seen.has(key)
@@ -174,13 +183,50 @@ export async function getInstrumentMaster():
       },
     );
 
-  cachedPath =
-    configuredPath;
+  return cachedSourceItems;
+}
 
-  cachedItems =
-    items;
+export async function getInstrumentMaster():
+  Promise<InstrumentMasterItem[]> {
+  const rows =
+    await prisma.instrument.findMany({
+      where: {
+        isActive: true,
+      },
 
-  return items;
+      orderBy: [
+        {
+          exchange: "asc",
+        },
+        {
+          symbol: "asc",
+        },
+      ],
+    });
+
+  if (
+    rows.length > 0
+  ) {
+    return rows.map(
+      (row) => ({
+        symbol:
+          row.symbol,
+
+        exchange:
+          row.exchange,
+
+        instrumentToken:
+          row.instrumentToken ??
+          undefined,
+
+        name:
+          row.name ??
+          undefined,
+      }),
+    );
+  }
+
+  return getConfiguredSourceItems();
 }
 
 export async function validateInstrument(
@@ -206,20 +252,37 @@ export async function validateInstrument(
     );
   }
 
-  const instruments =
-    await getInstrumentMaster();
+  const row =
+    await prisma.instrument.findUnique({
+      where: {
+        symbol_exchange: {
+          symbol:
+            normalizedSymbol,
 
-  const match =
-    instruments.find(
-      (item) =>
-        item.symbol ===
-          normalizedSymbol &&
-        item.exchange ===
-          normalizedExchange,
-    );
+          exchange:
+            normalizedExchange,
+        },
+      },
+    });
 
-  if (match) {
-    return match;
+  if (
+    row?.isActive
+  ) {
+    return {
+      symbol:
+        row.symbol,
+
+      exchange:
+        row.exchange,
+
+      instrumentToken:
+        row.instrumentToken ??
+        undefined,
+
+      name:
+        row.name ??
+        undefined,
+    } satisfies InstrumentMasterItem;
   }
 
   const strict =
@@ -242,7 +305,164 @@ export async function validateInstrument(
   } satisfies InstrumentMasterItem;
 }
 
+export async function upsertInstrument(
+  input: InstrumentMasterItem,
+) {
+  const item =
+    normalizeItem(
+      input,
+    );
+
+  return prisma.instrument.upsert({
+    where: {
+      symbol_exchange: {
+        symbol:
+          item.symbol,
+
+        exchange:
+          item.exchange,
+      },
+    },
+
+    create: {
+      symbol:
+        item.symbol,
+
+      exchange:
+        item.exchange,
+
+      instrumentToken:
+        item.instrumentToken ??
+        null,
+
+      name:
+        item.name ??
+        null,
+
+      isActive:
+        true,
+    },
+
+    update: {
+      instrumentToken:
+        item.instrumentToken ??
+        null,
+
+      name:
+        item.name ??
+        null,
+
+      isActive:
+        true,
+    },
+  });
+}
+
+export async function deactivateInstrument(
+  id: string,
+) {
+  const existing =
+    await prisma.instrument.findUnique({
+      where: {
+        id,
+      },
+    });
+
+  if (!existing) {
+    throw new Error(
+      "INSTRUMENT_NOT_FOUND",
+    );
+  }
+
+  return prisma.instrument.update({
+    where: {
+      id,
+    },
+
+    data: {
+      isActive: false,
+    },
+  });
+}
+
+export async function importConfiguredInstrumentMaster(
+  replace = false,
+) {
+  const items =
+    await getConfiguredSourceItems();
+
+  return prisma.$transaction(
+    async (tx) => {
+      if (replace) {
+        await tx.instrument.updateMany({
+          data: {
+            isActive: false,
+          },
+        });
+      }
+
+      for (
+        const item of
+        items
+      ) {
+        await tx.instrument.upsert({
+          where: {
+            symbol_exchange: {
+              symbol:
+                item.symbol,
+
+              exchange:
+                item.exchange,
+            },
+          },
+
+          create: {
+            symbol:
+              item.symbol,
+
+            exchange:
+              item.exchange,
+
+            instrumentToken:
+              item.instrumentToken ??
+              null,
+
+            name:
+              item.name ??
+              null,
+
+            isActive:
+              true,
+          },
+
+          update: {
+            instrumentToken:
+              item.instrumentToken ??
+              null,
+
+            name:
+              item.name ??
+              null,
+
+            isActive:
+              true,
+          },
+        });
+      }
+
+      return {
+        importedCount:
+          items.length,
+
+        replaced:
+          replace,
+      };
+    },
+  );
+}
+
 export function resetInstrumentMasterCacheForTests() {
   cachedPath = null;
-  cachedItems = null;
+  cachedSourceItems =
+    null;
 }
