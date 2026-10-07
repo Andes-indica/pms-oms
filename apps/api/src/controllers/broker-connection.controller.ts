@@ -113,6 +113,9 @@ async function findBrokerAccount(
           req.params
             .brokerAccountId,
 
+        archivedAt:
+          null,
+
         client: {
           firmId:
             req.user!.firmId,
