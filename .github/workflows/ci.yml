@@ -71,4 +71,4 @@ jobs:
         run: bun run build
 
       - name: Run tests
-        run: bun test ./apps ./packages
+        run: bun run test:all

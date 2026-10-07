@@ -178,10 +178,12 @@ async function getConfiguredSourceItems():
   return items;
 }
 
-export async function getInstrumentMaster():
+export async function getInstrumentMaster(
+  database: Pick<typeof prisma, "instrument"> = prisma,
+):
   Promise<InstrumentMasterItem[]> {
   const rows =
-    await prisma.instrument.findMany({
+    await database.instrument.findMany({
       where: {
         isActive: true,
       },
@@ -219,13 +221,14 @@ export async function getInstrumentMaster():
   }
 
   // An initialized database remains authoritative even when every row is inactive.
-  const storedCount = await prisma.instrument.count();
+  const storedCount = await database.instrument.count();
   return storedCount > 0 ? [] : getConfiguredSourceItems();
 }
 
 export async function validateInstrument(
   symbol: string,
   exchange: string,
+  database: Pick<typeof prisma, "instrument"> = prisma,
 ) {
   const normalizedSymbol =
     symbol
@@ -247,7 +250,7 @@ export async function validateInstrument(
   }
 
   const row =
-    await prisma.instrument.findUnique({
+    await database.instrument.findUnique({
       where: {
         symbol_exchange: {
           symbol:
@@ -284,7 +287,7 @@ export async function validateInstrument(
     throw new Error("UNKNOWN_INSTRUMENT");
   }
 
-  if (await prisma.instrument.count() === 0) {
+  if (await database.instrument.count() === 0) {
     const sourceItems = await getConfiguredSourceItems();
     const configuredItem = sourceItems.find(
       (item) => item.symbol === normalizedSymbol && item.exchange === normalizedExchange,
@@ -316,13 +319,14 @@ export async function validateInstrument(
 
 export async function upsertInstrument(
   input: InstrumentMasterItem,
+  database: Pick<typeof prisma, "instrument"> = prisma,
 ) {
   const item =
     normalizeItem(
       input,
     );
 
-  return prisma.instrument.upsert({
+  return database.instrument.upsert({
     where: {
       symbol_exchange: {
         symbol:
@@ -396,13 +400,14 @@ export async function deactivateInstrument(
 
 export async function importConfiguredInstrumentMaster(
   replace = false,
+  database: Pick<typeof prisma, "$transaction"> = prisma,
 ) {
   // Explicit imports must read edits to the configured file at the same path.
   resetInstrumentMasterCache();
   const items =
     await getConfiguredSourceItems();
 
-  return prisma.$transaction(
+  return database.$transaction(
     async (tx) => {
       if (replace) {
         await tx.instrument.updateMany({

@@ -1,16 +1,6 @@
-import dotenv from "dotenv";
-import path from "node:path";
+import { loadDatabaseEnvironment } from "./environment";
 
-if(!process.env.DATABASE_URL){
-const envFile = process.env.NODE_ENV === "test" ? ".env.test":".env"; 
-dotenv.config({
-  path:path.resolve(
-    process.cwd(),
-    "../../",
-    envFile,
-  ),
-});
-}
+loadDatabaseEnvironment();
 
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "./generated/prisma/client";

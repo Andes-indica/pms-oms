@@ -10,13 +10,16 @@
   "scripts": {
     "dev": "bun --filter '*' dev",
     "build": "bun --filter '*' build",
-    "test": "bun test ./apps ./packages",
+    "test": "bun scripts/test.ts all",
     "typecheck": "bunx tsc --noEmit -p apps/api/tsconfig.json && bunx tsc --noEmit -p packages/db/tsconfig.json && bunx tsc --noEmit -p packages/broker/tsconfig.json",
     "lint": "bun run typecheck",
     "dev:api": "cd apps/api && bun run dev",
-    "test:unit": "bun test ./apps ./packages",
-    "test:integration": "NODE_ENV=test bun --env-file=.env.test test ./apps/api/src/**/*.integration.test.ts",
-    "test:all": "bun run test:unit && bun run test:integration"
+    "test:unit": "bun scripts/test.ts unit",
+    "test:integration": "bun scripts/test.ts integration",
+    "test:all": "bun scripts/test.ts all",
+    "db:generate": "cd packages/db && bunx prisma generate",
+    "db:migrate:test": "NODE_ENV=test bun --cwd packages/db x prisma migrate deploy",
+    "db:status:test": "NODE_ENV=test bun --cwd packages/db x prisma migrate status"
   },
   "dependencies": {
     "@pms-oms/broker": "workspace:*"

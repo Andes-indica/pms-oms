@@ -1,8 +1,10 @@
 import {
   prisma,
 } from "@pms-oms/db";
+import { assertTestDatabase } from "../../../../packages/db/src/environment";
 
 export async function clearTestDatabase() {
+  assertTestDatabase(process.env.DATABASE_URL);
   await prisma.$transaction([
     prisma.execution.deleteMany(),
     prisma.executionJob.deleteMany(),

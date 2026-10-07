@@ -1,10 +1,7 @@
-import { config } from "dotenv";
-import { fileURLToPath } from "node:url";
 import { defineConfig, env } from "prisma/config";
+import { loadDatabaseEnvironment } from "./src/environment";
 
-config({
-  path: fileURLToPath(new URL("../../.env", import.meta.url)),
-});
+loadDatabaseEnvironment();
 
 export default defineConfig({
   schema: "prisma/schema.prisma",
