@@ -47,6 +47,9 @@ function fakeDatabase({
   restrictedSecurity =
     null,
 
+  brokerCashBalance =
+    null,
+
   reservedCash = 0,
 
   reservedQuantity = 0,
@@ -57,6 +60,7 @@ function fakeDatabase({
 }: {
   portfolio?: any;
   restrictedSecurity?: any;
+  brokerCashBalance?: number | null;
   reservedCash?: number;
   reservedQuantity?: number;
   buyQuantity?: number;
@@ -73,6 +77,17 @@ function fakeDatabase({
     restrictedSecurity: {
       findFirst: async () =>
         restrictedSecurity,
+    },
+
+    portfolioBrokerCash: {
+      findUnique: async () =>
+        brokerCashBalance ===
+          null
+          ? null
+          : {
+              cashBalance:
+                brokerCashBalance,
+            },
     },
 
     order: {
@@ -197,6 +212,37 @@ describe(
           ),
         ).rejects.toThrow(
           "INSUFFICIENT_CASH",
+        );
+      },
+    );
+
+    test(
+      "rejects BUY when broker allocation is insufficient",
+      async () => {
+        expect(
+          runRiskChecks(
+            {
+              ...baseInput,
+
+              quantity: 10,
+
+              estimatedPrice:
+                1000,
+            },
+
+            fakeDatabase({
+              portfolio:
+                makePortfolio({
+                  cashBalance:
+                    100_000,
+                }),
+
+              brokerCashBalance:
+                5_000,
+            }),
+          ),
+        ).rejects.toThrow(
+          "INSUFFICIENT_BROKER_CASH",
         );
       },
     );
