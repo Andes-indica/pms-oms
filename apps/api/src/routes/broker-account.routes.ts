@@ -17,6 +17,12 @@ import {
 } from "../controllers/broker-cash.controller";
 
 import {
+  archiveBrokerAccountController,
+  disconnectBrokerAccountController,
+  updateBrokerAccount,
+} from "../controllers/broker-account-management.controller";
+
+import {
   requireAuth,
 } from "../middleware/auth.middleware";
 
@@ -40,6 +46,38 @@ router.post(
   ),
 
   createBrokerAccount,
+);
+
+router.patch(
+  "/broker-accounts/:id",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+
+  updateBrokerAccount,
+);
+
+router.post(
+  "/broker-accounts/:id/disconnect",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+
+  disconnectBrokerAccountController,
+);
+
+router.delete(
+  "/broker-accounts/:id",
+
+  requireRole(
+    "ADMIN",
+  ),
+
+  archiveBrokerAccountController,
 );
 
 router.get(
