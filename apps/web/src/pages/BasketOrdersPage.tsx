@@ -166,8 +166,18 @@ function BasketList({
     basketId: string,
     action:
       | "execute"
-      | "sync",
+      | "sync"
+      | "cancel",
   ) {
+    if (
+      action === "cancel" &&
+      !window.confirm(
+        "Cancel all cancellable child orders in this basket?",
+      )
+    ) {
+      return;
+    }
+
     try {
       setBusyId(basketId);
 
@@ -321,6 +331,29 @@ function BasketList({
                   {busy
                     ? "Syncing..."
                     : "Sync Basket"}
+                </button>
+              )}
+              {[
+                "PENDING",
+                "SUBMITTED",
+                "PARTIALLY_SUBMITTED",
+                "PARTIALLY_FILLED",
+              ].includes(
+                basket.status,
+              ) && (
+                <button
+                  disabled={busy}
+                  onClick={() =>
+                    runAction(
+                      basket.id,
+                      "cancel",
+                    )
+                  }
+                  className="rounded-lg border border-red-200 px-4 py-2 text-sm text-red-700 disabled:opacity-60"
+                >
+                  {busy
+                    ? "Cancelling..."
+                    : "Cancel Basket"}
                 </button>
               )}
             </div>
