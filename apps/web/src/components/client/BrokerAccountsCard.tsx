@@ -109,6 +109,27 @@ function canManageBrokerAccounts() {
         return false;
     }
 }
+function isBrokerAdmin() {
+    const rawUser =
+        localStorage.getItem(
+            "user",
+        );
+
+    if (!rawUser) {
+        return false;
+    }
+
+    try {
+        return (
+            JSON.parse(rawUser)
+                ?.role ===
+            "ADMIN"
+        );
+    } catch {
+        return false;
+    }
+}
+
 function canRepairReconciliation() {
     const rawUser =
         localStorage.getItem(
@@ -190,6 +211,8 @@ export function BrokerAccountsCard({
 
     const canManage =
         canManageBrokerAccounts();
+    const isAdmin =
+        isBrokerAdmin();
     const canRepair =
         canRepairReconciliation();
     const [
@@ -268,6 +291,129 @@ export function BrokerAccountsCard({
         useState<string | null>(
             null,
         );
+
+    async function renameBrokerAccount(
+        account: BrokerAccount,
+    ) {
+        const nextLabel =
+            window.prompt(
+                "Broker account label",
+                account.accountLabel ??
+                "",
+            );
+
+        if (nextLabel === null) {
+            return;
+        }
+
+        try {
+            setSavingId(
+                account.id,
+            );
+            setError("");
+
+            await apiFetch(
+                `/api/broker-accounts/${account.id}`,
+                {
+                    method: "PATCH",
+                    body: JSON.stringify({
+                        accountLabel:
+                            nextLabel,
+                    }),
+                },
+            );
+
+            onChanged?.();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to rename broker account",
+            );
+        } finally {
+            setSavingId(null);
+        }
+    }
+
+    async function disconnectBroker(
+        account: BrokerAccount,
+    ) {
+        if (
+            !window.confirm(
+                "Disconnect the current broker session? Saved API credentials will be kept.",
+            )
+        ) {
+            return;
+        }
+
+        try {
+            setSavingId(
+                account.id,
+            );
+            setError("");
+
+            await apiFetch(
+                `/api/broker-accounts/${account.id}/disconnect`,
+                {
+                    method: "POST",
+                },
+            );
+
+            setMessage(
+                `${account.accountId} disconnected.`,
+            );
+
+            onChanged?.();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to disconnect broker account",
+            );
+        } finally {
+            setSavingId(null);
+        }
+    }
+
+    async function archiveBroker(
+        account: BrokerAccount,
+    ) {
+        if (
+            !window.confirm(
+                "Archive this broker account? It must have no holdings, active orders, or allocated cash.",
+            )
+        ) {
+            return;
+        }
+
+        try {
+            setSavingId(
+                account.id,
+            );
+            setError("");
+
+            await apiFetch(
+                `/api/broker-accounts/${account.id}`,
+                {
+                    method: "DELETE",
+                },
+            );
+
+            setMessage(
+                `${account.accountId} archived.`,
+            );
+
+            onChanged?.();
+        } catch (error) {
+            setError(
+                error instanceof Error
+                    ? error.message
+                    : "Failed to archive broker account",
+            );
+        } finally {
+            setSavingId(null);
+        }
+    }
 
     function startConfigure(
         brokerAccountId: string,
@@ -895,6 +1041,61 @@ export function BrokerAccountsCard({
                                                                     : "Reconcile"}
                                                             </button>
                                                         )}
+                                                    {canManage && (
+                                                        <button
+                                                            type="button"
+                                                            disabled={
+                                                                savingId ===
+                                                                account.id
+                                                            }
+                                                            onClick={() =>
+                                                                void renameBrokerAccount(
+                                                                    account,
+                                                                )
+                                                            }
+                                                            className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700"
+                                                        >
+                                                            Rename
+                                                        </button>
+                                                    )}
+
+                                                    {canManage &&
+                                                        status ===
+                                                            "CONNECTED" && (
+                                                        <button
+                                                            type="button"
+                                                            disabled={
+                                                                savingId ===
+                                                                account.id
+                                                            }
+                                                            onClick={() =>
+                                                                void disconnectBroker(
+                                                                    account,
+                                                                )
+                                                            }
+                                                            className="rounded-lg border px-3 py-2 text-sm font-medium text-slate-700"
+                                                        >
+                                                            Disconnect
+                                                        </button>
+                                                    )}
+
+                                                    {isAdmin && (
+                                                        <button
+                                                            type="button"
+                                                            disabled={
+                                                                savingId ===
+                                                                account.id
+                                                            }
+                                                            onClick={() =>
+                                                                void archiveBroker(
+                                                                    account,
+                                                                )
+                                                            }
+                                                            className="rounded-lg border border-red-200 px-3 py-2 text-sm font-medium text-red-700"
+                                                        >
+                                                            Archive
+                                                        </button>
+                                                    )}
                                                 </div>
                                             )}
                                     </div>
