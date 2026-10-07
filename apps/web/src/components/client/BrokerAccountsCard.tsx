@@ -13,6 +13,10 @@ import type {
     Portfolio
 } from "./types";
 
+import {
+    BrokerCashReconciliationCard,
+} from "./BrokerCashReconciliationCard";
+
 type Props = {
     clientId: string;
     accounts: BrokerAccount[];
@@ -1359,6 +1363,11 @@ export function BrokerAccountsCard({
                                                 </p>
                                             </div>
                                         )}
+
+                                    <BrokerCashReconciliationCard
+                                        account={account}
+                                        portfolios={portfolios}
+                                    />
 
                                     {editing &&
                                         isZerodha && (
