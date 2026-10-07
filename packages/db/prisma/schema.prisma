@@ -69,6 +69,7 @@ model BrokerAccount {
 
   orders   Order[]
   holdings Holding[]
+  portfolioCashAllocations PortfolioBrokerCash[]
 
   connection BrokerConnection?
 
@@ -135,11 +136,30 @@ model Portfolio {
   holdings Holding[]
   orders   Order[]
   cashTransactions CashTransaction[]
+  brokerCashAllocations PortfolioBrokerCash[]
 
   riskLimit RiskLimit?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PortfolioBrokerCash {
+  id String @id @default(cuid())
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+
+  cashBalance Decimal @default(0) @db.Decimal(18, 4)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([portfolioId, brokerAccountId])
+  @@index([brokerAccountId])
 }
 
 model CashTransaction {
