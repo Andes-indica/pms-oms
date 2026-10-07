@@ -11,6 +11,12 @@ import {
 } from "../controllers/broker-account.controller";
 
 import {
+  deleteBrokerCashAllocation,
+  getBrokerCashStatus,
+  updateBrokerCashAllocation,
+} from "../controllers/broker-cash.controller";
+
+import {
   requireAuth,
 } from "../middleware/auth.middleware";
 
@@ -48,6 +54,43 @@ router.get(
 
   getBrokerSnapshot,
 );
+router.get(
+  "/broker-accounts/:id/cash-reconciliation",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+    "VIEWER",
+  ),
+
+  getBrokerCashStatus,
+);
+
+router.put(
+  "/broker-accounts/:id/cash-allocations",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+
+  updateBrokerCashAllocation,
+);
+
+router.delete(
+  "/broker-accounts/:id/cash-allocations/:portfolioId",
+
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+
+  deleteBrokerCashAllocation,
+);
+
 router.get(
   "/broker-accounts/:id/reconciliation",
 
