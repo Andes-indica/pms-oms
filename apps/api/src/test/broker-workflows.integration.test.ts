@@ -328,7 +328,7 @@ describe("MockBroker create, queue, fill and cancel through HTTP", () => {
     expect(Number(cancelled.reservedCash)).toBe(0);
     expect(cancelled.reservedQuantity).toBe(0);
     await api("POST", `/orders/${order.id}/sync`);
-    await api("POST", `/orders/${order.id}/cancel`, undefined, 409);
+    expect(await api("POST", `/orders/${order.id}/cancel`)).toEqual(cancelled);
     const holdings = await prisma.holding.findMany();
     expect(holdings).toHaveLength(1);
     expect(holdings[0]!.quantity).toBe(5);
