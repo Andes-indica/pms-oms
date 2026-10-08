@@ -34,6 +34,12 @@ submission, fills, cash accounting and cancellation. Zerodha token exchange and
 holdings responses are simulated at the adapter boundary; these tests do not
 contact Zerodha or place live orders.
 
+Basket regressions also render the React form to verify account and portfolio
+selection for every allocation method and visible child-order errors. Database
+tests submit mixed MockBroker/Zerodha baskets through the real queue and compare
+Kite parameters with normal orders. Kite submission is intercepted at the SDK
+boundary, so these tests also place no live orders.
+
 To inspect the test database's migration state without changing it:
 
 ```bash

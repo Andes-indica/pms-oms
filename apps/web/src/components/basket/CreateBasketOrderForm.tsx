@@ -203,9 +203,9 @@ export function CreateBasketOrderForm({
       {
         clientId: client.id,
         portfolioId:
-          portfolio.id,
+          client.portfolios.length === 1 ? portfolio.id : "",
         brokerAccountId:
-          brokerAccount.id,
+          client.brokerAccounts.length === 1 ? brokerAccount.id : "",
         quantity: "",
         percentage: "",
       },
@@ -216,7 +216,9 @@ export function CreateBasketOrderForm({
     clientId: string,
     field:
       | "quantity"
-      | "percentage",
+      | "percentage"
+      | "portfolioId"
+      | "brokerAccountId",
     value: string,
   ) {
     setTargets((current) =>
@@ -261,6 +263,17 @@ export function CreateBasketOrderForm({
           "Select at least one client",
         );
         return;
+      }
+
+      for (const target of targets) {
+        const client = clients.find((item) => item.id === target.clientId);
+        if (
+          !client?.portfolios.some((portfolio) => portfolio.id === target.portfolioId) ||
+          !client.brokerAccounts.some((account) => account.id === target.brokerAccountId)
+        ) {
+          setError(`Select a portfolio and broker account for ${client?.name ?? "each client"}`);
+          return;
+        }
       }
 
       if (
@@ -623,15 +636,45 @@ export function CreateBasketOrderForm({
                       </p>
 
                       <p className="text-xs text-slate-500">
-                        {
-                          client
-                            .portfolios?.[0]
-                            ?.name ??
-                          "No portfolio"
-                        }
+                        Portfolios: {client.portfolios.length} · Broker accounts: {client.brokerAccounts.length}
                       </p>
                     </div>
                   </label>
+
+                  {selected && target && (
+                    <div className="mt-3 grid gap-3">
+                      <Field label="Portfolio">
+                        <select
+                          aria-label={`${client.name} portfolio`}
+                          required
+                          value={target.portfolioId}
+                          onChange={(event) => updateTarget(client.id, "portfolioId", event.target.value)}
+                          className="w-full rounded-lg border px-3 py-2"
+                        >
+                          <option value="">Select portfolio</option>
+                          {client.portfolios.map((portfolio) => (
+                            <option key={portfolio.id} value={portfolio.id}>{portfolio.name}</option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Field label="Broker account">
+                        <select
+                          aria-label={`${client.name} broker account`}
+                          required
+                          value={target.brokerAccountId}
+                          onChange={(event) => updateTarget(client.id, "brokerAccountId", event.target.value)}
+                          className="w-full rounded-lg border px-3 py-2"
+                        >
+                          <option value="">Select broker account</option>
+                          {client.brokerAccounts.map((account) => (
+                            <option key={account.id} value={account.id}>
+                              {account.broker} · {account.accountId}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                    </div>
+                  )}
 
                   {selected &&
                     allocationMethod ===

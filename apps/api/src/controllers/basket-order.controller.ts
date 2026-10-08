@@ -125,6 +125,9 @@ export async function getBasketOrders(
 
           orders: {
             include: {
+              executionJob: {
+                select: { status: true, lastError: true },
+              },
               portfolio: {
                 include: {
                   client: true,

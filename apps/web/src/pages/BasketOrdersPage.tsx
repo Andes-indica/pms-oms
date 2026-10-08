@@ -28,8 +28,14 @@ type Basket = {
     id: string;
     quantity: number;
     status: string;
+    brokerOrderId?: string | null;
+    executionJob?: {
+      status: string;
+      lastError?: string | null;
+    } | null;
 
     portfolio: {
+      name: string;
       client: {
         name: string;
       };
@@ -161,6 +167,7 @@ function BasketList({
 }) {
   const [busyId, setBusyId] =
     useState<string | null>(null);
+  const [actionErrors, setActionErrors] = useState<Record<string, string[]>>({});
 
   async function runAction(
     basketId: string,
@@ -180,13 +187,29 @@ function BasketList({
 
     try {
       setBusyId(basketId);
+      setActionErrors((current) => ({ ...current, [basketId]: [] }));
 
-      await apiFetch(
+      const response = await apiFetch<{
+        data: { results: Array<{ orderId: string; success?: boolean; status?: string; error?: string }> };
+      }>(
         `/api/basket-orders/${basketId}/${action}`,
         {
           method: "POST",
         },
       );
+
+      const basket = baskets.find((item) => item.id === basketId);
+      const errors = response.data.results
+        .filter((result) => result.success === false || result.status === "FAILED")
+        .map((result) => {
+          const order = basket?.orders.find((item) => item.id === result.orderId);
+          const account = order?.brokerAccount;
+          const label = order
+            ? `${order.portfolio.client.name}${account ? ` (${account.broker} ${account.accountId})` : ""}`
+            : result.orderId;
+          return `${label}: ${result.error ?? "Child order action failed"}`;
+        });
+      setActionErrors((current) => ({ ...current, [basketId]: errors }));
 
       await onUpdated();
     } catch (error) {
@@ -259,6 +282,8 @@ function BasketList({
                         }
                       </p>
 
+                      <p className="text-xs text-slate-500">{order.portfolio.name}</p>
+
                       {order
                         .brokerAccount && (
                         <p className="text-xs text-slate-500">
@@ -286,11 +311,26 @@ function BasketList({
                       <p className="text-xs text-slate-500">
                         {order.status}
                       </p>
+                      {order.brokerOrderId && (
+                        <p className="text-xs text-slate-500">Broker order: {order.brokerOrderId}</p>
+                      )}
+                      {order.executionJob && (
+                        <p className="text-xs text-slate-500">Execution: {order.executionJob.status}</p>
+                      )}
+                      {order.executionJob?.lastError && (
+                        <p role="alert" className="mt-1 max-w-sm break-words text-xs text-red-600">
+                          {order.executionJob.lastError}
+                        </p>
+                      )}
                     </div>
                   </div>
                 ),
               )}
             </div>
+
+            {actionErrors[basket.id]?.map((error, index) => (
+              <p key={index} role="alert" className="mt-3 text-sm text-red-600">{error}</p>
+            ))}
 
             <div className="mt-4 flex gap-2">
               {basket.status ===

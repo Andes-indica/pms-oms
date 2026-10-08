@@ -1,5 +1,6 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import type { Server } from "node:http";
+import { KiteConnect } from "kiteconnect";
 import { ZerodhaAuth, ZerodhaBroker, type BrokerExecution } from "@pms-oms/broker";
 import { prisma } from "@pms-oms/db";
 import app from "../app";
@@ -339,5 +340,123 @@ describe("MockBroker create, queue, fill and cancel through HTTP", () => {
     expect(await prisma.execution.count()).toBe(2);
     expect(await prisma.cashTransaction.count()).toBe(2);
     if (side === "SELL") expect(Number(cancelled.realizedPnl)).toBe(500);
+  });
+});
+
+describe("basket execution with real broker adapters", () => {
+  async function basketAccounts(expired = false) {
+    // Keep the existing MOCK account first, as in clients created before Kite was configured.
+    const zerodha = await prisma.brokerAccount.create({
+      data: {
+        clientId: account.client.id, broker: "ZERODHA", accountId: "AB1234",
+        connection: {
+          create: {
+            credentialsEncrypted: encryptBrokerData({ apiKey: "basket-api-key", apiSecret: "basket-api-secret" }),
+            sessionEncrypted: encryptBrokerData({ accessToken: "basket-access-token" }),
+            status: "CONNECTED",
+            sessionExpiresAt: new Date(Date.now() + (expired ? -60_000 : 3_600_000)),
+          },
+        },
+      },
+    });
+    const selectedPortfolio = await prisma.portfolio.create({
+      data: { name: "Selected Kite portfolio", clientId: account.client.id, cashBalance: 100_000 },
+    });
+    const secondClient = await prisma.client.create({
+      data: {
+        name: "Second basket client", firmId: account.firm.id,
+        portfolios: { create: { name: "Mock portfolio", cashBalance: 100_000 } },
+        brokerAccounts: { create: { broker: "MOCK", accountId: `SECOND-${crypto.randomUUID()}` } },
+      },
+      include: { portfolios: true, brokerAccounts: true },
+    });
+    return { zerodha, selectedPortfolio, secondClient };
+  }
+
+  test.each(["EQUAL_QUANTITY", "FIXED_QUANTITY", "PERCENTAGE"])(
+    "%s routes the selected account through the same Kite adapter as a normal order",
+    async (allocationMethod) => {
+      const { zerodha, selectedPortfolio, secondClient } = await basketAccounts();
+      // Stop at the SDK network boundary: exercise the real factory, credentials,
+      // Zerodha adapter and parameter mapping without sending any live order.
+      const kitePlace = spyOn(KiteConnect.prototype, "placeOrder").mockImplementation(async function (this: unknown) {
+        const credentials = this as unknown as { api_key: string; access_token: string };
+        expect(credentials.api_key).toBe("basket-api-key");
+        expect(credentials.access_token).toBe("basket-access-token");
+        return { order_id: `KITE-${crypto.randomUUID()}` };
+      });
+      restoreSpies.push(() => kitePlace.mockRestore());
+      const basket = await api("POST", "/basket-orders", {
+        symbol: "INFY", exchange: "NSE", side: "BUY", orderType: "LIMIT", limitPrice: 1500,
+        totalQuantity: 5, allocationMethod,
+        targets: [
+          { portfolioId: selectedPortfolio.id, brokerAccountId: zerodha.id,
+            ...(allocationMethod === "FIXED_QUANTITY" ? { quantity: 3 } : allocationMethod === "PERCENTAGE" ? { percentage: 60 } : {}) },
+          { portfolioId: secondClient.portfolios[0]!.id, brokerAccountId: secondClient.brokerAccounts[0]!.id,
+            ...(allocationMethod === "FIXED_QUANTITY" ? { quantity: 2 } : allocationMethod === "PERCENTAGE" ? { percentage: 40 } : {}) },
+        ],
+      }, 201);
+      expect(basket.orders).toHaveLength(2);
+      expect(basket.orders.find((order: { brokerAccountId: string }) => order.brokerAccountId === zerodha.id))
+        .toMatchObject({ portfolioId: selectedPortfolio.id, quantity: 3 });
+      const queued = await api("POST", `/basket-orders/${basket.id}/execute`, undefined, 202);
+      expect(queued.results.every((result: { success: boolean }) => result.success)).toBe(true);
+      await api("POST", `/basket-orders/${basket.id}/execute`, undefined, 202);
+      expect(await prisma.executionJob.count()).toBe(2);
+      for (let index = 0; index < 2; index++) {
+        expect(await processNextExecutionJob()).toMatchObject({ processed: true, succeeded: true });
+      }
+      expect(await processNextExecutionJob()).toEqual({ processed: false });
+      expect(kitePlace).toHaveBeenCalledTimes(1);
+      expect(kitePlace.mock.calls[0]).toEqual(["regular", expect.objectContaining({
+        tradingsymbol: "INFY", exchange: "NSE", transaction_type: "BUY", order_type: "LIMIT",
+        quantity: 3, price: 1500, product: "CNC", validity: "DAY", tag: expect.any(String),
+      })]);
+      const orders = await prisma.order.findMany({ where: { basketOrderId: basket.id } });
+      expect(orders.every((order) => order.status === "SUBMITTED")).toBe(true);
+      expect(orders.find((order) => order.brokerAccountId === zerodha.id)!.brokerOrderId).toStartWith("KITE-");
+      expect(orders.find((order) => order.brokerAccountId !== zerodha.id)!.brokerOrderId).toStartWith("MOCK-");
+      expect(await prisma.order.count({ where: { brokerAccountId: account.brokerAccount.id } })).toBe(0);
+      const listed = (await api("GET", "/basket-orders")).find((item: { id: string }) => item.id === basket.id);
+      expect(listed.status).toBe("SUBMITTED");
+      expect(listed.orders.every((order: { executionJob: { status: string } }) => order.executionJob.status === "COMPLETED"))
+        .toBe(true);
+
+      const normal = await api("POST", "/orders", {
+        portfolioId: selectedPortfolio.id, brokerAccountId: zerodha.id,
+        symbol: "INFY", exchange: "NSE", side: "BUY", orderType: "LIMIT", quantity: 3, limitPrice: 1500,
+      }, 201);
+      await api("POST", `/orders/${normal.id}/execute`, undefined, 202);
+      expect(await processNextExecutionJob()).toMatchObject({ succeeded: true });
+      expect(kitePlace).toHaveBeenCalledTimes(2);
+      const basketParameters = kitePlace.mock.calls[0]![1] as Record<string, unknown>;
+      const normalParameters = kitePlace.mock.calls[1]![1] as Record<string, unknown>;
+      expect({ ...basketParameters, tag: undefined }).toEqual({ ...normalParameters, tag: undefined });
+      expect(basketParameters.tag).not.toBe(normalParameters.tag);
+    },
+  );
+
+  test("an expired Kite session exposes the child failure while another broker can submit", async () => {
+    const { zerodha, selectedPortfolio, secondClient } = await basketAccounts(true);
+    const kitePlace = spyOn(KiteConnect.prototype, "placeOrder").mockRejectedValue(new Error("UNEXPECTED_KITE_CALL"));
+    restoreSpies.push(() => kitePlace.mockRestore());
+    const basket = await api("POST", "/basket-orders", {
+      symbol: "INFY", exchange: "NSE", side: "BUY", orderType: "LIMIT", limitPrice: 1500,
+      totalQuantity: 2, allocationMethod: "EQUAL_QUANTITY",
+      targets: [
+        { portfolioId: selectedPortfolio.id, brokerAccountId: zerodha.id },
+        { portfolioId: secondClient.portfolios[0]!.id, brokerAccountId: secondClient.brokerAccounts[0]!.id },
+      ],
+    }, 201);
+    await api("POST", `/basket-orders/${basket.id}/execute`, undefined, 202);
+    const results = [await processNextExecutionJob(), await processNextExecutionJob()];
+    expect(results.filter((result) => result.succeeded)).toHaveLength(1);
+    expect(results.find((result) => !result.succeeded)?.error).toBe("BROKER_SESSION_EXPIRED");
+    expect(kitePlace).not.toHaveBeenCalled();
+    const listed = (await api("GET", "/basket-orders")).find((item: { id: string }) => item.id === basket.id);
+    expect(listed.status).toBe("PARTIALLY_SUBMITTED");
+    expect(listed.orders.find((order: { brokerAccountId: string }) => order.brokerAccountId === zerodha.id))
+      .toMatchObject({ status: "PENDING", brokerOrderId: null,
+        executionJob: { status: "FAILED", lastError: "BROKER_SESSION_EXPIRED" } });
   });
 });
