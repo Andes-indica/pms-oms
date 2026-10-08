@@ -2,6 +2,48 @@ import { describe, expect, test } from "bun:test";
 import { MockBroker } from "./mock-broker";
 
 describe("MockBroker", () => {
+  test.each([0, 2])(
+    "cancellation replaces a simulated open state and preserves %i filled shares",
+    async (filledQuantity) => {
+      const broker = new MockBroker();
+      const { brokerOrderId } = await broker.placeOrder({
+        clientOrderId: `cancel-simulation-${filledQuantity}`,
+        symbol: "INFY",
+        exchange: "NSE",
+        side: "BUY",
+        orderType: "LIMIT",
+        quantity: 5,
+        limitPrice: 1500,
+      });
+      const executions = filledQuantity > 0 ? [{
+        brokerExecutionId: `${brokerOrderId}:partial`,
+        brokerOrderId,
+        quantity: filledQuantity,
+        price: 1500,
+        executedAt: new Date("2026-01-01T10:00:00Z"),
+      }] : [];
+      broker.setOrderSimulation(brokerOrderId, {
+        brokerOrderId,
+        status: filledQuantity > 0 ? "PARTIALLY_FILLED" : "OPEN",
+        filledQuantity,
+        averageFillPrice: filledQuantity > 0 ? 1500 : null,
+      }, executions);
+
+      await broker.cancelOrder(brokerOrderId);
+      await broker.cancelOrder(brokerOrderId);
+
+      expect(await broker.getOrderStatus(brokerOrderId)).toEqual({
+        brokerOrderId,
+        status: "CANCELLED",
+        filledQuantity,
+        averageFillPrice: filledQuantity > 0 ? 1500 : null,
+      });
+      expect(await broker.getExecutions(brokerOrderId)).toEqual(executions);
+      expect(await broker.findOrderByClientOrderId(`cancel-simulation-${filledQuantity}`))
+        .toEqual({ brokerOrderId, status: "CANCELLED" });
+    },
+  );
+
   test("uses the client order ID as an idempotency key", async () => {
     const broker = new MockBroker();
     const request = {

@@ -26,6 +26,14 @@ Both the Prisma CLI and the application resolve environment files from the
 repository root. In test mode, `.env.test` overrides an automatically loaded
 development URL. CI can supply a test `DATABASE_URL` without an env file.
 
+The broker workflow integration tests start the real Express API on a local,
+temporary port and use authenticated requests against the test database. They
+cover Zerodha session renewal, quantity reconciliation, repeated repairs,
+holdings split across portfolios, and MockBroker order creation through queue
+submission, fills, cash accounting and cancellation. Zerodha token exchange and
+holdings responses are simulated at the adapter boundary; these tests do not
+contact Zerodha or place live orders.
+
 To inspect the test database's migration state without changing it:
 
 ```bash

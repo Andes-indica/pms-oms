@@ -150,6 +150,13 @@ export class MockBroker implements BrokerAdapter {
 
     storedOrder.status = "CANCELLED";
 
+    if (storedOrder.simulatedUpdate) {
+      storedOrder.simulatedUpdate = {
+        ...storedOrder.simulatedUpdate,
+        status: "CANCELLED",
+      };
+    }
+
     return {
       brokerOrderId,
       status: "CANCELLED",
