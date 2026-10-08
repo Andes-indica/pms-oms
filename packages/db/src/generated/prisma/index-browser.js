@@ -153,6 +153,7 @@ exports.Prisma.BrokerAccountScalarFieldEnum = {
   accountId: 'accountId',
   accountLabel: 'accountLabel',
   clientId: 'clientId',
+  archivedAt: 'archivedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -164,6 +165,28 @@ exports.Prisma.PortfolioScalarFieldEnum = {
   cashBalance: 'cashBalance',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.PortfolioBrokerCashScalarFieldEnum = {
+  id: 'id',
+  portfolioId: 'portfolioId',
+  brokerAccountId: 'brokerAccountId',
+  cashBalance: 'cashBalance',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.CashTransactionScalarFieldEnum = {
+  id: 'id',
+  portfolioId: 'portfolioId',
+  type: 'type',
+  amount: 'amount',
+  balanceAfter: 'balanceAfter',
+  referenceType: 'referenceType',
+  referenceId: 'referenceId',
+  note: 'note',
+  actorUserId: 'actorUserId',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.HoldingScalarFieldEnum = {
@@ -198,6 +221,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   reservedQuantity: 'reservedQuantity',
   portfolioId: 'portfolioId',
   brokerAccountId: 'brokerAccountId',
+  allocationId: 'allocationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -209,6 +233,7 @@ exports.Prisma.AuditLogScalarFieldEnum = {
   entityType: 'entityType',
   entityId: 'entityId',
   message: 'message',
+  actorUserId: 'actorUserId',
   metadata: 'metadata',
   createdAt: 'createdAt'
 };
@@ -229,6 +254,16 @@ exports.Prisma.BasketOrderScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.AllocationScalarFieldEnum = {
+  id: 'id',
+  basketOrderId: 'basketOrderId',
+  portfolioId: 'portfolioId',
+  brokerAccountId: 'brokerAccountId',
+  allocatedQuantity: 'allocatedQuantity',
+  targetPercentage: 'targetPercentage',
+  createdAt: 'createdAt'
+};
+
 exports.Prisma.RiskLimitScalarFieldEnum = {
   id: 'id',
   portfolioId: 'portfolioId',
@@ -240,11 +275,23 @@ exports.Prisma.RiskLimitScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.InstrumentScalarFieldEnum = {
+  id: 'id',
+  symbol: 'symbol',
+  exchange: 'exchange',
+  instrumentToken: 'instrumentToken',
+  name: 'name',
+  isActive: 'isActive',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
 exports.Prisma.RestrictedSecurityScalarFieldEnum = {
   id: 'id',
   symbol: 'symbol',
   exchange: 'exchange',
   reason: 'reason',
+  firmId: 'firmId',
   createdAt: 'createdAt'
 };
 
@@ -314,6 +361,15 @@ exports.UserRole = exports.$Enums.UserRole = {
   PORTFOLIO_MANAGER: 'PORTFOLIO_MANAGER',
   OPERATIONS: 'OPERATIONS',
   VIEWER: 'VIEWER'
+};
+
+exports.CashTransactionType = exports.$Enums.CashTransactionType = {
+  DEPOSIT: 'DEPOSIT',
+  WITHDRAWAL: 'WITHDRAWAL',
+  ADJUSTMENT: 'ADJUSTMENT',
+  BUY_FILL: 'BUY_FILL',
+  SELL_FILL: 'SELL_FILL',
+  BROKER_RECONCILIATION: 'BROKER_RECONCILIATION'
 };
 
 exports.OrderSide = exports.$Enums.OrderSide = {
@@ -386,11 +442,15 @@ exports.Prisma.ModelName = {
   Client: 'Client',
   BrokerAccount: 'BrokerAccount',
   Portfolio: 'Portfolio',
+  PortfolioBrokerCash: 'PortfolioBrokerCash',
+  CashTransaction: 'CashTransaction',
   Holding: 'Holding',
   Order: 'Order',
   AuditLog: 'AuditLog',
   BasketOrder: 'BasketOrder',
+  Allocation: 'Allocation',
   RiskLimit: 'RiskLimit',
+  Instrument: 'Instrument',
   RestrictedSecurity: 'RestrictedSecurity',
   BrokerConnection: 'BrokerConnection',
   Execution: 'Execution',

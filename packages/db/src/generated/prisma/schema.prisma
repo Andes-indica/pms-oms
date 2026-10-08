@@ -21,10 +21,11 @@ model Firm {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  users        User[]
-  clients      Client[]
-  basketOrders BasketOrder[]
-  auditLogs    AuditLog[]
+  users                User[]
+  clients              Client[]
+  basketOrders         BasketOrder[]
+  auditLogs            AuditLog[]
+  restrictedSecurities RestrictedSecurity[]
 }
 
 model User {
@@ -36,6 +37,8 @@ model User {
 
   firmId String
   firm   Firm   @relation(fields: [firmId], references: [id])
+
+  auditLogs AuditLog[] @relation("AuditActor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -66,15 +69,28 @@ model BrokerAccount {
   clientId String
   client   Client @relation(fields: [clientId], references: [id])
 
-  orders   Order[]
-  holdings Holding[]
+  orders                   Order[]
+  holdings                 Holding[]
+  portfolioCashAllocations PortfolioBrokerCash[]
+  allocations              Allocation[]
 
   connection BrokerConnection?
+
+  archivedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([broker, accountId])
+}
+
+enum CashTransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  ADJUSTMENT
+  BUY_FILL
+  SELL_FILL
+  BROKER_RECONCILIATION
 }
 
 enum OrderSide {
@@ -122,13 +138,56 @@ model Portfolio {
 
   cashBalance Decimal @default(0) @db.Decimal(18, 4)
 
-  holdings Holding[]
-  orders   Order[]
+  holdings              Holding[]
+  orders                Order[]
+  cashTransactions      CashTransaction[]
+  brokerCashAllocations PortfolioBrokerCash[]
+  allocations           Allocation[]
 
   riskLimit RiskLimit?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model PortfolioBrokerCash {
+  id String @id @default(cuid())
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+
+  cashBalance Decimal @default(0) @db.Decimal(18, 4)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([portfolioId, brokerAccountId])
+  @@index([brokerAccountId])
+}
+
+model CashTransaction {
+  id String @id @default(cuid())
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  type CashTransactionType
+
+  amount       Decimal @db.Decimal(18, 4)
+  balanceAfter Decimal @db.Decimal(18, 4)
+
+  referenceType String?
+  referenceId   String?
+  note          String?
+  actorUserId   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([portfolioId, createdAt])
+  @@index([referenceType, referenceId])
 }
 
 model Holding {
@@ -186,6 +245,9 @@ model Order {
   brokerAccountId String
   brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
 
+  allocationId String?     @unique
+  allocation   Allocation? @relation(fields: [allocationId], references: [id], onDelete: SetNull)
+
   executions   Execution[]
   executionJob ExecutionJob?
   createdAt    DateTime      @default(now())
@@ -205,11 +267,15 @@ model AuditLog {
 
   message String?
 
+  actorUserId String?
+  actor       User?   @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
   metadata Json?
 
   createdAt DateTime @default(now())
 
   @@index([firmId])
+  @@index([actorUserId])
 }
 
 enum AllocationMethod {
@@ -243,12 +309,37 @@ model BasketOrder {
   firmId String
   firm   Firm   @relation(fields: [firmId], references: [id])
 
-  orders Order[]
+  orders      Order[]
+  allocations Allocation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([firmId])
+}
+
+model Allocation {
+  id String @id @default(cuid())
+
+  basketOrderId String
+  basketOrder   BasketOrder @relation(fields: [basketOrderId], references: [id], onDelete: Cascade)
+
+  portfolioId String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id])
+
+  allocatedQuantity Int
+  targetPercentage  Decimal? @db.Decimal(8, 4)
+
+  order Order?
+
+  createdAt DateTime @default(now())
+
+  @@index([basketOrderId])
+  @@index([portfolioId])
+  @@index([brokerAccountId])
 }
 
 model RiskLimit {
@@ -267,6 +358,24 @@ model RiskLimit {
   updatedAt DateTime @updatedAt
 }
 
+model Instrument {
+  id String @id @default(cuid())
+
+  symbol   String
+  exchange String
+
+  instrumentToken String?
+  name            String?
+
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([symbol, exchange])
+  @@index([instrumentToken])
+}
+
 model RestrictedSecurity {
   id String @id @default(cuid())
 
@@ -275,9 +384,13 @@ model RestrictedSecurity {
 
   reason String?
 
+  firmId String?
+  firm   Firm?   @relation(fields: [firmId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
 
-  @@unique([symbol, exchange])
+  @@unique([firmId, symbol, exchange])
+  @@index([symbol, exchange])
 }
 
 enum BrokerConnectionStatus {
