@@ -459,4 +459,36 @@ describe("basket execution with real broker adapters", () => {
       .toMatchObject({ status: "PENDING", brokerOrderId: null,
         executionJob: { status: "FAILED", lastError: "BROKER_SESSION_EXPIRED" } });
   });
+
+  test("preserves Kite's rejection detail on the failed basket child", async () => {
+    const { zerodha, selectedPortfolio } = await basketAccounts();
+    const kitePlace = spyOn(KiteConnect.prototype, "placeOrder").mockRejectedValue({
+      error_type: "MarginException",
+      message: "Required margin is 12,000 but only 8,000 is available",
+    });
+    restoreSpies.push(() => kitePlace.mockRestore());
+    const basket = await api("POST", "/basket-orders", {
+      symbol: "INFY", exchange: "NSE", side: "BUY", orderType: "LIMIT", limitPrice: 1500,
+      totalQuantity: 1, allocationMethod: "EQUAL_QUANTITY",
+      targets: [{ portfolioId: selectedPortfolio.id, brokerAccountId: zerodha.id }],
+    }, 201);
+    await api("POST", `/basket-orders/${basket.id}/execute`, undefined, 202);
+    expect(await processNextExecutionJob()).toMatchObject({
+      processed: true,
+      succeeded: false,
+      retryable: false,
+      error: "BROKER_INSUFFICIENT_FUNDS: Required margin is 12,000 but only 8,000 is available",
+    });
+    const listed = (await api("GET", "/basket-orders"))
+      .find((item: { id: string }) => item.id === basket.id);
+    expect(listed.status).toBe("REJECTED");
+    expect(listed.orders[0]).toMatchObject({
+      status: "REJECTED",
+      brokerOrderId: null,
+      executionJob: {
+        status: "FAILED",
+        lastError: "BROKER_INSUFFICIENT_FUNDS: Required margin is 12,000 but only 8,000 is available",
+      },
+    });
+  });
 });

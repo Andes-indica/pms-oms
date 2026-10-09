@@ -12,6 +12,9 @@ import {
 import {
   CreateBasketOrderForm,
 } from "../components/basket/CreateBasketOrderForm";
+import {
+  getBasketErrorGuidance,
+} from "../components/basket/basket-error-guidance";
 
 type Basket = {
   id: string;
@@ -167,7 +170,7 @@ function BasketList({
 }) {
   const [busyId, setBusyId] =
     useState<string | null>(null);
-  const [actionErrors, setActionErrors] = useState<Record<string, string[]>>({});
+  const [actionErrors, setActionErrors] = useState<Record<string, Array<{ label: string; error: string }>>>({});
 
   async function runAction(
     basketId: string,
@@ -207,17 +210,24 @@ function BasketList({
           const label = order
             ? `${order.portfolio.client.name}${account ? ` (${account.broker} ${account.accountId})` : ""}`
             : result.orderId;
-          return `${label}: ${result.error ?? "Child order action failed"}`;
+          return {
+            label,
+            error: result.error ?? "UNKNOWN_ERROR",
+          };
         });
       setActionErrors((current) => ({ ...current, [basketId]: errors }));
 
       await onUpdated();
     } catch (error) {
-      alert(
-        error instanceof Error
-          ? error.message
-          : "Basket action failed",
-      );
+      setActionErrors((current) => ({
+        ...current,
+        [basketId]: [{
+          label: "Basket action",
+          error: error instanceof Error
+            ? error.message
+            : "UNKNOWN_ERROR",
+        }],
+      }));
     } finally {
       setBusyId(null);
     }
@@ -236,6 +246,9 @@ function BasketList({
       {baskets.map((basket) => {
         const busy =
           busyId === basket.id;
+        const failedChildCount = basket.orders.filter(
+          (order) => order.executionJob?.status === "FAILED" || order.executionJob?.lastError,
+        ).length;
 
         return (
           <div
@@ -264,6 +277,12 @@ function BasketList({
                 {basket.status}
               </span>
             </div>
+
+            {failedChildCount > 0 && (
+              <p className="mt-3 rounded-md bg-red-50 px-3 py-2 text-sm font-medium text-red-800">
+                {failedChildCount} child {failedChildCount === 1 ? "order needs" : "orders need"} attention
+              </p>
+            )}
 
             <div className="mt-4 space-y-2">
               {basket.orders.map(
@@ -318,9 +337,7 @@ function BasketList({
                         <p className="text-xs text-slate-500">Execution: {order.executionJob.status}</p>
                       )}
                       {order.executionJob?.lastError && (
-                        <p role="alert" className="mt-1 max-w-sm break-words text-xs text-red-600">
-                          {order.executionJob.lastError}
-                        </p>
+                        <BasketErrorNotice error={order.executionJob.lastError} compact />
                       )}
                     </div>
                   </div>
@@ -328,8 +345,8 @@ function BasketList({
               )}
             </div>
 
-            {actionErrors[basket.id]?.map((error, index) => (
-              <p key={index} role="alert" className="mt-3 text-sm text-red-600">{error}</p>
+            {actionErrors[basket.id]?.map((failure, index) => (
+              <BasketErrorNotice key={index} error={failure.error} label={failure.label} />
             ))}
 
             <div className="mt-4 flex gap-2">
@@ -400,6 +417,30 @@ function BasketList({
           </div>
         );
       })}
+    </div>
+  );
+}
+
+function BasketErrorNotice({
+  error,
+  label,
+  compact = false,
+}: {
+  error: string;
+  label?: string;
+  compact?: boolean;
+}) {
+  const guidance = getBasketErrorGuidance(error);
+
+  return (
+    <div
+      role="alert"
+      className={`${compact ? "mt-2 max-w-sm" : "mt-3"} rounded-md border border-red-200 bg-red-50 p-3 text-left text-xs text-red-900`}
+    >
+      {label && <p className="font-medium">{label}</p>}
+      <p className={label ? "mt-1 font-semibold" : "font-semibold"}>{guidance.title}</p>
+      {guidance.detail && <p className="mt-1 break-words">Broker detail: {guidance.detail}</p>}
+      <p className="mt-1 text-red-700">Next: {guidance.action}</p>
     </div>
   );
 }

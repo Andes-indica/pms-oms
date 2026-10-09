@@ -72,6 +72,16 @@ function isRetryableExecutionError(
   return true;
 }
 
+export function describeExecutionError(error: unknown): string {
+  if (error instanceof BrokerError) {
+    return `${error.code}: ${error.brokerMessage}`;
+  }
+
+  return error instanceof Error
+    ? error.message
+    : "UNKNOWN_ERROR";
+}
+
 let workerTimer:
   ReturnType<
     typeof setTimeout
@@ -301,9 +311,7 @@ export async function processNextExecutionJob() {
     };
   } catch (error) {
     const message =
-      error instanceof Error
-        ? error.message
-        : "UNKNOWN_ERROR";
+      describeExecutionError(error);
 
     const retryable =
       isRetryableExecutionError(

@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { apiFetch } from "../../lib/api";
+import { getBasketErrorGuidance } from "./basket-error-guidance";
 
 type Client = {
   id: string;
@@ -108,6 +109,11 @@ export function CreateBasketOrderForm({
 
   const [success, setSuccess] =
     useState("");
+
+  const errorGuidance =
+    error
+      ? getBasketErrorGuidance(error)
+      : null;
 
   useEffect(() => {
     async function loadClients() {
@@ -736,10 +742,14 @@ export function CreateBasketOrderForm({
         </div>
       </div>
 
-      {error && (
-        <p className="mt-4 text-sm text-red-600">
-          {error}
-        </p>
+      {errorGuidance && (
+        <div role="alert" className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900">
+          <p className="font-semibold">{errorGuidance.title}</p>
+          {errorGuidance.detail && (
+            <p className="mt-1">Details: {errorGuidance.detail}</p>
+          )}
+          <p className="mt-1 text-red-700">Next: {errorGuidance.action}</p>
+        </div>
       )}
 
       {success && (

@@ -3,6 +3,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, spyOn, te
 import { Window } from "happy-dom";
 import { act, createElement } from "react";
 import type { Root } from "react-dom/client";
+import { getBasketErrorGuidance } from "./basket-error-guidance";
 
 const clients = [{
   id: "client-one", name: "Client One",
@@ -29,6 +30,7 @@ const restores: Array<() => void> = [];
 let postedBodies: Array<Record<string, unknown>>;
 let baskets: unknown[];
 let actionResults: unknown[];
+let actionHttpError: string | null;
 
 beforeAll(async () => {
   const globals = {
@@ -55,6 +57,7 @@ beforeEach(() => {
   postedBodies = [];
   baskets = [];
   actionResults = [];
+  actionHttpError = null;
   const fetchSpy = spyOn(globalThis, "fetch").mockImplementation(Object.assign(async (
     input: Parameters<typeof fetch>[0], options?: Parameters<typeof fetch>[1],
   ) => {
@@ -66,7 +69,10 @@ beforeEach(() => {
       return Response.json({ data: { id: "new-basket" } }, { status: 201 });
     }
     if (path === "/api/basket-orders") return Response.json({ data: baskets });
-    if (path.startsWith("/api/basket-orders/")) return Response.json({ data: { results: actionResults } });
+    if (path.startsWith("/api/basket-orders/")) {
+      if (actionHttpError) return Response.json({ error: actionHttpError }, { status: 409 });
+      return Response.json({ data: { results: actionResults } });
+    }
     throw new Error(`Unexpected request: ${path}`);
   }, { preconnect() {} }));
   const streamSpy = spyOn(apiModule, "subscribeToLiveUpdates").mockResolvedValue(undefined);
@@ -180,7 +186,10 @@ describe("basket execution feedback", () => {
 
   test("shows child submission errors beside the selected broker account", async () => {
     await act(async () => root.render(createElement(BasketOrdersPage)));
-    expect(container.textContent).toContain("BROKER_SESSION_EXPIRED");
+    expect(container.textContent).toContain("1 child order needs attention");
+    expect(container.textContent).toContain("Broker session expired");
+    expect(container.textContent).toContain("Reconnect this broker account");
+    expect(container.textContent).not.toContain("BROKER_SESSION_EXPIRED");
     expect(container.textContent).toContain("ZERODHA");
     expect(container.textContent).toContain("AB1234");
     expect(container.textContent).toContain("FAILED");
@@ -191,6 +200,51 @@ describe("basket execution feedback", () => {
     await act(async () => root.render(createElement(BasketOrdersPage)));
     const execute = [...container.querySelectorAll("button")].find((button) => button.textContent?.includes("Execute Basket"))!;
     await act(async () => execute.click());
-    expect(container.textContent).toContain("BROKER_NOT_CONNECTED");
+    expect(container.textContent).toContain("Broker account is not connected");
+    expect(container.textContent).toContain("Configure and connect this broker account");
+  });
+
+  test("shows HTTP action failures in the basket instead of a transient alert", async () => {
+    actionHttpError = "BASKET_NOT_PENDING";
+    await act(async () => root.render(createElement(BasketOrdersPage)));
+    const execute = [...container.querySelectorAll("button")].find((button) => button.textContent?.includes("Execute Basket"))!;
+    await act(async () => execute.click());
+    expect(container.textContent).toContain("Basket has already started");
+    expect(container.textContent).toContain("Refresh the basket");
+    expect(container.textContent).not.toContain("BASKET_NOT_PENDING");
+  });
+
+  test("shows the broker explanation and a safe next step", async () => {
+    baskets = [{
+      ...(baskets[0] as Record<string, unknown>),
+      orders: [{
+        ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
+        executionJob: {
+          status: "FAILED",
+          lastError: "BROKER_INSUFFICIENT_FUNDS: Required margin is 12,000 but only 8,000 is available",
+        },
+      }],
+    }];
+    await act(async () => root.render(createElement(BasketOrdersPage)));
+    expect(container.textContent).toContain("Insufficient funds at the broker");
+    expect(container.textContent).toContain("Broker detail: Required margin is 12,000 but only 8,000 is available");
+    expect(container.textContent).toContain("Add broker funds or reduce this child order quantity");
+  });
+});
+
+describe("basket error guidance", () => {
+  test("maps allocation errors to an explanation and correction", () => {
+    expect(getBasketErrorGuidance("PERCENTAGES_MUST_TOTAL_100")).toEqual({
+      title: "Allocation percentages must total 100%",
+      action: "Adjust the client percentages so they add up to 100%.",
+    });
+  });
+
+  test("keeps an unknown broker response as diagnostic detail", () => {
+    expect(getBasketErrorGuidance("Exchange is temporarily unavailable")).toEqual({
+      title: "Basket order action failed",
+      detail: "Exchange is temporarily unavailable",
+      action: "Review this child order and broker account, then try again.",
+    });
   });
 });
