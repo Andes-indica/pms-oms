@@ -40,6 +40,10 @@ tests submit mixed MockBroker/Zerodha baskets through the real queue and compare
 Kite parameters with normal orders. Kite submission is intercepted at the SDK
 boundary, so these tests also place no live orders.
 
+Basket recovery regressions verify safe per-child retry after reconnection,
+broker-order recovery after an uncertain submission without a second placement,
+and idempotent replacement-basket creation for definitive rejections.
+
 To inspect the test database's migration state without changing it:
 
 ```bash

@@ -31,6 +31,7 @@ let postedBodies: Array<Record<string, unknown>>;
 let baskets: unknown[];
 let actionResults: unknown[];
 let actionHttpError: string | null;
+let actionPaths: string[];
 
 beforeAll(async () => {
   const globals = {
@@ -58,6 +59,7 @@ beforeEach(() => {
   baskets = [];
   actionResults = [];
   actionHttpError = null;
+  actionPaths = [];
   const fetchSpy = spyOn(globalThis, "fetch").mockImplementation(Object.assign(async (
     input: Parameters<typeof fetch>[0], options?: Parameters<typeof fetch>[1],
   ) => {
@@ -70,6 +72,7 @@ beforeEach(() => {
     }
     if (path === "/api/basket-orders") return Response.json({ data: baskets });
     if (path.startsWith("/api/basket-orders/")) {
+      actionPaths.push(path);
       if (actionHttpError) return Response.json({ error: actionHttpError }, { status: 409 });
       return Response.json({ data: { results: actionResults } });
     }
@@ -180,6 +183,7 @@ describe("basket execution feedback", () => {
         portfolio: { name: "Selected portfolio", client: { name: "Client One" } },
         brokerAccount: { broker: "ZERODHA", accountId: "AB1234" },
         executionJob: { status: "FAILED", lastError: "BROKER_SESSION_EXPIRED" },
+        recoveryAction: "RETRY",
       }],
     }];
   });
@@ -193,10 +197,19 @@ describe("basket execution feedback", () => {
     expect(container.textContent).toContain("ZERODHA");
     expect(container.textContent).toContain("AB1234");
     expect(container.textContent).toContain("FAILED");
+    expect(container.textContent).not.toContain("Execute Basket");
   });
 
   test("reports child failures even when the basket action returns HTTP success", async () => {
     actionResults = [{ orderId: "order-one", success: false, error: "BROKER_NOT_CONNECTED" }];
+    baskets = [{
+      ...(baskets[0] as Record<string, unknown>),
+      orders: [{
+        ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
+        executionJob: null,
+        recoveryAction: null,
+      }],
+    }];
     await act(async () => root.render(createElement(BasketOrdersPage)));
     const execute = [...container.querySelectorAll("button")].find((button) => button.textContent?.includes("Execute Basket"))!;
     await act(async () => execute.click());
@@ -206,6 +219,14 @@ describe("basket execution feedback", () => {
 
   test("shows HTTP action failures in the basket instead of a transient alert", async () => {
     actionHttpError = "BASKET_NOT_PENDING";
+    baskets = [{
+      ...(baskets[0] as Record<string, unknown>),
+      orders: [{
+        ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
+        executionJob: null,
+        recoveryAction: null,
+      }],
+    }];
     await act(async () => root.render(createElement(BasketOrdersPage)));
     const execute = [...container.querySelectorAll("button")].find((button) => button.textContent?.includes("Execute Basket"))!;
     await act(async () => execute.click());
@@ -229,6 +250,71 @@ describe("basket execution feedback", () => {
     expect(container.textContent).toContain("Insufficient funds at the broker");
     expect(container.textContent).toContain("Broker detail: Required margin is 12,000 but only 8,000 is available");
     expect(container.textContent).toContain("Add broker funds or reduce this child order quantity");
+  });
+
+  test("queues only the selected failed child for retry", async () => {
+    await act(async () => root.render(createElement(BasketOrdersPage)));
+    const retry = [...container.querySelectorAll("button")]
+      .find((button) => button.textContent?.includes("Retry Child"))!;
+    await act(async () => retry.click());
+    expect(actionPaths).toContain(
+      "/api/basket-orders/basket-one/orders/order-one/retry",
+    );
+    expect(container.textContent).toContain(
+      "child order queued for retry",
+    );
+  });
+
+  test("shows reconciliation instead of retry for an uncertain submission", async () => {
+    baskets = [{
+      ...(baskets[0] as Record<string, unknown>),
+      status: "PARTIALLY_SUBMITTED",
+      orders: [{
+        ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
+        status: "SUBMITTED",
+        executionJob: {
+          status: "FAILED",
+          lastError: "BROKER_SUBMISSION_UNCERTAIN",
+        },
+        recoveryAction: "RECONCILE",
+      }],
+    }];
+    await act(async () => root.render(createElement(BasketOrdersPage)));
+    expect(container.textContent).toContain("Reconcile Child");
+    expect(container.textContent).not.toContain("Retry Child");
+  });
+
+  test("offers one replacement for a rejected child", async () => {
+    baskets = [{
+      ...(baskets[0] as Record<string, unknown>),
+      status: "REJECTED",
+      orders: [{
+        ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
+        status: "REJECTED",
+        recoveryAction: "CREATE_REPLACEMENT",
+      }],
+    }];
+    await act(async () => root.render(createElement(BasketOrdersPage)));
+    expect(container.textContent).toContain("Create Replacement");
+  });
+
+  test("shows the existing replacement instead of offering another", async () => {
+    baskets = [{
+      ...(baskets[0] as Record<string, unknown>),
+      status: "REJECTED",
+      orders: [{
+        ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
+        status: "REJECTED",
+        recoveryAction: null,
+        replacementBasket: {
+          id: "replacement-one",
+          status: "PENDING",
+        },
+      }],
+    }];
+    await act(async () => root.render(createElement(BasketOrdersPage)));
+    expect(container.textContent).toContain("Replacement basket: PENDING");
+    expect(container.textContent).not.toContain("Create Replacement");
   });
 });
 

@@ -12,6 +12,13 @@ import type { AuthenticatedRequest } from "../middleware/auth.middleware";
 import {
   publishLiveUpdate,
 } from "../services/live-update.service";
+import {
+  createBasketChildReplacementService,
+  basketChildReplacementId,
+  getBasketChildRecoveryAction,
+  reconcileBasketChildOrderService,
+  retryBasketChildOrderService,
+} from "../services/basket-child-recovery.service";
 
 type BasketOrderBody = {
   name?: string;
@@ -59,6 +66,12 @@ export async function createBasketOrder(
             req.user.firmId,
           actorUserId:
             req.user.userId,
+          // Replacement lineage is an internal recovery field and must never
+          // be accepted from the public basket creation payload.
+          id:
+            undefined,
+          replacementForOrderId:
+            undefined,
         },
       );
 
@@ -143,8 +156,49 @@ export async function getBasketOrders(
         },
       });
 
+    const basketsById =
+      new Map(
+        baskets.map(
+          (basket) => [
+            basket.id,
+            {
+              id: basket.id,
+              status: basket.status,
+            },
+          ],
+        ),
+      );
+
     return res.status(200).json({
-      data: baskets,
+      data: baskets.map(
+        (basket) => ({
+          ...basket,
+          orders:
+            basket.orders.map(
+              (order) => ({
+                ...order,
+                replacementBasket:
+                  basketsById.get(
+                    basketChildReplacementId(
+                      order.id,
+                    ),
+                  ) ?? null,
+                recoveryAction:
+                  getBasketChildRecoveryAction(
+                    {
+                      ...order,
+                      replacementBasket:
+                        basketsById.get(
+                          basketChildReplacementId(
+                            order.id,
+                          ),
+                        ) ?? null,
+                    },
+                  ),
+              }),
+            ),
+        }),
+      ),
     });
   } catch (error) {
     console.error(
@@ -156,6 +210,222 @@ export async function getBasketOrders(
       error:
         "Failed to fetch basket orders",
     });
+  }
+}
+
+function basketChildRecoveryError(
+  res: Response,
+  error: unknown,
+) {
+  if (!(error instanceof Error)) {
+    return res.status(500).json({
+      error:
+        "Basket child recovery failed",
+    });
+  }
+
+  if (
+    error.message ===
+    "BASKET_CHILD_ORDER_NOT_FOUND"
+  ) {
+    return res.status(404).json({
+      error: error.message,
+    });
+  }
+
+  if (
+    [
+      "BASKET_CHILD_RETRY_NOT_ALLOWED",
+      "BASKET_CHILD_RECONCILE_NOT_ALLOWED",
+      "BASKET_CHILD_REPLACEMENT_NOT_ALLOWED",
+      "BROKER_RECOVERY_UNSUPPORTED",
+      "BROKER_ORDER_RECOVERY_NOT_FOUND",
+      "BROKER_ORDER_RECOVERY_CONFLICT",
+    ].includes(
+      error.message,
+    )
+  ) {
+    return res.status(409).json({
+      error: error.message,
+    });
+  }
+
+  console.error(
+    "Basket child recovery failed:",
+    error,
+  );
+
+  return res.status(502).json({
+    error: error.message,
+  });
+}
+
+export async function retryBasketChildOrder(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+      orderId: string;
+    };
+  },
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
+    }
+
+    const result =
+      await retryBasketChildOrderService(
+        req.params.id,
+        req.params.orderId,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "order.execution_queued",
+        entityType: "ORDER",
+        entityId:
+          req.params.orderId,
+      },
+    );
+
+    return res.status(202).json({
+      data: result,
+    });
+  } catch (error) {
+    return basketChildRecoveryError(
+      res,
+      error,
+    );
+  }
+}
+
+export async function reconcileBasketChildOrder(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+      orderId: string;
+    };
+  },
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
+    }
+
+    const result =
+      await reconcileBasketChildOrderService(
+        req.params.id,
+        req.params.orderId,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type: "order.updated",
+        entityType: "ORDER",
+        entityId:
+          req.params.orderId,
+      },
+    );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "basket.updated",
+        entityType:
+          "BASKET_ORDER",
+        entityId:
+          req.params.id,
+      },
+    );
+
+    return res.status(200).json({
+      data: result,
+    });
+  } catch (error) {
+    return basketChildRecoveryError(
+      res,
+      error,
+    );
+  }
+}
+
+export async function createBasketChildReplacement(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+      orderId: string;
+    };
+  },
+  res: Response,
+) {
+  try {
+    if (!req.user) {
+      return res.status(401).json({
+        error:
+          "Authentication required",
+      });
+    }
+
+    const result =
+      await createBasketChildReplacementService(
+        req.params.id,
+        req.params.orderId,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "basket.created",
+        entityType:
+          "BASKET_ORDER",
+        entityId:
+          result.replacementBasket.id,
+      },
+    );
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type: "order.updated",
+        entityType: "ORDER",
+        entityId:
+          req.params.orderId,
+      },
+    );
+
+    return res
+      .status(
+        result.created
+          ? 201
+          : 200,
+      )
+      .json({
+        data: result,
+      });
+  } catch (error) {
+    return basketChildRecoveryError(
+      res,
+      error,
+    );
   }
 }
 

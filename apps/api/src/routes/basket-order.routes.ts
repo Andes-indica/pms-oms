@@ -2,9 +2,12 @@ import { Router } from "express";
 
 import {
   cancelBasketOrder,
+  createBasketChildReplacement,
   createBasketOrder,
   executeBasketOrder,
   getBasketOrders,
+  reconcileBasketChildOrder,
+  retryBasketChildOrder,
   syncBasketOrder,
 } from "../controllers/basket-order.controller";
 
@@ -41,6 +44,34 @@ router.post(
     "PORTFOLIO_MANAGER",
   ),
   executeBasketOrder,
+);
+
+router.post(
+  "/:id/orders/:orderId/retry",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  retryBasketChildOrder,
+);
+
+router.post(
+  "/:id/orders/:orderId/reconcile",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+  reconcileBasketChildOrder,
+);
+
+router.post(
+  "/:id/orders/:orderId/replacement",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  createBasketChildReplacement,
 );
 
 router.post(

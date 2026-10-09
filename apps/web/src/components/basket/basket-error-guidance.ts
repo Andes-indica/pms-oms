@@ -205,6 +205,38 @@ const guidanceByCode: Record<string, Omit<BasketErrorGuidance, "detail">> = {
     title: "Order processing was interrupted",
     action: "Refresh the basket. Retry only if the child order remains failed.",
   },
+  BASKET_CHILD_ORDER_NOT_FOUND: {
+    title: "Basket child order was not found",
+    action: "Refresh the basket before taking another recovery action.",
+  },
+  BASKET_CHILD_RETRY_NOT_ALLOWED: {
+    title: "This child order cannot be retried",
+    action: "Refresh the basket and use the recovery action shown for its current state.",
+  },
+  BASKET_CHILD_RECONCILE_NOT_ALLOWED: {
+    title: "This child order does not need broker recovery",
+    action: "Refresh the basket and use the action shown for its current state.",
+  },
+  BASKET_CHILD_REPLACEMENT_NOT_ALLOWED: {
+    title: "A replacement is not allowed for this child order",
+    action: "Only a definitively rejected child order can be replaced.",
+  },
+  BROKER_RECOVERY_UNSUPPORTED: {
+    title: "This broker cannot recover an uncertain submission",
+    action: "Check the broker order book manually before taking any further action.",
+  },
+  BROKER_ORDER_RECOVERY_NOT_FOUND: {
+    title: "No matching order was found in the broker order book",
+    action: "Verify the broker order book manually. Do not retry until you are certain no order was placed.",
+  },
+  BROKER_ORDER_RECOVERY_CONFLICT: {
+    title: "Recovered broker order conflicts with PMS state",
+    action: "Stop and inspect both order records before taking another action.",
+  },
+  BROKER_RECOVERED_SYNC_REQUIRED: {
+    title: "Broker order was recovered but still needs synchronization",
+    action: "Use Sync Basket to import the broker's latest status and fills.",
+  },
   NO_ALLOCATION_TARGETS: {
     title: "No clients are selected",
     action: "Select at least one client for this basket.",

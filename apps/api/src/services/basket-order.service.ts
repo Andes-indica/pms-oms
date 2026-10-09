@@ -35,6 +35,8 @@ type CreateBasketOrderInput = {
   targets: AllocationTarget[];
 
   actorUserId?: string;
+  id?: string;
+  replacementForOrderId?: string;
 };
 
 export async function createBasketOrderService(
@@ -133,6 +135,7 @@ export async function createBasketOrderService(
         const createdBasket =
           await tx.basketOrder.create({
             data: {
+              id: input.id,
               name: input.name,
 
               symbol:
@@ -241,7 +244,9 @@ export async function createBasketOrderService(
           action: "BASKET_CREATED",
           entityType: "BASKET_ORDER",
           entityId: createdBasket.id,
-          message: "Basket order created",
+          message: input.replacementForOrderId
+            ? "Replacement basket created for rejected child order"
+            : "Basket order created",
           actorUserId:
             input.actorUserId,
           metadata: {
@@ -249,6 +254,12 @@ export async function createBasketOrderService(
             totalQuantity: createdBasket.totalQuantity,
             allocationMethod: createdBasket.allocationMethod,
             clientCount: allocations.length,
+            ...(input.replacementForOrderId
+              ? {
+                  replacesOrderId:
+                    input.replacementForOrderId,
+                }
+              : {}),
           },
         }, tx);
 

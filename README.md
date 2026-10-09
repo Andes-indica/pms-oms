@@ -310,6 +310,9 @@ Basket functionality includes:
 - Execute child orders
 - Track partial submission
 - Synchronize child orders
+- Retry only failed children that remain safely pending
+- Recover uncertain submissions from the broker order book before continuing
+- Create one linked replacement basket for a definitively rejected child
 - Derive aggregate basket status
 - Audit basket operations
 
@@ -481,6 +484,11 @@ POST /api/basket-orders
 
 POST /api/basket-orders/:id/execute
 POST /api/basket-orders/:id/sync
+POST /api/basket-orders/:id/cancel
+
+POST /api/basket-orders/:id/orders/:orderId/retry
+POST /api/basket-orders/:id/orders/:orderId/reconcile
+POST /api/basket-orders/:id/orders/:orderId/replacement
 ```
 
 ### Broker Accounts
@@ -634,6 +642,7 @@ bun test
 - [x] Failure recovery for uncertain submissions
 - [x] Multi-client basket allocation
 - [x] Basket execution and synchronization
+- [x] State-safe basket child retry, reconciliation, and replacement
 - [x] Portfolio accounting and valuation
 - [x] Realized/unrealized P&L
 - [x] Audit logging

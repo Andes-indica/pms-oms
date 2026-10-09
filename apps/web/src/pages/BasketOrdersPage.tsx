@@ -16,6 +16,11 @@ import {
   getBasketErrorGuidance,
 } from "../components/basket/basket-error-guidance";
 
+type BasketChildRecoveryAction =
+  | "RETRY"
+  | "RECONCILE"
+  | "CREATE_REPLACEMENT";
+
 type Basket = {
   id: string;
   name?: string;
@@ -35,6 +40,13 @@ type Basket = {
     executionJob?: {
       status: string;
       lastError?: string | null;
+    } | null;
+    recoveryAction?:
+      BasketChildRecoveryAction |
+      null;
+    replacementBasket?: {
+      id: string;
+      status: string;
     } | null;
 
     portfolio: {
@@ -170,7 +182,10 @@ function BasketList({
 }) {
   const [busyId, setBusyId] =
     useState<string | null>(null);
+  const [busyChildId, setBusyChildId] =
+    useState<string | null>(null);
   const [actionErrors, setActionErrors] = useState<Record<string, Array<{ label: string; error: string }>>>({});
+  const [actionNotices, setActionNotices] = useState<Record<string, string>>({});
 
   async function runAction(
     basketId: string,
@@ -191,6 +206,7 @@ function BasketList({
     try {
       setBusyId(basketId);
       setActionErrors((current) => ({ ...current, [basketId]: [] }));
+      setActionNotices((current) => ({ ...current, [basketId]: "" }));
 
       const response = await apiFetch<{
         data: { results: Array<{ orderId: string; success?: boolean; status?: string; error?: string }> };
@@ -230,6 +246,76 @@ function BasketList({
       }));
     } finally {
       setBusyId(null);
+    }
+  }
+
+  async function runChildAction(
+    basketId: string,
+    order: Basket["orders"][number],
+    action: BasketChildRecoveryAction,
+  ) {
+    if (
+      action ===
+        "CREATE_REPLACEMENT" &&
+      !window.confirm(
+        "Create a new single-client replacement basket for this rejected child order?",
+      )
+    ) {
+      return;
+    }
+
+    const path =
+      action === "RETRY"
+        ? "retry"
+        : action === "RECONCILE"
+          ? "reconcile"
+          : "replacement";
+
+    const label =
+      `${order.portfolio.client.name}${
+        order.brokerAccount
+          ? ` (${order.brokerAccount.broker} ${order.brokerAccount.accountId})`
+          : ""
+      }`;
+
+    try {
+      setBusyChildId(order.id);
+      setActionErrors((current) => ({ ...current, [basketId]: [] }));
+      setActionNotices((current) => ({ ...current, [basketId]: "" }));
+
+      await apiFetch(
+        `/api/basket-orders/${basketId}/orders/${order.id}/${path}`,
+        {
+          method: "POST",
+        },
+      );
+
+      setActionNotices((current) => ({
+        ...current,
+        [basketId]:
+          action === "RETRY"
+            ? `${label}: child order queued for retry.`
+            : action === "RECONCILE"
+              ? `${label}: broker order recovered and synchronized.`
+              : `${label}: replacement basket created. Review it before execution.`,
+      }));
+
+      await onUpdated();
+    } catch (error) {
+      setActionErrors((current) => ({
+        ...current,
+        [basketId]: [
+          {
+            label,
+            error:
+              error instanceof Error
+                ? error.message
+                : "UNKNOWN_ERROR",
+          },
+        ],
+      }));
+    } finally {
+      setBusyChildId(null);
     }
   }
 
@@ -339,6 +425,36 @@ function BasketList({
                       {order.executionJob?.lastError && (
                         <BasketErrorNotice error={order.executionJob.lastError} compact />
                       )}
+                      {order.replacementBasket && (
+                        <p className="mt-2 text-xs font-medium text-emerald-700">
+                          Replacement basket: {order.replacementBasket.status}
+                        </p>
+                      )}
+                      {order.recoveryAction && (
+                        <button
+                          disabled={
+                            busy ||
+                            busyChildId !==
+                              null
+                          }
+                          onClick={() =>
+                            runChildAction(
+                              basket.id,
+                              order,
+                              order.recoveryAction!,
+                            )
+                          }
+                          className="mt-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-900 disabled:opacity-60"
+                        >
+                          {busyChildId === order.id
+                            ? "Working..."
+                            : order.recoveryAction === "RETRY"
+                              ? "Retry Child"
+                              : order.recoveryAction === "RECONCILE"
+                                ? "Reconcile Child"
+                                : "Create Replacement"}
+                        </button>
+                      )}
                     </div>
                   </div>
                 ),
@@ -349,11 +465,21 @@ function BasketList({
               <BasketErrorNotice key={index} error={failure.error} label={failure.label} />
             ))}
 
+            {actionNotices[basket.id] && (
+              <p role="status" className="mt-3 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+                {actionNotices[basket.id]}
+              </p>
+            )}
+
             <div className="mt-4 flex gap-2">
               {basket.status ===
-                "PENDING" && (
+                "PENDING" &&
+                failedChildCount === 0 && (
                 <button
-                  disabled={busy}
+                  disabled={
+                    busy ||
+                    busyChildId !== null
+                  }
                   onClick={() =>
                     runAction(
                       basket.id,
@@ -376,7 +502,10 @@ function BasketList({
                 basket.status,
               ) && (
                 <button
-                  disabled={busy}
+                  disabled={
+                    busy ||
+                    busyChildId !== null
+                  }
                   onClick={() =>
                     runAction(
                       basket.id,
@@ -399,7 +528,10 @@ function BasketList({
                 basket.status,
               ) && (
                 <button
-                  disabled={busy}
+                  disabled={
+                    busy ||
+                    busyChildId !== null
+                  }
                   onClick={() =>
                     runAction(
                       basket.id,

@@ -457,7 +457,105 @@ describe("basket execution with real broker adapters", () => {
     expect(listed.status).toBe("PARTIALLY_SUBMITTED");
     expect(listed.orders.find((order: { brokerAccountId: string }) => order.brokerAccountId === zerodha.id))
       .toMatchObject({ status: "PENDING", brokerOrderId: null,
-        executionJob: { status: "FAILED", lastError: "BROKER_SESSION_EXPIRED" } });
+        executionJob: { status: "FAILED", lastError: "BROKER_SESSION_EXPIRED" },
+        recoveryAction: "RETRY" });
+
+    await prisma.brokerConnection.update({
+      where: { brokerAccountId: zerodha.id },
+      data: { sessionExpiresAt: new Date(Date.now() + 3_600_000) },
+    });
+    kitePlace.mockResolvedValue({ order_id: "KITE-RETRIED-CHILD" });
+    const failedChild = listed.orders.find(
+      (order: { brokerAccountId: string }) => order.brokerAccountId === zerodha.id,
+    );
+    const retried = await api(
+      "POST",
+      `/basket-orders/${basket.id}/orders/${failedChild.id}/retry`,
+      undefined,
+      202,
+    );
+    expect(retried).toMatchObject({
+      action: "RETRY",
+      orderId: failedChild.id,
+      job: { status: "PENDING", attempts: 0, lastError: null },
+    });
+    await api(
+      "POST",
+      `/basket-orders/${basket.id}/orders/${failedChild.id}/retry`,
+      undefined,
+      409,
+    );
+    expect(await processNextExecutionJob()).toMatchObject({
+      processed: true,
+      succeeded: true,
+    });
+    expect(kitePlace).toHaveBeenCalledTimes(1);
+    expect(await processNextExecutionJob()).toEqual({ processed: false });
+    const recoveredBasket = (await api("GET", "/basket-orders"))
+      .find((item: { id: string }) => item.id === basket.id);
+    expect(recoveredBasket.status).toBe("SUBMITTED");
+    expect(recoveredBasket.orders.find(
+      (order: { id: string }) => order.id === failedChild.id,
+    )).toMatchObject({
+      status: "SUBMITTED",
+      brokerOrderId: "KITE-RETRIED-CHILD",
+      executionJob: { status: "COMPLETED", lastError: null },
+      recoveryAction: null,
+    });
+  });
+
+  test("reconciles an uncertain child without placing a duplicate order", async () => {
+    const originalPlace = mockBroker.placeOrder.bind(mockBroker);
+    const place = spyOn(mockBroker, "placeOrder").mockImplementation(async (request) => {
+      await originalPlace(request);
+      throw new Error("NETWORK_TIMEOUT_AFTER_SUBMISSION");
+    });
+    restoreSpies.push(() => place.mockRestore());
+    const basket = await api("POST", "/basket-orders", {
+      symbol: "INFY", exchange: "NSE", side: "BUY", orderType: "LIMIT", limitPrice: 1500,
+      totalQuantity: 1, allocationMethod: "EQUAL_QUANTITY",
+      targets: [{ portfolioId: account.portfolio.id, brokerAccountId: account.brokerAccount.id }],
+    }, 201);
+    await api("POST", `/basket-orders/${basket.id}/execute`, undefined, 202);
+    expect(await processNextExecutionJob()).toMatchObject({
+      processed: true,
+      succeeded: false,
+      retryable: true,
+    });
+    const child = await prisma.order.findFirstOrThrow({
+      where: { basketOrderId: basket.id },
+      include: { executionJob: true },
+    });
+    expect(child).toMatchObject({ status: "SUBMITTED", brokerOrderId: null });
+    await prisma.executionJob.update({
+      where: { id: child.executionJob!.id },
+      data: { status: "FAILED", attempts: 5 },
+    });
+    const beforeRecovery = (await api("GET", "/basket-orders"))
+      .find((item: { id: string }) => item.id === basket.id);
+    expect(beforeRecovery.orders[0].recoveryAction).toBe("RECONCILE");
+    const recovered = await api(
+      "POST",
+      `/basket-orders/${basket.id}/orders/${child.id}/reconcile`,
+    );
+    expect(recovered.action).toBe("RECONCILE");
+    expect(place).toHaveBeenCalledTimes(1);
+    const saved = await prisma.order.findUniqueOrThrow({
+      where: { id: child.id },
+      include: { executionJob: true },
+    });
+    expect(saved.brokerOrderId).not.toBeNull();
+    expect(saved.executionJob).toMatchObject({
+      status: "COMPLETED",
+      lastError: null,
+    });
+    await api(
+      "POST",
+      `/basket-orders/${basket.id}/orders/${child.id}/reconcile`,
+      undefined,
+      409,
+    );
+    expect(place).toHaveBeenCalledTimes(1);
   });
 
   test("preserves Kite's rejection detail on the failed basket child", async () => {
@@ -489,6 +587,56 @@ describe("basket execution with real broker adapters", () => {
         status: "FAILED",
         lastError: "BROKER_INSUFFICIENT_FUNDS: Required margin is 12,000 but only 8,000 is available",
       },
+      recoveryAction: "CREATE_REPLACEMENT",
     });
+
+    const replacement = await api(
+      "POST",
+      `/basket-orders/${basket.id}/orders/${listed.orders[0].id}/replacement`,
+      undefined,
+      201,
+    );
+    expect(replacement).toMatchObject({
+      action: "CREATE_REPLACEMENT",
+      created: true,
+      replacementBasket: {
+        status: "PENDING",
+        replacesOrderId: listed.orders[0].id,
+      },
+    });
+    const repeated = await api(
+      "POST",
+      `/basket-orders/${basket.id}/orders/${listed.orders[0].id}/replacement`,
+    );
+    expect(repeated.created).toBe(false);
+    expect(repeated.replacementBasket.id).toBe(replacement.replacementBasket.id);
+    expect(await prisma.basketOrder.count({
+      where: { id: replacement.replacementBasket.id },
+    })).toBe(1);
+    const forgedPublicReplacement = await api("POST", "/basket-orders", {
+      name: "Ordinary basket",
+      symbol: "INFY", exchange: "NSE", side: "BUY", orderType: "LIMIT", limitPrice: 1500,
+      totalQuantity: 1, allocationMethod: "EQUAL_QUANTITY",
+      targets: [{ portfolioId: selectedPortfolio.id, brokerAccountId: zerodha.id }],
+      replacesOrderId: listed.orders[0].id,
+    }, 201);
+    expect(forgedPublicReplacement.replacesOrderId).toBeUndefined();
+    const replacementOrder = await prisma.order.findFirstOrThrow({
+      where: { basketOrderId: replacement.replacementBasket.id },
+    });
+    expect(replacementOrder.id).not.toBe(listed.orders[0].id);
+    expect(replacementOrder).toMatchObject({
+      status: "PENDING",
+      symbol: "INFY",
+      exchange: "NSE",
+      side: "BUY",
+      orderType: "LIMIT",
+      quantity: 1,
+      portfolioId: selectedPortfolio.id,
+      brokerAccountId: zerodha.id,
+    });
+    expect((await prisma.basketOrder.findUniqueOrThrow({
+      where: { id: basket.id },
+    })).status).toBe("REJECTED");
   });
 });
