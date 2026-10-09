@@ -572,6 +572,15 @@ export async function syncOrderService(
           brokerUpdate.status,
         );
 
+      const rejectionReason =
+        brokerUpdate.status ===
+          "REJECTED"
+          ? brokerUpdate
+              .statusMessage
+              ?.trim() ||
+            "Broker reported the order as rejected without additional details"
+          : null;
+
       const remainingQuantity =
         freshOrder.quantity -
         cumulativeFillQuantity;
@@ -667,6 +676,19 @@ export async function syncOrderService(
           },
         });
 
+      if (rejectionReason) {
+        await tx.executionJob.updateMany({
+          where: {
+            orderId:
+              updatedOrder.id,
+          },
+          data: {
+            lastError:
+              `BROKER_ORDER_REJECTED: ${rejectionReason}`,
+          },
+        });
+      }
+
       const action =
         updatedOrder.status ===
           "FILLED"
@@ -692,7 +714,9 @@ export async function syncOrderService(
             updatedOrder.id,
 
           message:
-            "Order synchronized with broker",
+            rejectionReason
+              ? "Order rejected by broker during synchronization"
+              : "Order synchronized with broker",
 
           actorUserId,
 
@@ -714,6 +738,12 @@ export async function syncOrderService(
                 .realizedPnl
                 ?.toString(),
             executionCount: brokerExecutions ?.length ?? null,
+
+            ...(rejectionReason
+              ? {
+                  rejectionReason,
+                }
+              : {}),
           },
         },
 

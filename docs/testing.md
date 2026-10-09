@@ -44,6 +44,12 @@ Basket recovery regressions verify safe per-child retry after reconnection,
 broker-order recovery after an uncertain submission without a second placement,
 and idempotent replacement-basket creation for definitive rejections.
 
+The test runner treats deprecation warnings as failures. PostgreSQL integration
+coverage starts the execution worker and order monitor together and exercises
+Prisma's concurrent transaction query planning through `pg` pipeline mode.
+Rejection tests also verify that broker-provided reasons survive synchronization
+and remain visible to the order UI.
+
 To inspect the test database's migration state without changing it:
 
 ```bash

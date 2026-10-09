@@ -26,6 +26,9 @@ import {
 import {
   processNextExecutionJob,
 } from "./order-execution-worker.service";
+import {
+  monitorActiveOrdersOnce,
+} from "./order-monitor.service";
 
 beforeEach(async () => {
   mockBroker.clear();
@@ -42,6 +45,25 @@ afterAll(async () => {
 describe(
   "basket execution integration",
   () => {
+    test(
+      "starts the execution worker and order monitor without overlapping pg-client queries",
+      async () => {
+        const [worker, monitor] =
+          await Promise.all([
+            processNextExecutionJob(),
+            monitorActiveOrdersOnce(),
+          ]);
+
+        expect(worker).toEqual({
+          processed: false,
+        });
+
+        expect(monitor).toEqual({
+          checked: 0,
+        });
+      },
+    );
+
     test(
       "queues child orders and lets the worker submit them",
       async () => {

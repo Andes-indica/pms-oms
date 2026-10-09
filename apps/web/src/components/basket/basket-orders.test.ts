@@ -23,12 +23,14 @@ const savedGlobals = new Map<string, PropertyDescriptor | undefined>();
 let createRoot: typeof import("react-dom/client").createRoot;
 let CreateBasketOrderForm: typeof import("./CreateBasketOrderForm").CreateBasketOrderForm;
 let BasketOrdersPage: typeof import("../../pages/BasketOrdersPage").BasketOrdersPage;
+let OrdersPage: typeof import("../../pages/OrdersPage").OrdersPage;
 let apiModule: typeof import("../../lib/api");
 let root: Root;
 let container: HTMLDivElement;
 const restores: Array<() => void> = [];
 let postedBodies: Array<Record<string, unknown>>;
 let baskets: unknown[];
+let orders: unknown[];
 let actionResults: unknown[];
 let actionHttpError: string | null;
 let actionPaths: string[];
@@ -48,6 +50,7 @@ beforeAll(async () => {
   ({ createRoot } = await import("react-dom/client"));
   ({ CreateBasketOrderForm } = await import("./CreateBasketOrderForm"));
   ({ BasketOrdersPage } = await import("../../pages/BasketOrdersPage"));
+  ({ OrdersPage } = await import("../../pages/OrdersPage"));
   apiModule = await import("../../lib/api");
 });
 
@@ -57,6 +60,7 @@ beforeEach(() => {
   root = createRoot(container);
   postedBodies = [];
   baskets = [];
+  orders = [];
   actionResults = [];
   actionHttpError = null;
   actionPaths = [];
@@ -71,6 +75,7 @@ beforeEach(() => {
       return Response.json({ data: { id: "new-basket" } }, { status: 201 });
     }
     if (path === "/api/basket-orders") return Response.json({ data: baskets });
+    if (path === "/api/orders") return Response.json({ data: orders });
     if (path.startsWith("/api/basket-orders/")) {
       actionPaths.push(path);
       if (actionHttpError) return Response.json({ error: actionHttpError }, { status: 409 });
@@ -196,7 +201,7 @@ describe("basket execution feedback", () => {
     expect(container.textContent).not.toContain("BROKER_SESSION_EXPIRED");
     expect(container.textContent).toContain("ZERODHA");
     expect(container.textContent).toContain("AB1234");
-    expect(container.textContent).toContain("FAILED");
+    expect(container.textContent).toContain("Failed");
     expect(container.textContent).not.toContain("Execute Basket");
   });
 
@@ -313,8 +318,74 @@ describe("basket execution feedback", () => {
       }],
     }];
     await act(async () => root.render(createElement(BasketOrdersPage)));
-    expect(container.textContent).toContain("Replacement basket: PENDING");
+    expect(container.textContent).toContain("Replacement basket: Pending");
     expect(container.textContent).not.toContain("Create Replacement");
+  });
+});
+
+describe("normal order rejection feedback", () => {
+  test("shows a readable status, broker reason, and corrective action", async () => {
+    orders = [{
+      id: "order-one",
+      symbol: "INFY",
+      exchange: "NSE",
+      side: "BUY",
+      orderType: "LIMIT",
+      quantity: 1,
+      status: "REJECTED",
+      limitPrice: "1500",
+      filledQuantity: 0,
+      portfolio: {
+        client: {
+          name: "Client One",
+        },
+      },
+      executionJob: {
+        status: "FAILED",
+        attempts: 1,
+        lastError:
+          "BROKER_INSUFFICIENT_FUNDS: Required margin is 12,000 but only 8,000 is available",
+      },
+    }];
+
+    await act(async () => root.render(createElement(OrdersPage)));
+
+    expect(container.textContent).toContain("Rejected");
+    expect(container.textContent).toContain("Insufficient funds at the broker");
+    expect(container.textContent).toContain(
+      "Broker detail: Required margin is 12,000 but only 8,000 is available",
+    );
+    expect(container.textContent).toContain(
+      "Add broker funds or reduce this child order quantity",
+    );
+    expect(container.textContent).not.toContain("BROKER_INSUFFICIENT_FUNDS");
+  });
+
+  test("does not invent a reason for a legacy rejected order", async () => {
+    orders = [{
+      id: "legacy-order",
+      symbol: "INFY",
+      exchange: "NSE",
+      side: "BUY",
+      orderType: "LIMIT",
+      quantity: 1,
+      status: "REJECTED",
+      portfolio: {
+        client: {
+          name: "Client One",
+        },
+      },
+      executionJob: {
+        status: "COMPLETED",
+        attempts: 1,
+        lastError: null,
+      },
+    }];
+
+    await act(async () => root.render(createElement(OrdersPage)));
+
+    expect(container.textContent).toContain("No rejection reason was recorded");
+    expect(container.textContent).toContain("Check the audit log and broker order book");
   });
 });
 

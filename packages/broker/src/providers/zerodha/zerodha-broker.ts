@@ -372,6 +372,16 @@ export class ZerodhaBroker
           filledQuantity,
         );
 
+    const statusMessage =
+      [
+        order.status_message,
+        order.status_message_raw,
+      ].find(
+        (value) =>
+          typeof value === "string" &&
+          value.trim().length > 0,
+      );
+
     return {
       brokerOrderId,
 
@@ -385,6 +395,12 @@ export class ZerodhaBroker
       filledQuantity,
 
       averageFillPrice,
+
+      statusMessage:
+        typeof statusMessage ===
+          "string"
+          ? statusMessage.trim()
+          : null,
     };
   }
   async cancelOrder(

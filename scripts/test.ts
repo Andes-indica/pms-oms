@@ -40,4 +40,6 @@ const files = Array.from(new Bun.Glob("{apps,packages}/**/*.test.ts").scanSync({
   .sort()
   .map((file) => `./${file}`);
 if (files.length === 0) throw new Error("No matching tests found");
-await run(["test", ...files]);
+// Treat deprecated concurrent pg-client queries as failures now, before pg@9
+// turns the same pattern into a runtime error.
+await run(["--throw-deprecation", "test", ...files]);

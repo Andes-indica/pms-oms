@@ -286,7 +286,7 @@ The current OMS supports:
 - Cancel
 - Partial fills
 - Full fills
-- Broker rejection
+- Broker rejection with the broker-provided reason and corrective guidance
 - Safe uncertain-submission recovery
 
 ## Multi-Client Basket Orders

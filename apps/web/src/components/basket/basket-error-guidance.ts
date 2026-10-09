@@ -51,7 +51,11 @@ const guidanceByCode: Record<string, Omit<BasketErrorGuidance, "detail">> = {
   },
   BROKER_ORDER_REJECTED: {
     title: "Broker rejected the order",
-    action: "Review the broker reason below, correct the order, and retry.",
+    action: "Review the broker reason below, correct the issue, then create a replacement order.",
+  },
+  ORDER_REJECTION_REASON_UNAVAILABLE: {
+    title: "Order was rejected",
+    action: "No rejection reason was recorded. Check the audit log and broker order book before creating a replacement.",
   },
   BROKER_OPERATION_UNCERTAIN: {
     title: "Broker result is uncertain",
@@ -286,6 +290,22 @@ const guidanceByCode: Record<string, Omit<BasketErrorGuidance, "detail">> = {
     action: "Synchronize the basket again before taking another action.",
   },
 };
+
+export function formatOrderStatusLabel(
+  status: string,
+) {
+  return status
+    .toLowerCase()
+    .split("_")
+    .filter(Boolean)
+    .map(
+      (word) =>
+        word.charAt(0)
+          .toUpperCase() +
+        word.slice(1),
+    )
+    .join(" ");
+}
 
 export function getBasketErrorGuidance(rawError: string): BasketErrorGuidance {
   const normalized = rawError.trim();

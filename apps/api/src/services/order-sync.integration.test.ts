@@ -1505,5 +1505,125 @@ describe(
                 ).toBe(9000);
             },
         );
+
+        test(
+            "persists the broker explanation when an accepted order is later rejected",
+            async () => {
+                const {
+                    firm,
+                    portfolio,
+                    brokerAccount,
+                } =
+                    await createTestAccount({
+                        cashBalance:
+                            100_000,
+                    });
+
+                const brokerOrderId =
+                    `MOCK-${crypto.randomUUID()}`;
+
+                const order =
+                    await prisma.order.create({
+                        data: {
+                            portfolioId:
+                                portfolio.id,
+                            brokerAccountId:
+                                brokerAccount.id,
+                            symbol: "INFY",
+                            exchange: "NSE",
+                            side: "BUY",
+                            orderType: "LIMIT",
+                            quantity: 10,
+                            limitPrice: 1500,
+                            estimatedPrice: 1500,
+                            reservedCash: 15_000,
+                            status: "SUBMITTED",
+                            brokerOrderId,
+                            executionJob: {
+                                create: {
+                                    status:
+                                        "COMPLETED",
+                                },
+                            },
+                        },
+                    });
+
+                mockBroker.restoreOrder(
+                    brokerOrderId,
+                    {
+                        clientOrderId:
+                            order.id,
+                        symbol: "INFY",
+                        exchange: "NSE",
+                        side: "BUY",
+                        orderType: "LIMIT",
+                        quantity: 10,
+                        limitPrice: 1500,
+                    },
+                    "SUBMITTED",
+                );
+
+                mockBroker.setOrderSimulation(
+                    brokerOrderId,
+                    {
+                        brokerOrderId,
+                        status: "REJECTED",
+                        filledQuantity: 0,
+                        averageFillPrice: null,
+                        statusMessage:
+                            "Exchange rejected the price outside the permitted range",
+                    },
+                    [],
+                );
+
+                const result =
+                    await syncOrderService(
+                        order.id,
+                        firm.id,
+                    );
+
+                expect(result.status)
+                    .toBe("REJECTED");
+                expect(Number(result.reservedCash))
+                    .toBe(0);
+
+                const job =
+                    await prisma.executionJob
+                        .findUniqueOrThrow({
+                            where: {
+                                orderId:
+                                    order.id,
+                            },
+                        });
+
+                expect(job.status)
+                    .toBe("COMPLETED");
+                expect(job.lastError)
+                    .toBe(
+                        "BROKER_ORDER_REJECTED: Exchange rejected the price outside the permitted range",
+                    );
+
+                const audit =
+                    await prisma.auditLog
+                        .findFirstOrThrow({
+                            where: {
+                                entityId:
+                                    order.id,
+                                action:
+                                    "ORDER_REJECTED",
+                            },
+                            orderBy: {
+                                createdAt:
+                                    "desc",
+                            },
+                        });
+
+                expect(audit.metadata)
+                    .toMatchObject({
+                        rejectionReason:
+                            "Exchange rejected the price outside the permitted range",
+                    });
+            },
+        );
     },
 );

@@ -13,6 +13,7 @@ import {
   CreateBasketOrderForm,
 } from "../components/basket/CreateBasketOrderForm";
 import {
+  formatOrderStatusLabel,
   getBasketErrorGuidance,
 } from "../components/basket/basket-error-guidance";
 
@@ -333,7 +334,14 @@ function BasketList({
         const busy =
           busyId === basket.id;
         const failedChildCount = basket.orders.filter(
-          (order) => order.executionJob?.status === "FAILED" || order.executionJob?.lastError,
+          (order) =>
+            order.status ===
+              "REJECTED" ||
+            order.executionJob
+              ?.status ===
+              "FAILED" ||
+            order.executionJob
+              ?.lastError,
         ).length;
 
         return (
@@ -360,7 +368,9 @@ function BasketList({
               </div>
 
               <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium">
-                {basket.status}
+                {formatOrderStatusLabel(
+                  basket.status,
+                )}
               </span>
             </div>
 
@@ -372,92 +382,110 @@ function BasketList({
 
             <div className="mt-4 space-y-2">
               {basket.orders.map(
-                (order) => (
-                  <div
-                    key={order.id}
-                    className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3 text-sm"
-                  >
-                    <div>
-                      <p className="font-medium">
-                        {
-                          order
-                            .portfolio
-                            .client
-                            .name
-                        }
-                      </p>
+                (order) => {
+                  const statusError =
+                    order.executionJob
+                      ?.lastError ??
+                    (order.status ===
+                      "REJECTED"
+                      ? "ORDER_REJECTION_REASON_UNAVAILABLE"
+                      : null);
 
-                      <p className="text-xs text-slate-500">{order.portfolio.name}</p>
+                  return (
+                    <div
+                      key={order.id}
+                      className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3 text-sm"
+                    >
+                      <div>
+                        <p className="font-medium">
+                          {
+                            order
+                              .portfolio
+                              .client
+                              .name
+                          }
+                        </p>
 
-                      {order
-                        .brokerAccount && (
+                        <p className="text-xs text-slate-500">{order.portfolio.name}</p>
+
+                        {order
+                          .brokerAccount && (
+                          <p className="text-xs text-slate-500">
+                            {
+                              order
+                                .brokerAccount
+                                .broker
+                            }{" "}
+                            •{" "}
+                            {
+                              order
+                                .brokerAccount
+                                .accountId
+                            }
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="text-right">
+                        <p>
+                          Qty{" "}
+                          {order.quantity}
+                        </p>
+
                         <p className="text-xs text-slate-500">
-                          {
-                            order
-                              .brokerAccount
-                              .broker
-                          }{" "}
-                          •{" "}
-                          {
-                            order
-                              .brokerAccount
-                              .accountId
-                          }
+                          {formatOrderStatusLabel(
+                            order.status,
+                          )}
                         </p>
-                      )}
+                        {order.brokerOrderId && (
+                          <p className="text-xs text-slate-500">Broker order: {order.brokerOrderId}</p>
+                        )}
+                        {order.executionJob && (
+                          <p className="text-xs text-slate-500">
+                            Execution: {formatOrderStatusLabel(
+                              order.executionJob.status,
+                            )}
+                          </p>
+                        )}
+                        {statusError && (
+                          <BasketErrorNotice error={statusError} compact />
+                        )}
+                        {order.replacementBasket && (
+                          <p className="mt-2 text-xs font-medium text-emerald-700">
+                            Replacement basket: {formatOrderStatusLabel(
+                              order.replacementBasket.status,
+                            )}
+                          </p>
+                        )}
+                        {order.recoveryAction && (
+                          <button
+                            disabled={
+                              busy ||
+                              busyChildId !==
+                                null
+                            }
+                            onClick={() =>
+                              runChildAction(
+                                basket.id,
+                                order,
+                                order.recoveryAction!,
+                              )
+                            }
+                            className="mt-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-900 disabled:opacity-60"
+                          >
+                            {busyChildId === order.id
+                              ? "Working..."
+                              : order.recoveryAction === "RETRY"
+                                ? "Retry Child"
+                                : order.recoveryAction === "RECONCILE"
+                                  ? "Reconcile Child"
+                                  : "Create Replacement"}
+                          </button>
+                        )}
+                      </div>
                     </div>
-
-                    <div className="text-right">
-                      <p>
-                        Qty{" "}
-                        {order.quantity}
-                      </p>
-
-                      <p className="text-xs text-slate-500">
-                        {order.status}
-                      </p>
-                      {order.brokerOrderId && (
-                        <p className="text-xs text-slate-500">Broker order: {order.brokerOrderId}</p>
-                      )}
-                      {order.executionJob && (
-                        <p className="text-xs text-slate-500">Execution: {order.executionJob.status}</p>
-                      )}
-                      {order.executionJob?.lastError && (
-                        <BasketErrorNotice error={order.executionJob.lastError} compact />
-                      )}
-                      {order.replacementBasket && (
-                        <p className="mt-2 text-xs font-medium text-emerald-700">
-                          Replacement basket: {order.replacementBasket.status}
-                        </p>
-                      )}
-                      {order.recoveryAction && (
-                        <button
-                          disabled={
-                            busy ||
-                            busyChildId !==
-                              null
-                          }
-                          onClick={() =>
-                            runChildAction(
-                              basket.id,
-                              order,
-                              order.recoveryAction!,
-                            )
-                          }
-                          className="mt-2 rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs font-medium text-amber-900 disabled:opacity-60"
-                        >
-                          {busyChildId === order.id
-                            ? "Working..."
-                            : order.recoveryAction === "RETRY"
-                              ? "Retry Child"
-                              : order.recoveryAction === "RECONCILE"
-                                ? "Reconcile Child"
-                                : "Create Replacement"}
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ),
+                  );
+                },
               )}
             </div>
 

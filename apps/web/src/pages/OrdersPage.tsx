@@ -9,6 +9,10 @@ import {
   subscribeToLiveUpdates,
 } from "../lib/api";
 import { PlaceOrderForm } from "../components/PlaceOrderForm";
+import {
+  formatOrderStatusLabel,
+  getBasketErrorGuidance,
+} from "../components/basket/basket-error-guidance";
 
 type Order = {
   id: string;
@@ -379,6 +383,21 @@ function OrdersTable({
                   "FAILED"
               );
 
+            const statusError =
+              order.executionJob
+                ?.lastError ??
+              (order.status ===
+                "REJECTED"
+                ? "ORDER_REJECTION_REASON_UNAVAILABLE"
+                : null);
+
+            const statusGuidance =
+              statusError
+                ? getBasketErrorGuidance(
+                    statusError,
+                  )
+                : null;
+
             return (
               <tr
                 key={order.id}
@@ -409,28 +428,31 @@ function OrdersTable({
 
                 <td className="px-4 py-4">
                   <p>
-                    {displayStatus}
+                    {formatOrderStatusLabel(
+                      displayStatus,
+                    )}
                   </p>
 
-                  {displayStatus ===
-                    "EXECUTION_FAILED" &&
-                    order.executionJob
-                      ?.lastError && (
-                      <p
-                        className="mt-1 max-w-48 truncate text-xs text-red-600"
-                        title={
-                          order
-                            .executionJob
-                            .lastError
-                        }
-                      >
-                        {
-                          order
-                            .executionJob
-                            .lastError
-                        }
+                  {statusGuidance && (
+                    <div
+                      role="alert"
+                      className="mt-2 max-w-sm rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900"
+                    >
+                      <p className="font-semibold">
+                        {statusGuidance.title}
                       </p>
-                    )}
+
+                      {statusGuidance.detail && (
+                        <p className="mt-1 break-words">
+                          Broker detail: {statusGuidance.detail}
+                        </p>
+                      )}
+
+                      <p className="mt-1 text-red-700">
+                        Next: {statusGuidance.action}
+                      </p>
+                    </div>
+                  )}
                 </td>
 
                 <td className="px-4 py-4">

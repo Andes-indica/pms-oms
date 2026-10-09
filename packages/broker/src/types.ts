@@ -35,6 +35,7 @@ export type BrokerOrderUpdate = {
   status: BrokerOrderStatus;
   filledQuantity: number;
   averageFillPrice: number | null;
+  statusMessage?: string | null;
 };
 export type BrokerOrderModification = {
   quantity?: number;
