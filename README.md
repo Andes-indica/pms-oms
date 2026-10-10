@@ -38,7 +38,7 @@ The system currently includes:
 - Durable PostgreSQL-backed execution queue and worker
 - Worker crash recovery with stale-lease reclamation
 
-The major remaining architecture work is **richer persisted order lifecycle states, explicit allocation records, database-backed instrument master data, and production deployment/hardening**. Real-time UI updates are implemented with an authenticated SSE stream, and the current instrument master is a configurable canonical file-backed registry.
+The core Zerodha order lifecycle is operational. Remaining product evolution includes richer pre-submission lifecycle states and, if needed, persisted allocation records. Production images, fail-closed runtime validation, HTTPS Compose topology, readiness checks, bounded database pooling, and graceful worker shutdown are included; provisioning the selected host, database, market-data vendor, DNS, and fixed outbound IP remains an operator task.
 
 ## Tech Stack
 
@@ -320,9 +320,7 @@ Basket functionality includes:
 
 Order and basket creation now pass through a canonical instrument registry.
 
-By default the repository includes a small development registry. A deployment can provide a complete JSON instrument universe using `INSTRUMENT_MASTER_PATH`. Setting `INSTRUMENT_MASTER_STRICT=true` rejects symbols that are not present in that registry. The authenticated `GET /api/instruments` endpoint exposes the canonical list to the order-entry UI.
-
-A database-backed instrument model remains a future schema migration if richer instrument metadata and lifecycle management are required.
+By default the repository includes a small development registry. A deployment can provide a complete JSON instrument universe using `INSTRUMENT_MASTER_PATH` or import instruments into the database. Database rows are authoritative once present. Setting `INSTRUMENT_MASTER_STRICT=true` rejects symbols that are not in the canonical registry. The authenticated `GET /api/instruments` endpoint exposes the list to the order-entry UI.
 
 ## Risk Engine
 
@@ -533,6 +531,7 @@ PATCH /api/users/:id/role
 ```http
 GET /health
 GET /health/db
+GET /ready
 ```
 
 ## Local Development
@@ -610,7 +609,7 @@ Run the repository checks from the root:
 
 ```bash
 bun run typecheck
-bun test
+bun run test:all
 ```
 
 ## Development Roadmap
@@ -654,6 +653,11 @@ bun test
 - [x] Durable execution queue / worker
 - [x] Automatic broker status monitoring
 - [x] Worker crash recovery / stale-job reclamation
+- [x] Fail-closed production configuration validation
+- [x] Login throttling and defensive HTTP headers
+- [x] Bounded database pooling and graceful worker shutdown
+- [x] Production Compose topology with automatic HTTPS
+- [x] Production image build and health smoke tests in CI
 
 ### Remaining from the original architecture
 
@@ -663,10 +667,11 @@ bun test
 - [x] Add configurable market-data provider boundary
 - [ ] Expand the persisted order state machine with pre-submission and cancel-pending states
 - [ ] Persist explicit allocation records if the original database design is retained
-- [ ] Move the instrument master into the database if richer metadata/lifecycle management is needed
+- [x] Add database-backed instrument master management
 - [ ] Configure a concrete production market-data vendor
 - [x] Add reproducible production API/web images and deployment runbook
-- [ ] Select deployment provider and provision fixed outbound IP for real broker traffic
+- [x] Select AWS Lightsail as the initial deployment provider
+- [ ] Provision and register the fixed outbound IP for real broker traffic
 
 ## Deployment
 
@@ -676,7 +681,7 @@ Production containerization and rollout guidance is documented in:
 docs/deployment.md
 ```
 
-The repository includes `Dockerfile.api` with a one-shot migration target and runtime health check, plus `Dockerfile.web` with SPA nginx serving. A concrete cloud provider and fixed egress IP still need to be selected for live broker traffic.
+The repository includes `Dockerfile.api` with one-shot migration and production runtime targets, `Dockerfile.web` with SPA nginx serving, and `docker-compose.production.yml` with automatic HTTPS through Caddy. The API readiness check verifies PostgreSQL and the instrument master. A fixed outbound IP must be provisioned and registered with Zerodha before live broker traffic.
 
 ## Architecture Documentation
 
@@ -713,4 +718,4 @@ Real-broker execution should only be used with:
 
 ## Status
 
-The project is under active development. Core PMS/OMS functionality, Zerodha execution, reconciliation, persistent fills, automatic monitoring, durable queued execution, live UI updates, canonical instrument validation, and actor-aware auditing are operational. Remaining work is primarily schema refinement and production deployment/hardening.
+The project is under active development. Core PMS/OMS functionality, Zerodha execution, reconciliation, persistent fills, automatic monitoring, durable queued execution, live UI updates, canonical instrument validation, actor-aware auditing, and production deployment safeguards are operational. Remaining work is concrete infrastructure provisioning, a real quote-provider configuration, controlled live verification, and optional future schema refinement.

@@ -33,7 +33,7 @@ jobs:
       NODE_ENV: test
       DATABASE_URL: postgresql://pms_user:pms_password@localhost:5432/pms_oms_test?schema=public
       JWT_SECRET: ci-test-secret
-      BROKER_CREDENTIAL_ENCRYPTION_KEY: ci-test-ci-test-ci-test-ci-test
+      BROKER_CREDENTIAL_ENCRYPTION_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       ORDER_MONITOR_ENABLED: "false"
       ORDER_EXECUTION_WORKER_ENABLED: "false"
 
@@ -69,6 +69,73 @@ jobs:
         env:
           VITE_API_URL: http://127.0.0.1:3000
         run: bun run build
+
+      - name: Build production images
+        run: |
+          docker build -f Dockerfile.api -t pms-oms-api:ci .
+          docker build \
+            -f Dockerfile.web \
+            --build-arg VITE_API_URL=https://api.example.com \
+            -t pms-oms-web:ci \
+            .
+
+      - name: Validate production deployment configuration
+        run: |
+          PMS_ENV_FILE=.env.production.example docker compose \
+            --env-file .env.production.example \
+            -f docker-compose.production.yml \
+            config --quiet
+
+          docker run --rm \
+            -e API_DOMAIN=api.example.com \
+            -e APP_DOMAIN=app.example.com \
+            -e TLS_EMAIL=operations@example.com \
+            -v "${{ github.workspace }}/deploy/Caddyfile:/etc/caddy/Caddyfile:ro" \
+            caddy:2-alpine \
+            caddy validate --config /etc/caddy/Caddyfile
+
+      - name: Smoke test production images
+        run: |
+          cleanup() {
+            docker rm -f pms-oms-api-smoke pms-oms-web-smoke >/dev/null 2>&1 || true
+          }
+          trap cleanup EXIT
+
+          docker run -d \
+            --name pms-oms-api-smoke \
+            --network host \
+            -e NODE_ENV=production \
+            -e PORT=3000 \
+            -e DATABASE_URL \
+            -e JWT_SECRET=0123456789abcdef0123456789abcdef \
+            -e BROKER_CREDENTIAL_ENCRYPTION_KEY \
+            -e CORS_ORIGINS=https://app.example.com \
+            -e MARKET_DATA_PROVIDER=http \
+            -e MARKET_DATA_BASE_URL=https://quotes.example.com \
+            -e INSTRUMENT_MASTER_PATH=/run/config/instruments.json \
+            -e INSTRUMENT_MASTER_STRICT=true \
+            -e ORDER_MONITOR_ENABLED=false \
+            -e ORDER_EXECUTION_WORKER_ENABLED=false \
+            -v "${{ github.workspace }}/config/instruments.example.json:/run/config/instruments.json:ro" \
+            pms-oms-api:ci
+
+          docker run -d \
+            --name pms-oms-web-smoke \
+            -p 8080:80 \
+            pms-oms-web:ci
+
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:3000/ready >/dev/null; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              docker logs pms-oms-api-smoke
+              exit 1
+            fi
+            sleep 1
+          done
+
+          curl --fail --silent http://127.0.0.1:8080/health >/dev/null
 
       - name: Run tests
         run: bun run test:all
