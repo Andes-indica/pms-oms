@@ -22,9 +22,30 @@ const originalEnv = {
   MARKET_DATA_PROVIDER:
     process.env
       .MARKET_DATA_PROVIDER,
+  MARKET_DATA_BASE_URL:
+    process.env
+      .MARKET_DATA_BASE_URL,
   INSTRUMENT_MASTER_STRICT:
     process.env
       .INSTRUMENT_MASTER_STRICT,
+  MARKET_DATA_REQUEST_TIMEOUT_MS:
+    process.env
+      .MARKET_DATA_REQUEST_TIMEOUT_MS,
+  BROKER_HTTP_TIMEOUT_MS:
+    process.env
+      .BROKER_HTTP_TIMEOUT_MS,
+  LOGIN_RATE_LIMIT_MAX_ATTEMPTS:
+    process.env
+      .LOGIN_RATE_LIMIT_MAX_ATTEMPTS,
+  LOGIN_RATE_LIMIT_WINDOW_MS:
+    process.env
+      .LOGIN_RATE_LIMIT_WINDOW_MS,
+  TRUST_PROXY_HOPS:
+    process.env
+      .TRUST_PROXY_HOPS,
+  SHUTDOWN_TIMEOUT_MS:
+    process.env
+      .SHUTDOWN_TIMEOUT_MS,
 };
 
 function restore(
@@ -79,6 +100,10 @@ function setValidProductionConfig() {
   process.env
     .MARKET_DATA_PROVIDER =
     "http";
+
+  process.env
+    .MARKET_DATA_BASE_URL =
+    "https://quotes.example.com";
 
   process.env
     .INSTRUMENT_MASTER_STRICT =
@@ -163,6 +188,106 @@ describe(
           validateRuntimeConfig,
         ).toThrow(
           "PRODUCTION_CORS_ORIGINS_REQUIRED",
+        );
+      },
+    );
+
+    test(
+      "requires exact HTTPS production origins",
+      () => {
+        setValidProductionConfig();
+
+        process.env.CORS_ORIGINS =
+          "http://app.example.com";
+
+        expect(
+          validateRuntimeConfig,
+        ).toThrow(
+          "PRODUCTION_CORS_ORIGIN_INVALID",
+        );
+      },
+    );
+
+    test(
+      "rejects the mock market-data provider in production",
+      () => {
+        setValidProductionConfig();
+
+        process.env
+          .MARKET_DATA_PROVIDER =
+          "mock";
+
+        expect(
+          validateRuntimeConfig,
+        ).toThrow(
+          "PRODUCTION_MARKET_DATA_PROVIDER_INVALID",
+        );
+      },
+    );
+
+    test(
+      "requires a production market-data base URL",
+      () => {
+        setValidProductionConfig();
+
+        delete process.env
+          .MARKET_DATA_BASE_URL;
+
+        expect(
+          validateRuntimeConfig,
+        ).toThrow(
+          "PRODUCTION_MARKET_DATA_BASE_URL_REQUIRED",
+        );
+      },
+    );
+
+    test(
+      "rejects an invalid production market-data base URL",
+      () => {
+        setValidProductionConfig();
+
+        process.env
+          .MARKET_DATA_BASE_URL =
+          "not-a-url";
+
+        expect(
+          validateRuntimeConfig,
+        ).toThrow(
+          "PRODUCTION_MARKET_DATA_BASE_URL_INVALID",
+        );
+      },
+    );
+
+    test(
+      "requires strict instrument validation in production",
+      () => {
+        setValidProductionConfig();
+
+        process.env
+          .INSTRUMENT_MASTER_STRICT =
+          "false";
+
+        expect(
+          validateRuntimeConfig,
+        ).toThrow(
+          "PRODUCTION_INSTRUMENT_MASTER_STRICT_REQUIRED",
+        );
+      },
+    );
+
+    test(
+      "rejects invalid production timeout settings",
+      () => {
+        setValidProductionConfig();
+
+        process.env
+          .BROKER_HTTP_TIMEOUT_MS =
+          "0";
+
+        expect(
+          validateRuntimeConfig,
+        ).toThrow(
+          "PRODUCTION_BROKER_HTTP_TIMEOUT_MS_INVALID",
         );
       },
     );

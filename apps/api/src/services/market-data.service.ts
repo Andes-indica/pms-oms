@@ -13,6 +13,24 @@ const mockPrices:
     HDFCBANK: 1700,
   };
 
+const DEFAULT_REQUEST_TIMEOUT_MS =
+  5_000;
+
+function getRequestTimeoutMs() {
+  const configured =
+    Number(
+      process.env
+        .MARKET_DATA_REQUEST_TIMEOUT_MS,
+    );
+
+  return Number.isInteger(
+    configured,
+  ) && configured > 0 &&
+    configured <= 60_000
+    ? configured
+    : DEFAULT_REQUEST_TIMEOUT_MS;
+}
+
 class MockMarketDataProvider
   implements MarketDataProvider {
   async getPrice(
@@ -74,13 +92,30 @@ class HttpMarketDataProvider
       );
     }
 
-    const response =
-      await fetch(
-        url,
-        {
-          headers,
-        },
+    const signal =
+      AbortSignal.timeout(
+        getRequestTimeoutMs(),
       );
+
+    let response:
+      Response;
+
+    try {
+      response =
+        await fetch(
+          url,
+          {
+            headers,
+            signal,
+          },
+        );
+    } catch {
+      throw new Error(
+        signal.aborted
+          ? "MARKET_DATA_REQUEST_TIMEOUT"
+          : "MARKET_DATA_REQUEST_FAILED",
+      );
+    }
 
     if (!response.ok) {
       throw new Error(
@@ -88,10 +123,20 @@ class HttpMarketDataProvider
       );
     }
 
-    const body =
-      await response.json() as {
-        price?: unknown;
-      };
+    let body: {
+      price?: unknown;
+    };
+
+    try {
+      body =
+        await response.json() as {
+          price?: unknown;
+        };
+    } catch {
+      throw new Error(
+        "MARKET_DATA_RESPONSE_INVALID",
+      );
+    }
 
     if (
       typeof body.price !==

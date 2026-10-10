@@ -19,7 +19,8 @@
     "test:all": "bun scripts/test.ts all",
     "db:generate": "cd packages/db && bunx prisma generate",
     "db:migrate:test": "cd packages/db && NODE_ENV=test bunx prisma migrate deploy",
-    "db:status:test": "cd packages/db && NODE_ENV=test bunx prisma migrate status"
+    "db:status:test": "cd packages/db && NODE_ENV=test bunx prisma migrate status",
+    "db:bootstrap:admin": "cd packages/db && bun run bootstrap:admin"
   },
   "dependencies": {
     "@pms-oms/broker": "workspace:*"

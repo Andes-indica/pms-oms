@@ -185,6 +185,8 @@ function CreateUserForm({
 
       <div className="mt-5 grid gap-4 md:grid-cols-4">
         <input
+          autoComplete="name"
+          name="name"
           value={name}
           onChange={(event) =>
             setName(
@@ -197,6 +199,8 @@ function CreateUserForm({
         />
 
         <input
+          autoComplete="email"
+          name="email"
           type="email"
           value={email}
           onChange={(event) =>
@@ -210,6 +214,10 @@ function CreateUserForm({
         />
 
         <input
+          autoComplete="new-password"
+          maxLength={128}
+          minLength={12}
+          name="password"
           type="password"
           value={password}
           onChange={(event) =>
@@ -217,7 +225,7 @@ function CreateUserForm({
               event.target.value,
             )
           }
-          placeholder="Password"
+          placeholder="Password (12+ characters)"
           required
           className="rounded-lg border px-3 py-2"
         />

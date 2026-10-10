@@ -21,12 +21,10 @@ type LoginResponse = {
 
 export function LoginPage() {
   const [email, setEmail] =
-    useState(
-      "manager@alphapms.com",
-    );
+    useState("");
 
   const [password, setPassword] =
-    useState("demo1234");
+    useState("");
 
   const [error, setError] =
     useState("");
@@ -103,13 +101,16 @@ export function LoginPage() {
             </label>
 
             <input
+              autoComplete="email"
+              inputMode="email"
+              name="email"
+              type="email"
               value={email}
               onChange={(event) =>
                 setEmail(
                   event.target.value,
                 )
               }
-              type="email"
               className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-900"
             />
           </div>
@@ -120,13 +121,15 @@ export function LoginPage() {
             </label>
 
             <input
+              autoComplete="current-password"
+              name="password"
+              type="password"
               value={password}
               onChange={(event) =>
                 setPassword(
                   event.target.value,
                 )
               }
-              type="password"
               className="mt-2 w-full rounded-lg border border-slate-300 px-3 py-2 outline-none focus:border-slate-900"
             />
           </div>
