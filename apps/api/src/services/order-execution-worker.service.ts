@@ -89,6 +89,10 @@ let workerTimer:
 
 let workerStopped = true;
 
+let activeWorkerCycle:
+  Promise<void> | null =
+  null;
+
 function getLockTimeoutMs() {
   const configured =
     Number(
@@ -431,28 +435,44 @@ export function startOrderExecutionWorker() {
       return;
     }
 
-    try {
-      /*
-       * Drain available jobs before
-       * sleeping again.
-       */
-      while (
-        !workerStopped
-      ) {
-        const result =
-          await processNextExecutionJob();
+    const cycle =
+      (async () => {
+        try {
+          /*
+           * Drain available jobs before
+           * sleeping again.
+           */
+          while (
+            !workerStopped
+          ) {
+            const result =
+              await processNextExecutionJob();
 
-        if (
-          !result.processed
-        ) {
-          break;
+            if (
+              !result.processed
+            ) {
+              break;
+            }
+          }
+        } catch (error) {
+          console.error(
+            "Order execution worker cycle failed:",
+            error,
+          );
         }
-      }
-    } catch (error) {
-      console.error(
-        "Order execution worker cycle failed:",
-        error,
-      );
+      })();
+
+    activeWorkerCycle =
+      cycle;
+
+    await cycle;
+
+    if (
+      activeWorkerCycle ===
+      cycle
+    ) {
+      activeWorkerCycle =
+        null;
     }
 
     if (!workerStopped) {
@@ -467,7 +487,7 @@ export function startOrderExecutionWorker() {
   void run();
 }
 
-export function stopOrderExecutionWorker() {
+export async function stopOrderExecutionWorker() {
   workerStopped = true;
 
   if (workerTimer) {
@@ -477,4 +497,6 @@ export function stopOrderExecutionWorker() {
 
     workerTimer = null;
   }
+
+  await activeWorkerCycle;
 }

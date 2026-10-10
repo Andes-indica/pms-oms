@@ -55,6 +55,30 @@ export async function createUser(
       });
     }
 
+    if (
+      password.length < 12 ||
+      password.length > 128
+    ) {
+      return res.status(400).json({
+        error:
+          "Password must be between 12 and 128 characters",
+      });
+    }
+
+    if (
+      ![
+        "ADMIN",
+        "PORTFOLIO_MANAGER",
+        "OPERATIONS",
+        "VIEWER",
+      ].includes(role)
+    ) {
+      return res.status(400).json({
+        error:
+          "Invalid user role",
+      });
+    }
+
     const user =
       await createUserService({
         firmId: req.user.firmId,

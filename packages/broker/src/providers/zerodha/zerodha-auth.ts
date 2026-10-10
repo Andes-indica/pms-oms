@@ -2,6 +2,10 @@ import {
   KiteConnect,
 } from "kiteconnect";
 
+import {
+  getZerodhaHttpTimeoutMs,
+} from "./zerodha-timeout";
+
 export class ZerodhaAuth {
   constructor(
     private apiKey: string,
@@ -11,6 +15,8 @@ export class ZerodhaAuth {
     const kite =
       new KiteConnect({
         api_key: this.apiKey,
+        timeout:
+          getZerodhaHttpTimeoutMs(),
       });
 
     return kite.getLoginURL();
@@ -23,6 +29,8 @@ export class ZerodhaAuth {
     const kite =
       new KiteConnect({
         api_key: this.apiKey,
+        timeout:
+          getZerodhaHttpTimeoutMs(),
       });
 
     const session =

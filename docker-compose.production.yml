@@ -1,0 +1,71 @@
+services:
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+      target: migrate
+    env_file:
+      - ${PMS_ENV_FILE:-.env.production}
+    profiles:
+      - tools
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    env_file:
+      - ${PMS_ENV_FILE:-.env.production}
+    expose:
+      - "3000"
+    volumes:
+      - ${INSTRUMENT_MASTER_FILE:?Set INSTRUMENT_MASTER_FILE}:/run/config/instruments.json:ro
+    restart: unless-stopped
+    stop_grace_period: 45s
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        VITE_API_URL: ${VITE_API_URL:?Set VITE_API_URL}
+    expose:
+      - "80"
+    healthcheck:
+      test:
+        - CMD
+        - wget
+        - --quiet
+        - --tries=1
+        - --spider
+        - http://127.0.0.1/health
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  proxy:
+    image: caddy:2-alpine
+    environment:
+      API_DOMAIN: ${API_DOMAIN:?Set API_DOMAIN}
+      APP_DOMAIN: ${APP_DOMAIN:?Set APP_DOMAIN}
+      TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      api:
+        condition: service_healthy
+      web:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

@@ -11,6 +11,35 @@ function decodeBrokerKey(
   }
 }
 
+function validateOptionalInteger(
+  name: string,
+  minimum: number,
+  maximum: number,
+) {
+  const value =
+    process.env[name];
+
+  if (
+    value === undefined
+  ) {
+    return;
+  }
+
+  const parsed =
+    Number(value);
+
+  if (
+    !Number.isInteger(
+      parsed,
+    ) || parsed < minimum ||
+    parsed > maximum
+  ) {
+    throw new Error(
+      `PRODUCTION_${name}_INVALID`,
+    );
+  }
+}
+
 export function validateRuntimeConfig() {
   if (
     process.env.NODE_ENV !==
@@ -69,6 +98,35 @@ export function validateRuntimeConfig() {
     );
   }
 
+  for (
+    const origin of corsOrigins
+  ) {
+    let parsedOrigin:
+      URL;
+
+    try {
+      parsedOrigin =
+        new URL(origin);
+    } catch {
+      throw new Error(
+        "PRODUCTION_CORS_ORIGIN_INVALID",
+      );
+    }
+
+    if (
+      parsedOrigin.protocol !==
+        "https:" ||
+      parsedOrigin.origin !==
+        origin ||
+      parsedOrigin.pathname !==
+        "/"
+    ) {
+      throw new Error(
+        "PRODUCTION_CORS_ORIGIN_INVALID",
+      );
+    }
+  }
+
   if (
     (
       process.env
@@ -76,11 +134,44 @@ export function validateRuntimeConfig() {
       "mock"
     )
       .trim()
-      .toLowerCase() ===
-    "mock"
+      .toLowerCase() !==
+    "http"
   ) {
-    console.warn(
-      "Production is using the mock market-data provider.",
+    throw new Error(
+      "PRODUCTION_MARKET_DATA_PROVIDER_INVALID",
+    );
+  }
+
+  const marketDataBaseUrl =
+    process.env
+      .MARKET_DATA_BASE_URL
+      ?.trim();
+
+  if (!marketDataBaseUrl) {
+    throw new Error(
+      "PRODUCTION_MARKET_DATA_BASE_URL_REQUIRED",
+    );
+  }
+
+  try {
+    const parsedUrl =
+      new URL(
+        marketDataBaseUrl,
+      );
+
+    if (
+      parsedUrl.protocol !==
+        "https:" &&
+      parsedUrl.protocol !==
+        "http:"
+    ) {
+      throw new Error(
+        "INVALID_PROTOCOL",
+      );
+    }
+  } catch {
+    throw new Error(
+      "PRODUCTION_MARKET_DATA_BASE_URL_INVALID",
     );
   }
 
@@ -89,8 +180,44 @@ export function validateRuntimeConfig() {
       .INSTRUMENT_MASTER_STRICT !==
     "true"
   ) {
-    console.warn(
-      "Production instrument-master strict validation is disabled.",
+    throw new Error(
+      "PRODUCTION_INSTRUMENT_MASTER_STRICT_REQUIRED",
     );
   }
+
+  validateOptionalInteger(
+    "MARKET_DATA_REQUEST_TIMEOUT_MS",
+    100,
+    60_000,
+  );
+
+  validateOptionalInteger(
+    "BROKER_HTTP_TIMEOUT_MS",
+    1_000,
+    60_000,
+  );
+
+  validateOptionalInteger(
+    "LOGIN_RATE_LIMIT_MAX_ATTEMPTS",
+    1,
+    1_000,
+  );
+
+  validateOptionalInteger(
+    "LOGIN_RATE_LIMIT_WINDOW_MS",
+    1_000,
+    86_400_000,
+  );
+
+  validateOptionalInteger(
+    "TRUST_PROXY_HOPS",
+    0,
+    10,
+  );
+
+  validateOptionalInteger(
+    "SHUTDOWN_TIMEOUT_MS",
+    5_000,
+    120_000,
+  );
 }

@@ -167,6 +167,10 @@ let monitorTimer:
 
 let monitorStopped = true;
 
+let activeMonitorCycle:
+  Promise<void> | null =
+  null;
+
 export function startOrderMonitor() {
   if (!monitorStopped) {
     return;
@@ -194,13 +198,29 @@ export function startOrderMonitor() {
       return;
     }
 
-    try {
-      await monitorActiveOrdersOnce();
-    } catch (error) {
-      console.error(
-        "Order monitor cycle failed:",
-        error,
-      );
+    const cycle =
+      (async () => {
+        try {
+          await monitorActiveOrdersOnce();
+        } catch (error) {
+          console.error(
+            "Order monitor cycle failed:",
+            error,
+          );
+        }
+      })();
+
+    activeMonitorCycle =
+      cycle;
+
+    await cycle;
+
+    if (
+      activeMonitorCycle ===
+      cycle
+    ) {
+      activeMonitorCycle =
+        null;
     }
 
     if (!monitorStopped) {
@@ -222,7 +242,7 @@ export function startOrderMonitor() {
   void run();
 }
 
-export function stopOrderMonitor() {
+export async function stopOrderMonitor() {
   monitorStopped = true;
 
   if (monitorTimer) {
@@ -232,4 +252,6 @@ export function stopOrderMonitor() {
 
     monitorTimer = null;
   }
+
+  await activeMonitorCycle;
 }

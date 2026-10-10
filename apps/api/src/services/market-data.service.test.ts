@@ -21,6 +21,10 @@ const originalToken =
   process.env
     .MARKET_DATA_API_TOKEN;
 
+const originalTimeout =
+  process.env
+    .MARKET_DATA_REQUEST_TIMEOUT_MS;
+
 const originalFetch =
   globalThis.fetch;
 
@@ -59,6 +63,18 @@ afterEach(() => {
     process.env
       .MARKET_DATA_API_TOKEN =
       originalToken;
+  }
+
+  if (
+    originalTimeout ===
+    undefined
+  ) {
+    delete process.env
+      .MARKET_DATA_REQUEST_TIMEOUT_MS;
+  } else {
+    process.env
+      .MARKET_DATA_REQUEST_TIMEOUT_MS =
+      originalTimeout;
   }
 
   globalThis.fetch =
@@ -223,6 +239,52 @@ describe(
           ),
         ).rejects.toThrow(
           "MARKET_DATA_NOT_CONFIGURED",
+        );
+      },
+    );
+
+    test(
+      "times out an unavailable HTTP provider",
+      async () => {
+        process.env
+          .MARKET_DATA_PROVIDER =
+          "http";
+
+        process.env
+          .MARKET_DATA_BASE_URL =
+          "https://quotes.example";
+
+        process.env
+          .MARKET_DATA_REQUEST_TIMEOUT_MS =
+          "10";
+
+        globalThis.fetch =
+          ((_input, init) =>
+            new Promise(
+              (_resolve, reject) => {
+                init?.signal
+                  ?.addEventListener(
+                    "abort",
+                    () =>
+                      reject(
+                        new Error(
+                          "aborted",
+                        ),
+                      ),
+                    {
+                      once: true,
+                    },
+                  );
+              },
+            )) as typeof fetch;
+
+        await expect(
+          getMarketPrice(
+            "INFY",
+            "NSE",
+          ),
+        ).rejects.toThrow(
+          "MARKET_DATA_REQUEST_TIMEOUT",
         );
       },
     );

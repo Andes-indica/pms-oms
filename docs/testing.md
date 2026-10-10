@@ -17,6 +17,11 @@ cd apps/api && bun run build
 cd ../web && bun run build
 ```
 
+CI additionally builds both production Docker images, validates the production
+Compose and Caddy configuration, starts both images, and requires successful
+API `/ready` and web `/health` checks. This catches missing production-only
+workspace files, invalid runtime configuration, and container startup failures.
+
 `test:unit` excludes integration tests and needs no running database.
 `test:all` and `test:integration` regenerate Prisma, apply the existing migrations
 to the test database, and then run the selected tests. A failed migration stops
@@ -67,4 +72,5 @@ For the application database, use `bun run db:generate`, then run
 Restart the API after regeneration and migration. Test setup only prepares the
 test database; it does not migrate the application database.
 
-Push to `main` only after tests, typecheck, and both builds pass for the commit.
+Push to `main` only after tests, typecheck, both builds, PostgreSQL integration,
+and the production image smoke tests pass for the exact commit.

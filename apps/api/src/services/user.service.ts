@@ -17,10 +17,16 @@ type CreateUserInput = {
 export async function createUserService(
   input: CreateUserInput,
 ) {
+  const normalizedEmail =
+    input.email
+      .trim()
+      .toLowerCase();
+
   const existingUser =
     await prisma.user.findUnique({
       where: {
-        email: input.email,
+        email:
+          normalizedEmail,
       },
     });
 
@@ -35,8 +41,10 @@ export async function createUserService(
 
   return prisma.user.create({
     data: {
-      name: input.name,
-      email: input.email,
+      name:
+        input.name.trim(),
+      email:
+        normalizedEmail,
       passwordHash,
       role: input.role,
       firmId: input.firmId,

@@ -1,6 +1,15 @@
 import { prisma } from "../src";
 
 async function main() {
+  if (
+    process.env.NODE_ENV ===
+    "production"
+  ) {
+    throw new Error(
+      "DEMO_SEED_DISABLED_IN_PRODUCTION",
+    );
+  }
+
   // 1. Firm
   const firm = await prisma.firm.upsert({
     where: {

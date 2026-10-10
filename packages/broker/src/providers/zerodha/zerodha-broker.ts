@@ -40,7 +40,10 @@ import {
 import {
   BrokerError,
 } from "../../broker-error";
-import { error } from "node:console";
+
+import {
+  getZerodhaHttpTimeoutMs,
+} from "./zerodha-timeout";
 
 type ZerodhaErrorLike = {
   message?: unknown;
@@ -168,6 +171,8 @@ export class ZerodhaBroker
       new KiteConnect({
         api_key: credentials.apiKey,
         access_token: credentials.accessToken,
+        timeout:
+          getZerodhaHttpTimeoutMs(),
       });
   }
 

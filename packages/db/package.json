@@ -18,7 +18,8 @@
     "generate":"prisma generate",
     "migrate":"prisma migrate dev",
     "studio":"prisma studio",
-    "seed":"bun --env-file=../../.env prisma/seed.ts"
+    "seed":"bun --env-file=../../.env prisma/seed.ts",
+    "bootstrap:admin":"bun prisma/bootstrap-admin.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",

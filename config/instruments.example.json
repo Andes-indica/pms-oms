@@ -1,0 +1,22 @@
+[
+  {
+    "symbol": "RELIANCE",
+    "exchange": "NSE",
+    "name": "Reliance Industries"
+  },
+  {
+    "symbol": "INFY",
+    "exchange": "NSE",
+    "name": "Infosys"
+  },
+  {
+    "symbol": "TCS",
+    "exchange": "NSE",
+    "name": "Tata Consultancy Services"
+  },
+  {
+    "symbol": "HDFCBANK",
+    "exchange": "NSE",
+    "name": "HDFC Bank"
+  }
+]

@@ -12,7 +12,9 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN cd packages/db && bunx prisma generate
+RUN cd packages/db && \
+    DATABASE_URL=postgresql://prisma:prisma@127.0.0.1:5432/prisma_build \
+    bunx prisma generate
 RUN cd apps/api && bun run build
 
 FROM build AS migrate
@@ -42,7 +44,9 @@ COPY --from=build /app/packages/db/src packages/db/src
 
 EXPOSE 3000
 
+USER bun
+
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD bun -e 'fetch("http://127.0.0.1:3000/health/db").then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
+  CMD bun -e 'fetch("http://127.0.0.1:3000/ready").then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))'
 
 CMD ["bun", "apps/api/dist/server.js"]
