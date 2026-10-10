@@ -324,7 +324,7 @@ describe("basket execution feedback", () => {
 });
 
 describe("normal order rejection feedback", () => {
-  test("shows a readable status, broker reason, and corrective action", async () => {
+  test("reveals a readable broker reason and corrective action after selecting an order", async () => {
     orders = [{
       id: "order-one",
       symbol: "INFY",
@@ -351,6 +351,22 @@ describe("normal order rejection feedback", () => {
     await act(async () => root.render(createElement(OrdersPage)));
 
     expect(container.textContent).toContain("Rejected");
+    expect(container.textContent).not.toContain("Insufficient funds at the broker");
+    expect(container.textContent).not.toContain(
+      "Required margin is 12,000 but only 8,000 is available",
+    );
+
+    const orderRow = element<HTMLTableRowElement>(
+      'tr[data-order-id="order-one"]',
+    );
+    const detailsToggle = element<HTMLButtonElement>(
+      'button[data-order-details-toggle="order-one"]',
+    );
+    expect(detailsToggle.getAttribute("aria-expanded")).toBe("false");
+
+    await act(async () => orderRow.click());
+
+    expect(detailsToggle.getAttribute("aria-expanded")).toBe("true");
     expect(container.textContent).toContain("Insufficient funds at the broker");
     expect(container.textContent).toContain(
       "Broker detail: Required margin is 12,000 but only 8,000 is available",
@@ -359,6 +375,9 @@ describe("normal order rejection feedback", () => {
       "Add broker funds or reduce this child order quantity",
     );
     expect(container.textContent).not.toContain("BROKER_INSUFFICIENT_FUNDS");
+
+    await act(async () => orderRow.click());
+    expect(container.textContent).not.toContain("Insufficient funds at the broker");
   });
 
   test("does not invent a reason for a legacy rejected order", async () => {
@@ -383,6 +402,14 @@ describe("normal order rejection feedback", () => {
     }];
 
     await act(async () => root.render(createElement(OrdersPage)));
+
+    expect(container.textContent).not.toContain("No rejection reason was recorded");
+
+    await act(async () => {
+      element<HTMLTableRowElement>(
+        'tr[data-order-id="legacy-order"]',
+      ).click();
+    });
 
     expect(container.textContent).toContain("No rejection reason was recorded");
     expect(container.textContent).toContain("Check the audit log and broker order book");

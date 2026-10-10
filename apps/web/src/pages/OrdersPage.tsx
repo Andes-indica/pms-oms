@@ -1,4 +1,5 @@
 import {
+  Fragment,
   useCallback,
   useEffect,
   useState,
@@ -128,6 +129,10 @@ export function OrdersPage() {
           Order Blotter
         </h2>
 
+        <p className="mt-1 text-sm text-slate-500">
+          Select an order to view its execution status and broker details.
+        </p>
+
         {error && (
           <p className="mt-4 text-red-600">
             {error}
@@ -165,6 +170,13 @@ function OrdersTable({
     modifyingOrder,
     setModifyingOrder,
   ] = useState<Order | null>(null);
+
+  const [
+    expandedOrderId,
+    setExpandedOrderId,
+  ] = useState<string | null>(
+    null,
+  );
 
   const [
     modifyQuantity,
@@ -215,6 +227,17 @@ function OrdersTable({
 
     setModifyLimitPrice(
       order.limitPrice ?? "",
+    );
+  }
+
+  function toggleOrderDetails(
+    orderId: string,
+  ) {
+    setExpandedOrderId(
+      (currentOrderId) =>
+        currentOrderId === orderId
+          ? null
+          : orderId,
     );
   }
 
@@ -398,11 +421,39 @@ function OrdersTable({
                   )
                 : null;
 
+            const expanded =
+              expandedOrderId ===
+              order.id;
+
+            const detailsId =
+              `order-details-${order.id}`;
+
             return (
-              <tr
-                key={order.id}
-                className="border-b last:border-b-0"
-              >
+              <Fragment key={order.id}>
+                <tr
+                  data-order-id={order.id}
+                  onClick={(event) => {
+                    const target =
+                      event.target as HTMLElement;
+
+                    if (
+                      target.closest?.(
+                        "button, a, input, select, textarea",
+                      )
+                    ) {
+                      return;
+                    }
+
+                    toggleOrderDetails(
+                      order.id,
+                    );
+                  }}
+                  className={`cursor-pointer border-b transition-colors hover:bg-slate-50 ${
+                    expanded
+                      ? "bg-slate-50"
+                      : ""
+                  }`}
+                >
                 <td className="px-4 py-4">
                   {
                     order.portfolio
@@ -427,32 +478,44 @@ function OrdersTable({
                 </td>
 
                 <td className="px-4 py-4">
-                  <p>
-                    {formatOrderStatusLabel(
-                      displayStatus,
-                    )}
-                  </p>
-
-                  {statusGuidance && (
-                    <div
-                      role="alert"
-                      className="mt-2 max-w-sm rounded-md border border-red-200 bg-red-50 p-2 text-xs text-red-900"
-                    >
-                      <p className="font-semibold">
-                        {statusGuidance.title}
-                      </p>
-
-                      {statusGuidance.detail && (
-                        <p className="mt-1 break-words">
-                          Broker detail: {statusGuidance.detail}
-                        </p>
+                  <button
+                    type="button"
+                    data-order-details-toggle={order.id}
+                    aria-expanded={expanded}
+                    aria-controls={detailsId}
+                    aria-label={`View status details for ${order.symbol} ${order.side} order`}
+                    onClick={() =>
+                      toggleOrderDetails(
+                        order.id,
+                      )
+                    }
+                    className="flex min-w-32 items-center justify-between gap-3 rounded-sm text-left outline-none focus-visible:ring-2 focus-visible:ring-slate-400"
+                  >
+                    <span>
+                      {formatOrderStatusLabel(
+                        displayStatus,
                       )}
+                    </span>
 
-                      <p className="mt-1 text-red-700">
-                        Next: {statusGuidance.action}
-                      </p>
-                    </div>
-                  )}
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 20 20"
+                      fill="none"
+                      className={`h-4 w-4 shrink-0 text-slate-500 transition-transform ${
+                        expanded
+                          ? "rotate-180"
+                          : ""
+                      }`}
+                    >
+                      <path
+                        d="m5 7.5 5 5 5-5"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </button>
                 </td>
 
                 <td className="px-4 py-4">
@@ -548,7 +611,83 @@ function OrdersTable({
                       )}
                   </div>
                 </td>
-              </tr>
+                </tr>
+
+                {expanded && (
+                  <tr
+                    id={detailsId}
+                    className="border-b bg-slate-50/70"
+                  >
+                    <td
+                      colSpan={9}
+                      className="px-4 pb-5 pt-1"
+                    >
+                      <div className="rounded-lg border border-slate-200 bg-white p-4 shadow-sm">
+                      <h3 className="font-semibold text-slate-900">
+                        Order status details
+                      </h3>
+
+                      <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                            Order status
+                          </dt>
+                          <dd className="mt-1 text-slate-900">
+                            {formatOrderStatusLabel(
+                              displayStatus,
+                            )}
+                          </dd>
+                        </div>
+
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                            Execution status
+                          </dt>
+                          <dd className="mt-1 text-slate-900">
+                            {jobStatus
+                              ? formatOrderStatusLabel(
+                                  jobStatus,
+                                )
+                              : "Not started"}
+                          </dd>
+                        </div>
+
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                            Attempts
+                          </dt>
+                          <dd className="mt-1 text-slate-900">
+                            {order.executionJob
+                              ?.attempts ?? 0}
+                          </dd>
+                        </div>
+                      </dl>
+
+                      {statusGuidance && (
+                        <div
+                          role="alert"
+                          className="mt-4 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-900"
+                        >
+                          <p className="font-semibold">
+                            {statusGuidance.title}
+                          </p>
+
+                          {statusGuidance.detail && (
+                            <p className="mt-1 break-words">
+                              Broker detail: {statusGuidance.detail}
+                            </p>
+                          )}
+
+                          <p className="mt-1 text-red-700">
+                            Next: {statusGuidance.action}
+                          </p>
+                        </div>
+                      )}
+                      </div>
+                    </td>
+                  </tr>
+                )}
+              </Fragment>
             );
           })}
         </tbody>
