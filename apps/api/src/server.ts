@@ -17,7 +17,13 @@ import {
   validateRuntimeConfig,
 } from "./services/runtime-config.service";
 
+import {
+  validateRuntimeDependencies,
+} from "./services/runtime-readiness.service";
+
 validateRuntimeConfig();
+
+await validateRuntimeDependencies();
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -51,36 +57,120 @@ export const serverKeepAlive = setInterval(() => {}, 2_147_483_647);
 
 let shuttingDown = false;
 
-function shutdown() {
+function getShutdownTimeoutMs() {
+  const configured =
+    Number(
+      process.env
+        .SHUTDOWN_TIMEOUT_MS,
+    );
+
+  return Number.isInteger(
+    configured,
+  ) && configured >= 5_000 &&
+    configured <= 120_000
+    ? configured
+    : 30_000;
+}
+
+async function shutdown(
+  signal: string,
+) {
   if (shuttingDown) {
     return;
   }
 
   shuttingDown = true;
 
-  stopOrderExecutionWorker();
-  stopOrderMonitor();
-  closeLiveUpdateStreams();
+  console.log(
+    `Received ${signal}; shutting down safely`,
+  );
 
   clearInterval(
     serverKeepAlive,
   );
 
-  server.close(() => {
-    void prisma
-      .$disconnect()
-      .finally(() => {
-        process.exit(0);
-      });
-  });
+  const forceTimer =
+    setTimeout(
+      () => {
+        console.error(
+          "Graceful shutdown timed out",
+        );
+
+        process.exit(1);
+      },
+      getShutdownTimeoutMs(),
+    );
+
+  const serverClosed =
+    new Promise<void>(
+      (resolve, reject) => {
+        server.close(
+          (error?: Error) => {
+            if (error) {
+              reject(error);
+
+              return;
+            }
+
+            resolve();
+          },
+        );
+      },
+    );
+
+  closeLiveUpdateStreams();
+
+  let shutdownFailed =
+    false;
+
+  try {
+    await Promise.all([
+      stopOrderExecutionWorker(),
+      stopOrderMonitor(),
+      serverClosed,
+    ]);
+  } catch (error) {
+    shutdownFailed = true;
+
+    console.error(
+      "Graceful shutdown failed:",
+      error,
+    );
+  }
+
+  try {
+    await prisma.$disconnect();
+  } catch (error) {
+    shutdownFailed = true;
+
+    console.error(
+      "Database disconnect failed:",
+      error,
+    );
+  }
+
+  process.exitCode =
+    shutdownFailed ? 1 : 0;
+
+  clearTimeout(
+    forceTimer,
+  );
 }
 
 process.on(
   "SIGTERM",
-  shutdown,
+  () => {
+    void shutdown(
+      "SIGTERM",
+    );
+  },
 );
 
 process.on(
   "SIGINT",
-  shutdown,
+  () => {
+    void shutdown(
+      "SIGINT",
+    );
+  },
 );
