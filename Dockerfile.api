@@ -12,7 +12,9 @@ RUN bun install --frozen-lockfile
 
 COPY . .
 
-RUN cd packages/db && bunx prisma generate
+RUN cd packages/db && \
+    DATABASE_URL=postgresql://prisma:prisma@127.0.0.1:5432/prisma_build \
+    bunx prisma generate
 RUN cd apps/api && bun run build
 
 FROM build AS migrate
