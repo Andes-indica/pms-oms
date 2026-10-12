@@ -24,6 +24,8 @@ import instrumentRoutes
   from "./routes/instrument.routes";
 import riskRoutes
   from "./routes/risk.routes";
+import clientOrderConfirmationRoutes
+  from "./routes/client-order-confirmation.routes";
 
 import {
   securityHeaders,
@@ -114,6 +116,10 @@ app.use(express.json({
   limit: "256kb",
 }));
 app.use("/api/auth", authRoutes);
+app.use(
+  "/api/client-order-confirmations",
+  clientOrderConfirmationRoutes,
+);
 app.use("/api/users",userRoutes);
 app.use("/api/portfolios",PortfolioRoutes,);
 app.use("/api/dashboard",dashboardRoutes);

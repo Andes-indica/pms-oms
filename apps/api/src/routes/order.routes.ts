@@ -10,6 +10,11 @@ import {
 } from "../controllers/order.controller";
 
 import {
+  requestOrderConfirmation,
+  resolveOrderConfirmationAsNotPlaced,
+} from "../controllers/client-order-confirmation.controller";
+
+import {
   requireAuth,
 } from "../middleware/auth.middleware";
 
@@ -55,6 +60,25 @@ router.post(
     "PORTFOLIO_MANAGER",
   ),
   executeOrder,
+);
+
+router.post(
+  "/:id/client-confirmation",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  requestOrderConfirmation,
+);
+
+router.post(
+  "/:id/client-confirmation/resolve-not-placed",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+    "OPERATIONS",
+  ),
+  resolveOrderConfirmationAsNotPlaced,
 );
 
 //

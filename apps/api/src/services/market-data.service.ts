@@ -195,6 +195,14 @@ function resolveProvider():
     );
   }
 
+  if (
+    provider === "disabled"
+  ) {
+    throw new Error(
+      "MARKET_DATA_NOT_CONFIGURED",
+    );
+  }
+
   throw new Error(
     "UNSUPPORTED_MARKET_DATA_PROVIDER",
   );

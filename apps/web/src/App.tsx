@@ -23,24 +23,39 @@ import {
 import {
   RiskPage,
 } from "./pages/RiskPage";
+import {
+  ClientOrderConfirmationPage,
+} from "./pages/ClientOrderConfirmationPage";
 
-function App() {
+function AuthenticatedLayout() {
   const token = localStorage.getItem("accessToken");
 
   if (!token) {
     return <LoginPage />;
   }
 
+  return <AppLayout />;
+}
+
+function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/broker/zerodha/callback"
-        element={
-          <ZerodhaCallbackPage/>
-        }/>
+        <Route
+          path="/client-confirmation"
+          element={
+            <ClientOrderConfirmationPage />
+          }
+        />
+        <Route
+          path="/broker/zerodha/callback"
+          element={
+            <ZerodhaCallbackPage />
+          }
+        />
         <Route
         element={
-          <AppLayout/>
+          <AuthenticatedLayout />
         }>
           <Route
             path="/"

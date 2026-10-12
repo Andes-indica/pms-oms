@@ -79,8 +79,14 @@ export function PlaceOrderForm({
 
   const [orderType, setOrderType] =
     useState<"MARKET" | "LIMIT">(
-      "MARKET",
+      "LIMIT",
     );
+
+  const [executionMode, setExecutionMode] =
+    useState<
+      "CLIENT_CONFIRMATION" |
+      "DIRECT_API"
+    >("CLIENT_CONFIRMATION");
 
   const [quantity, setQuantity] =
     useState(1);
@@ -193,6 +199,7 @@ export function PlaceOrderForm({
         exchange: exchange.trim().toUpperCase(),
         side,
         orderType,
+        executionMode,
         quantity,
         ...(orderType === "LIMIT"
           ? {
@@ -445,6 +452,34 @@ export function PlaceOrderForm({
               LIMIT
             </option>
           </select>
+        </Field>
+
+        <Field label="Execution">
+          <select
+            value={executionMode}
+            onChange={(event) =>
+              setExecutionMode(
+                event.target.value as
+                  | "CLIENT_CONFIRMATION"
+                  | "DIRECT_API",
+              )
+            }
+            className="w-full rounded-lg border px-3 py-2"
+          >
+            <option value="CLIENT_CONFIRMATION">
+              Client confirms in Zerodha
+            </option>
+            <option value="DIRECT_API">
+              Direct API execution
+            </option>
+          </select>
+
+          <p className="mt-1 text-xs text-slate-500">
+            {executionMode ===
+            "CLIENT_CONFIRMATION"
+              ? "Creates a secure link. The client reviews and places the order in their own Kite account."
+              : "Uses the existing server-side broker execution flow."}
+          </p>
         </Field>
 
         <Field label="Quantity">

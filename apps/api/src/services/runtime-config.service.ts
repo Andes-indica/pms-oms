@@ -127,15 +127,20 @@ export function validateRuntimeConfig() {
     }
   }
 
-  if (
+  const marketDataProvider =
     (
       process.env
         .MARKET_DATA_PROVIDER ??
       "mock"
     )
       .trim()
-      .toLowerCase() !==
-    "http"
+      .toLowerCase();
+
+  if (
+    marketDataProvider !==
+      "http" &&
+    marketDataProvider !==
+      "disabled"
   ) {
     throw new Error(
       "PRODUCTION_MARKET_DATA_PROVIDER_INVALID",
@@ -147,33 +152,48 @@ export function validateRuntimeConfig() {
       .MARKET_DATA_BASE_URL
       ?.trim();
 
-  if (!marketDataBaseUrl) {
+  if (
+    marketDataProvider ===
+      "http" &&
+    !marketDataBaseUrl
+  ) {
     throw new Error(
       "PRODUCTION_MARKET_DATA_BASE_URL_REQUIRED",
     );
   }
 
-  try {
-    const parsedUrl =
-      new URL(
-        marketDataBaseUrl,
-      );
+  if (
+    marketDataProvider ===
+      "http"
+  ) {
+    try {
+      const parsedUrl =
+        new URL(
+          marketDataBaseUrl!,
+        );
 
-    if (
-      parsedUrl.protocol !==
-        "https:" &&
-      parsedUrl.protocol !==
-        "http:"
-    ) {
+      if (
+        parsedUrl.protocol !==
+          "https:" &&
+        parsedUrl.protocol !==
+          "http:"
+      ) {
+        throw new Error(
+          "INVALID_PROTOCOL",
+        );
+      }
+    } catch {
       throw new Error(
-        "INVALID_PROTOCOL",
+        "PRODUCTION_MARKET_DATA_BASE_URL_INVALID",
       );
     }
-  } catch {
-    throw new Error(
-      "PRODUCTION_MARKET_DATA_BASE_URL_INVALID",
-    );
   }
+
+  validateOptionalInteger(
+    "CLIENT_CONFIRMATION_TTL_MINUTES",
+    5,
+    1_440,
+  );
 
   if (
     process.env

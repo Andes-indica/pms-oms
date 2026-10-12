@@ -26,6 +26,15 @@ export async function enqueueOrderExecution(
   }
 
   if (
+    order.executionMode !==
+      "DIRECT_API"
+  ) {
+    throw new Error(
+      "CLIENT_CONFIRMATION_REQUIRED",
+    );
+  }
+
+  if (
     order.status !== "PENDING" &&
     order.status !== "SUBMITTED"
   ) {

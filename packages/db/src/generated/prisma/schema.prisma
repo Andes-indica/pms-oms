@@ -15,6 +15,20 @@ enum UserRole {
   VIEWER
 }
 
+enum OrderExecutionMode {
+  DIRECT_API
+  CLIENT_CONFIRMATION
+}
+
+enum ClientConfirmationStatus {
+  AWAITING_CLIENT
+  HANDOFF_STARTED
+  CONFIRMED
+  DECLINED
+  EXPIRED
+  REVOKED
+}
+
 model Firm {
   id        String   @id @default(cuid())
   name      String
@@ -121,6 +135,10 @@ enum AuditAction {
   ORDER_CANCELLED
   ORDER_REJECTED
   ORDER_SYNCED
+  ORDER_CONFIRMATION_REQUESTED
+  ORDER_CONFIRMATION_STARTED
+  ORDER_CLIENT_CONFIRMED
+  ORDER_CONFIRMATION_DECLINED
 
   BASKET_CREATED
   BASKET_SUBMITTED
@@ -218,9 +236,10 @@ model Order {
   symbol   String
   exchange String
 
-  side      OrderSide
-  orderType OrderType
-  status    OrderStatus @default(PENDING)
+  side          OrderSide
+  orderType     OrderType
+  status        OrderStatus        @default(PENDING)
+  executionMode OrderExecutionMode @default(DIRECT_API)
 
   quantity Int
 
@@ -248,10 +267,11 @@ model Order {
   allocationId String?     @unique
   allocation   Allocation? @relation(fields: [allocationId], references: [id], onDelete: SetNull)
 
-  executions   Execution[]
-  executionJob ExecutionJob?
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
+  executions         Execution[]
+  executionJob       ExecutionJob?
+  clientConfirmation ClientOrderConfirmation?
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
 }
 
 model AuditLog {
@@ -295,16 +315,17 @@ enum BasketOrderStatus {
 }
 
 model BasketOrder {
-  id               String            @id @default(cuid())
+  id               String             @id @default(cuid())
   name             String?
   symbol           String
   exchange         String
   side             OrderSide
   orderType        OrderType
-  limitPrice       Decimal?          @db.Decimal(18, 4)
+  limitPrice       Decimal?           @db.Decimal(18, 4)
   totalQuantity    Int
   allocationMethod AllocationMethod
-  status           BasketOrderStatus @default(PENDING)
+  status           BasketOrderStatus  @default(PENDING)
+  executionMode    OrderExecutionMode @default(DIRECT_API)
 
   firmId String
   firm   Firm   @relation(fields: [firmId], references: [id])
@@ -316,6 +337,26 @@ model BasketOrder {
   updatedAt DateTime @updatedAt
 
   @@index([firmId])
+}
+
+model ClientOrderConfirmation {
+  id String @id @default(cuid())
+
+  orderId String @unique
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  tokenHash String                   @unique
+  status    ClientConfirmationStatus @default(AWAITING_CLIENT)
+
+  expiresAt        DateTime
+  handoffStartedAt DateTime?
+  confirmedAt      DateTime?
+  lastError        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, expiresAt])
 }
 
 model Allocation {

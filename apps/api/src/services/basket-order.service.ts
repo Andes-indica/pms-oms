@@ -25,6 +25,10 @@ type CreateBasketOrderInput = {
 
   limitPrice?: number;
 
+  executionMode?:
+    | "DIRECT_API"
+    | "CLIENT_CONFIRMATION";
+
   totalQuantity: number;
 
   allocationMethod:
@@ -42,6 +46,20 @@ type CreateBasketOrderInput = {
 export async function createBasketOrderService(
   input: CreateBasketOrderInput,
 ) {
+  const executionMode =
+    input.executionMode ??
+    "DIRECT_API";
+
+  if (
+    ![
+      "DIRECT_API",
+      "CLIENT_CONFIRMATION",
+    ].includes(executionMode)
+  ) {
+    throw new Error(
+      "INVALID_EXECUTION_MODE",
+    );
+  }
   if (
     typeof input.symbol !== "string" || !input.symbol.trim() ||
     typeof input.exchange !== "string" || !input.exchange.trim()
@@ -127,6 +145,18 @@ export async function createBasketOrderService(
         "BROKER_ACCOUNT_MISMATCH",
       );
     }
+
+    if (
+      executionMode ===
+        "CLIENT_CONFIRMATION" &&
+      brokerAccount.broker
+        .toUpperCase() !==
+        "ZERODHA"
+    ) {
+      throw new Error(
+        "CLIENT_CONFIRMATION_BROKER_UNSUPPORTED",
+      );
+    }
   }
 
   const basket =
@@ -161,6 +191,7 @@ export async function createBasketOrderService(
                 input.allocationMethod,
 
               status: "PENDING",
+              executionMode,
               firmId: input.firmId,
             },
           });
@@ -235,6 +266,7 @@ export async function createBasketOrderService(
                   : null,
 
               status: "PENDING",
+              executionMode,
             },
           });
         }
@@ -254,6 +286,7 @@ export async function createBasketOrderService(
             totalQuantity: createdBasket.totalQuantity,
             allocationMethod: createdBasket.allocationMethod,
             clientCount: allocations.length,
+            executionMode,
             ...(input.replacementForOrderId
               ? {
                   replacesOrderId:

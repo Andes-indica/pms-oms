@@ -6,3 +6,4 @@ export * from "./broker-error";
 export * from "./providers/zerodha/zerodha-broker";
 export * from "./providers/zerodha/zerodha-auth";
 export * from "./providers/zerodha/zerodha-types";
+export * from "./providers/zerodha/zerodha-tag";

@@ -48,6 +48,15 @@ export async function executeOrderService(
     );
   }
 
+  if (
+    existingOrder.executionMode !==
+      "DIRECT_API"
+  ) {
+    throw new Error(
+      "CLIENT_CONFIRMATION_REQUIRED",
+    );
+  }
+
   /*
    * If we already know the broker order ID,
    * this request is idempotent.

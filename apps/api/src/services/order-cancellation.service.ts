@@ -81,6 +81,13 @@ export async function cancelOrderService(
                 },
               },
             },
+            include: {
+              clientConfirmation: {
+                select: {
+                  status: true,
+                },
+              },
+            },
           });
 
         if (!currentOrder) {
@@ -127,6 +134,22 @@ export async function cancelOrderService(
           currentOrder.status ===
           "PENDING"
         ) {
+          if (
+            currentOrder.executionMode ===
+              "CLIENT_CONFIRMATION" &&
+            [
+              "HANDOFF_STARTED",
+            ].includes(
+              currentOrder
+                .clientConfirmation
+                ?.status ?? "",
+            )
+          ) {
+            throw new Error(
+              "CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS",
+            );
+          }
+
           const cancelledOrder =
             await tx.order.update({
               where: {
@@ -163,6 +186,25 @@ export async function cancelOrderService(
 
                 lockedAt:
                   null,
+              },
+            });
+
+          await tx
+            .clientOrderConfirmation
+            .updateMany({
+              where: {
+                orderId:
+                  currentOrder.id,
+                status: {
+                  in: [
+                    "AWAITING_CLIENT",
+                  ],
+                },
+              },
+              data: {
+                status: "REVOKED",
+                lastError:
+                  "ORDER_CANCELLED",
               },
             });
 
@@ -210,6 +252,16 @@ export async function cancelOrderService(
         ) {
           throw new Error(
             "ORDER_SUBMISSION_IN_PROGRESS",
+          );
+        }
+
+
+        if (
+          currentOrder.executionMode ===
+            "CLIENT_CONFIRMATION"
+        ) {
+          throw new Error(
+            "CLIENT_CONFIRMED_ORDER_MANAGE_IN_BROKER",
           );
         }
 

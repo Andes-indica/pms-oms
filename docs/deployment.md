@@ -22,7 +22,7 @@ Required infrastructure:
 - Linux host with Docker Engine and Docker Compose
 - fixed outbound IPv4 address for Zerodha allowlisting
 - PostgreSQL 17-compatible managed database
-- real HTTP market-data provider
+- real HTTP market-data provider, unless operating in explicit limit-only mode
 - complete instrument master JSON file
 - `app` and `api` DNS names pointing to the host
 - inbound TCP ports 80 and 443
@@ -74,9 +74,21 @@ Keep the total pool capacity below the database plan's connection limit. With
 one API replica and one migration process, a pool maximum of 10 is a safe
 starting point for a small deployment.
 
-## 3. Configure real market data
+## 3. Configure market data or limit-only mode
 
-Production startup rejects the mock provider. Configure:
+Production startup always rejects the mock provider. Until a real subscription
+is available, use explicit limit-only mode:
+
+```env
+MARKET_DATA_PROVIDER=disabled
+MARKET_DATA_BASE_URL=
+MARKET_DATA_API_TOKEN=
+```
+
+In this mode, create only `LIMIT` orders. `MARKET` orders fail safely with
+`MARKET_DATA_NOT_CONFIGURED`; there is no mock-price or stale-price fallback.
+
+When a real provider is available, configure:
 
 ```env
 MARKET_DATA_PROVIDER=http
@@ -150,8 +162,30 @@ Configure the exact Zerodha redirect URL:
 https://app.example.com/broker/zerodha/callback
 ```
 
-Register the server's static outbound IPv4 with Zerodha before placing,
-modifying, or cancelling real orders.
+The same callback supports both account connection and client-confirmed
+execution. For client-confirmed orders, each client opens their own secure link,
+signs in to their own Kite account, reviews the immutable order, and confirms it
+on Zerodha. Set the link lifetime explicitly:
+
+```env
+CLIENT_CONFIRMATION_TTL_MINUTES=30
+ZERODHA_PUBLISHER_API_KEY=replace-with-publisher-public-api-key
+```
+
+The allowed range is 5 to 1440 minutes. The token is carried in the URL
+fragment, only its SHA-256 hash is stored, and creating a replacement link
+invalidates the previous link.
+
+The Publisher API key is application-level and public. Do not put a personal
+client's Kite Connect API key here. Publisher-only callbacks do not grant the
+PMS access to the client's order book, so final fills and rejection reasons
+must be checked in Kite until Zerodha approves the app for multi-user/platform
+access and a checksum-verified postback integration is deployed.
+
+For the existing `DIRECT_API` mode, register the server's static outbound IPv4
+with Zerodha before placing, modifying, or cancelling real orders. The
+Publisher-only client-confirmation handoff happens in the client's browser and
+does not use that direct execution path.
 
 ## 6. Build and migrate
 
@@ -262,6 +296,16 @@ After login:
    and UI live update
 7. cancel or close the controlled order as appropriate
 8. test one deliberate rejection and confirm its broker explanation is visible
+9. create one client-confirmed limit order, open the secure link in a separate
+   browser session, confirm it in the matching client Kite account, and verify
+   that the PMS records the completed Publisher handoff without inventing a
+   broker order ID
+10. inspect that client's Kite order book and verify the final broker status
+
+Do not submit the same client-confirmed proposal again after the Publisher
+handoff. In Publisher-only mode, Kite is the source of truth for final broker
+status; automatic PMS tracking requires the separately approved postback
+upgrade described in the architecture document.
 
 Zerodha access tokens expire at 6 AM on the following day. Operations must
 reconnect affected accounts before further broker activity.

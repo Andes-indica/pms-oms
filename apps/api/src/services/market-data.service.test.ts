@@ -244,6 +244,24 @@ describe(
     );
 
     test(
+      "fails closed when market data is explicitly disabled",
+      async () => {
+        process.env
+          .MARKET_DATA_PROVIDER =
+          "disabled";
+
+        await expect(
+          getMarketPrice(
+            "INFY",
+            "NSE",
+          ),
+        ).rejects.toThrow(
+          "MARKET_DATA_NOT_CONFIGURED",
+        );
+      },
+    );
+
+    test(
       "times out an unavailable HTTP provider",
       async () => {
         process.env

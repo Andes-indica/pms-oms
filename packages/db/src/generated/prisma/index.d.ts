@@ -69,6 +69,11 @@ export type AuditLog = $Result.DefaultSelection<Prisma.$AuditLogPayload>
  */
 export type BasketOrder = $Result.DefaultSelection<Prisma.$BasketOrderPayload>
 /**
+ * Model ClientOrderConfirmation
+ * 
+ */
+export type ClientOrderConfirmation = $Result.DefaultSelection<Prisma.$ClientOrderConfirmationPayload>
+/**
  * Model Allocation
  * 
  */
@@ -116,6 +121,26 @@ export namespace $Enums {
 };
 
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
+
+
+export const OrderExecutionMode: {
+  DIRECT_API: 'DIRECT_API',
+  CLIENT_CONFIRMATION: 'CLIENT_CONFIRMATION'
+};
+
+export type OrderExecutionMode = (typeof OrderExecutionMode)[keyof typeof OrderExecutionMode]
+
+
+export const ClientConfirmationStatus: {
+  AWAITING_CLIENT: 'AWAITING_CLIENT',
+  HANDOFF_STARTED: 'HANDOFF_STARTED',
+  CONFIRMED: 'CONFIRMED',
+  DECLINED: 'DECLINED',
+  EXPIRED: 'EXPIRED',
+  REVOKED: 'REVOKED'
+};
+
+export type ClientConfirmationStatus = (typeof ClientConfirmationStatus)[keyof typeof ClientConfirmationStatus]
 
 
 export const CashTransactionType: {
@@ -167,6 +192,10 @@ export const AuditAction: {
   ORDER_CANCELLED: 'ORDER_CANCELLED',
   ORDER_REJECTED: 'ORDER_REJECTED',
   ORDER_SYNCED: 'ORDER_SYNCED',
+  ORDER_CONFIRMATION_REQUESTED: 'ORDER_CONFIRMATION_REQUESTED',
+  ORDER_CONFIRMATION_STARTED: 'ORDER_CONFIRMATION_STARTED',
+  ORDER_CLIENT_CONFIRMED: 'ORDER_CLIENT_CONFIRMED',
+  ORDER_CONFIRMATION_DECLINED: 'ORDER_CONFIRMATION_DECLINED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',
@@ -222,6 +251,14 @@ export type ExecutionJobStatus = (typeof ExecutionJobStatus)[keyof typeof Execut
 export type UserRole = $Enums.UserRole
 
 export const UserRole: typeof $Enums.UserRole
+
+export type OrderExecutionMode = $Enums.OrderExecutionMode
+
+export const OrderExecutionMode: typeof $Enums.OrderExecutionMode
+
+export type ClientConfirmationStatus = $Enums.ClientConfirmationStatus
+
+export const ClientConfirmationStatus: typeof $Enums.ClientConfirmationStatus
 
 export type CashTransactionType = $Enums.CashTransactionType
 
@@ -489,6 +526,16 @@ export class PrismaClient<
     * ```
     */
   get basketOrder(): Prisma.BasketOrderDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.clientOrderConfirmation`: Exposes CRUD operations for the **ClientOrderConfirmation** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ClientOrderConfirmations
+    * const clientOrderConfirmations = await prisma.clientOrderConfirmation.findMany()
+    * ```
+    */
+  get clientOrderConfirmation(): Prisma.ClientOrderConfirmationDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.allocation`: Exposes CRUD operations for the **Allocation** model.
@@ -1017,6 +1064,7 @@ export namespace Prisma {
     Order: 'Order',
     AuditLog: 'AuditLog',
     BasketOrder: 'BasketOrder',
+    ClientOrderConfirmation: 'ClientOrderConfirmation',
     Allocation: 'Allocation',
     RiskLimit: 'RiskLimit',
     Instrument: 'Instrument',
@@ -1039,7 +1087,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "portfolioBrokerCash" | "cashTransaction" | "holding" | "order" | "auditLog" | "basketOrder" | "allocation" | "riskLimit" | "instrument" | "restrictedSecurity" | "brokerConnection" | "execution" | "executionJob"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "portfolioBrokerCash" | "cashTransaction" | "holding" | "order" | "auditLog" | "basketOrder" | "clientOrderConfirmation" | "allocation" | "riskLimit" | "instrument" | "restrictedSecurity" | "brokerConnection" | "execution" | "executionJob"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1857,6 +1905,80 @@ export namespace Prisma {
           }
         }
       }
+      ClientOrderConfirmation: {
+        payload: Prisma.$ClientOrderConfirmationPayload<ExtArgs>
+        fields: Prisma.ClientOrderConfirmationFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ClientOrderConfirmationFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ClientOrderConfirmationFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>
+          }
+          findFirst: {
+            args: Prisma.ClientOrderConfirmationFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ClientOrderConfirmationFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>
+          }
+          findMany: {
+            args: Prisma.ClientOrderConfirmationFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>[]
+          }
+          create: {
+            args: Prisma.ClientOrderConfirmationCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>
+          }
+          createMany: {
+            args: Prisma.ClientOrderConfirmationCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ClientOrderConfirmationCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>[]
+          }
+          delete: {
+            args: Prisma.ClientOrderConfirmationDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>
+          }
+          update: {
+            args: Prisma.ClientOrderConfirmationUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>
+          }
+          deleteMany: {
+            args: Prisma.ClientOrderConfirmationDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ClientOrderConfirmationUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ClientOrderConfirmationUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>[]
+          }
+          upsert: {
+            args: Prisma.ClientOrderConfirmationUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ClientOrderConfirmationPayload>
+          }
+          aggregate: {
+            args: Prisma.ClientOrderConfirmationAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateClientOrderConfirmation>
+          }
+          groupBy: {
+            args: Prisma.ClientOrderConfirmationGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ClientOrderConfirmationGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ClientOrderConfirmationCountArgs<ExtArgs>
+            result: $Utils.Optional<ClientOrderConfirmationCountAggregateOutputType> | number
+          }
+        }
+      }
       Allocation: {
         payload: Prisma.$AllocationPayload<ExtArgs>
         fields: Prisma.AllocationFieldRefs
@@ -2509,6 +2631,7 @@ export namespace Prisma {
     order?: OrderOmit
     auditLog?: AuditLogOmit
     basketOrder?: BasketOrderOmit
+    clientOrderConfirmation?: ClientOrderConfirmationOmit
     allocation?: AllocationOmit
     riskLimit?: RiskLimitOmit
     instrument?: InstrumentOmit
@@ -12369,6 +12492,7 @@ export namespace Prisma {
     side: $Enums.OrderSide | null
     orderType: $Enums.OrderType | null
     status: $Enums.OrderStatus | null
+    executionMode: $Enums.OrderExecutionMode | null
     quantity: number | null
     limitPrice: Decimal | null
     brokerOrderId: string | null
@@ -12394,6 +12518,7 @@ export namespace Prisma {
     side: $Enums.OrderSide | null
     orderType: $Enums.OrderType | null
     status: $Enums.OrderStatus | null
+    executionMode: $Enums.OrderExecutionMode | null
     quantity: number | null
     limitPrice: Decimal | null
     brokerOrderId: string | null
@@ -12419,6 +12544,7 @@ export namespace Prisma {
     side: number
     orderType: number
     status: number
+    executionMode: number
     quantity: number
     limitPrice: number
     brokerOrderId: number
@@ -12468,6 +12594,7 @@ export namespace Prisma {
     side?: true
     orderType?: true
     status?: true
+    executionMode?: true
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
@@ -12493,6 +12620,7 @@ export namespace Prisma {
     side?: true
     orderType?: true
     status?: true
+    executionMode?: true
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
@@ -12518,6 +12646,7 @@ export namespace Prisma {
     side?: true
     orderType?: true
     status?: true
+    executionMode?: true
     quantity?: true
     limitPrice?: true
     brokerOrderId?: true
@@ -12630,6 +12759,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status: $Enums.OrderStatus
+    executionMode: $Enums.OrderExecutionMode
     quantity: number
     limitPrice: Decimal | null
     brokerOrderId: string | null
@@ -12674,6 +12804,7 @@ export namespace Prisma {
     side?: boolean
     orderType?: boolean
     status?: boolean
+    executionMode?: boolean
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
@@ -12696,6 +12827,7 @@ export namespace Prisma {
     allocation?: boolean | Order$allocationArgs<ExtArgs>
     executions?: boolean | Order$executionsArgs<ExtArgs>
     executionJob?: boolean | Order$executionJobArgs<ExtArgs>
+    clientConfirmation?: boolean | Order$clientConfirmationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["order"]>
 
@@ -12706,6 +12838,7 @@ export namespace Prisma {
     side?: boolean
     orderType?: boolean
     status?: boolean
+    executionMode?: boolean
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
@@ -12735,6 +12868,7 @@ export namespace Prisma {
     side?: boolean
     orderType?: boolean
     status?: boolean
+    executionMode?: boolean
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
@@ -12764,6 +12898,7 @@ export namespace Prisma {
     side?: boolean
     orderType?: boolean
     status?: boolean
+    executionMode?: boolean
     quantity?: boolean
     limitPrice?: boolean
     brokerOrderId?: boolean
@@ -12782,7 +12917,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "quantity" | "limitPrice" | "brokerOrderId" | "basketOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "estimatedPrice" | "reservedCash" | "reservedQuantity" | "portfolioId" | "brokerAccountId" | "allocationId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "executionMode" | "quantity" | "limitPrice" | "brokerOrderId" | "basketOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "estimatedPrice" | "reservedCash" | "reservedQuantity" | "portfolioId" | "brokerAccountId" | "allocationId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
@@ -12790,6 +12925,7 @@ export namespace Prisma {
     allocation?: boolean | Order$allocationArgs<ExtArgs>
     executions?: boolean | Order$executionsArgs<ExtArgs>
     executionJob?: boolean | Order$executionJobArgs<ExtArgs>
+    clientConfirmation?: boolean | Order$clientConfirmationArgs<ExtArgs>
     _count?: boolean | OrderCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrderIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12814,6 +12950,7 @@ export namespace Prisma {
       allocation: Prisma.$AllocationPayload<ExtArgs> | null
       executions: Prisma.$ExecutionPayload<ExtArgs>[]
       executionJob: Prisma.$ExecutionJobPayload<ExtArgs> | null
+      clientConfirmation: Prisma.$ClientOrderConfirmationPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -12822,6 +12959,7 @@ export namespace Prisma {
       side: $Enums.OrderSide
       orderType: $Enums.OrderType
       status: $Enums.OrderStatus
+      executionMode: $Enums.OrderExecutionMode
       quantity: number
       limitPrice: Prisma.Decimal | null
       brokerOrderId: string | null
@@ -13238,6 +13376,7 @@ export namespace Prisma {
     allocation<T extends Order$allocationArgs<ExtArgs> = {}>(args?: Subset<T, Order$allocationArgs<ExtArgs>>): Prisma__AllocationClient<$Result.GetResult<Prisma.$AllocationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     executions<T extends Order$executionsArgs<ExtArgs> = {}>(args?: Subset<T, Order$executionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ExecutionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     executionJob<T extends Order$executionJobArgs<ExtArgs> = {}>(args?: Subset<T, Order$executionJobArgs<ExtArgs>>): Prisma__ExecutionJobClient<$Result.GetResult<Prisma.$ExecutionJobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    clientConfirmation<T extends Order$clientConfirmationArgs<ExtArgs> = {}>(args?: Subset<T, Order$clientConfirmationArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -13273,6 +13412,7 @@ export namespace Prisma {
     readonly side: FieldRef<"Order", 'OrderSide'>
     readonly orderType: FieldRef<"Order", 'OrderType'>
     readonly status: FieldRef<"Order", 'OrderStatus'>
+    readonly executionMode: FieldRef<"Order", 'OrderExecutionMode'>
     readonly quantity: FieldRef<"Order", 'Int'>
     readonly limitPrice: FieldRef<"Order", 'Decimal'>
     readonly brokerOrderId: FieldRef<"Order", 'String'>
@@ -13768,6 +13908,25 @@ export namespace Prisma {
      */
     include?: ExecutionJobInclude<ExtArgs> | null
     where?: ExecutionJobWhereInput
+  }
+
+  /**
+   * Order.clientConfirmation
+   */
+  export type Order$clientConfirmationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    where?: ClientOrderConfirmationWhereInput
   }
 
   /**
@@ -14960,6 +15119,7 @@ export namespace Prisma {
     totalQuantity: number | null
     allocationMethod: $Enums.AllocationMethod | null
     status: $Enums.BasketOrderStatus | null
+    executionMode: $Enums.OrderExecutionMode | null
     firmId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14976,6 +15136,7 @@ export namespace Prisma {
     totalQuantity: number | null
     allocationMethod: $Enums.AllocationMethod | null
     status: $Enums.BasketOrderStatus | null
+    executionMode: $Enums.OrderExecutionMode | null
     firmId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -14992,6 +15153,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: number
     status: number
+    executionMode: number
     firmId: number
     createdAt: number
     updatedAt: number
@@ -15020,6 +15182,7 @@ export namespace Prisma {
     totalQuantity?: true
     allocationMethod?: true
     status?: true
+    executionMode?: true
     firmId?: true
     createdAt?: true
     updatedAt?: true
@@ -15036,6 +15199,7 @@ export namespace Prisma {
     totalQuantity?: true
     allocationMethod?: true
     status?: true
+    executionMode?: true
     firmId?: true
     createdAt?: true
     updatedAt?: true
@@ -15052,6 +15216,7 @@ export namespace Prisma {
     totalQuantity?: true
     allocationMethod?: true
     status?: true
+    executionMode?: true
     firmId?: true
     createdAt?: true
     updatedAt?: true
@@ -15155,6 +15320,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status: $Enums.BasketOrderStatus
+    executionMode: $Enums.OrderExecutionMode
     firmId: string
     createdAt: Date
     updatedAt: Date
@@ -15190,6 +15356,7 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    executionMode?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -15210,6 +15377,7 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    executionMode?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -15227,6 +15395,7 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    executionMode?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -15244,12 +15413,13 @@ export namespace Prisma {
     totalQuantity?: boolean
     allocationMethod?: boolean
     status?: boolean
+    executionMode?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type BasketOrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "symbol" | "exchange" | "side" | "orderType" | "limitPrice" | "totalQuantity" | "allocationMethod" | "status" | "firmId" | "createdAt" | "updatedAt", ExtArgs["result"]["basketOrder"]>
+  export type BasketOrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "symbol" | "exchange" | "side" | "orderType" | "limitPrice" | "totalQuantity" | "allocationMethod" | "status" | "executionMode" | "firmId" | "createdAt" | "updatedAt", ExtArgs["result"]["basketOrder"]>
   export type BasketOrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     firm?: boolean | FirmDefaultArgs<ExtArgs>
     orders?: boolean | BasketOrder$ordersArgs<ExtArgs>
@@ -15281,6 +15451,7 @@ export namespace Prisma {
       totalQuantity: number
       allocationMethod: $Enums.AllocationMethod
       status: $Enums.BasketOrderStatus
+      executionMode: $Enums.OrderExecutionMode
       firmId: string
       createdAt: Date
       updatedAt: Date
@@ -15720,6 +15891,7 @@ export namespace Prisma {
     readonly totalQuantity: FieldRef<"BasketOrder", 'Int'>
     readonly allocationMethod: FieldRef<"BasketOrder", 'AllocationMethod'>
     readonly status: FieldRef<"BasketOrder", 'BasketOrderStatus'>
+    readonly executionMode: FieldRef<"BasketOrder", 'OrderExecutionMode'>
     readonly firmId: FieldRef<"BasketOrder", 'String'>
     readonly createdAt: FieldRef<"BasketOrder", 'DateTime'>
     readonly updatedAt: FieldRef<"BasketOrder", 'DateTime'>
@@ -16187,6 +16359,1134 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BasketOrderInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ClientOrderConfirmation
+   */
+
+  export type AggregateClientOrderConfirmation = {
+    _count: ClientOrderConfirmationCountAggregateOutputType | null
+    _min: ClientOrderConfirmationMinAggregateOutputType | null
+    _max: ClientOrderConfirmationMaxAggregateOutputType | null
+  }
+
+  export type ClientOrderConfirmationMinAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    tokenHash: string | null
+    status: $Enums.ClientConfirmationStatus | null
+    expiresAt: Date | null
+    handoffStartedAt: Date | null
+    confirmedAt: Date | null
+    lastError: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ClientOrderConfirmationMaxAggregateOutputType = {
+    id: string | null
+    orderId: string | null
+    tokenHash: string | null
+    status: $Enums.ClientConfirmationStatus | null
+    expiresAt: Date | null
+    handoffStartedAt: Date | null
+    confirmedAt: Date | null
+    lastError: string | null
+    createdAt: Date | null
+    updatedAt: Date | null
+  }
+
+  export type ClientOrderConfirmationCountAggregateOutputType = {
+    id: number
+    orderId: number
+    tokenHash: number
+    status: number
+    expiresAt: number
+    handoffStartedAt: number
+    confirmedAt: number
+    lastError: number
+    createdAt: number
+    updatedAt: number
+    _all: number
+  }
+
+
+  export type ClientOrderConfirmationMinAggregateInputType = {
+    id?: true
+    orderId?: true
+    tokenHash?: true
+    status?: true
+    expiresAt?: true
+    handoffStartedAt?: true
+    confirmedAt?: true
+    lastError?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ClientOrderConfirmationMaxAggregateInputType = {
+    id?: true
+    orderId?: true
+    tokenHash?: true
+    status?: true
+    expiresAt?: true
+    handoffStartedAt?: true
+    confirmedAt?: true
+    lastError?: true
+    createdAt?: true
+    updatedAt?: true
+  }
+
+  export type ClientOrderConfirmationCountAggregateInputType = {
+    id?: true
+    orderId?: true
+    tokenHash?: true
+    status?: true
+    expiresAt?: true
+    handoffStartedAt?: true
+    confirmedAt?: true
+    lastError?: true
+    createdAt?: true
+    updatedAt?: true
+    _all?: true
+  }
+
+  export type ClientOrderConfirmationAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClientOrderConfirmation to aggregate.
+     */
+    where?: ClientOrderConfirmationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOrderConfirmations to fetch.
+     */
+    orderBy?: ClientOrderConfirmationOrderByWithRelationInput | ClientOrderConfirmationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ClientOrderConfirmationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOrderConfirmations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOrderConfirmations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ClientOrderConfirmations
+    **/
+    _count?: true | ClientOrderConfirmationCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ClientOrderConfirmationMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ClientOrderConfirmationMaxAggregateInputType
+  }
+
+  export type GetClientOrderConfirmationAggregateType<T extends ClientOrderConfirmationAggregateArgs> = {
+        [P in keyof T & keyof AggregateClientOrderConfirmation]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateClientOrderConfirmation[P]>
+      : GetScalarType<T[P], AggregateClientOrderConfirmation[P]>
+  }
+
+
+
+
+  export type ClientOrderConfirmationGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ClientOrderConfirmationWhereInput
+    orderBy?: ClientOrderConfirmationOrderByWithAggregationInput | ClientOrderConfirmationOrderByWithAggregationInput[]
+    by: ClientOrderConfirmationScalarFieldEnum[] | ClientOrderConfirmationScalarFieldEnum
+    having?: ClientOrderConfirmationScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ClientOrderConfirmationCountAggregateInputType | true
+    _min?: ClientOrderConfirmationMinAggregateInputType
+    _max?: ClientOrderConfirmationMaxAggregateInputType
+  }
+
+  export type ClientOrderConfirmationGroupByOutputType = {
+    id: string
+    orderId: string
+    tokenHash: string
+    status: $Enums.ClientConfirmationStatus
+    expiresAt: Date
+    handoffStartedAt: Date | null
+    confirmedAt: Date | null
+    lastError: string | null
+    createdAt: Date
+    updatedAt: Date
+    _count: ClientOrderConfirmationCountAggregateOutputType | null
+    _min: ClientOrderConfirmationMinAggregateOutputType | null
+    _max: ClientOrderConfirmationMaxAggregateOutputType | null
+  }
+
+  type GetClientOrderConfirmationGroupByPayload<T extends ClientOrderConfirmationGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ClientOrderConfirmationGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ClientOrderConfirmationGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ClientOrderConfirmationGroupByOutputType[P]>
+            : GetScalarType<T[P], ClientOrderConfirmationGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ClientOrderConfirmationSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    handoffStartedAt?: boolean
+    confirmedAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["clientOrderConfirmation"]>
+
+  export type ClientOrderConfirmationSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    handoffStartedAt?: boolean
+    confirmedAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["clientOrderConfirmation"]>
+
+  export type ClientOrderConfirmationSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    handoffStartedAt?: boolean
+    confirmedAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["clientOrderConfirmation"]>
+
+  export type ClientOrderConfirmationSelectScalar = {
+    id?: boolean
+    orderId?: boolean
+    tokenHash?: boolean
+    status?: boolean
+    expiresAt?: boolean
+    handoffStartedAt?: boolean
+    confirmedAt?: boolean
+    lastError?: boolean
+    createdAt?: boolean
+    updatedAt?: boolean
+  }
+
+  export type ClientOrderConfirmationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "tokenHash" | "status" | "expiresAt" | "handoffStartedAt" | "confirmedAt" | "lastError" | "createdAt" | "updatedAt", ExtArgs["result"]["clientOrderConfirmation"]>
+  export type ClientOrderConfirmationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type ClientOrderConfirmationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+  export type ClientOrderConfirmationIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    order?: boolean | OrderDefaultArgs<ExtArgs>
+  }
+
+  export type $ClientOrderConfirmationPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ClientOrderConfirmation"
+    objects: {
+      order: Prisma.$OrderPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      orderId: string
+      tokenHash: string
+      status: $Enums.ClientConfirmationStatus
+      expiresAt: Date
+      handoffStartedAt: Date | null
+      confirmedAt: Date | null
+      lastError: string | null
+      createdAt: Date
+      updatedAt: Date
+    }, ExtArgs["result"]["clientOrderConfirmation"]>
+    composites: {}
+  }
+
+  type ClientOrderConfirmationGetPayload<S extends boolean | null | undefined | ClientOrderConfirmationDefaultArgs> = $Result.GetResult<Prisma.$ClientOrderConfirmationPayload, S>
+
+  type ClientOrderConfirmationCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ClientOrderConfirmationFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ClientOrderConfirmationCountAggregateInputType | true
+    }
+
+  export interface ClientOrderConfirmationDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ClientOrderConfirmation'], meta: { name: 'ClientOrderConfirmation' } }
+    /**
+     * Find zero or one ClientOrderConfirmation that matches the filter.
+     * @param {ClientOrderConfirmationFindUniqueArgs} args - Arguments to find a ClientOrderConfirmation
+     * @example
+     * // Get one ClientOrderConfirmation
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ClientOrderConfirmationFindUniqueArgs>(args: SelectSubset<T, ClientOrderConfirmationFindUniqueArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ClientOrderConfirmation that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ClientOrderConfirmationFindUniqueOrThrowArgs} args - Arguments to find a ClientOrderConfirmation
+     * @example
+     * // Get one ClientOrderConfirmation
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ClientOrderConfirmationFindUniqueOrThrowArgs>(args: SelectSubset<T, ClientOrderConfirmationFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ClientOrderConfirmation that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOrderConfirmationFindFirstArgs} args - Arguments to find a ClientOrderConfirmation
+     * @example
+     * // Get one ClientOrderConfirmation
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ClientOrderConfirmationFindFirstArgs>(args?: SelectSubset<T, ClientOrderConfirmationFindFirstArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ClientOrderConfirmation that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOrderConfirmationFindFirstOrThrowArgs} args - Arguments to find a ClientOrderConfirmation
+     * @example
+     * // Get one ClientOrderConfirmation
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ClientOrderConfirmationFindFirstOrThrowArgs>(args?: SelectSubset<T, ClientOrderConfirmationFindFirstOrThrowArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ClientOrderConfirmations that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOrderConfirmationFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ClientOrderConfirmations
+     * const clientOrderConfirmations = await prisma.clientOrderConfirmation.findMany()
+     * 
+     * // Get first 10 ClientOrderConfirmations
+     * const clientOrderConfirmations = await prisma.clientOrderConfirmation.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const clientOrderConfirmationWithIdOnly = await prisma.clientOrderConfirmation.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ClientOrderConfirmationFindManyArgs>(args?: SelectSubset<T, ClientOrderConfirmationFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ClientOrderConfirmation.
+     * @param {ClientOrderConfirmationCreateArgs} args - Arguments to create a ClientOrderConfirmation.
+     * @example
+     * // Create one ClientOrderConfirmation
+     * const ClientOrderConfirmation = await prisma.clientOrderConfirmation.create({
+     *   data: {
+     *     // ... data to create a ClientOrderConfirmation
+     *   }
+     * })
+     * 
+     */
+    create<T extends ClientOrderConfirmationCreateArgs>(args: SelectSubset<T, ClientOrderConfirmationCreateArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ClientOrderConfirmations.
+     * @param {ClientOrderConfirmationCreateManyArgs} args - Arguments to create many ClientOrderConfirmations.
+     * @example
+     * // Create many ClientOrderConfirmations
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ClientOrderConfirmationCreateManyArgs>(args?: SelectSubset<T, ClientOrderConfirmationCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ClientOrderConfirmations and returns the data saved in the database.
+     * @param {ClientOrderConfirmationCreateManyAndReturnArgs} args - Arguments to create many ClientOrderConfirmations.
+     * @example
+     * // Create many ClientOrderConfirmations
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ClientOrderConfirmations and only return the `id`
+     * const clientOrderConfirmationWithIdOnly = await prisma.clientOrderConfirmation.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ClientOrderConfirmationCreateManyAndReturnArgs>(args?: SelectSubset<T, ClientOrderConfirmationCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ClientOrderConfirmation.
+     * @param {ClientOrderConfirmationDeleteArgs} args - Arguments to delete one ClientOrderConfirmation.
+     * @example
+     * // Delete one ClientOrderConfirmation
+     * const ClientOrderConfirmation = await prisma.clientOrderConfirmation.delete({
+     *   where: {
+     *     // ... filter to delete one ClientOrderConfirmation
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ClientOrderConfirmationDeleteArgs>(args: SelectSubset<T, ClientOrderConfirmationDeleteArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ClientOrderConfirmation.
+     * @param {ClientOrderConfirmationUpdateArgs} args - Arguments to update one ClientOrderConfirmation.
+     * @example
+     * // Update one ClientOrderConfirmation
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ClientOrderConfirmationUpdateArgs>(args: SelectSubset<T, ClientOrderConfirmationUpdateArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ClientOrderConfirmations.
+     * @param {ClientOrderConfirmationDeleteManyArgs} args - Arguments to filter ClientOrderConfirmations to delete.
+     * @example
+     * // Delete a few ClientOrderConfirmations
+     * const { count } = await prisma.clientOrderConfirmation.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ClientOrderConfirmationDeleteManyArgs>(args?: SelectSubset<T, ClientOrderConfirmationDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ClientOrderConfirmations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOrderConfirmationUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ClientOrderConfirmations
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ClientOrderConfirmationUpdateManyArgs>(args: SelectSubset<T, ClientOrderConfirmationUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ClientOrderConfirmations and returns the data updated in the database.
+     * @param {ClientOrderConfirmationUpdateManyAndReturnArgs} args - Arguments to update many ClientOrderConfirmations.
+     * @example
+     * // Update many ClientOrderConfirmations
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ClientOrderConfirmations and only return the `id`
+     * const clientOrderConfirmationWithIdOnly = await prisma.clientOrderConfirmation.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ClientOrderConfirmationUpdateManyAndReturnArgs>(args: SelectSubset<T, ClientOrderConfirmationUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ClientOrderConfirmation.
+     * @param {ClientOrderConfirmationUpsertArgs} args - Arguments to update or create a ClientOrderConfirmation.
+     * @example
+     * // Update or create a ClientOrderConfirmation
+     * const clientOrderConfirmation = await prisma.clientOrderConfirmation.upsert({
+     *   create: {
+     *     // ... data to create a ClientOrderConfirmation
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ClientOrderConfirmation we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ClientOrderConfirmationUpsertArgs>(args: SelectSubset<T, ClientOrderConfirmationUpsertArgs<ExtArgs>>): Prisma__ClientOrderConfirmationClient<$Result.GetResult<Prisma.$ClientOrderConfirmationPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ClientOrderConfirmations.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOrderConfirmationCountArgs} args - Arguments to filter ClientOrderConfirmations to count.
+     * @example
+     * // Count the number of ClientOrderConfirmations
+     * const count = await prisma.clientOrderConfirmation.count({
+     *   where: {
+     *     // ... the filter for the ClientOrderConfirmations we want to count
+     *   }
+     * })
+    **/
+    count<T extends ClientOrderConfirmationCountArgs>(
+      args?: Subset<T, ClientOrderConfirmationCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ClientOrderConfirmationCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ClientOrderConfirmation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOrderConfirmationAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ClientOrderConfirmationAggregateArgs>(args: Subset<T, ClientOrderConfirmationAggregateArgs>): Prisma.PrismaPromise<GetClientOrderConfirmationAggregateType<T>>
+
+    /**
+     * Group by ClientOrderConfirmation.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ClientOrderConfirmationGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ClientOrderConfirmationGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ClientOrderConfirmationGroupByArgs['orderBy'] }
+        : { orderBy?: ClientOrderConfirmationGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ClientOrderConfirmationGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetClientOrderConfirmationGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ClientOrderConfirmation model
+   */
+  readonly fields: ClientOrderConfirmationFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ClientOrderConfirmation.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ClientOrderConfirmationClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    order<T extends OrderDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrderDefaultArgs<ExtArgs>>): Prisma__OrderClient<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ClientOrderConfirmation model
+   */
+  interface ClientOrderConfirmationFieldRefs {
+    readonly id: FieldRef<"ClientOrderConfirmation", 'String'>
+    readonly orderId: FieldRef<"ClientOrderConfirmation", 'String'>
+    readonly tokenHash: FieldRef<"ClientOrderConfirmation", 'String'>
+    readonly status: FieldRef<"ClientOrderConfirmation", 'ClientConfirmationStatus'>
+    readonly expiresAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
+    readonly handoffStartedAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
+    readonly confirmedAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
+    readonly lastError: FieldRef<"ClientOrderConfirmation", 'String'>
+    readonly createdAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
+    readonly updatedAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ClientOrderConfirmation findUnique
+   */
+  export type ClientOrderConfirmationFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientOrderConfirmation to fetch.
+     */
+    where: ClientOrderConfirmationWhereUniqueInput
+  }
+
+  /**
+   * ClientOrderConfirmation findUniqueOrThrow
+   */
+  export type ClientOrderConfirmationFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientOrderConfirmation to fetch.
+     */
+    where: ClientOrderConfirmationWhereUniqueInput
+  }
+
+  /**
+   * ClientOrderConfirmation findFirst
+   */
+  export type ClientOrderConfirmationFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientOrderConfirmation to fetch.
+     */
+    where?: ClientOrderConfirmationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOrderConfirmations to fetch.
+     */
+    orderBy?: ClientOrderConfirmationOrderByWithRelationInput | ClientOrderConfirmationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClientOrderConfirmations.
+     */
+    cursor?: ClientOrderConfirmationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOrderConfirmations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOrderConfirmations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientOrderConfirmations.
+     */
+    distinct?: ClientOrderConfirmationScalarFieldEnum | ClientOrderConfirmationScalarFieldEnum[]
+  }
+
+  /**
+   * ClientOrderConfirmation findFirstOrThrow
+   */
+  export type ClientOrderConfirmationFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientOrderConfirmation to fetch.
+     */
+    where?: ClientOrderConfirmationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOrderConfirmations to fetch.
+     */
+    orderBy?: ClientOrderConfirmationOrderByWithRelationInput | ClientOrderConfirmationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ClientOrderConfirmations.
+     */
+    cursor?: ClientOrderConfirmationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOrderConfirmations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOrderConfirmations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientOrderConfirmations.
+     */
+    distinct?: ClientOrderConfirmationScalarFieldEnum | ClientOrderConfirmationScalarFieldEnum[]
+  }
+
+  /**
+   * ClientOrderConfirmation findMany
+   */
+  export type ClientOrderConfirmationFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * Filter, which ClientOrderConfirmations to fetch.
+     */
+    where?: ClientOrderConfirmationWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ClientOrderConfirmations to fetch.
+     */
+    orderBy?: ClientOrderConfirmationOrderByWithRelationInput | ClientOrderConfirmationOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ClientOrderConfirmations.
+     */
+    cursor?: ClientOrderConfirmationWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ClientOrderConfirmations from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ClientOrderConfirmations.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ClientOrderConfirmations.
+     */
+    distinct?: ClientOrderConfirmationScalarFieldEnum | ClientOrderConfirmationScalarFieldEnum[]
+  }
+
+  /**
+   * ClientOrderConfirmation create
+   */
+  export type ClientOrderConfirmationCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ClientOrderConfirmation.
+     */
+    data: XOR<ClientOrderConfirmationCreateInput, ClientOrderConfirmationUncheckedCreateInput>
+  }
+
+  /**
+   * ClientOrderConfirmation createMany
+   */
+  export type ClientOrderConfirmationCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ClientOrderConfirmations.
+     */
+    data: ClientOrderConfirmationCreateManyInput | ClientOrderConfirmationCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ClientOrderConfirmation createManyAndReturn
+   */
+  export type ClientOrderConfirmationCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * The data used to create many ClientOrderConfirmations.
+     */
+    data: ClientOrderConfirmationCreateManyInput | ClientOrderConfirmationCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ClientOrderConfirmation update
+   */
+  export type ClientOrderConfirmationUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ClientOrderConfirmation.
+     */
+    data: XOR<ClientOrderConfirmationUpdateInput, ClientOrderConfirmationUncheckedUpdateInput>
+    /**
+     * Choose, which ClientOrderConfirmation to update.
+     */
+    where: ClientOrderConfirmationWhereUniqueInput
+  }
+
+  /**
+   * ClientOrderConfirmation updateMany
+   */
+  export type ClientOrderConfirmationUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ClientOrderConfirmations.
+     */
+    data: XOR<ClientOrderConfirmationUpdateManyMutationInput, ClientOrderConfirmationUncheckedUpdateManyInput>
+    /**
+     * Filter which ClientOrderConfirmations to update
+     */
+    where?: ClientOrderConfirmationWhereInput
+    /**
+     * Limit how many ClientOrderConfirmations to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ClientOrderConfirmation updateManyAndReturn
+   */
+  export type ClientOrderConfirmationUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * The data used to update ClientOrderConfirmations.
+     */
+    data: XOR<ClientOrderConfirmationUpdateManyMutationInput, ClientOrderConfirmationUncheckedUpdateManyInput>
+    /**
+     * Filter which ClientOrderConfirmations to update
+     */
+    where?: ClientOrderConfirmationWhereInput
+    /**
+     * Limit how many ClientOrderConfirmations to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ClientOrderConfirmation upsert
+   */
+  export type ClientOrderConfirmationUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ClientOrderConfirmation to update in case it exists.
+     */
+    where: ClientOrderConfirmationWhereUniqueInput
+    /**
+     * In case the ClientOrderConfirmation found by the `where` argument doesn't exist, create a new ClientOrderConfirmation with this data.
+     */
+    create: XOR<ClientOrderConfirmationCreateInput, ClientOrderConfirmationUncheckedCreateInput>
+    /**
+     * In case the ClientOrderConfirmation was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ClientOrderConfirmationUpdateInput, ClientOrderConfirmationUncheckedUpdateInput>
+  }
+
+  /**
+   * ClientOrderConfirmation delete
+   */
+  export type ClientOrderConfirmationDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
+    /**
+     * Filter which ClientOrderConfirmation to delete.
+     */
+    where: ClientOrderConfirmationWhereUniqueInput
+  }
+
+  /**
+   * ClientOrderConfirmation deleteMany
+   */
+  export type ClientOrderConfirmationDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ClientOrderConfirmations to delete
+     */
+    where?: ClientOrderConfirmationWhereInput
+    /**
+     * Limit how many ClientOrderConfirmations to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ClientOrderConfirmation without action
+   */
+  export type ClientOrderConfirmationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ClientOrderConfirmation
+     */
+    select?: ClientOrderConfirmationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ClientOrderConfirmation
+     */
+    omit?: ClientOrderConfirmationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ClientOrderConfirmationInclude<ExtArgs> | null
   }
 
 
@@ -24177,6 +25477,7 @@ export namespace Prisma {
     side: 'side',
     orderType: 'orderType',
     status: 'status',
+    executionMode: 'executionMode',
     quantity: 'quantity',
     limitPrice: 'limitPrice',
     brokerOrderId: 'brokerOrderId',
@@ -24224,12 +25525,29 @@ export namespace Prisma {
     totalQuantity: 'totalQuantity',
     allocationMethod: 'allocationMethod',
     status: 'status',
+    executionMode: 'executionMode',
     firmId: 'firmId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
 
   export type BasketOrderScalarFieldEnum = (typeof BasketOrderScalarFieldEnum)[keyof typeof BasketOrderScalarFieldEnum]
+
+
+  export const ClientOrderConfirmationScalarFieldEnum: {
+    id: 'id',
+    orderId: 'orderId',
+    tokenHash: 'tokenHash',
+    status: 'status',
+    expiresAt: 'expiresAt',
+    handoffStartedAt: 'handoffStartedAt',
+    confirmedAt: 'confirmedAt',
+    lastError: 'lastError',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
+  };
+
+  export type ClientOrderConfirmationScalarFieldEnum = (typeof ClientOrderConfirmationScalarFieldEnum)[keyof typeof ClientOrderConfirmationScalarFieldEnum]
 
 
   export const AllocationScalarFieldEnum: {
@@ -24503,6 +25821,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'OrderExecutionMode'
+   */
+  export type EnumOrderExecutionModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderExecutionMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'OrderExecutionMode[]'
+   */
+  export type ListEnumOrderExecutionModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrderExecutionMode[]'>
+    
+
+
+  /**
    * Reference to a field of type 'AuditAction'
    */
   export type EnumAuditActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AuditAction'>
@@ -24555,6 +25887,20 @@ export namespace Prisma {
    * Reference to a field of type 'BasketOrderStatus[]'
    */
   export type ListEnumBasketOrderStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'BasketOrderStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ClientConfirmationStatus'
+   */
+  export type EnumClientConfirmationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientConfirmationStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ClientConfirmationStatus[]'
+   */
+  export type ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ClientConfirmationStatus[]'>
     
 
 
@@ -25216,6 +26562,7 @@ export namespace Prisma {
     side?: EnumOrderSideFilter<"Order"> | $Enums.OrderSide
     orderType?: EnumOrderTypeFilter<"Order"> | $Enums.OrderType
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFilter<"Order"> | $Enums.OrderExecutionMode
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
@@ -25238,6 +26585,7 @@ export namespace Prisma {
     allocation?: XOR<AllocationNullableScalarRelationFilter, AllocationWhereInput> | null
     executions?: ExecutionListRelationFilter
     executionJob?: XOR<ExecutionJobNullableScalarRelationFilter, ExecutionJobWhereInput> | null
+    clientConfirmation?: XOR<ClientOrderConfirmationNullableScalarRelationFilter, ClientOrderConfirmationWhereInput> | null
   }
 
   export type OrderOrderByWithRelationInput = {
@@ -25247,6 +26595,7 @@ export namespace Prisma {
     side?: SortOrder
     orderType?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     quantity?: SortOrder
     limitPrice?: SortOrderInput | SortOrder
     brokerOrderId?: SortOrderInput | SortOrder
@@ -25269,6 +26618,7 @@ export namespace Prisma {
     allocation?: AllocationOrderByWithRelationInput
     executions?: ExecutionOrderByRelationAggregateInput
     executionJob?: ExecutionJobOrderByWithRelationInput
+    clientConfirmation?: ClientOrderConfirmationOrderByWithRelationInput
   }
 
   export type OrderWhereUniqueInput = Prisma.AtLeast<{
@@ -25283,6 +26633,7 @@ export namespace Prisma {
     side?: EnumOrderSideFilter<"Order"> | $Enums.OrderSide
     orderType?: EnumOrderTypeFilter<"Order"> | $Enums.OrderType
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFilter<"Order"> | $Enums.OrderExecutionMode
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     basketOrderId?: StringNullableFilter<"Order"> | string | null
@@ -25303,6 +26654,7 @@ export namespace Prisma {
     allocation?: XOR<AllocationNullableScalarRelationFilter, AllocationWhereInput> | null
     executions?: ExecutionListRelationFilter
     executionJob?: XOR<ExecutionJobNullableScalarRelationFilter, ExecutionJobWhereInput> | null
+    clientConfirmation?: XOR<ClientOrderConfirmationNullableScalarRelationFilter, ClientOrderConfirmationWhereInput> | null
   }, "id" | "brokerOrderId" | "allocationId">
 
   export type OrderOrderByWithAggregationInput = {
@@ -25312,6 +26664,7 @@ export namespace Prisma {
     side?: SortOrder
     orderType?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     quantity?: SortOrder
     limitPrice?: SortOrderInput | SortOrder
     brokerOrderId?: SortOrderInput | SortOrder
@@ -25345,6 +26698,7 @@ export namespace Prisma {
     side?: EnumOrderSideWithAggregatesFilter<"Order"> | $Enums.OrderSide
     orderType?: EnumOrderTypeWithAggregatesFilter<"Order"> | $Enums.OrderType
     status?: EnumOrderStatusWithAggregatesFilter<"Order"> | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeWithAggregatesFilter<"Order"> | $Enums.OrderExecutionMode
     quantity?: IntWithAggregatesFilter<"Order"> | number
     limitPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -25455,6 +26809,7 @@ export namespace Prisma {
     totalQuantity?: IntFilter<"BasketOrder"> | number
     allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFilter<"BasketOrder"> | $Enums.OrderExecutionMode
     firmId?: StringFilter<"BasketOrder"> | string
     createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
     updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
@@ -25474,6 +26829,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25496,6 +26852,7 @@ export namespace Prisma {
     totalQuantity?: IntFilter<"BasketOrder"> | number
     allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFilter<"BasketOrder"> | $Enums.OrderExecutionMode
     firmId?: StringFilter<"BasketOrder"> | string
     createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
     updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
@@ -25515,6 +26872,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -25539,9 +26897,90 @@ export namespace Prisma {
     totalQuantity?: IntWithAggregatesFilter<"BasketOrder"> | number
     allocationMethod?: EnumAllocationMethodWithAggregatesFilter<"BasketOrder"> | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusWithAggregatesFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeWithAggregatesFilter<"BasketOrder"> | $Enums.OrderExecutionMode
     firmId?: StringWithAggregatesFilter<"BasketOrder"> | string
     createdAt?: DateTimeWithAggregatesFilter<"BasketOrder"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BasketOrder"> | Date | string
+  }
+
+  export type ClientOrderConfirmationWhereInput = {
+    AND?: ClientOrderConfirmationWhereInput | ClientOrderConfirmationWhereInput[]
+    OR?: ClientOrderConfirmationWhereInput[]
+    NOT?: ClientOrderConfirmationWhereInput | ClientOrderConfirmationWhereInput[]
+    id?: StringFilter<"ClientOrderConfirmation"> | string
+    orderId?: StringFilter<"ClientOrderConfirmation"> | string
+    tokenHash?: StringFilter<"ClientOrderConfirmation"> | string
+    status?: EnumClientConfirmationStatusFilter<"ClientOrderConfirmation"> | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
+    handoffStartedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
+    confirmedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
+    lastError?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
+    createdAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
+    updatedAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }
+
+  export type ClientOrderConfirmationOrderByWithRelationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    handoffStartedAt?: SortOrderInput | SortOrder
+    confirmedAt?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    order?: OrderOrderByWithRelationInput
+  }
+
+  export type ClientOrderConfirmationWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    orderId?: string
+    tokenHash?: string
+    AND?: ClientOrderConfirmationWhereInput | ClientOrderConfirmationWhereInput[]
+    OR?: ClientOrderConfirmationWhereInput[]
+    NOT?: ClientOrderConfirmationWhereInput | ClientOrderConfirmationWhereInput[]
+    status?: EnumClientConfirmationStatusFilter<"ClientOrderConfirmation"> | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
+    handoffStartedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
+    confirmedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
+    lastError?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
+    createdAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
+    updatedAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
+    order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
+  }, "id" | "orderId" | "tokenHash">
+
+  export type ClientOrderConfirmationOrderByWithAggregationInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    handoffStartedAt?: SortOrderInput | SortOrder
+    confirmedAt?: SortOrderInput | SortOrder
+    lastError?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+    _count?: ClientOrderConfirmationCountOrderByAggregateInput
+    _max?: ClientOrderConfirmationMaxOrderByAggregateInput
+    _min?: ClientOrderConfirmationMinOrderByAggregateInput
+  }
+
+  export type ClientOrderConfirmationScalarWhereWithAggregatesInput = {
+    AND?: ClientOrderConfirmationScalarWhereWithAggregatesInput | ClientOrderConfirmationScalarWhereWithAggregatesInput[]
+    OR?: ClientOrderConfirmationScalarWhereWithAggregatesInput[]
+    NOT?: ClientOrderConfirmationScalarWhereWithAggregatesInput | ClientOrderConfirmationScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ClientOrderConfirmation"> | string
+    orderId?: StringWithAggregatesFilter<"ClientOrderConfirmation"> | string
+    tokenHash?: StringWithAggregatesFilter<"ClientOrderConfirmation"> | string
+    status?: EnumClientConfirmationStatusWithAggregatesFilter<"ClientOrderConfirmation"> | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string
+    handoffStartedAt?: DateTimeNullableWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string | null
+    confirmedAt?: DateTimeNullableWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string | null
+    lastError?: StringNullableWithAggregatesFilter<"ClientOrderConfirmation"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string
+    updatedAt?: DateTimeWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string
   }
 
   export type AllocationWhereInput = {
@@ -26692,6 +28131,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -26710,6 +28150,7 @@ export namespace Prisma {
     allocation?: AllocationCreateNestedOneWithoutOrderInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateInput = {
@@ -26719,6 +28160,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -26737,6 +28179,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUpdateInput = {
@@ -26746,6 +28189,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26764,6 +28208,7 @@ export namespace Prisma {
     allocation?: AllocationUpdateOneWithoutOrderNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateInput = {
@@ -26773,6 +28218,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26791,6 +28237,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderCreateManyInput = {
@@ -26800,6 +28247,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -26825,6 +28273,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26846,6 +28295,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -26957,6 +28407,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutBasketOrdersInput
@@ -26975,6 +28426,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -26993,6 +28445,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutBasketOrdersNestedInput
@@ -27011,6 +28464,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -27029,6 +28483,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -27045,6 +28500,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -27060,7 +28516,98 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     firmId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientOrderConfirmationCreateInput = {
+    id?: string
+    tokenHash: string
+    status?: $Enums.ClientConfirmationStatus
+    expiresAt: Date | string
+    handoffStartedAt?: Date | string | null
+    confirmedAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    order: OrderCreateNestedOneWithoutClientConfirmationInput
+  }
+
+  export type ClientOrderConfirmationUncheckedCreateInput = {
+    id?: string
+    orderId: string
+    tokenHash: string
+    status?: $Enums.ClientConfirmationStatus
+    expiresAt: Date | string
+    handoffStartedAt?: Date | string | null
+    confirmedAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClientOrderConfirmationUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    status?: EnumClientConfirmationStatusFieldUpdateOperationsInput | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    order?: OrderUpdateOneRequiredWithoutClientConfirmationNestedInput
+  }
+
+  export type ClientOrderConfirmationUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    status?: EnumClientConfirmationStatusFieldUpdateOperationsInput | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientOrderConfirmationCreateManyInput = {
+    id?: string
+    orderId: string
+    tokenHash: string
+    status?: $Enums.ClientConfirmationStatus
+    expiresAt: Date | string
+    handoffStartedAt?: Date | string | null
+    confirmedAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClientOrderConfirmationUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    status?: EnumClientConfirmationStatusFieldUpdateOperationsInput | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientOrderConfirmationUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    orderId?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    status?: EnumClientConfirmationStatusFieldUpdateOperationsInput | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28276,6 +29823,13 @@ export namespace Prisma {
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
   }
 
+  export type EnumOrderExecutionModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderExecutionMode | EnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderExecutionModeFilter<$PrismaModel> | $Enums.OrderExecutionMode
+  }
+
   export type DecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
@@ -28308,6 +29862,11 @@ export namespace Prisma {
     isNot?: ExecutionJobWhereInput | null
   }
 
+  export type ClientOrderConfirmationNullableScalarRelationFilter = {
+    is?: ClientOrderConfirmationWhereInput | null
+    isNot?: ClientOrderConfirmationWhereInput | null
+  }
+
   export type ExecutionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
@@ -28319,6 +29878,7 @@ export namespace Prisma {
     side?: SortOrder
     orderType?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
@@ -28355,6 +29915,7 @@ export namespace Prisma {
     side?: SortOrder
     orderType?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
@@ -28380,6 +29941,7 @@ export namespace Prisma {
     side?: SortOrder
     orderType?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     quantity?: SortOrder
     limitPrice?: SortOrder
     brokerOrderId?: SortOrder
@@ -28437,6 +29999,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
+  export type EnumOrderExecutionModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderExecutionMode | EnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderExecutionModeWithAggregatesFilter<$PrismaModel> | $Enums.OrderExecutionMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOrderExecutionModeFilter<$PrismaModel>
+    _max?: NestedEnumOrderExecutionModeFilter<$PrismaModel>
   }
 
   export type DecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -28585,6 +30157,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -28606,6 +30179,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -28622,6 +30196,7 @@ export namespace Prisma {
     totalQuantity?: SortOrder
     allocationMethod?: SortOrder
     status?: SortOrder
+    executionMode?: SortOrder
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
@@ -28650,6 +30225,67 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
+  }
+
+  export type EnumClientConfirmationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientConfirmationStatus | EnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumClientConfirmationStatusFilter<$PrismaModel> | $Enums.ClientConfirmationStatus
+  }
+
+  export type OrderScalarRelationFilter = {
+    is?: OrderWhereInput
+    isNot?: OrderWhereInput
+  }
+
+  export type ClientOrderConfirmationCountOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    handoffStartedAt?: SortOrder
+    confirmedAt?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ClientOrderConfirmationMaxOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    handoffStartedAt?: SortOrder
+    confirmedAt?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type ClientOrderConfirmationMinOrderByAggregateInput = {
+    id?: SortOrder
+    orderId?: SortOrder
+    tokenHash?: SortOrder
+    status?: SortOrder
+    expiresAt?: SortOrder
+    handoffStartedAt?: SortOrder
+    confirmedAt?: SortOrder
+    lastError?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type EnumClientConfirmationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientConfirmationStatus | EnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumClientConfirmationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClientConfirmationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumClientConfirmationStatusFilter<$PrismaModel>
+    _max?: NestedEnumClientConfirmationStatusFilter<$PrismaModel>
   }
 
   export type BasketOrderScalarRelationFilter = {
@@ -28920,11 +30556,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
     _max?: NestedEnumBrokerConnectionStatusFilter<$PrismaModel>
-  }
-
-  export type OrderScalarRelationFilter = {
-    is?: OrderWhereInput
-    isNot?: OrderWhereInput
   }
 
   export type ExecutionOrderIdBrokerExecutionIdCompoundUniqueInput = {
@@ -30014,6 +31645,12 @@ export namespace Prisma {
     connect?: ExecutionJobWhereUniqueInput
   }
 
+  export type ClientOrderConfirmationCreateNestedOneWithoutOrderInput = {
+    create?: XOR<ClientOrderConfirmationCreateWithoutOrderInput, ClientOrderConfirmationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ClientOrderConfirmationCreateOrConnectWithoutOrderInput
+    connect?: ClientOrderConfirmationWhereUniqueInput
+  }
+
   export type ExecutionUncheckedCreateNestedManyWithoutOrderInput = {
     create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
@@ -30027,6 +31664,12 @@ export namespace Prisma {
     connect?: ExecutionJobWhereUniqueInput
   }
 
+  export type ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput = {
+    create?: XOR<ClientOrderConfirmationCreateWithoutOrderInput, ClientOrderConfirmationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ClientOrderConfirmationCreateOrConnectWithoutOrderInput
+    connect?: ClientOrderConfirmationWhereUniqueInput
+  }
+
   export type EnumOrderSideFieldUpdateOperationsInput = {
     set?: $Enums.OrderSide
   }
@@ -30037,6 +31680,10 @@ export namespace Prisma {
 
   export type EnumOrderStatusFieldUpdateOperationsInput = {
     set?: $Enums.OrderStatus
+  }
+
+  export type EnumOrderExecutionModeFieldUpdateOperationsInput = {
+    set?: $Enums.OrderExecutionMode
   }
 
   export type NullableDecimalFieldUpdateOperationsInput = {
@@ -30107,6 +31754,16 @@ export namespace Prisma {
     update?: XOR<XOR<ExecutionJobUpdateToOneWithWhereWithoutOrderInput, ExecutionJobUpdateWithoutOrderInput>, ExecutionJobUncheckedUpdateWithoutOrderInput>
   }
 
+  export type ClientOrderConfirmationUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<ClientOrderConfirmationCreateWithoutOrderInput, ClientOrderConfirmationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ClientOrderConfirmationCreateOrConnectWithoutOrderInput
+    upsert?: ClientOrderConfirmationUpsertWithoutOrderInput
+    disconnect?: ClientOrderConfirmationWhereInput | boolean
+    delete?: ClientOrderConfirmationWhereInput | boolean
+    connect?: ClientOrderConfirmationWhereUniqueInput
+    update?: XOR<XOR<ClientOrderConfirmationUpdateToOneWithWhereWithoutOrderInput, ClientOrderConfirmationUpdateWithoutOrderInput>, ClientOrderConfirmationUncheckedUpdateWithoutOrderInput>
+  }
+
   export type ExecutionUncheckedUpdateManyWithoutOrderNestedInput = {
     create?: XOR<ExecutionCreateWithoutOrderInput, ExecutionUncheckedCreateWithoutOrderInput> | ExecutionCreateWithoutOrderInput[] | ExecutionUncheckedCreateWithoutOrderInput[]
     connectOrCreate?: ExecutionCreateOrConnectWithoutOrderInput | ExecutionCreateOrConnectWithoutOrderInput[]
@@ -30129,6 +31786,16 @@ export namespace Prisma {
     delete?: ExecutionJobWhereInput | boolean
     connect?: ExecutionJobWhereUniqueInput
     update?: XOR<XOR<ExecutionJobUpdateToOneWithWhereWithoutOrderInput, ExecutionJobUpdateWithoutOrderInput>, ExecutionJobUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput = {
+    create?: XOR<ClientOrderConfirmationCreateWithoutOrderInput, ClientOrderConfirmationUncheckedCreateWithoutOrderInput>
+    connectOrCreate?: ClientOrderConfirmationCreateOrConnectWithoutOrderInput
+    upsert?: ClientOrderConfirmationUpsertWithoutOrderInput
+    disconnect?: ClientOrderConfirmationWhereInput | boolean
+    delete?: ClientOrderConfirmationWhereInput | boolean
+    connect?: ClientOrderConfirmationWhereUniqueInput
+    update?: XOR<XOR<ClientOrderConfirmationUpdateToOneWithWhereWithoutOrderInput, ClientOrderConfirmationUpdateWithoutOrderInput>, ClientOrderConfirmationUncheckedUpdateWithoutOrderInput>
   }
 
   export type FirmCreateNestedOneWithoutAuditLogsInput = {
@@ -30269,6 +31936,24 @@ export namespace Prisma {
     update?: AllocationUpdateWithWhereUniqueWithoutBasketOrderInput | AllocationUpdateWithWhereUniqueWithoutBasketOrderInput[]
     updateMany?: AllocationUpdateManyWithWhereWithoutBasketOrderInput | AllocationUpdateManyWithWhereWithoutBasketOrderInput[]
     deleteMany?: AllocationScalarWhereInput | AllocationScalarWhereInput[]
+  }
+
+  export type OrderCreateNestedOneWithoutClientConfirmationInput = {
+    create?: XOR<OrderCreateWithoutClientConfirmationInput, OrderUncheckedCreateWithoutClientConfirmationInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutClientConfirmationInput
+    connect?: OrderWhereUniqueInput
+  }
+
+  export type EnumClientConfirmationStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ClientConfirmationStatus
+  }
+
+  export type OrderUpdateOneRequiredWithoutClientConfirmationNestedInput = {
+    create?: XOR<OrderCreateWithoutClientConfirmationInput, OrderUncheckedCreateWithoutClientConfirmationInput>
+    connectOrCreate?: OrderCreateOrConnectWithoutClientConfirmationInput
+    upsert?: OrderUpsertWithoutClientConfirmationInput
+    connect?: OrderWhereUniqueInput
+    update?: XOR<XOR<OrderUpdateToOneWithWhereWithoutClientConfirmationInput, OrderUpdateWithoutClientConfirmationInput>, OrderUncheckedUpdateWithoutClientConfirmationInput>
   }
 
   export type BasketOrderCreateNestedOneWithoutAllocationsInput = {
@@ -30680,6 +32365,13 @@ export namespace Prisma {
     not?: NestedEnumOrderStatusFilter<$PrismaModel> | $Enums.OrderStatus
   }
 
+  export type NestedEnumOrderExecutionModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderExecutionMode | EnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderExecutionModeFilter<$PrismaModel> | $Enums.OrderExecutionMode
+  }
+
   export type NestedDecimalNullableFilter<$PrismaModel = never> = {
     equals?: Decimal | DecimalJsLike | number | string | DecimalFieldRefInput<$PrismaModel> | null
     in?: Decimal[] | DecimalJsLike[] | number[] | string[] | ListDecimalFieldRefInput<$PrismaModel> | null
@@ -30719,6 +32411,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumOrderStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumOrderExecutionModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.OrderExecutionMode | EnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    in?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.OrderExecutionMode[] | ListEnumOrderExecutionModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumOrderExecutionModeWithAggregatesFilter<$PrismaModel> | $Enums.OrderExecutionMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumOrderExecutionModeFilter<$PrismaModel>
+    _max?: NestedEnumOrderExecutionModeFilter<$PrismaModel>
   }
 
   export type NestedDecimalNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -30809,6 +32511,23 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
     _max?: NestedEnumBasketOrderStatusFilter<$PrismaModel>
+  }
+
+  export type NestedEnumClientConfirmationStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientConfirmationStatus | EnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumClientConfirmationStatusFilter<$PrismaModel> | $Enums.ClientConfirmationStatus
+  }
+
+  export type NestedEnumClientConfirmationStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ClientConfirmationStatus | EnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ClientConfirmationStatus[] | ListEnumClientConfirmationStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumClientConfirmationStatusWithAggregatesFilter<$PrismaModel> | $Enums.ClientConfirmationStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumClientConfirmationStatusFilter<$PrismaModel>
+    _max?: NestedEnumClientConfirmationStatusFilter<$PrismaModel>
   }
 
   export type NestedIntNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -30958,6 +32677,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutBasketOrderInput
@@ -30975,6 +32695,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBasketOrderInput
@@ -31137,6 +32858,7 @@ export namespace Prisma {
     totalQuantity?: IntFilter<"BasketOrder"> | number
     allocationMethod?: EnumAllocationMethodFilter<"BasketOrder"> | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFilter<"BasketOrder"> | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFilter<"BasketOrder"> | $Enums.OrderExecutionMode
     firmId?: StringFilter<"BasketOrder"> | string
     createdAt?: DateTimeFilter<"BasketOrder"> | Date | string
     updatedAt?: DateTimeFilter<"BasketOrder"> | Date | string
@@ -31537,6 +33259,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -31554,6 +33277,7 @@ export namespace Prisma {
     allocation?: AllocationCreateNestedOneWithoutOrderInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutBrokerAccountInput = {
@@ -31563,6 +33287,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -31580,6 +33305,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutBrokerAccountInput = {
@@ -31768,6 +33494,7 @@ export namespace Prisma {
     side?: EnumOrderSideFilter<"Order"> | $Enums.OrderSide
     orderType?: EnumOrderTypeFilter<"Order"> | $Enums.OrderType
     status?: EnumOrderStatusFilter<"Order"> | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFilter<"Order"> | $Enums.OrderExecutionMode
     quantity?: IntFilter<"Order"> | number
     limitPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: StringNullableFilter<"Order"> | string | null
@@ -31975,6 +33702,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -31992,6 +33720,7 @@ export namespace Prisma {
     allocation?: AllocationCreateNestedOneWithoutOrderInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutPortfolioInput = {
@@ -32001,6 +33730,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -32018,6 +33748,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutPortfolioInput = {
@@ -32682,6 +34413,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutBasketOrdersInput
@@ -32699,6 +34431,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -32858,6 +34591,35 @@ export namespace Prisma {
     create: XOR<ExecutionJobCreateWithoutOrderInput, ExecutionJobUncheckedCreateWithoutOrderInput>
   }
 
+  export type ClientOrderConfirmationCreateWithoutOrderInput = {
+    id?: string
+    tokenHash: string
+    status?: $Enums.ClientConfirmationStatus
+    expiresAt: Date | string
+    handoffStartedAt?: Date | string | null
+    confirmedAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClientOrderConfirmationUncheckedCreateWithoutOrderInput = {
+    id?: string
+    tokenHash: string
+    status?: $Enums.ClientConfirmationStatus
+    expiresAt: Date | string
+    handoffStartedAt?: Date | string | null
+    confirmedAt?: Date | string | null
+    lastError?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+  }
+
+  export type ClientOrderConfirmationCreateOrConnectWithoutOrderInput = {
+    where: ClientOrderConfirmationWhereUniqueInput
+    create: XOR<ClientOrderConfirmationCreateWithoutOrderInput, ClientOrderConfirmationUncheckedCreateWithoutOrderInput>
+  }
+
   export type BasketOrderUpsertWithoutOrdersInput = {
     update: XOR<BasketOrderUpdateWithoutOrdersInput, BasketOrderUncheckedUpdateWithoutOrdersInput>
     create: XOR<BasketOrderCreateWithoutOrdersInput, BasketOrderUncheckedCreateWithoutOrdersInput>
@@ -32880,6 +34642,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutBasketOrdersNestedInput
@@ -32897,6 +34660,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33076,6 +34840,41 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ClientOrderConfirmationUpsertWithoutOrderInput = {
+    update: XOR<ClientOrderConfirmationUpdateWithoutOrderInput, ClientOrderConfirmationUncheckedUpdateWithoutOrderInput>
+    create: XOR<ClientOrderConfirmationCreateWithoutOrderInput, ClientOrderConfirmationUncheckedCreateWithoutOrderInput>
+    where?: ClientOrderConfirmationWhereInput
+  }
+
+  export type ClientOrderConfirmationUpdateToOneWithWhereWithoutOrderInput = {
+    where?: ClientOrderConfirmationWhereInput
+    data: XOR<ClientOrderConfirmationUpdateWithoutOrderInput, ClientOrderConfirmationUncheckedUpdateWithoutOrderInput>
+  }
+
+  export type ClientOrderConfirmationUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    status?: EnumClientConfirmationStatusFieldUpdateOperationsInput | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ClientOrderConfirmationUncheckedUpdateWithoutOrderInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    status?: EnumClientConfirmationStatusFieldUpdateOperationsInput | $Enums.ClientConfirmationStatus
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type FirmCreateWithoutAuditLogsInput = {
     id?: string
     name: string
@@ -33230,6 +35029,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -33247,6 +35047,7 @@ export namespace Prisma {
     allocation?: AllocationCreateNestedOneWithoutOrderInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutBasketOrderInput = {
@@ -33256,6 +35057,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -33273,6 +35075,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutBasketOrderInput = {
@@ -33380,6 +35183,134 @@ export namespace Prisma {
     data: XOR<AllocationUpdateManyMutationInput, AllocationUncheckedUpdateManyWithoutBasketOrderInput>
   }
 
+  export type OrderCreateWithoutClientConfirmationInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
+    portfolio: PortfolioCreateNestedOneWithoutOrdersInput
+    brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
+    allocation?: AllocationCreateNestedOneWithoutOrderInput
+    executions?: ExecutionCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderUncheckedCreateWithoutClientConfirmationInput = {
+    id?: string
+    symbol: string
+    exchange: string
+    side: $Enums.OrderSide
+    orderType: $Enums.OrderType
+    status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
+    quantity: number
+    limitPrice?: Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: string | null
+    basketOrderId?: string | null
+    filledQuantity?: number
+    averageFillPrice?: Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: Decimal | DecimalJsLike | number | string | null
+    filledAt?: Date | string | null
+    estimatedPrice?: Decimal | DecimalJsLike | number | string | null
+    reservedCash?: Decimal | DecimalJsLike | number | string
+    reservedQuantity?: number
+    portfolioId: string
+    brokerAccountId: string
+    allocationId?: string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
+    executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
+  }
+
+  export type OrderCreateOrConnectWithoutClientConfirmationInput = {
+    where: OrderWhereUniqueInput
+    create: XOR<OrderCreateWithoutClientConfirmationInput, OrderUncheckedCreateWithoutClientConfirmationInput>
+  }
+
+  export type OrderUpsertWithoutClientConfirmationInput = {
+    update: XOR<OrderUpdateWithoutClientConfirmationInput, OrderUncheckedUpdateWithoutClientConfirmationInput>
+    create: XOR<OrderCreateWithoutClientConfirmationInput, OrderUncheckedCreateWithoutClientConfirmationInput>
+    where?: OrderWhereInput
+  }
+
+  export type OrderUpdateToOneWithWhereWithoutClientConfirmationInput = {
+    where?: OrderWhereInput
+    data: XOR<OrderUpdateWithoutClientConfirmationInput, OrderUncheckedUpdateWithoutClientConfirmationInput>
+  }
+
+  export type OrderUpdateWithoutClientConfirmationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
+    portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
+    allocation?: AllocationUpdateOneWithoutOrderNestedInput
+    executions?: ExecutionUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
+  }
+
+  export type OrderUncheckedUpdateWithoutClientConfirmationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    symbol?: StringFieldUpdateOperationsInput | string
+    exchange?: StringFieldUpdateOperationsInput | string
+    side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
+    orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
+    status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
+    quantity?: IntFieldUpdateOperationsInput | number
+    limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    basketOrderId?: NullableStringFieldUpdateOperationsInput | string | null
+    filledQuantity?: IntFieldUpdateOperationsInput | number
+    averageFillPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    realizedPnl?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    filledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    reservedQuantity?: IntFieldUpdateOperationsInput | number
+    portfolioId?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    allocationId?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
+    executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+  }
+
   export type BasketOrderCreateWithoutAllocationsInput = {
     id?: string
     name?: string | null
@@ -33391,6 +35322,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutBasketOrdersInput
@@ -33408,6 +35340,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -33494,6 +35427,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -33511,6 +35445,7 @@ export namespace Prisma {
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutAllocationInput = {
@@ -33520,6 +35455,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -33537,6 +35473,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
     executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutAllocationInput = {
@@ -33566,6 +35503,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutBasketOrdersNestedInput
@@ -33583,6 +35521,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -33687,6 +35626,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33704,6 +35644,7 @@ export namespace Prisma {
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutAllocationInput = {
@@ -33713,6 +35654,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -33730,6 +35672,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type PortfolioCreateWithoutRiskLimitInput = {
@@ -33947,6 +35890,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -33964,6 +35908,7 @@ export namespace Prisma {
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
     allocation?: AllocationCreateNestedOneWithoutOrderInput
     executionJob?: ExecutionJobCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutExecutionsInput = {
@@ -33973,6 +35918,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -33990,6 +35936,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     executionJob?: ExecutionJobUncheckedCreateNestedOneWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutExecutionsInput = {
@@ -34015,6 +35962,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34032,6 +35980,7 @@ export namespace Prisma {
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
     allocation?: AllocationUpdateOneWithoutOrderNestedInput
     executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutExecutionsInput = {
@@ -34041,6 +35990,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34058,6 +36008,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderCreateWithoutExecutionJobInput = {
@@ -34067,6 +36018,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -34084,6 +36036,7 @@ export namespace Prisma {
     brokerAccount: BrokerAccountCreateNestedOneWithoutOrdersInput
     allocation?: AllocationCreateNestedOneWithoutOrderInput
     executions?: ExecutionCreateNestedManyWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationCreateNestedOneWithoutOrderInput
   }
 
   export type OrderUncheckedCreateWithoutExecutionJobInput = {
@@ -34093,6 +36046,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -34110,6 +36064,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     executions?: ExecutionUncheckedCreateNestedManyWithoutOrderInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedCreateNestedOneWithoutOrderInput
   }
 
   export type OrderCreateOrConnectWithoutExecutionJobInput = {
@@ -34135,6 +36090,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34152,6 +36108,7 @@ export namespace Prisma {
     brokerAccount?: BrokerAccountUpdateOneRequiredWithoutOrdersNestedInput
     allocation?: AllocationUpdateOneWithoutOrderNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutExecutionJobInput = {
@@ -34161,6 +36118,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34178,6 +36136,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type UserCreateManyFirmInput = {
@@ -34209,6 +36168,7 @@ export namespace Prisma {
     totalQuantity: number
     allocationMethod: $Enums.AllocationMethod
     status?: $Enums.BasketOrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -34303,6 +36263,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutBasketOrderNestedInput
@@ -34320,6 +36281,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBasketOrderNestedInput
@@ -34337,6 +36299,7 @@ export namespace Prisma {
     totalQuantity?: IntFieldUpdateOperationsInput | number
     allocationMethod?: EnumAllocationMethodFieldUpdateOperationsInput | $Enums.AllocationMethod
     status?: EnumBasketOrderStatusFieldUpdateOperationsInput | $Enums.BasketOrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -34543,6 +36506,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -34595,6 +36559,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34612,6 +36577,7 @@ export namespace Prisma {
     allocation?: AllocationUpdateOneWithoutOrderNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutBrokerAccountInput = {
@@ -34621,6 +36587,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34638,6 +36605,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutBrokerAccountInput = {
@@ -34647,6 +36615,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34768,6 +36737,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -34854,6 +36824,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34871,6 +36842,7 @@ export namespace Prisma {
     allocation?: AllocationUpdateOneWithoutOrderNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutPortfolioInput = {
@@ -34880,6 +36852,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -34897,6 +36870,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutPortfolioInput = {
@@ -34906,6 +36880,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35055,6 +37030,7 @@ export namespace Prisma {
     side: $Enums.OrderSide
     orderType: $Enums.OrderType
     status?: $Enums.OrderStatus
+    executionMode?: $Enums.OrderExecutionMode
     quantity: number
     limitPrice?: Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: string | null
@@ -35088,6 +37064,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35105,6 +37082,7 @@ export namespace Prisma {
     allocation?: AllocationUpdateOneWithoutOrderNestedInput
     executions?: ExecutionUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateWithoutBasketOrderInput = {
@@ -35114,6 +37092,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35131,6 +37110,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     executions?: ExecutionUncheckedUpdateManyWithoutOrderNestedInput
     executionJob?: ExecutionJobUncheckedUpdateOneWithoutOrderNestedInput
+    clientConfirmation?: ClientOrderConfirmationUncheckedUpdateOneWithoutOrderNestedInput
   }
 
   export type OrderUncheckedUpdateManyWithoutBasketOrderInput = {
@@ -35140,6 +37120,7 @@ export namespace Prisma {
     side?: EnumOrderSideFieldUpdateOperationsInput | $Enums.OrderSide
     orderType?: EnumOrderTypeFieldUpdateOperationsInput | $Enums.OrderType
     status?: EnumOrderStatusFieldUpdateOperationsInput | $Enums.OrderStatus
+    executionMode?: EnumOrderExecutionModeFieldUpdateOperationsInput | $Enums.OrderExecutionMode
     quantity?: IntFieldUpdateOperationsInput | number
     limitPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     brokerOrderId?: NullableStringFieldUpdateOperationsInput | string | null

@@ -46,6 +46,9 @@ const originalEnv = {
   SHUTDOWN_TIMEOUT_MS:
     process.env
       .SHUTDOWN_TIMEOUT_MS,
+  CLIENT_CONFIRMATION_TTL_MINUTES:
+    process.env
+      .CLIENT_CONFIRMATION_TTL_MINUTES,
 };
 
 function restore(
@@ -222,6 +225,23 @@ describe(
         ).toThrow(
           "PRODUCTION_MARKET_DATA_PROVIDER_INVALID",
         );
+      },
+    );
+
+    test(
+      "allows limit-only production operation with market data disabled",
+      () => {
+        setValidProductionConfig();
+
+        process.env
+          .MARKET_DATA_PROVIDER =
+          "disabled";
+        delete process.env
+          .MARKET_DATA_BASE_URL;
+
+        expect(
+          validateRuntimeConfig,
+        ).not.toThrow();
       },
     );
 

@@ -26,6 +26,9 @@ type CreateOrderBody = {
   orderType: "MARKET" | "LIMIT";
   quantity: number;
   limitPrice?: number;
+  executionMode?:
+    | "DIRECT_API"
+    | "CLIENT_CONFIRMATION";
 };
 
 type AuthenticatedRequest = BaseAuthenticatedRequest & Request<{}, {}, CreateOrderBody>;
@@ -46,6 +49,8 @@ export async function createOrder(
       orderType,
       quantity,
       limitPrice,
+      executionMode =
+        "DIRECT_API",
     } = req.body ?? ({} as CreateOrderBody);
 
     if (
@@ -78,6 +83,18 @@ export async function createOrder(
     }
 
     if (
+      ![
+        "DIRECT_API",
+        "CLIENT_CONFIRMATION",
+      ].includes(executionMode)
+    ) {
+      return res.status(400).json({
+        error:
+          "Invalid execution mode",
+      });
+    }
+
+    if (
       orderType === "LIMIT" &&
       (typeof limitPrice !== "number" ||
         !Number.isFinite(limitPrice) ||
@@ -103,6 +120,7 @@ export async function createOrder(
       orderType,
       quantity,
       limitPrice,
+      executionMode,
       actorUserId:
         req.user.userId,
     });
@@ -136,6 +154,16 @@ export async function createOrder(
       if (error.message === "BROKER_ACCOUNT_MISMATCH") {
         return res.status(400).json({
           error: "Portfolio and broker account belong to different clients",
+        });
+      }
+
+      if (
+        error.message ===
+          "CLIENT_CONFIRMATION_BROKER_UNSUPPORTED"
+      ) {
+        return res.status(400).json({
+          error:
+            error.message,
         });
       }
 
@@ -198,6 +226,14 @@ export async function getOrders(
         },
         brokerAccount: true,
         executionJob: true,
+        clientConfirmation: {
+          select: {
+            status: true,
+            expiresAt: true,
+            confirmedAt: true,
+            lastError: true,
+          },
+        },
       },
       orderBy: {
         createdAt: "desc",
@@ -267,6 +303,12 @@ export async function executeOrder(
         case "ORDER_NOT_PENDING":
           return res.status(409).json({
             error: "Order is not pending",
+          });
+
+        case "CLIENT_CONFIRMATION_REQUIRED":
+          return res.status(409).json({
+            error:
+              "This order requires client confirmation in Zerodha and cannot enter the direct execution queue.",
           });
 
         case "BROKER_ACCOUNT_MISMATCH":
@@ -472,6 +514,18 @@ export async function cancelOrder(
           return res.status(409).json({
             error: "Order submission is still in progress",
           });
+
+        case "CLIENT_CONFIRMED_ORDER_MANAGE_IN_BROKER":
+          return res.status(409).json({
+            error:
+              "Client-confirmed orders must be managed in Zerodha. Publisher-only mode cannot synchronize them automatically.",
+          });
+
+        case "CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS":
+          return res.status(409).json({
+            error:
+              "The client has already opened Zerodha. Check the Kite order book; use Mark Not Placed only if no order exists.",
+          });
       }
     }
 
@@ -547,6 +601,7 @@ export async function modifyOrder(
 
       case "ORDER_NOT_MODIFIABLE":
       case "PARTIALLY_FILLED_ORDER_NOT_MODIFIABLE":
+      case "CLIENT_CONFIRMED_ORDER_MANAGE_IN_BROKER":
         return res
           .status(409)
           .json({

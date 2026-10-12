@@ -208,6 +208,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   side: 'side',
   orderType: 'orderType',
   status: 'status',
+  executionMode: 'executionMode',
   quantity: 'quantity',
   limitPrice: 'limitPrice',
   brokerOrderId: 'brokerOrderId',
@@ -249,7 +250,21 @@ exports.Prisma.BasketOrderScalarFieldEnum = {
   totalQuantity: 'totalQuantity',
   allocationMethod: 'allocationMethod',
   status: 'status',
+  executionMode: 'executionMode',
   firmId: 'firmId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+};
+
+exports.Prisma.ClientOrderConfirmationScalarFieldEnum = {
+  id: 'id',
+  orderId: 'orderId',
+  tokenHash: 'tokenHash',
+  status: 'status',
+  expiresAt: 'expiresAt',
+  handoffStartedAt: 'handoffStartedAt',
+  confirmedAt: 'confirmedAt',
+  lastError: 'lastError',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -392,6 +407,11 @@ exports.OrderStatus = exports.$Enums.OrderStatus = {
   REJECTED: 'REJECTED'
 };
 
+exports.OrderExecutionMode = exports.$Enums.OrderExecutionMode = {
+  DIRECT_API: 'DIRECT_API',
+  CLIENT_CONFIRMATION: 'CLIENT_CONFIRMATION'
+};
+
 exports.AuditAction = exports.$Enums.AuditAction = {
   ORDER_CREATED: 'ORDER_CREATED',
   ORDER_SUBMITTED: 'ORDER_SUBMITTED',
@@ -400,6 +420,10 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   ORDER_CANCELLED: 'ORDER_CANCELLED',
   ORDER_REJECTED: 'ORDER_REJECTED',
   ORDER_SYNCED: 'ORDER_SYNCED',
+  ORDER_CONFIRMATION_REQUESTED: 'ORDER_CONFIRMATION_REQUESTED',
+  ORDER_CONFIRMATION_STARTED: 'ORDER_CONFIRMATION_STARTED',
+  ORDER_CLIENT_CONFIRMED: 'ORDER_CLIENT_CONFIRMED',
+  ORDER_CONFIRMATION_DECLINED: 'ORDER_CONFIRMATION_DECLINED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',
@@ -420,6 +444,15 @@ exports.BasketOrderStatus = exports.$Enums.BasketOrderStatus = {
   FILLED: 'FILLED',
   CANCELLED: 'CANCELLED',
   REJECTED: 'REJECTED'
+};
+
+exports.ClientConfirmationStatus = exports.$Enums.ClientConfirmationStatus = {
+  AWAITING_CLIENT: 'AWAITING_CLIENT',
+  HANDOFF_STARTED: 'HANDOFF_STARTED',
+  CONFIRMED: 'CONFIRMED',
+  DECLINED: 'DECLINED',
+  EXPIRED: 'EXPIRED',
+  REVOKED: 'REVOKED'
 };
 
 exports.BrokerConnectionStatus = exports.$Enums.BrokerConnectionStatus = {
@@ -448,6 +481,7 @@ exports.Prisma.ModelName = {
   Order: 'Order',
   AuditLog: 'AuditLog',
   BasketOrder: 'BasketOrder',
+  ClientOrderConfirmation: 'ClientOrderConfirmation',
   Allocation: 'Allocation',
   RiskLimit: 'RiskLimit',
   Instrument: 'Instrument',
