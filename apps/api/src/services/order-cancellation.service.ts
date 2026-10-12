@@ -81,13 +81,6 @@ export async function cancelOrderService(
                 },
               },
             },
-            include: {
-              clientConfirmation: {
-                select: {
-                  status: true,
-                },
-              },
-            },
           });
 
         if (!currentOrder) {
@@ -134,16 +127,27 @@ export async function cancelOrderService(
           currentOrder.status ===
           "PENDING"
         ) {
+          const clientConfirmation =
+            currentOrder.executionMode ===
+              "CLIENT_CONFIRMATION"
+              ? await tx
+                  .clientOrderConfirmation
+                  .findUnique({
+                    where: {
+                      orderId:
+                        currentOrder.id,
+                    },
+                    select: {
+                      status: true,
+                    },
+                  })
+              : null;
+
           if (
             currentOrder.executionMode ===
               "CLIENT_CONFIRMATION" &&
-            [
-              "HANDOFF_STARTED",
-            ].includes(
-              currentOrder
-                .clientConfirmation
-                ?.status ?? "",
-            )
+            clientConfirmation?.status ===
+              "HANDOFF_STARTED"
           ) {
             throw new Error(
               "CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS",
