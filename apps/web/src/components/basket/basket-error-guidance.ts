@@ -241,6 +241,38 @@ const guidanceByCode: Record<string, Omit<BasketErrorGuidance, "detail">> = {
     title: "Broker order was recovered but still needs synchronization",
     action: "Use Sync Basket to import the broker's latest status and fills.",
   },
+  CLIENT_CONFIRMATION_REQUIRED: {
+    title: "Client confirmation is required",
+    action: "Create and share the secure client link instead of using direct execution.",
+  },
+  CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS: {
+    title: "The client has already opened Zerodha",
+    action: "Check the client's Kite order book before taking another action to avoid a duplicate or unknown live order.",
+  },
+  CLIENT_CONFIRMATION_HANDOFF_NOT_STARTED: {
+    title: "The Zerodha handoff was not started",
+    action: "Open the original client confirmation link and continue to Zerodha first.",
+  },
+  ZERODHA_CALLBACK_STATUS_UNCERTAIN: {
+    title: "Zerodha's return could not be verified",
+    action: "Check the client's Kite order book. Use Mark Not Placed only after confirming no order exists.",
+  },
+  MANUALLY_CONFIRMED_NOT_PLACED: {
+    title: "The handoff was closed after a manual Kite check",
+    action: "Create a new link only if the client still intends to place this proposal.",
+  },
+  ZERODHA_PUBLISHER_API_KEY_NOT_CONFIGURED: {
+    title: "Zerodha Publisher is not configured",
+    action: "Set the application-level ZERODHA_PUBLISHER_API_KEY before creating client confirmation links.",
+  },
+  BROKER_ACCOUNT_ID_MISMATCH: {
+    title: "The wrong Zerodha account was used",
+    action: "Stop and inspect the broker order book. Confirm the configured client account before proceeding.",
+  },
+  CLIENT_CONFIRMATION_BROKER_UNSUPPORTED: {
+    title: "This broker does not support client confirmation",
+    action: "Select the client's Zerodha account or use direct execution where permitted.",
+  },
   NO_ALLOCATION_TARGETS: {
     title: "No clients are selected",
     action: "Select at least one client for this basket.",

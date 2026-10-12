@@ -32,12 +32,20 @@ type Basket = {
   totalQuantity: number;
   allocationMethod: string;
   status: string;
+  executionMode:
+    | "DIRECT_API"
+    | "CLIENT_CONFIRMATION";
 
   orders: Array<{
     id: string;
     quantity: number;
     status: string;
     brokerOrderId?: string | null;
+    clientConfirmation?: {
+      status: string;
+      expiresAt: string;
+      lastError?: string | null;
+    } | null;
     executionJob?: {
       status: string;
       lastError?: string | null;
@@ -187,6 +195,11 @@ function BasketList({
     useState<string | null>(null);
   const [actionErrors, setActionErrors] = useState<Record<string, Array<{ label: string; error: string }>>>({});
   const [actionNotices, setActionNotices] = useState<Record<string, string>>({});
+  const [confirmationLinks, setConfirmationLinks] = useState<Record<string, Array<{
+    orderId: string;
+    label: string;
+    link: string;
+  }>>>({});
 
   async function runAction(
     basketId: string,
@@ -320,6 +333,104 @@ function BasketList({
     }
   }
 
+  async function createClientLinks(
+    basket: Basket,
+  ) {
+    try {
+      setBusyId(basket.id);
+      setActionErrors((current) => ({ ...current, [basket.id]: [] }));
+      setActionNotices((current) => ({ ...current, [basket.id]: "" }));
+
+      const response = await apiFetch<{
+        data: {
+          results: Array<{
+            orderId: string;
+            success: boolean;
+            token?: string;
+            error?: string;
+          }>;
+        };
+      }>(
+        `/api/basket-orders/${basket.id}/client-confirmations`,
+        {
+          method: "POST",
+        },
+      );
+
+      const links = response.data.results
+        .filter(
+          (result) =>
+            result.success &&
+            result.token,
+        )
+        .map((result) => {
+          const order = basket.orders.find(
+            (item) =>
+              item.id === result.orderId,
+          );
+
+          return {
+            orderId: result.orderId,
+            label:
+              order?.portfolio.client.name ??
+              result.orderId,
+            link:
+              `${window.location.origin}/client-confirmation#token=${result.token}`,
+          };
+        });
+
+      const errors = response.data.results
+        .filter(
+          (result) =>
+            !result.success,
+        )
+        .map((result) => {
+          const order = basket.orders.find(
+            (item) =>
+              item.id === result.orderId,
+          );
+
+          return {
+            label:
+              order?.portfolio.client.name ??
+              result.orderId,
+            error:
+              result.error ??
+              "UNKNOWN_ERROR",
+          };
+        });
+
+      setConfirmationLinks((current) => ({
+        ...current,
+        [basket.id]: links,
+      }));
+      setActionErrors((current) => ({
+        ...current,
+        [basket.id]: errors,
+      }));
+      setActionNotices((current) => ({
+        ...current,
+        [basket.id]:
+          `${links.length} client confirmation ${links.length === 1 ? "link" : "links"} created.`,
+      }));
+
+      await onUpdated();
+    } catch (error) {
+      setActionErrors((current) => ({
+        ...current,
+        [basket.id]: [{
+          label: "Client links",
+          error:
+            error instanceof Error
+              ? error.message
+              : "UNKNOWN_ERROR",
+        }],
+      }));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   if (baskets.length === 0) {
     return (
       <div className="mt-6 rounded-xl border bg-white p-6 text-sm text-slate-500">
@@ -384,6 +495,8 @@ function BasketList({
               {basket.orders.map(
                 (order) => {
                   const statusError =
+                    order.clientConfirmation
+                      ?.lastError ??
                     order.executionJob
                       ?.lastError ??
                     (order.status ===
@@ -447,6 +560,13 @@ function BasketList({
                             )}
                           </p>
                         )}
+                        {order.clientConfirmation && (
+                          <p className="text-xs text-slate-500">
+                            Client confirmation: {formatOrderStatusLabel(
+                              order.clientConfirmation.status,
+                            )}
+                          </p>
+                        )}
                         {statusError && (
                           <BasketErrorNotice error={statusError} compact />
                         )}
@@ -482,6 +602,15 @@ function BasketList({
                                   : "Create Replacement"}
                           </button>
                         )}
+                        {basket.executionMode ===
+                          "CLIENT_CONFIRMATION" &&
+                          order.clientConfirmation
+                            ?.status ===
+                              "CONFIRMED" && (
+                          <p className="mt-2 rounded-md border border-blue-200 bg-blue-50 p-2 text-xs text-blue-800">
+                            Publisher handoff completed. Verify the final broker status in this client's Kite account.
+                          </p>
+                        )}
                       </div>
                     </div>
                   );
@@ -499,10 +628,42 @@ function BasketList({
               </p>
             )}
 
+            {confirmationLinks[
+              basket.id
+            ]?.length > 0 && (
+              <div className="mt-3 rounded-lg border border-emerald-200 bg-emerald-50 p-4">
+                <p className="text-sm font-semibold text-emerald-900">
+                  Share each link only with the named client
+                </p>
+                <div className="mt-3 space-y-3">
+                  {confirmationLinks[
+                    basket.id
+                  ].map((item) => (
+                    <label
+                      key={item.orderId}
+                      className="block text-xs font-medium text-emerald-900"
+                    >
+                      {item.label}
+                      <input
+                        readOnly
+                        value={item.link}
+                        onFocus={(event) =>
+                          event.currentTarget.select()
+                        }
+                        className="mt-1 w-full rounded border border-emerald-200 bg-white px-3 py-2 text-xs font-normal text-slate-800"
+                      />
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+
             <div className="mt-4 flex gap-2">
               {basket.status ===
                 "PENDING" &&
-                failedChildCount === 0 && (
+                failedChildCount === 0 &&
+                basket.executionMode ===
+                  "DIRECT_API" && (
                 <button
                   disabled={
                     busy ||
@@ -519,6 +680,32 @@ function BasketList({
                   {busy
                     ? "Executing..."
                     : "Execute Basket"}
+                </button>
+              )}
+
+              {basket.status ===
+                "PENDING" &&
+                basket.executionMode ===
+                  "CLIENT_CONFIRMATION" && (
+                <button
+                  disabled={
+                    busy ||
+                    busyChildId !== null
+                  }
+                  onClick={() =>
+                    void createClientLinks(
+                      basket,
+                    )
+                  }
+                  className="rounded-lg bg-slate-900 px-4 py-2 text-sm text-white disabled:opacity-60"
+                >
+                  {busy
+                    ? "Creating links..."
+                    : confirmationLinks[
+                          basket.id
+                        ]?.length
+                      ? "Replace Client Links"
+                      : "Create Client Links"}
                 </button>
               )}
 

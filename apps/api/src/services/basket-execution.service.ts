@@ -35,6 +35,15 @@ export async function executeBasketOrderService(
   }
 
   if (
+    basket.executionMode !==
+      "DIRECT_API"
+  ) {
+    throw new Error(
+      "CLIENT_CONFIRMATION_REQUIRED",
+    );
+  }
+
+  if (
     basket.status !==
     "PENDING"
   ) {

@@ -127,6 +127,33 @@ export async function cancelOrderService(
           currentOrder.status ===
           "PENDING"
         ) {
+          const clientConfirmation =
+            currentOrder.executionMode ===
+              "CLIENT_CONFIRMATION"
+              ? await tx
+                  .clientOrderConfirmation
+                  .findUnique({
+                    where: {
+                      orderId:
+                        currentOrder.id,
+                    },
+                    select: {
+                      status: true,
+                    },
+                  })
+              : null;
+
+          if (
+            currentOrder.executionMode ===
+              "CLIENT_CONFIRMATION" &&
+            clientConfirmation?.status ===
+              "HANDOFF_STARTED"
+          ) {
+            throw new Error(
+              "CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS",
+            );
+          }
+
           const cancelledOrder =
             await tx.order.update({
               where: {
@@ -163,6 +190,25 @@ export async function cancelOrderService(
 
                 lockedAt:
                   null,
+              },
+            });
+
+          await tx
+            .clientOrderConfirmation
+            .updateMany({
+              where: {
+                orderId:
+                  currentOrder.id,
+                status: {
+                  in: [
+                    "AWAITING_CLIENT",
+                  ],
+                },
+              },
+              data: {
+                status: "REVOKED",
+                lastError:
+                  "ORDER_CANCELLED",
               },
             });
 
@@ -210,6 +256,16 @@ export async function cancelOrderService(
         ) {
           throw new Error(
             "ORDER_SUBMISSION_IN_PROGRESS",
+          );
+        }
+
+
+        if (
+          currentOrder.executionMode ===
+            "CLIENT_CONFIRMATION"
+        ) {
+          throw new Error(
+            "CLIENT_CONFIRMED_ORDER_MANAGE_IN_BROKER",
           );
         }
 

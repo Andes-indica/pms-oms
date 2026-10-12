@@ -24,6 +24,7 @@ let createRoot: typeof import("react-dom/client").createRoot;
 let CreateBasketOrderForm: typeof import("./CreateBasketOrderForm").CreateBasketOrderForm;
 let BasketOrdersPage: typeof import("../../pages/BasketOrdersPage").BasketOrdersPage;
 let OrdersPage: typeof import("../../pages/OrdersPage").OrdersPage;
+let ClientOrderConfirmationPage: typeof import("../../pages/ClientOrderConfirmationPage").ClientOrderConfirmationPage;
 let apiModule: typeof import("../../lib/api");
 let root: Root;
 let container: HTMLDivElement;
@@ -51,6 +52,7 @@ beforeAll(async () => {
   ({ CreateBasketOrderForm } = await import("./CreateBasketOrderForm"));
   ({ BasketOrdersPage } = await import("../../pages/BasketOrdersPage"));
   ({ OrdersPage } = await import("../../pages/OrdersPage"));
+  ({ ClientOrderConfirmationPage } = await import("../../pages/ClientOrderConfirmationPage"));
   apiModule = await import("../../lib/api");
 });
 
@@ -64,6 +66,7 @@ beforeEach(() => {
   actionResults = [];
   actionHttpError = null;
   actionPaths = [];
+  browser.location.hash = "";
   const fetchSpy = spyOn(globalThis, "fetch").mockImplementation(Object.assign(async (
     input: Parameters<typeof fetch>[0], options?: Parameters<typeof fetch>[1],
   ) => {
@@ -76,6 +79,26 @@ beforeEach(() => {
     }
     if (path === "/api/basket-orders") return Response.json({ data: baskets });
     if (path === "/api/orders") return Response.json({ data: orders });
+    if (path === "/api/client-order-confirmations/lookup") {
+      return Response.json({
+        data: {
+          status: "AWAITING_CLIENT",
+          expiresAt: new Date(Date.now() + 60_000).toISOString(),
+          canHandoff: true,
+          canDecline: true,
+          order: {
+            id: "order-one", symbol: "INFY", exchange: "NSE", side: "BUY",
+            orderType: "LIMIT", quantity: 1, limitPrice: "1500",
+            clientName: "Client One", portfolioName: "Selected portfolio",
+            broker: "ZERODHA", brokerAccountLabel: "Primary", maskedBrokerAccountId: "**1234",
+          },
+        },
+      });
+    }
+    if (path === "/api/orders/order-one/client-confirmation") {
+      actionPaths.push(path);
+      return Response.json({ data: { token: "a".repeat(43) } }, { status: 201 });
+    }
     if (path.startsWith("/api/basket-orders/")) {
       actionPaths.push(path);
       if (actionHttpError) return Response.json({ error: actionHttpError }, { status: 409 });
@@ -140,6 +163,12 @@ describe("basket account selection", () => {
       await change('select[aria-label="Client One broker account"]', "zerodha-selected");
       await change('select[aria-label="Client One portfolio"]', "portfolio-selected");
       await change('input[list="basket-instruments"]', "INFY");
+      const executionSelect = [...container.querySelectorAll("select")].find((select) =>
+        [...select.options].some((option) => option.value === "DIRECT_API"))!;
+      await act(async () => {
+        executionSelect.value = "DIRECT_API";
+        executionSelect.dispatchEvent(new Event("change", { bubbles: true }));
+      });
       const allocationSelect = [...container.querySelectorAll("select")].find((select) =>
         [...select.options].some((option) => option.value === "EQUAL_QUANTITY"))!;
       await act(async () => {
@@ -157,6 +186,7 @@ describe("basket account selection", () => {
         }
       }
       await change('input[type="number"]', "2");
+      await change('input[step="0.01"]', "1500");
       await submit();
       expect(postedBodies).toHaveLength(1);
       expect(postedBodies[0]!.targets).toEqual([
@@ -183,6 +213,7 @@ describe("basket execution feedback", () => {
     baskets = [{
       id: "basket-one", name: "Zerodha basket", symbol: "INFY", exchange: "NSE", side: "BUY",
       orderType: "LIMIT", totalQuantity: 1, allocationMethod: "EQUAL_QUANTITY", status: "PENDING",
+      executionMode: "DIRECT_API",
       orders: [{
         id: "order-one", quantity: 1, status: "PENDING",
         portfolio: { name: "Selected portfolio", client: { name: "Client One" } },
@@ -293,6 +324,7 @@ describe("basket execution feedback", () => {
     baskets = [{
       ...(baskets[0] as Record<string, unknown>),
       status: "REJECTED",
+      executionMode: "DIRECT_API",
       orders: [{
         ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
         status: "REJECTED",
@@ -307,6 +339,7 @@ describe("basket execution feedback", () => {
     baskets = [{
       ...(baskets[0] as Record<string, unknown>),
       status: "REJECTED",
+      executionMode: "DIRECT_API",
       orders: [{
         ...((baskets[0] as { orders: Array<Record<string, unknown>> }).orders[0]),
         status: "REJECTED",
@@ -320,6 +353,86 @@ describe("basket execution feedback", () => {
     await act(async () => root.render(createElement(BasketOrdersPage)));
     expect(container.textContent).toContain("Replacement basket: Pending");
     expect(container.textContent).not.toContain("Create Replacement");
+  });
+});
+
+describe("client-confirmed execution UI", () => {
+  test("creates one named link for each basket child", async () => {
+    actionResults = [{
+      orderId: "order-one",
+      success: true,
+      token: "b".repeat(43),
+    }];
+    baskets = [{
+      id: "basket-one", name: "Client basket", symbol: "INFY", exchange: "NSE", side: "BUY",
+      orderType: "LIMIT", totalQuantity: 1, allocationMethod: "EQUAL_QUANTITY", status: "PENDING",
+      executionMode: "CLIENT_CONFIRMATION",
+      orders: [{
+        id: "order-one", quantity: 1, status: "PENDING", clientConfirmation: null,
+        portfolio: { name: "Selected portfolio", client: { name: "Client One" } },
+        brokerAccount: { broker: "ZERODHA", accountId: "AB1234" }, executionJob: null,
+      }],
+    }];
+
+    await act(async () => root.render(createElement(BasketOrdersPage)));
+
+    expect(container.textContent).toContain("Create Client Links");
+    expect(container.textContent).not.toContain("Execute Basket");
+
+    const createLinks = [...container.querySelectorAll("button")]
+      .find((button) => button.textContent?.includes("Create Client Links"))!;
+    await act(async () => createLinks.click());
+
+    expect(actionPaths).toContain("/api/basket-orders/basket-one/client-confirmations");
+    expect(container.textContent).toContain("Share each link only with the named client");
+    expect(container.querySelector<HTMLInputElement>('input[readonly]')?.value)
+      .toContain("/client-confirmation#token=");
+  });
+
+  test("creates a client link instead of showing the direct execute action", async () => {
+    orders = [{
+      id: "order-one", symbol: "INFY", exchange: "NSE", side: "BUY",
+      orderType: "LIMIT", quantity: 1, status: "PENDING", limitPrice: "1500",
+      executionMode: "CLIENT_CONFIRMATION", clientConfirmation: null,
+      portfolio: { client: { name: "Client One" } }, executionJob: null,
+    }];
+
+    await act(async () => root.render(createElement(OrdersPage)));
+
+    expect(container.textContent).toContain("Create Client Link");
+    expect(container.textContent).not.toContain("Execute");
+
+    const createLink = [...container.querySelectorAll("button")]
+      .find((button) => button.textContent?.includes("Create Client Link"))!;
+    await act(async () => createLink.click());
+
+    expect(actionPaths).toContain("/api/orders/order-one/client-confirmation");
+    await act(async () => {
+      element<HTMLTableRowElement>('tr[data-order-id="order-one"]').click();
+    });
+    expect(element<HTMLInputElement>('input[aria-label="Client confirmation link"]').value)
+      .toContain("/client-confirmation#token=");
+  });
+
+  test("shows the unauthenticated client a readable immutable order review", async () => {
+    browser.location.hash = `token=${"a".repeat(43)}`;
+
+    await act(async () => root.render(createElement(ClientOrderConfirmationPage)));
+
+    expect(container.textContent).toContain("Review before opening Zerodha");
+    expect(container.textContent).toContain("BUY 1 INFY");
+    expect(container.textContent).toContain("**1234");
+    expect(container.textContent).toContain("Review and place in Zerodha");
+    expect(container.textContent).toContain("cannot be changed from this link");
+    expect(container.textContent).toContain("cannot verify the account after login");
+
+    const continueButton = [...container.querySelectorAll("button")]
+      .find((button) => button.textContent?.includes("Review and place in Zerodha"))!;
+    expect(continueButton.disabled).toBeTrue();
+
+    const acknowledgement = element<HTMLInputElement>('input[type="checkbox"]');
+    await act(async () => acknowledgement.click());
+    expect(continueButton.disabled).toBeFalse();
   });
 });
 

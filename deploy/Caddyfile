@@ -6,9 +6,9 @@
 	encode zstd gzip
 
 	header {
-		Content-Security-Policy "default-src 'self'; base-uri 'self'; connect-src 'self' https://{$API_DOMAIN}; form-action 'self'; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'"
+		Content-Security-Policy "default-src 'self'; base-uri 'self'; connect-src 'self' https://{$API_DOMAIN}; form-action 'self' https://kite.zerodha.com; frame-ancestors 'none'; img-src 'self' data:; object-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'"
 		Permissions-Policy "camera=(), geolocation=(), microphone=()"
-		Referrer-Policy "strict-origin-when-cross-origin"
+		Referrer-Policy "no-referrer"
 		Strict-Transport-Security "max-age=31536000; includeSubDomains"
 		X-Content-Type-Options "nosniff"
 		X-Frame-Options "DENY"

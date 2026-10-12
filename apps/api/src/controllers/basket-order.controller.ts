@@ -34,6 +34,10 @@ type BasketOrderBody = {
 
   limitPrice?: number;
 
+  executionMode?:
+    | "DIRECT_API"
+    | "CLIENT_CONFIRMATION";
+
   totalQuantity: number;
 
   allocationMethod:
@@ -140,6 +144,14 @@ export async function getBasketOrders(
             include: {
               executionJob: {
                 select: { status: true, lastError: true },
+              },
+              clientConfirmation: {
+                select: {
+                  status: true,
+                  expiresAt: true,
+                  confirmedAt: true,
+                  lastError: true,
+                },
               },
               portfolio: {
                 include: {
@@ -478,6 +490,12 @@ export async function executeBasketOrder(
           return res.status(409).json({
             error:
               "Basket contains no child orders",
+          });
+
+        case "CLIENT_CONFIRMATION_REQUIRED":
+          return res.status(409).json({
+            error:
+              "This basket requires confirmation by each client in Zerodha.",
           });
       }
     }

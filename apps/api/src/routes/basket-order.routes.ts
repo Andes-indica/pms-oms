@@ -12,6 +12,10 @@ import {
 } from "../controllers/basket-order.controller";
 
 import {
+  requestBasketConfirmations,
+} from "../controllers/client-order-confirmation.controller";
+
+import {
   requireAuth,
 } from "../middleware/auth.middleware";
 
@@ -44,6 +48,15 @@ router.post(
     "PORTFOLIO_MANAGER",
   ),
   executeBasketOrder,
+);
+
+router.post(
+  "/:id/client-confirmations",
+  requireRole(
+    "ADMIN",
+    "PORTFOLIO_MANAGER",
+  ),
+  requestBasketConfirmations,
 );
 
 router.post(

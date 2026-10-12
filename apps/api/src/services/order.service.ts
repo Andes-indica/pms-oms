@@ -15,6 +15,9 @@ type CreateOrderInput = {
   orderType: "MARKET" | "LIMIT";
   quantity: number;
   limitPrice?: number;
+  executionMode?:
+    | "DIRECT_API"
+    | "CLIENT_CONFIRMATION";
   actorUserId?: string;
 };
 
@@ -29,6 +32,8 @@ export async function createOrderService(input: CreateOrderInput) {
     orderType,
     quantity,
     limitPrice,
+    executionMode =
+      "DIRECT_API",
     actorUserId,
   } = input;
 
@@ -69,6 +74,18 @@ export async function createOrderService(input: CreateOrderInput) {
     throw new Error("BROKER_ACCOUNT_MISMATCH");
   }
 
+  if (
+    executionMode ===
+      "CLIENT_CONFIRMATION" &&
+    brokerAccount.broker
+      .toUpperCase() !==
+      "ZERODHA"
+  ) {
+    throw new Error(
+      "CLIENT_CONFIRMATION_BROKER_UNSUPPORTED",
+    );
+  }
+
   return prisma.$transaction(async (tx) => {
     const order = await tx.order.create({
       data: {
@@ -86,6 +103,7 @@ export async function createOrderService(input: CreateOrderInput) {
             ? limitPrice
             : null,
         status: "PENDING",
+        executionMode,
       },
     });
 
@@ -102,6 +120,7 @@ export async function createOrderService(input: CreateOrderInput) {
         symbol: order.symbol,
         side,
         quantity,
+        executionMode,
       },
     }, tx);
 

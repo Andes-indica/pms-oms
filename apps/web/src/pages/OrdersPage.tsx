@@ -23,12 +23,22 @@ type Order = {
   orderType: "MARKET" | "LIMIT";
   quantity: number;
   status: string;
+  executionMode:
+    | "DIRECT_API"
+    | "CLIENT_CONFIRMATION";
 
   limitPrice?: string | null;
   filledQuantity?: number;
 
   averageFillPrice?: string | null;
   realizedPnl?: string | null;
+
+  clientConfirmation?: {
+    status: string;
+    expiresAt: string;
+    confirmedAt?: string | null;
+    lastError?: string | null;
+  } | null;
 
   executionJob?: {
     status:
@@ -188,6 +198,13 @@ function OrdersTable({
     setModifyLimitPrice,
   ] = useState("");
 
+  const [
+    confirmationLinks,
+    setConfirmationLinks,
+  ] = useState<Record<string, string>>(
+    {},
+  );
+
   async function runAction(
     orderId: string,
     action:
@@ -216,6 +233,87 @@ function OrdersTable({
       setActionOrderId(null);
     }
   }
+
+  async function createConfirmationLink(
+    orderId: string,
+  ) {
+    try {
+      setActionOrderId(orderId);
+
+      const response =
+        await apiFetch<{
+          data: {
+            token: string;
+          };
+        }>(
+          `/api/orders/${orderId}/client-confirmation`,
+          {
+            method: "POST",
+          },
+        );
+
+      const link =
+        `${window.location.origin}/client-confirmation#token=${response.data.token}`;
+
+      setConfirmationLinks(
+        (current) => ({
+          ...current,
+          [orderId]: link,
+        }),
+      );
+
+      try {
+        await navigator.clipboard
+          .writeText(link);
+      } catch {
+        // The visible field still lets the manager copy manually.
+      }
+
+      await onUpdated();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to create client confirmation link",
+      );
+    } finally {
+      setActionOrderId(null);
+    }
+  }
+
+  async function resolveConfirmationAsNotPlaced(
+    orderId: string,
+  ) {
+    const confirmed = window.confirm(
+      "Only continue after checking the intended client's Kite order book and confirming that no order was placed. This will release the PMS reservation.",
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setActionOrderId(orderId);
+
+      await apiFetch(
+        `/api/orders/${orderId}/client-confirmation/resolve-not-placed`,
+        {
+          method: "POST",
+        },
+      );
+
+      await onUpdated();
+    } catch (error) {
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to resolve the Publisher handoff",
+      );
+    } finally {
+      setActionOrderId(null);
+    }
+  }
+
   function openModify(
     order: Order,
   ) {
@@ -398,6 +496,8 @@ function OrdersTable({
                     : order.status;
 
             const canExecute =
+              order.executionMode ===
+                "DIRECT_API" &&
               order.status ===
                 "PENDING" &&
               (
@@ -407,6 +507,8 @@ function OrdersTable({
               );
 
             const statusError =
+              order.clientConfirmation
+                ?.lastError ??
               order.executionJob
                 ?.lastError ??
               (order.status ===
@@ -427,6 +529,25 @@ function OrdersTable({
 
             const detailsId =
               `order-details-${order.id}`;
+
+            const isClientConfirmed =
+              order.executionMode ===
+              "CLIENT_CONFIRMATION";
+
+            const confirmationStatus =
+              order.clientConfirmation
+                ?.status ?? "";
+
+            const canCreateLink =
+              isClientConfirmed &&
+              order.status === "PENDING" &&
+              ![
+                "CONFIRMED",
+              ].includes(
+                confirmationStatus,
+              ) &&
+              confirmationStatus !==
+                "HANDOFF_STARTED";
 
             return (
               <Fragment key={order.id}>
@@ -548,13 +669,54 @@ function OrdersTable({
                         </button>
                       )}
 
+                    {canCreateLink && (
+                      <button
+                        disabled={busy}
+                        onClick={() =>
+                          void createConfirmationLink(
+                            order.id,
+                          )
+                        }
+                        className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white disabled:opacity-60"
+                      >
+                        {busy
+                          ? "Creating..."
+                          : order.clientConfirmation
+                            ? "Replace Client Link"
+                            : "Create Client Link"}
+                      </button>
+                    )}
+
+                    {isClientConfirmed &&
+                      order.status ===
+                        "PENDING" &&
+                      confirmationStatus ===
+                        "HANDOFF_STARTED" && (
+                      <button
+                        disabled={busy}
+                        onClick={() =>
+                          void resolveConfirmationAsNotPlaced(
+                            order.id,
+                          )
+                        }
+                        className="rounded-md border border-amber-300 bg-amber-50 px-3 py-1.5 text-xs text-amber-900 disabled:opacity-60"
+                      >
+                        Mark Not Placed
+                      </button>
+                    )}
+
                     {[
                       "SUBMITTED",
                       "OPEN",
                       "PARTIALLY_FILLED",
                     ].includes(
                       order.status,
-                    ) && (
+                    ) &&
+                      (!isClientConfirmed ||
+                        order.status ===
+                          "PENDING") &&
+                      confirmationStatus !==
+                        "HANDOFF_STARTED" && (
                         <button
                           disabled={busy}
                           onClick={() =>
@@ -575,7 +737,12 @@ function OrdersTable({
                       "OPEN",
                     ].includes(
                       order.status,
-                    ) && (
+                    ) &&
+                      (!isClientConfirmed ||
+                        order.status ===
+                          "PENDING") &&
+                      confirmationStatus !==
+                        "HANDOFF_STARTED" && (
                         <button
                           disabled={busy}
                           onClick={() =>
@@ -595,6 +762,7 @@ function OrdersTable({
                     ].includes(
                       order.status,
                     ) &&
+                      !isClientConfirmed &&
                       (order.filledQuantity ??
                         0) === 0 && (
                         <button
@@ -630,6 +798,17 @@ function OrdersTable({
                       <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
                         <div>
                           <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                            Execution mode
+                          </dt>
+                          <dd className="mt-1 text-slate-900">
+                            {isClientConfirmed
+                              ? "Client confirms in Zerodha"
+                              : "Direct API"}
+                          </dd>
+                        </div>
+
+                        <div>
+                          <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
                             Order status
                           </dt>
                           <dd className="mt-1 text-slate-900">
@@ -661,7 +840,61 @@ function OrdersTable({
                               ?.attempts ?? 0}
                           </dd>
                         </div>
+
+                        {isClientConfirmed && (
+                          <div>
+                            <dt className="text-xs font-medium uppercase tracking-wide text-slate-500">
+                              Client confirmation
+                            </dt>
+                            <dd className="mt-1 text-slate-900">
+                              {order.clientConfirmation
+                                ? formatOrderStatusLabel(
+                                    order.clientConfirmation.status,
+                                  )
+                                : "Link not created"}
+                            </dd>
+                          </div>
+                        )}
                       </dl>
+
+                      {confirmationLinks[
+                        order.id
+                      ] && (
+                        <div className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 p-3">
+                          <p className="text-sm font-semibold text-emerald-900">
+                            Client link created and copied
+                          </p>
+                          <input
+                            readOnly
+                            aria-label="Client confirmation link"
+                            value={
+                              confirmationLinks[
+                                order.id
+                              ]
+                            }
+                            onFocus={(event) =>
+                              event.currentTarget.select()
+                            }
+                            className="mt-2 w-full rounded border border-emerald-200 bg-white px-3 py-2 text-xs text-slate-800"
+                          />
+                          <p className="mt-1 text-xs text-emerald-800">
+                            Share only with this client. Creating a replacement link invalidates the previous one.
+                          </p>
+                        </div>
+                      )}
+
+                      {isClientConfirmed &&
+                        [
+                          "SUBMITTED",
+                          "OPEN",
+                          "PARTIALLY_FILLED",
+                        ].includes(
+                          order.status,
+                        ) && (
+                          <p className="mt-4 rounded-md border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
+                            The client completed the Zerodha Publisher handoff. This version cannot read the client's broker account, so verify fills, rejections, modifications, and cancellations in Kite. Automatic Sync is intentionally unavailable.
+                          </p>
+                        )}
 
                       {statusGuidance && (
                         <div

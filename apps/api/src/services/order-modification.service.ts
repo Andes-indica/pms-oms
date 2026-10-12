@@ -60,6 +60,15 @@ export async function modifyOrderService(
             "ORDER_NOT_FOUND",
         );
     }
+
+    if (
+        order.executionMode ===
+        "CLIENT_CONFIRMATION"
+    ) {
+        throw new Error(
+            "CLIENT_CONFIRMED_ORDER_MANAGE_IN_BROKER",
+        );
+    }
     const broker =
         await resolveBroker(
             order.brokerAccountId,

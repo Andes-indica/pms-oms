@@ -11,6 +11,48 @@ type RiskCheckInput = {
   estimatedPrice: number;
 };
 
+const ACTIVE_ORDER_STATUSES = [
+  "SUBMITTED",
+  "OPEN",
+  "PARTIALLY_FILLED",
+] as const;
+
+function activeReservationFilter(
+  now = new Date(),
+) {
+  return {
+    OR: [
+      {
+        status: {
+          in: [
+            ...ACTIVE_ORDER_STATUSES,
+          ],
+        },
+      },
+      {
+        status: "PENDING" as const,
+        executionMode:
+          "CLIENT_CONFIRMATION" as const,
+        clientConfirmation: {
+          OR: [
+            {
+              status:
+                "HANDOFF_STARTED" as const,
+            },
+            {
+              status:
+                "AWAITING_CLIENT" as const,
+              expiresAt: {
+                gt: now,
+              },
+            },
+          ],
+        },
+      },
+    ],
+  };
+}
+
 export async function runRiskChecks(
   input: RiskCheckInput,
   database: Pick<
@@ -89,9 +131,7 @@ export async function runRiskChecks(
       id: {
         not: input.currentOrderId,
       },
-      status: {
-        in: ["SUBMITTED", "OPEN", "PARTIALLY_FILLED"],
-      },
+      ...activeReservationFilter(),
     },
     _sum: {
       reservedCash: true,
@@ -127,13 +167,7 @@ export async function runRiskChecks(
               input.currentOrderId,
           },
 
-          status: {
-            in: [
-              "SUBMITTED",
-              "OPEN",
-              "PARTIALLY_FILLED",
-            ],
-          },
+          ...activeReservationFilter(),
         },
 
         _sum: {
@@ -204,9 +238,7 @@ export async function runRiskChecks(
       id: {
         not: input.currentOrderId,
       },
-      status: {
-        in: ["SUBMITTED", "OPEN", "PARTIALLY_FILLED"],
-      },
+      ...activeReservationFilter(),
     },
     _sum: {
       reservedQuantity: true,
@@ -234,13 +266,7 @@ export async function runRiskChecks(
             input.currentOrderId,
         },
 
-        status: {
-          in: [
-            "SUBMITTED",
-            "OPEN",
-            "PARTIALLY_FILLED",
-          ],
-        },
+        ...activeReservationFilter(),
       },
 
       _sum: {
@@ -266,9 +292,7 @@ export async function runRiskChecks(
       id: {
         not: input.currentOrderId,
       },
-      status: {
-        in: ["SUBMITTED", "OPEN", "PARTIALLY_FILLED"],
-      },
+      ...activeReservationFilter(),
     },
     _sum: {
       quantity: true,

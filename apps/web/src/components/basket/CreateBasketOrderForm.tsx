@@ -81,8 +81,14 @@ export function CreateBasketOrderForm({
 
   const [orderType, setOrderType] =
     useState<"MARKET" | "LIMIT">(
-      "MARKET",
+      "LIMIT",
     );
+
+  const [executionMode, setExecutionMode] =
+    useState<
+      "CLIENT_CONFIRMATION" |
+      "DIRECT_API"
+    >("CLIENT_CONFIRMATION");
 
   const [limitPrice, setLimitPrice] =
     useState("");
@@ -273,11 +279,29 @@ export function CreateBasketOrderForm({
 
       for (const target of targets) {
         const client = clients.find((item) => item.id === target.clientId);
+        const account =
+          client?.brokerAccounts.find(
+            (item) =>
+              item.id ===
+              target.brokerAccountId,
+          );
         if (
           !client?.portfolios.some((portfolio) => portfolio.id === target.portfolioId) ||
-          !client.brokerAccounts.some((account) => account.id === target.brokerAccountId)
+          !account
         ) {
           setError(`Select a portfolio and broker account for ${client?.name ?? "each client"}`);
+          return;
+        }
+
+        if (
+          executionMode ===
+            "CLIENT_CONFIRMATION" &&
+          account.broker.toUpperCase() !==
+            "ZERODHA"
+        ) {
+          setError(
+            `${client.name} must use a Zerodha account for client confirmation`,
+          );
           return;
         }
       }
@@ -342,6 +366,8 @@ export function CreateBasketOrderForm({
             side,
 
             orderType,
+
+            executionMode,
 
             totalQuantity,
 
@@ -532,6 +558,34 @@ export function CreateBasketOrderForm({
               LIMIT
             </option>
           </select>
+        </Field>
+
+        <Field label="Execution">
+          <select
+            value={executionMode}
+            onChange={(event) =>
+              setExecutionMode(
+                event.target.value as
+                  | "CLIENT_CONFIRMATION"
+                  | "DIRECT_API",
+              )
+            }
+            className="w-full rounded-lg border px-3 py-2"
+          >
+            <option value="CLIENT_CONFIRMATION">
+              Each client confirms in Zerodha
+            </option>
+            <option value="DIRECT_API">
+              Direct API execution
+            </option>
+          </select>
+
+          <p className="mt-1 text-xs text-slate-500">
+            {executionMode ===
+            "CLIENT_CONFIRMATION"
+              ? "One secure confirmation link is generated for each client order."
+              : "The server submits every child order using the existing direct flow."}
+          </p>
         </Field>
 
         <Field label="Total Quantity">
