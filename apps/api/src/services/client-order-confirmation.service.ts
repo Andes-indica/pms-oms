@@ -9,7 +9,7 @@ import {
 } from "@pms-oms/db";
 
 import {
-  createZerodhaOrderTag,
+  createZerodhaPublisherOrderTag,
 } from "@pms-oms/broker";
 
 import {
@@ -840,7 +840,7 @@ export async function startClientOrderHandoff(
         validity: "DAY",
         readonly: true,
         tag:
-          createZerodhaOrderTag(
+          createZerodhaPublisherOrderTag(
             order.id,
           ),
         ...(order.orderType ===
