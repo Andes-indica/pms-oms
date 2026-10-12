@@ -9,7 +9,7 @@ import {
   test,
 } from "bun:test";
 
-import { createZerodhaOrderTag } from "@pms-oms/broker";
+import { createZerodhaPublisherOrderTag } from "@pms-oms/broker";
 import { prisma } from "@pms-oms/db";
 
 import {
@@ -154,9 +154,12 @@ describe("client-confirmed execution integration", () => {
           quantity: 10,
           price: 1500,
           readonly: true,
-          tag: createZerodhaOrderTag(account.order.id),
+          tag: createZerodhaPublisherOrderTag(account.order.id),
         }),
       ]);
+      expect(
+        handoff.basket[0]?.tag,
+      ).toHaveLength(8);
 
       const connection =
         await prisma.brokerConnection.findUnique({
