@@ -9,6 +9,11 @@ type RiskCheckInput = {
   side: "BUY" | "SELL";
   quantity: number;
   estimatedPrice: number;
+  brokerFundsSnapshot?: {
+    availableCash: number;
+    capturedAt: Date;
+    existingOrderReservedCash?: number;
+  };
 };
 
 const ACTIVE_ORDER_STATUSES = [
@@ -193,6 +198,110 @@ export async function runRiskChecks(
     ) {
       throw new Error(
         "INSUFFICIENT_BROKER_CASH",
+      );
+    }
+  }
+
+  if (
+    input.side === "BUY" &&
+    input.brokerFundsSnapshot
+  ) {
+    const ttlSeconds = Number(
+      process.env
+        .BROKER_FUNDS_SNAPSHOT_TTL_SECONDS ??
+        30,
+    );
+
+    if (
+      !Number.isInteger(ttlSeconds) ||
+      ttlSeconds < 5 ||
+      ttlSeconds > 300
+    ) {
+      throw new Error(
+        "BROKER_FUNDS_SNAPSHOT_TTL_INVALID",
+      );
+    }
+
+    if (
+      Date.now() -
+        input.brokerFundsSnapshot
+          .capturedAt.getTime() >
+      ttlSeconds * 1_000
+    ) {
+      throw new Error(
+        "BROKER_FUNDS_SNAPSHOT_STALE",
+      );
+    }
+
+    /*
+     * The broker snapshot already includes margin for orders
+     * accepted before it was captured. Only subtract PMS
+     * reservations which the snapshot cannot yet include.
+     */
+    const newerReservations =
+      await database.order.aggregate({
+        where: {
+          brokerAccountId:
+            input.brokerAccountId,
+          id: {
+            not:
+              input.currentOrderId,
+          },
+          executionMode:
+            "DIRECT_API",
+          status: {
+            in: [
+              ...ACTIVE_ORDER_STATUSES,
+            ],
+          },
+          reservedCash: {
+            gt: 0,
+          },
+          OR: [
+            {
+              brokerOrderId:
+                null,
+            },
+            {
+              brokerAcceptedAt: {
+                gt:
+                  input
+                    .brokerFundsSnapshot
+                    .capturedAt,
+              },
+            },
+          ],
+        },
+        _sum: {
+          reservedCash: true,
+        },
+      });
+
+    const unavailableSinceSnapshot =
+      Number(
+        newerReservations
+          ._sum.reservedCash ??
+          0,
+      );
+
+    const requiredBrokerCash =
+      Math.max(
+        0,
+        orderValue -
+          (input
+            .brokerFundsSnapshot
+            .existingOrderReservedCash ??
+            0),
+      );
+
+    if (
+      input.brokerFundsSnapshot
+        .availableCash -
+        unavailableSinceSnapshot <
+      requiredBrokerCash
+    ) {
+      throw new Error(
+        "INSUFFICIENT_BROKER_AVAILABLE_CASH",
       );
     }
   }

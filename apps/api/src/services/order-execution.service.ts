@@ -2,11 +2,13 @@ import { prisma } from "@pms-oms/db";
 
 import {
   BrokerError,
+  supportsFunds,
   supportsOrderRecovery,
   type BrokerOrderResult,
 } from "@pms-oms/broker";
 
 import {
+  mockBroker,
   resolveBroker,
 } from "../brokers/broker-registry";
 
@@ -24,6 +26,10 @@ import {
 import {
   getMarketPrice,
 } from "./market-data.service";
+
+import {
+  captureBrokerFundsSnapshot,
+} from "./broker-funds-snapshot.service";
 
 export async function executeOrderService(
   orderId: string,
@@ -85,6 +91,27 @@ export async function executeOrderService(
       firmId,
     );
 
+  const brokerFundsSnapshot =
+    existingOrder.status !==
+      "PENDING" ||
+    existingOrder.side !== "BUY"
+      ? undefined
+      : supportsFunds(broker)
+      ? await captureBrokerFundsSnapshot({
+          brokerAccountId:
+            existingOrder
+              .brokerAccountId,
+          firmId,
+          broker,
+        })
+      : broker === mockBroker
+        ? undefined
+        : (() => {
+            throw new Error(
+              "BROKER_FUNDS_UNSUPPORTED_FOR_DIRECT_EXECUTION",
+            );
+          })();
+
   const estimatedPrice =
     existingOrder.orderType ===
       "LIMIT" &&
@@ -136,6 +163,17 @@ export async function executeOrderService(
             SELECT "id"
             FROM "Portfolio"
             WHERE "id" = ${existingOrder.portfolioId}
+            FOR UPDATE
+          `;
+
+          /*
+           * Broker cash is account-wide, so direct BUY
+           * reservations must also serialize by account.
+           */
+          await tx.$queryRaw`
+            SELECT "id"
+            FROM "BrokerAccount"
+            WHERE "id" = ${existingOrder.brokerAccountId}
             FOR UPDATE
           `;
 
@@ -235,6 +273,18 @@ export async function executeOrderService(
                 checkedOrder.quantity,
 
               estimatedPrice,
+
+              brokerFundsSnapshot:
+                brokerFundsSnapshot
+                  ? {
+                      availableCash:
+                        brokerFundsSnapshot
+                          .availableCash,
+                      capturedAt:
+                        brokerFundsSnapshot
+                          .capturedAt,
+                    }
+                  : undefined,
             },
 
             tx,
@@ -282,6 +332,8 @@ export async function executeOrderService(
         "INSUFFICIENT_HOLDINGS",
         "HOLDING_IN_DIFFERENT_PORTFOLIO",
         "INSUFFICIENT_CASH",
+        "INSUFFICIENT_BROKER_CASH",
+        "INSUFFICIENT_BROKER_AVAILABLE_CASH",
         "RESTRICTED_SECURITY",
         "MAX_ORDER_QUANTITY_EXCEEDED",
         "MAX_ORDER_VALUE_EXCEEDED",
@@ -610,6 +662,9 @@ export async function executeOrderService(
             brokerOrderId:
               brokerResult
                 .brokerOrderId,
+
+            brokerAcceptedAt:
+              new Date(),
 
             status:
               brokerResult.status,

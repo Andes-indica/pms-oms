@@ -187,6 +187,20 @@ with Zerodha before placing, modifying, or cancelling real orders. The
 Publisher-only client-confirmation handoff happens in the client's browser and
 does not use that direct execution path.
 
+Direct BUY execution also requires a fresh broker funds observation. Configure
+the maximum reuse window:
+
+```env
+BROKER_FUNDS_SNAPSHOT_TTL_SECONDS=30
+```
+
+The allowed range is 5 to 300 seconds. The PMS still enforces its portfolio cash
+ledger and portfolio-to-broker allocation; the Zerodha snapshot is an additional
+source-of-truth check for cash actually available at the broker. Publisher-only
+orders cannot perform this check and are validated by Kite when the client
+confirms them. See
+`docs/system-architecture/broker-balance-authority.md` for the authority model.
+
 ## 6. Build and migrate
 
 Validate Compose interpolation:

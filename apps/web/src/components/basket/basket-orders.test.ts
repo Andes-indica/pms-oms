@@ -537,6 +537,19 @@ describe("basket error guidance", () => {
     });
   });
 
+  test("explains a live broker cash rejection", () => {
+    expect(
+      getBasketErrorGuidance(
+        "INSUFFICIENT_BROKER_AVAILABLE_CASH",
+      ),
+    ).toEqual({
+      title:
+        "Insufficient available cash at the broker",
+      action:
+        "Add funds or release margin in the broker account, refresh its cash status, and retry with a smaller order if needed.",
+    });
+  });
+
   test("keeps an unknown broker response as diagnostic detail", () => {
     expect(getBasketErrorGuidance("Exchange is temporarily unavailable")).toEqual({
       title: "Basket order action failed",

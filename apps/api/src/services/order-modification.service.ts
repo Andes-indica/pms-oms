@@ -8,6 +8,10 @@ import {
 } from "../brokers/broker-registry";
 
 import {
+    supportsFunds,
+} from "@pms-oms/broker";
+
+import {
     createAuditLog,
 } from "./audit.service";
 
@@ -19,6 +23,14 @@ import { ensureMockBrokerOrder } from "../brokers/ensure-mock-broker-order";
 import {
     getMarketPrice,
 } from "./market-data.service";
+
+import {
+    captureBrokerFundsSnapshot,
+} from "./broker-funds-snapshot.service";
+
+import {
+    runRiskChecks,
+} from "./risk.service";
 
 const ACTIVE_STATUSES = [
     "PENDING",
@@ -154,9 +166,65 @@ export async function modifyOrderService(
                 order.exchange,
             );
 
+    const brokerFundsSnapshot =
+        order.side !== "BUY"
+            ? undefined
+            : supportsFunds(broker)
+                ? await captureBrokerFundsSnapshot({
+                    brokerAccountId:
+                        order.brokerAccountId,
+                    firmId,
+                    broker,
+                })
+                : broker === mockBroker
+                    ? undefined
+                    : (() => {
+                        throw new Error(
+                            "BROKER_FUNDS_UNSUPPORTED_FOR_DIRECT_EXECUTION",
+                        );
+                    })();
+
     const estimatedValue =
         newQuantity *
         estimatedPrice;
+
+    /*
+     * Reuse the complete order risk policy for modifications.
+     * Broker available cash only needs to cover an increase,
+     * because the live order's existing margin is already used.
+     */
+    await runRiskChecks({
+        currentOrderId:
+            order.id,
+        portfolioId:
+            order.portfolioId,
+        brokerAccountId:
+            order.brokerAccountId,
+        symbol:
+            order.symbol,
+        exchange:
+            order.exchange,
+        side:
+            order.side,
+        quantity:
+            newQuantity,
+        estimatedPrice,
+        brokerFundsSnapshot:
+            brokerFundsSnapshot
+                ? {
+                    availableCash:
+                        brokerFundsSnapshot
+                            .availableCash,
+                    capturedAt:
+                        brokerFundsSnapshot
+                            .capturedAt,
+                    existingOrderReservedCash:
+                        Number(
+                            order.reservedCash,
+                        ),
+                }
+                : undefined,
+    });
 
     /*
      * Get reservations from OTHER

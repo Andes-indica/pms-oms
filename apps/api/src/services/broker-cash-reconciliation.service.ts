@@ -1,14 +1,14 @@
 import {
-  supportsFunds,
-} from "@pms-oms/broker";
-
-import {
   prisma,
 } from "@pms-oms/db";
 
 import {
   resolveBroker,
 } from "../brokers/broker-registry";
+
+import {
+  captureBrokerFundsSnapshot,
+} from "./broker-funds-snapshot.service";
 
 function nearlyEqual(
   left: number,
@@ -59,22 +59,17 @@ export async function getBrokerCashReconciliation(
       firmId,
     );
 
-  if (
-    !supportsFunds(
-      broker,
-    )
-  ) {
-    throw new Error(
-      "BROKER_FUNDS_UNSUPPORTED",
-    );
-  }
-
   const [
-    funds,
+    fundsSnapshot,
     allocations,
   ] =
     await Promise.all([
-      broker.getFunds(),
+      captureBrokerFundsSnapshot({
+        brokerAccountId,
+        firmId,
+        broker,
+        force: true,
+      }),
 
       prisma.portfolioBrokerCash.findMany({
         where: {
@@ -123,7 +118,7 @@ export async function getBrokerCashReconciliation(
     allocations.length === 0
       ? "UNCONFIGURED"
       : nearlyEqual(
-          funds.availableCash,
+          fundsSnapshot.availableCash,
           pmsAllocatedCash,
         )
         ? "MATCH"
@@ -142,18 +137,18 @@ export async function getBrokerCashReconciliation(
     status,
 
     brokerAvailableCash:
-      funds.availableCash,
+      fundsSnapshot.availableCash,
 
     brokerNetAvailable:
-      funds.netAvailable,
+      fundsSnapshot.netAvailable,
 
     brokerUsedMargin:
-      funds.usedMargin,
+      fundsSnapshot.usedMargin,
 
     pmsAllocatedCash,
 
     difference:
-      funds.availableCash -
+      fundsSnapshot.availableCash -
       pmsAllocatedCash,
 
     allocations:
@@ -187,7 +182,7 @@ export async function getBrokerCashReconciliation(
       ),
 
     fetchedAt:
-      new Date()
+      fundsSnapshot.capturedAt
         .toISOString(),
   };
 }
