@@ -57,6 +57,8 @@ function fakeDatabase({
   buyQuantity = 0,
 
   buyFilledQuantity = 0,
+
+  newerBrokerReservedCash = 0,
 }: {
   portfolio?: any;
   restrictedSecurity?: any;
@@ -65,6 +67,7 @@ function fakeDatabase({
   reservedQuantity?: number;
   buyQuantity?: number;
   buyFilledQuantity?: number;
+  newerBrokerReservedCash?: number;
 } = {}) {
   let aggregateCall = 0;
 
@@ -91,7 +94,25 @@ function fakeDatabase({
     },
 
     order: {
-      aggregate: async () => {
+      aggregate: async (
+        args: any,
+      ) => {
+        if (
+          args?.where
+            ?.executionMode ===
+              "DIRECT_API" &&
+          Array.isArray(
+            args?.where?.OR,
+          )
+        ) {
+          return {
+            _sum: {
+              reservedCash:
+                newerBrokerReservedCash,
+            },
+          };
+        }
+
         aggregateCall += 1;
 
         /*
@@ -243,6 +264,103 @@ describe(
           ),
         ).rejects.toThrow(
           "INSUFFICIENT_BROKER_CASH",
+        );
+      },
+    );
+
+    test(
+      "rejects BUY when the broker reports insufficient available cash",
+      async () => {
+        expect(
+          runRiskChecks(
+            {
+              ...baseInput,
+              brokerFundsSnapshot: {
+                availableCash:
+                  7_000,
+                capturedAt:
+                  new Date(),
+              },
+            },
+            fakeDatabase(),
+          ),
+        ).rejects.toThrow(
+          "INSUFFICIENT_BROKER_AVAILABLE_CASH",
+        );
+      },
+    );
+
+    test(
+      "subtracts direct reservations not represented by the broker snapshot",
+      async () => {
+        expect(
+          runRiskChecks(
+            {
+              ...baseInput,
+              brokerFundsSnapshot: {
+                availableCash:
+                  10_000,
+                capturedAt:
+                  new Date(),
+              },
+            },
+            fakeDatabase({
+              newerBrokerReservedCash:
+                3_000,
+            }),
+          ),
+        ).rejects.toThrow(
+          "INSUFFICIENT_BROKER_AVAILABLE_CASH",
+        );
+      },
+    );
+
+    test(
+      "rejects a stale broker funds snapshot",
+      async () => {
+        expect(
+          runRiskChecks(
+            {
+              ...baseInput,
+              brokerFundsSnapshot: {
+                availableCash:
+                  100_000,
+                capturedAt:
+                  new Date(
+                    Date.now() -
+                      31_000,
+                  ),
+              },
+            },
+            fakeDatabase(),
+          ),
+        ).rejects.toThrow(
+          "BROKER_FUNDS_SNAPSHOT_STALE",
+        );
+      },
+    );
+
+    test(
+      "requires only additional broker cash when modifying a live BUY",
+      async () => {
+        const result =
+          await runRiskChecks(
+            {
+              ...baseInput,
+              brokerFundsSnapshot: {
+                availableCash:
+                  500,
+                capturedAt:
+                  new Date(),
+                existingOrderReservedCash:
+                  8_000,
+              },
+            },
+            fakeDatabase(),
+          );
+
+        expect(result.passed).toBe(
+          true,
         );
       },
     );

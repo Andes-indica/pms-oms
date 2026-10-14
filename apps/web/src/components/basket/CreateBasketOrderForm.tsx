@@ -583,8 +583,8 @@ export function CreateBasketOrderForm({
           <p className="mt-1 text-xs text-slate-500">
             {executionMode ===
             "CLIENT_CONFIRMATION"
-              ? "One secure confirmation link is generated for each client order."
-              : "The server submits every child order using the existing direct flow."}
+              ? "One secure link is generated per client. Kite verifies each client's funds; Publisher does not expose them to the PMS."
+              : "The server submits each child order and verifies fresh broker cash before reserving every BUY."}
           </p>
         </Field>
 

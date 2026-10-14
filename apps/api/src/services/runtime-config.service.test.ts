@@ -34,6 +34,9 @@ const originalEnv = {
   BROKER_HTTP_TIMEOUT_MS:
     process.env
       .BROKER_HTTP_TIMEOUT_MS,
+  BROKER_FUNDS_SNAPSHOT_TTL_SECONDS:
+    process.env
+      .BROKER_FUNDS_SNAPSHOT_TTL_SECONDS,
   LOGIN_RATE_LIMIT_MAX_ATTEMPTS:
     process.env
       .LOGIN_RATE_LIMIT_MAX_ATTEMPTS,
@@ -139,6 +142,23 @@ describe(
         expect(
           validateRuntimeConfig,
         ).not.toThrow();
+      },
+    );
+
+    test(
+      "rejects an unsafe broker funds snapshot TTL",
+      () => {
+        setValidProductionConfig();
+
+        process.env
+          .BROKER_FUNDS_SNAPSHOT_TTL_SECONDS =
+          "301";
+
+        expect(
+          validateRuntimeConfig,
+        ).toThrow(
+          "PRODUCTION_BROKER_FUNDS_SNAPSHOT_TTL_SECONDS_INVALID",
+        );
       },
     );
 

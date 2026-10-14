@@ -112,7 +112,15 @@ async function connectZerodha(quantity = 10, averagePrice = 1500) {
   const holdings = spyOn(ZerodhaBroker.prototype, "getHoldings").mockResolvedValue([
     { symbol: "INFY", exchange: "NSE", quantity, averagePrice },
   ]);
+  const funds = spyOn(KiteConnect.prototype, "getMargins").mockResolvedValue({
+    equity: {
+      available: { cash: 1_000_000 },
+      utilised: { debits: 0 },
+      net: 1_000_000,
+    },
+  } as never);
   restoreSpies.push(() => holdings.mockRestore());
+  restoreSpies.push(() => funds.mockRestore());
   return holdings;
 }
 
@@ -344,7 +352,10 @@ describe("MockBroker create, queue, fill and cancel through HTTP", () => {
 });
 
 describe("basket execution with real broker adapters", () => {
-  async function basketAccounts(expired = false) {
+  async function basketAccounts(
+    expired = false,
+    availableCash = 1_000_000,
+  ) {
     // Keep the existing MOCK account first, as in clients created before Kite was configured.
     const zerodha = await prisma.brokerAccount.create({
       data: {
@@ -370,8 +381,100 @@ describe("basket execution with real broker adapters", () => {
       },
       include: { portfolios: true, brokerAccounts: true },
     });
+    const funds = spyOn(KiteConnect.prototype, "getMargins").mockResolvedValue({
+      equity: {
+        available: { cash: availableCash },
+        utilised: { debits: 0 },
+        net: availableCash,
+      },
+    } as never);
+    restoreSpies.push(() => funds.mockRestore());
     return { zerodha, selectedPortfolio, secondClient };
   }
+
+  test("rejects a direct BUY before placement when Zerodha cash is insufficient", async () => {
+    const { zerodha, selectedPortfolio } =
+      await basketAccounts(
+        false,
+        1_000,
+      );
+    const kitePlace = spyOn(
+      KiteConnect.prototype,
+      "placeOrder",
+    ).mockRejectedValue(
+      new Error(
+        "UNEXPECTED_KITE_CALL",
+      ),
+    );
+    restoreSpies.push(
+      () => kitePlace.mockRestore(),
+    );
+
+    const basket = await api(
+      "POST",
+      "/basket-orders",
+      {
+        symbol: "INFY",
+        exchange: "NSE",
+        side: "BUY",
+        orderType: "LIMIT",
+        limitPrice: 1_500,
+        totalQuantity: 1,
+        allocationMethod:
+          "EQUAL_QUANTITY",
+        targets: [
+          {
+            portfolioId:
+              selectedPortfolio.id,
+            brokerAccountId:
+              zerodha.id,
+          },
+        ],
+      },
+      201,
+    );
+
+    await api(
+      "POST",
+      `/basket-orders/${basket.id}/execute`,
+      undefined,
+      202,
+    );
+
+    expect(
+      await processNextExecutionJob(),
+    ).toMatchObject({
+      processed: true,
+      succeeded: false,
+      retryable: false,
+      error:
+        "INSUFFICIENT_BROKER_AVAILABLE_CASH",
+    });
+    expect(kitePlace).not.toHaveBeenCalled();
+
+    const order =
+      await prisma.order
+        .findFirstOrThrow({
+          where: {
+            basketOrderId:
+              basket.id,
+          },
+        });
+
+    expect(order.status).toBe(
+      "REJECTED",
+    );
+    expect(
+      await prisma
+        .brokerFundsSnapshot
+        .count({
+          where: {
+            brokerAccountId:
+              zerodha.id,
+          },
+        }),
+    ).toBe(1);
+  });
 
   test.each(["EQUAL_QUANTITY", "FIXED_QUANTITY", "PERCENTAGE"])(
     "%s routes the selected account through the same Kite adapter as a normal order",

@@ -176,6 +176,15 @@ exports.Prisma.PortfolioBrokerCashScalarFieldEnum = {
   updatedAt: 'updatedAt'
 };
 
+exports.Prisma.BrokerFundsSnapshotScalarFieldEnum = {
+  id: 'id',
+  brokerAccountId: 'brokerAccountId',
+  availableCash: 'availableCash',
+  usedMargin: 'usedMargin',
+  netAvailable: 'netAvailable',
+  capturedAt: 'capturedAt'
+};
+
 exports.Prisma.CashTransactionScalarFieldEnum = {
   id: 'id',
   portfolioId: 'portfolioId',
@@ -220,6 +229,7 @@ exports.Prisma.OrderScalarFieldEnum = {
   estimatedPrice: 'estimatedPrice',
   reservedCash: 'reservedCash',
   reservedQuantity: 'reservedQuantity',
+  brokerAcceptedAt: 'brokerAcceptedAt',
   portfolioId: 'portfolioId',
   brokerAccountId: 'brokerAccountId',
   allocationId: 'allocationId',
@@ -476,6 +486,7 @@ exports.Prisma.ModelName = {
   BrokerAccount: 'BrokerAccount',
   Portfolio: 'Portfolio',
   PortfolioBrokerCash: 'PortfolioBrokerCash',
+  BrokerFundsSnapshot: 'BrokerFundsSnapshot',
   CashTransaction: 'CashTransaction',
   Holding: 'Holding',
   Order: 'Order',

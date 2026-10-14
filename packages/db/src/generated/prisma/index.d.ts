@@ -44,6 +44,11 @@ export type Portfolio = $Result.DefaultSelection<Prisma.$PortfolioPayload>
  */
 export type PortfolioBrokerCash = $Result.DefaultSelection<Prisma.$PortfolioBrokerCashPayload>
 /**
+ * Model BrokerFundsSnapshot
+ * 
+ */
+export type BrokerFundsSnapshot = $Result.DefaultSelection<Prisma.$BrokerFundsSnapshotPayload>
+/**
  * Model CashTransaction
  * 
  */
@@ -476,6 +481,16 @@ export class PrismaClient<
     * ```
     */
   get portfolioBrokerCash(): Prisma.PortfolioBrokerCashDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.brokerFundsSnapshot`: Exposes CRUD operations for the **BrokerFundsSnapshot** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more BrokerFundsSnapshots
+    * const brokerFundsSnapshots = await prisma.brokerFundsSnapshot.findMany()
+    * ```
+    */
+  get brokerFundsSnapshot(): Prisma.BrokerFundsSnapshotDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.cashTransaction`: Exposes CRUD operations for the **CashTransaction** model.
@@ -1059,6 +1074,7 @@ export namespace Prisma {
     BrokerAccount: 'BrokerAccount',
     Portfolio: 'Portfolio',
     PortfolioBrokerCash: 'PortfolioBrokerCash',
+    BrokerFundsSnapshot: 'BrokerFundsSnapshot',
     CashTransaction: 'CashTransaction',
     Holding: 'Holding',
     Order: 'Order',
@@ -1087,7 +1103,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "portfolioBrokerCash" | "cashTransaction" | "holding" | "order" | "auditLog" | "basketOrder" | "clientOrderConfirmation" | "allocation" | "riskLimit" | "instrument" | "restrictedSecurity" | "brokerConnection" | "execution" | "executionJob"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "portfolioBrokerCash" | "brokerFundsSnapshot" | "cashTransaction" | "holding" | "order" | "auditLog" | "basketOrder" | "clientOrderConfirmation" | "allocation" | "riskLimit" | "instrument" | "restrictedSecurity" | "brokerConnection" | "execution" | "executionJob"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1532,6 +1548,80 @@ export namespace Prisma {
           count: {
             args: Prisma.PortfolioBrokerCashCountArgs<ExtArgs>
             result: $Utils.Optional<PortfolioBrokerCashCountAggregateOutputType> | number
+          }
+        }
+      }
+      BrokerFundsSnapshot: {
+        payload: Prisma.$BrokerFundsSnapshotPayload<ExtArgs>
+        fields: Prisma.BrokerFundsSnapshotFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.BrokerFundsSnapshotFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.BrokerFundsSnapshotFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>
+          }
+          findFirst: {
+            args: Prisma.BrokerFundsSnapshotFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.BrokerFundsSnapshotFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>
+          }
+          findMany: {
+            args: Prisma.BrokerFundsSnapshotFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>[]
+          }
+          create: {
+            args: Prisma.BrokerFundsSnapshotCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>
+          }
+          createMany: {
+            args: Prisma.BrokerFundsSnapshotCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.BrokerFundsSnapshotCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>[]
+          }
+          delete: {
+            args: Prisma.BrokerFundsSnapshotDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>
+          }
+          update: {
+            args: Prisma.BrokerFundsSnapshotUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>
+          }
+          deleteMany: {
+            args: Prisma.BrokerFundsSnapshotDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.BrokerFundsSnapshotUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.BrokerFundsSnapshotUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>[]
+          }
+          upsert: {
+            args: Prisma.BrokerFundsSnapshotUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$BrokerFundsSnapshotPayload>
+          }
+          aggregate: {
+            args: Prisma.BrokerFundsSnapshotAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateBrokerFundsSnapshot>
+          }
+          groupBy: {
+            args: Prisma.BrokerFundsSnapshotGroupByArgs<ExtArgs>
+            result: $Utils.Optional<BrokerFundsSnapshotGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.BrokerFundsSnapshotCountArgs<ExtArgs>
+            result: $Utils.Optional<BrokerFundsSnapshotCountAggregateOutputType> | number
           }
         }
       }
@@ -2626,6 +2716,7 @@ export namespace Prisma {
     brokerAccount?: BrokerAccountOmit
     portfolio?: PortfolioOmit
     portfolioBrokerCash?: PortfolioBrokerCashOmit
+    brokerFundsSnapshot?: BrokerFundsSnapshotOmit
     cashTransaction?: CashTransactionOmit
     holding?: HoldingOmit
     order?: OrderOmit
@@ -2859,6 +2950,7 @@ export namespace Prisma {
   export type BrokerAccountCountOutputType = {
     orders: number
     holdings: number
+    fundsSnapshots: number
     portfolioCashAllocations: number
     allocations: number
   }
@@ -2866,6 +2958,7 @@ export namespace Prisma {
   export type BrokerAccountCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     orders?: boolean | BrokerAccountCountOutputTypeCountOrdersArgs
     holdings?: boolean | BrokerAccountCountOutputTypeCountHoldingsArgs
+    fundsSnapshots?: boolean | BrokerAccountCountOutputTypeCountFundsSnapshotsArgs
     portfolioCashAllocations?: boolean | BrokerAccountCountOutputTypeCountPortfolioCashAllocationsArgs
     allocations?: boolean | BrokerAccountCountOutputTypeCountAllocationsArgs
   }
@@ -2893,6 +2986,13 @@ export namespace Prisma {
    */
   export type BrokerAccountCountOutputTypeCountHoldingsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: HoldingWhereInput
+  }
+
+  /**
+   * BrokerAccountCountOutputType without action
+   */
+  export type BrokerAccountCountOutputTypeCountFundsSnapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BrokerFundsSnapshotWhereInput
   }
 
   /**
@@ -6683,6 +6783,7 @@ export namespace Prisma {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     orders?: boolean | BrokerAccount$ordersArgs<ExtArgs>
     holdings?: boolean | BrokerAccount$holdingsArgs<ExtArgs>
+    fundsSnapshots?: boolean | BrokerAccount$fundsSnapshotsArgs<ExtArgs>
     portfolioCashAllocations?: boolean | BrokerAccount$portfolioCashAllocationsArgs<ExtArgs>
     allocations?: boolean | BrokerAccount$allocationsArgs<ExtArgs>
     connection?: boolean | BrokerAccount$connectionArgs<ExtArgs>
@@ -6729,6 +6830,7 @@ export namespace Prisma {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     orders?: boolean | BrokerAccount$ordersArgs<ExtArgs>
     holdings?: boolean | BrokerAccount$holdingsArgs<ExtArgs>
+    fundsSnapshots?: boolean | BrokerAccount$fundsSnapshotsArgs<ExtArgs>
     portfolioCashAllocations?: boolean | BrokerAccount$portfolioCashAllocationsArgs<ExtArgs>
     allocations?: boolean | BrokerAccount$allocationsArgs<ExtArgs>
     connection?: boolean | BrokerAccount$connectionArgs<ExtArgs>
@@ -6747,6 +6849,7 @@ export namespace Prisma {
       client: Prisma.$ClientPayload<ExtArgs>
       orders: Prisma.$OrderPayload<ExtArgs>[]
       holdings: Prisma.$HoldingPayload<ExtArgs>[]
+      fundsSnapshots: Prisma.$BrokerFundsSnapshotPayload<ExtArgs>[]
       portfolioCashAllocations: Prisma.$PortfolioBrokerCashPayload<ExtArgs>[]
       allocations: Prisma.$AllocationPayload<ExtArgs>[]
       connection: Prisma.$BrokerConnectionPayload<ExtArgs> | null
@@ -7157,6 +7260,7 @@ export namespace Prisma {
     client<T extends ClientDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ClientDefaultArgs<ExtArgs>>): Prisma__ClientClient<$Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     orders<T extends BrokerAccount$ordersArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$ordersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     holdings<T extends BrokerAccount$holdingsArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$holdingsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$HoldingPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    fundsSnapshots<T extends BrokerAccount$fundsSnapshotsArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$fundsSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     portfolioCashAllocations<T extends BrokerAccount$portfolioCashAllocationsArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$portfolioCashAllocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$PortfolioBrokerCashPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     allocations<T extends BrokerAccount$allocationsArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$allocationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AllocationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     connection<T extends BrokerAccount$connectionArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccount$connectionArgs<ExtArgs>>): Prisma__BrokerConnectionClient<$Result.GetResult<Prisma.$BrokerConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -7643,6 +7747,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: HoldingScalarFieldEnum | HoldingScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerAccount.fundsSnapshots
+   */
+  export type BrokerAccount$fundsSnapshotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    where?: BrokerFundsSnapshotWhereInput
+    orderBy?: BrokerFundsSnapshotOrderByWithRelationInput | BrokerFundsSnapshotOrderByWithRelationInput[]
+    cursor?: BrokerFundsSnapshotWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: BrokerFundsSnapshotScalarFieldEnum | BrokerFundsSnapshotScalarFieldEnum[]
   }
 
   /**
@@ -10125,6 +10253,1124 @@ export namespace Prisma {
 
 
   /**
+   * Model BrokerFundsSnapshot
+   */
+
+  export type AggregateBrokerFundsSnapshot = {
+    _count: BrokerFundsSnapshotCountAggregateOutputType | null
+    _avg: BrokerFundsSnapshotAvgAggregateOutputType | null
+    _sum: BrokerFundsSnapshotSumAggregateOutputType | null
+    _min: BrokerFundsSnapshotMinAggregateOutputType | null
+    _max: BrokerFundsSnapshotMaxAggregateOutputType | null
+  }
+
+  export type BrokerFundsSnapshotAvgAggregateOutputType = {
+    availableCash: Decimal | null
+    usedMargin: Decimal | null
+    netAvailable: Decimal | null
+  }
+
+  export type BrokerFundsSnapshotSumAggregateOutputType = {
+    availableCash: Decimal | null
+    usedMargin: Decimal | null
+    netAvailable: Decimal | null
+  }
+
+  export type BrokerFundsSnapshotMinAggregateOutputType = {
+    id: string | null
+    brokerAccountId: string | null
+    availableCash: Decimal | null
+    usedMargin: Decimal | null
+    netAvailable: Decimal | null
+    capturedAt: Date | null
+  }
+
+  export type BrokerFundsSnapshotMaxAggregateOutputType = {
+    id: string | null
+    brokerAccountId: string | null
+    availableCash: Decimal | null
+    usedMargin: Decimal | null
+    netAvailable: Decimal | null
+    capturedAt: Date | null
+  }
+
+  export type BrokerFundsSnapshotCountAggregateOutputType = {
+    id: number
+    brokerAccountId: number
+    availableCash: number
+    usedMargin: number
+    netAvailable: number
+    capturedAt: number
+    _all: number
+  }
+
+
+  export type BrokerFundsSnapshotAvgAggregateInputType = {
+    availableCash?: true
+    usedMargin?: true
+    netAvailable?: true
+  }
+
+  export type BrokerFundsSnapshotSumAggregateInputType = {
+    availableCash?: true
+    usedMargin?: true
+    netAvailable?: true
+  }
+
+  export type BrokerFundsSnapshotMinAggregateInputType = {
+    id?: true
+    brokerAccountId?: true
+    availableCash?: true
+    usedMargin?: true
+    netAvailable?: true
+    capturedAt?: true
+  }
+
+  export type BrokerFundsSnapshotMaxAggregateInputType = {
+    id?: true
+    brokerAccountId?: true
+    availableCash?: true
+    usedMargin?: true
+    netAvailable?: true
+    capturedAt?: true
+  }
+
+  export type BrokerFundsSnapshotCountAggregateInputType = {
+    id?: true
+    brokerAccountId?: true
+    availableCash?: true
+    usedMargin?: true
+    netAvailable?: true
+    capturedAt?: true
+    _all?: true
+  }
+
+  export type BrokerFundsSnapshotAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BrokerFundsSnapshot to aggregate.
+     */
+    where?: BrokerFundsSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerFundsSnapshots to fetch.
+     */
+    orderBy?: BrokerFundsSnapshotOrderByWithRelationInput | BrokerFundsSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: BrokerFundsSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerFundsSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerFundsSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned BrokerFundsSnapshots
+    **/
+    _count?: true | BrokerFundsSnapshotCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: BrokerFundsSnapshotAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: BrokerFundsSnapshotSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: BrokerFundsSnapshotMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: BrokerFundsSnapshotMaxAggregateInputType
+  }
+
+  export type GetBrokerFundsSnapshotAggregateType<T extends BrokerFundsSnapshotAggregateArgs> = {
+        [P in keyof T & keyof AggregateBrokerFundsSnapshot]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateBrokerFundsSnapshot[P]>
+      : GetScalarType<T[P], AggregateBrokerFundsSnapshot[P]>
+  }
+
+
+
+
+  export type BrokerFundsSnapshotGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: BrokerFundsSnapshotWhereInput
+    orderBy?: BrokerFundsSnapshotOrderByWithAggregationInput | BrokerFundsSnapshotOrderByWithAggregationInput[]
+    by: BrokerFundsSnapshotScalarFieldEnum[] | BrokerFundsSnapshotScalarFieldEnum
+    having?: BrokerFundsSnapshotScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: BrokerFundsSnapshotCountAggregateInputType | true
+    _avg?: BrokerFundsSnapshotAvgAggregateInputType
+    _sum?: BrokerFundsSnapshotSumAggregateInputType
+    _min?: BrokerFundsSnapshotMinAggregateInputType
+    _max?: BrokerFundsSnapshotMaxAggregateInputType
+  }
+
+  export type BrokerFundsSnapshotGroupByOutputType = {
+    id: string
+    brokerAccountId: string
+    availableCash: Decimal
+    usedMargin: Decimal
+    netAvailable: Decimal
+    capturedAt: Date
+    _count: BrokerFundsSnapshotCountAggregateOutputType | null
+    _avg: BrokerFundsSnapshotAvgAggregateOutputType | null
+    _sum: BrokerFundsSnapshotSumAggregateOutputType | null
+    _min: BrokerFundsSnapshotMinAggregateOutputType | null
+    _max: BrokerFundsSnapshotMaxAggregateOutputType | null
+  }
+
+  type GetBrokerFundsSnapshotGroupByPayload<T extends BrokerFundsSnapshotGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<BrokerFundsSnapshotGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof BrokerFundsSnapshotGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], BrokerFundsSnapshotGroupByOutputType[P]>
+            : GetScalarType<T[P], BrokerFundsSnapshotGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type BrokerFundsSnapshotSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    brokerAccountId?: boolean
+    availableCash?: boolean
+    usedMargin?: boolean
+    netAvailable?: boolean
+    capturedAt?: boolean
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["brokerFundsSnapshot"]>
+
+  export type BrokerFundsSnapshotSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    brokerAccountId?: boolean
+    availableCash?: boolean
+    usedMargin?: boolean
+    netAvailable?: boolean
+    capturedAt?: boolean
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["brokerFundsSnapshot"]>
+
+  export type BrokerFundsSnapshotSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    brokerAccountId?: boolean
+    availableCash?: boolean
+    usedMargin?: boolean
+    netAvailable?: boolean
+    capturedAt?: boolean
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["brokerFundsSnapshot"]>
+
+  export type BrokerFundsSnapshotSelectScalar = {
+    id?: boolean
+    brokerAccountId?: boolean
+    availableCash?: boolean
+    usedMargin?: boolean
+    netAvailable?: boolean
+    capturedAt?: boolean
+  }
+
+  export type BrokerFundsSnapshotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "brokerAccountId" | "availableCash" | "usedMargin" | "netAvailable" | "capturedAt", ExtArgs["result"]["brokerFundsSnapshot"]>
+  export type BrokerFundsSnapshotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }
+  export type BrokerFundsSnapshotIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }
+  export type BrokerFundsSnapshotIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    brokerAccount?: boolean | BrokerAccountDefaultArgs<ExtArgs>
+  }
+
+  export type $BrokerFundsSnapshotPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "BrokerFundsSnapshot"
+    objects: {
+      brokerAccount: Prisma.$BrokerAccountPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      brokerAccountId: string
+      availableCash: Prisma.Decimal
+      usedMargin: Prisma.Decimal
+      netAvailable: Prisma.Decimal
+      capturedAt: Date
+    }, ExtArgs["result"]["brokerFundsSnapshot"]>
+    composites: {}
+  }
+
+  type BrokerFundsSnapshotGetPayload<S extends boolean | null | undefined | BrokerFundsSnapshotDefaultArgs> = $Result.GetResult<Prisma.$BrokerFundsSnapshotPayload, S>
+
+  type BrokerFundsSnapshotCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<BrokerFundsSnapshotFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: BrokerFundsSnapshotCountAggregateInputType | true
+    }
+
+  export interface BrokerFundsSnapshotDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BrokerFundsSnapshot'], meta: { name: 'BrokerFundsSnapshot' } }
+    /**
+     * Find zero or one BrokerFundsSnapshot that matches the filter.
+     * @param {BrokerFundsSnapshotFindUniqueArgs} args - Arguments to find a BrokerFundsSnapshot
+     * @example
+     * // Get one BrokerFundsSnapshot
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends BrokerFundsSnapshotFindUniqueArgs>(args: SelectSubset<T, BrokerFundsSnapshotFindUniqueArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one BrokerFundsSnapshot that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {BrokerFundsSnapshotFindUniqueOrThrowArgs} args - Arguments to find a BrokerFundsSnapshot
+     * @example
+     * // Get one BrokerFundsSnapshot
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends BrokerFundsSnapshotFindUniqueOrThrowArgs>(args: SelectSubset<T, BrokerFundsSnapshotFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BrokerFundsSnapshot that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerFundsSnapshotFindFirstArgs} args - Arguments to find a BrokerFundsSnapshot
+     * @example
+     * // Get one BrokerFundsSnapshot
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends BrokerFundsSnapshotFindFirstArgs>(args?: SelectSubset<T, BrokerFundsSnapshotFindFirstArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first BrokerFundsSnapshot that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerFundsSnapshotFindFirstOrThrowArgs} args - Arguments to find a BrokerFundsSnapshot
+     * @example
+     * // Get one BrokerFundsSnapshot
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends BrokerFundsSnapshotFindFirstOrThrowArgs>(args?: SelectSubset<T, BrokerFundsSnapshotFindFirstOrThrowArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more BrokerFundsSnapshots that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerFundsSnapshotFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all BrokerFundsSnapshots
+     * const brokerFundsSnapshots = await prisma.brokerFundsSnapshot.findMany()
+     * 
+     * // Get first 10 BrokerFundsSnapshots
+     * const brokerFundsSnapshots = await prisma.brokerFundsSnapshot.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const brokerFundsSnapshotWithIdOnly = await prisma.brokerFundsSnapshot.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends BrokerFundsSnapshotFindManyArgs>(args?: SelectSubset<T, BrokerFundsSnapshotFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a BrokerFundsSnapshot.
+     * @param {BrokerFundsSnapshotCreateArgs} args - Arguments to create a BrokerFundsSnapshot.
+     * @example
+     * // Create one BrokerFundsSnapshot
+     * const BrokerFundsSnapshot = await prisma.brokerFundsSnapshot.create({
+     *   data: {
+     *     // ... data to create a BrokerFundsSnapshot
+     *   }
+     * })
+     * 
+     */
+    create<T extends BrokerFundsSnapshotCreateArgs>(args: SelectSubset<T, BrokerFundsSnapshotCreateArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many BrokerFundsSnapshots.
+     * @param {BrokerFundsSnapshotCreateManyArgs} args - Arguments to create many BrokerFundsSnapshots.
+     * @example
+     * // Create many BrokerFundsSnapshots
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends BrokerFundsSnapshotCreateManyArgs>(args?: SelectSubset<T, BrokerFundsSnapshotCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many BrokerFundsSnapshots and returns the data saved in the database.
+     * @param {BrokerFundsSnapshotCreateManyAndReturnArgs} args - Arguments to create many BrokerFundsSnapshots.
+     * @example
+     * // Create many BrokerFundsSnapshots
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many BrokerFundsSnapshots and only return the `id`
+     * const brokerFundsSnapshotWithIdOnly = await prisma.brokerFundsSnapshot.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends BrokerFundsSnapshotCreateManyAndReturnArgs>(args?: SelectSubset<T, BrokerFundsSnapshotCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a BrokerFundsSnapshot.
+     * @param {BrokerFundsSnapshotDeleteArgs} args - Arguments to delete one BrokerFundsSnapshot.
+     * @example
+     * // Delete one BrokerFundsSnapshot
+     * const BrokerFundsSnapshot = await prisma.brokerFundsSnapshot.delete({
+     *   where: {
+     *     // ... filter to delete one BrokerFundsSnapshot
+     *   }
+     * })
+     * 
+     */
+    delete<T extends BrokerFundsSnapshotDeleteArgs>(args: SelectSubset<T, BrokerFundsSnapshotDeleteArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one BrokerFundsSnapshot.
+     * @param {BrokerFundsSnapshotUpdateArgs} args - Arguments to update one BrokerFundsSnapshot.
+     * @example
+     * // Update one BrokerFundsSnapshot
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends BrokerFundsSnapshotUpdateArgs>(args: SelectSubset<T, BrokerFundsSnapshotUpdateArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more BrokerFundsSnapshots.
+     * @param {BrokerFundsSnapshotDeleteManyArgs} args - Arguments to filter BrokerFundsSnapshots to delete.
+     * @example
+     * // Delete a few BrokerFundsSnapshots
+     * const { count } = await prisma.brokerFundsSnapshot.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends BrokerFundsSnapshotDeleteManyArgs>(args?: SelectSubset<T, BrokerFundsSnapshotDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BrokerFundsSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerFundsSnapshotUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many BrokerFundsSnapshots
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends BrokerFundsSnapshotUpdateManyArgs>(args: SelectSubset<T, BrokerFundsSnapshotUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more BrokerFundsSnapshots and returns the data updated in the database.
+     * @param {BrokerFundsSnapshotUpdateManyAndReturnArgs} args - Arguments to update many BrokerFundsSnapshots.
+     * @example
+     * // Update many BrokerFundsSnapshots
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more BrokerFundsSnapshots and only return the `id`
+     * const brokerFundsSnapshotWithIdOnly = await prisma.brokerFundsSnapshot.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends BrokerFundsSnapshotUpdateManyAndReturnArgs>(args: SelectSubset<T, BrokerFundsSnapshotUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one BrokerFundsSnapshot.
+     * @param {BrokerFundsSnapshotUpsertArgs} args - Arguments to update or create a BrokerFundsSnapshot.
+     * @example
+     * // Update or create a BrokerFundsSnapshot
+     * const brokerFundsSnapshot = await prisma.brokerFundsSnapshot.upsert({
+     *   create: {
+     *     // ... data to create a BrokerFundsSnapshot
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the BrokerFundsSnapshot we want to update
+     *   }
+     * })
+     */
+    upsert<T extends BrokerFundsSnapshotUpsertArgs>(args: SelectSubset<T, BrokerFundsSnapshotUpsertArgs<ExtArgs>>): Prisma__BrokerFundsSnapshotClient<$Result.GetResult<Prisma.$BrokerFundsSnapshotPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of BrokerFundsSnapshots.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerFundsSnapshotCountArgs} args - Arguments to filter BrokerFundsSnapshots to count.
+     * @example
+     * // Count the number of BrokerFundsSnapshots
+     * const count = await prisma.brokerFundsSnapshot.count({
+     *   where: {
+     *     // ... the filter for the BrokerFundsSnapshots we want to count
+     *   }
+     * })
+    **/
+    count<T extends BrokerFundsSnapshotCountArgs>(
+      args?: Subset<T, BrokerFundsSnapshotCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], BrokerFundsSnapshotCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a BrokerFundsSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerFundsSnapshotAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends BrokerFundsSnapshotAggregateArgs>(args: Subset<T, BrokerFundsSnapshotAggregateArgs>): Prisma.PrismaPromise<GetBrokerFundsSnapshotAggregateType<T>>
+
+    /**
+     * Group by BrokerFundsSnapshot.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {BrokerFundsSnapshotGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends BrokerFundsSnapshotGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: BrokerFundsSnapshotGroupByArgs['orderBy'] }
+        : { orderBy?: BrokerFundsSnapshotGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, BrokerFundsSnapshotGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBrokerFundsSnapshotGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the BrokerFundsSnapshot model
+   */
+  readonly fields: BrokerFundsSnapshotFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for BrokerFundsSnapshot.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__BrokerFundsSnapshotClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    brokerAccount<T extends BrokerAccountDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BrokerAccountDefaultArgs<ExtArgs>>): Prisma__BrokerAccountClient<$Result.GetResult<Prisma.$BrokerAccountPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the BrokerFundsSnapshot model
+   */
+  interface BrokerFundsSnapshotFieldRefs {
+    readonly id: FieldRef<"BrokerFundsSnapshot", 'String'>
+    readonly brokerAccountId: FieldRef<"BrokerFundsSnapshot", 'String'>
+    readonly availableCash: FieldRef<"BrokerFundsSnapshot", 'Decimal'>
+    readonly usedMargin: FieldRef<"BrokerFundsSnapshot", 'Decimal'>
+    readonly netAvailable: FieldRef<"BrokerFundsSnapshot", 'Decimal'>
+    readonly capturedAt: FieldRef<"BrokerFundsSnapshot", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * BrokerFundsSnapshot findUnique
+   */
+  export type BrokerFundsSnapshotFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerFundsSnapshot to fetch.
+     */
+    where: BrokerFundsSnapshotWhereUniqueInput
+  }
+
+  /**
+   * BrokerFundsSnapshot findUniqueOrThrow
+   */
+  export type BrokerFundsSnapshotFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerFundsSnapshot to fetch.
+     */
+    where: BrokerFundsSnapshotWhereUniqueInput
+  }
+
+  /**
+   * BrokerFundsSnapshot findFirst
+   */
+  export type BrokerFundsSnapshotFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerFundsSnapshot to fetch.
+     */
+    where?: BrokerFundsSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerFundsSnapshots to fetch.
+     */
+    orderBy?: BrokerFundsSnapshotOrderByWithRelationInput | BrokerFundsSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BrokerFundsSnapshots.
+     */
+    cursor?: BrokerFundsSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerFundsSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerFundsSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BrokerFundsSnapshots.
+     */
+    distinct?: BrokerFundsSnapshotScalarFieldEnum | BrokerFundsSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerFundsSnapshot findFirstOrThrow
+   */
+  export type BrokerFundsSnapshotFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerFundsSnapshot to fetch.
+     */
+    where?: BrokerFundsSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerFundsSnapshots to fetch.
+     */
+    orderBy?: BrokerFundsSnapshotOrderByWithRelationInput | BrokerFundsSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for BrokerFundsSnapshots.
+     */
+    cursor?: BrokerFundsSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerFundsSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerFundsSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BrokerFundsSnapshots.
+     */
+    distinct?: BrokerFundsSnapshotScalarFieldEnum | BrokerFundsSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerFundsSnapshot findMany
+   */
+  export type BrokerFundsSnapshotFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter, which BrokerFundsSnapshots to fetch.
+     */
+    where?: BrokerFundsSnapshotWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of BrokerFundsSnapshots to fetch.
+     */
+    orderBy?: BrokerFundsSnapshotOrderByWithRelationInput | BrokerFundsSnapshotOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing BrokerFundsSnapshots.
+     */
+    cursor?: BrokerFundsSnapshotWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` BrokerFundsSnapshots from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` BrokerFundsSnapshots.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of BrokerFundsSnapshots.
+     */
+    distinct?: BrokerFundsSnapshotScalarFieldEnum | BrokerFundsSnapshotScalarFieldEnum[]
+  }
+
+  /**
+   * BrokerFundsSnapshot create
+   */
+  export type BrokerFundsSnapshotCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * The data needed to create a BrokerFundsSnapshot.
+     */
+    data: XOR<BrokerFundsSnapshotCreateInput, BrokerFundsSnapshotUncheckedCreateInput>
+  }
+
+  /**
+   * BrokerFundsSnapshot createMany
+   */
+  export type BrokerFundsSnapshotCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many BrokerFundsSnapshots.
+     */
+    data: BrokerFundsSnapshotCreateManyInput | BrokerFundsSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * BrokerFundsSnapshot createManyAndReturn
+   */
+  export type BrokerFundsSnapshotCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * The data used to create many BrokerFundsSnapshots.
+     */
+    data: BrokerFundsSnapshotCreateManyInput | BrokerFundsSnapshotCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BrokerFundsSnapshot update
+   */
+  export type BrokerFundsSnapshotUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * The data needed to update a BrokerFundsSnapshot.
+     */
+    data: XOR<BrokerFundsSnapshotUpdateInput, BrokerFundsSnapshotUncheckedUpdateInput>
+    /**
+     * Choose, which BrokerFundsSnapshot to update.
+     */
+    where: BrokerFundsSnapshotWhereUniqueInput
+  }
+
+  /**
+   * BrokerFundsSnapshot updateMany
+   */
+  export type BrokerFundsSnapshotUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update BrokerFundsSnapshots.
+     */
+    data: XOR<BrokerFundsSnapshotUpdateManyMutationInput, BrokerFundsSnapshotUncheckedUpdateManyInput>
+    /**
+     * Filter which BrokerFundsSnapshots to update
+     */
+    where?: BrokerFundsSnapshotWhereInput
+    /**
+     * Limit how many BrokerFundsSnapshots to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * BrokerFundsSnapshot updateManyAndReturn
+   */
+  export type BrokerFundsSnapshotUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * The data used to update BrokerFundsSnapshots.
+     */
+    data: XOR<BrokerFundsSnapshotUpdateManyMutationInput, BrokerFundsSnapshotUncheckedUpdateManyInput>
+    /**
+     * Filter which BrokerFundsSnapshots to update
+     */
+    where?: BrokerFundsSnapshotWhereInput
+    /**
+     * Limit how many BrokerFundsSnapshots to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * BrokerFundsSnapshot upsert
+   */
+  export type BrokerFundsSnapshotUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * The filter to search for the BrokerFundsSnapshot to update in case it exists.
+     */
+    where: BrokerFundsSnapshotWhereUniqueInput
+    /**
+     * In case the BrokerFundsSnapshot found by the `where` argument doesn't exist, create a new BrokerFundsSnapshot with this data.
+     */
+    create: XOR<BrokerFundsSnapshotCreateInput, BrokerFundsSnapshotUncheckedCreateInput>
+    /**
+     * In case the BrokerFundsSnapshot was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<BrokerFundsSnapshotUpdateInput, BrokerFundsSnapshotUncheckedUpdateInput>
+  }
+
+  /**
+   * BrokerFundsSnapshot delete
+   */
+  export type BrokerFundsSnapshotDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+    /**
+     * Filter which BrokerFundsSnapshot to delete.
+     */
+    where: BrokerFundsSnapshotWhereUniqueInput
+  }
+
+  /**
+   * BrokerFundsSnapshot deleteMany
+   */
+  export type BrokerFundsSnapshotDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which BrokerFundsSnapshots to delete
+     */
+    where?: BrokerFundsSnapshotWhereInput
+    /**
+     * Limit how many BrokerFundsSnapshots to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * BrokerFundsSnapshot without action
+   */
+  export type BrokerFundsSnapshotDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the BrokerFundsSnapshot
+     */
+    select?: BrokerFundsSnapshotSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the BrokerFundsSnapshot
+     */
+    omit?: BrokerFundsSnapshotOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: BrokerFundsSnapshotInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model CashTransaction
    */
 
@@ -12504,6 +13750,7 @@ export namespace Prisma {
     estimatedPrice: Decimal | null
     reservedCash: Decimal | null
     reservedQuantity: number | null
+    brokerAcceptedAt: Date | null
     portfolioId: string | null
     brokerAccountId: string | null
     allocationId: string | null
@@ -12530,6 +13777,7 @@ export namespace Prisma {
     estimatedPrice: Decimal | null
     reservedCash: Decimal | null
     reservedQuantity: number | null
+    brokerAcceptedAt: Date | null
     portfolioId: string | null
     brokerAccountId: string | null
     allocationId: string | null
@@ -12556,6 +13804,7 @@ export namespace Prisma {
     estimatedPrice: number
     reservedCash: number
     reservedQuantity: number
+    brokerAcceptedAt: number
     portfolioId: number
     brokerAccountId: number
     allocationId: number
@@ -12606,6 +13855,7 @@ export namespace Prisma {
     estimatedPrice?: true
     reservedCash?: true
     reservedQuantity?: true
+    brokerAcceptedAt?: true
     portfolioId?: true
     brokerAccountId?: true
     allocationId?: true
@@ -12632,6 +13882,7 @@ export namespace Prisma {
     estimatedPrice?: true
     reservedCash?: true
     reservedQuantity?: true
+    brokerAcceptedAt?: true
     portfolioId?: true
     brokerAccountId?: true
     allocationId?: true
@@ -12658,6 +13909,7 @@ export namespace Prisma {
     estimatedPrice?: true
     reservedCash?: true
     reservedQuantity?: true
+    brokerAcceptedAt?: true
     portfolioId?: true
     brokerAccountId?: true
     allocationId?: true
@@ -12771,6 +14023,7 @@ export namespace Prisma {
     estimatedPrice: Decimal | null
     reservedCash: Decimal
     reservedQuantity: number
+    brokerAcceptedAt: Date | null
     portfolioId: string
     brokerAccountId: string
     allocationId: string | null
@@ -12816,6 +14069,7 @@ export namespace Prisma {
     estimatedPrice?: boolean
     reservedCash?: boolean
     reservedQuantity?: boolean
+    brokerAcceptedAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     allocationId?: boolean
@@ -12850,6 +14104,7 @@ export namespace Prisma {
     estimatedPrice?: boolean
     reservedCash?: boolean
     reservedQuantity?: boolean
+    brokerAcceptedAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     allocationId?: boolean
@@ -12880,6 +14135,7 @@ export namespace Prisma {
     estimatedPrice?: boolean
     reservedCash?: boolean
     reservedQuantity?: boolean
+    brokerAcceptedAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     allocationId?: boolean
@@ -12910,6 +14166,7 @@ export namespace Prisma {
     estimatedPrice?: boolean
     reservedCash?: boolean
     reservedQuantity?: boolean
+    brokerAcceptedAt?: boolean
     portfolioId?: boolean
     brokerAccountId?: boolean
     allocationId?: boolean
@@ -12917,7 +14174,7 @@ export namespace Prisma {
     updatedAt?: boolean
   }
 
-  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "executionMode" | "quantity" | "limitPrice" | "brokerOrderId" | "basketOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "estimatedPrice" | "reservedCash" | "reservedQuantity" | "portfolioId" | "brokerAccountId" | "allocationId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
+  export type OrderOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "symbol" | "exchange" | "side" | "orderType" | "status" | "executionMode" | "quantity" | "limitPrice" | "brokerOrderId" | "basketOrderId" | "filledQuantity" | "averageFillPrice" | "realizedPnl" | "filledAt" | "estimatedPrice" | "reservedCash" | "reservedQuantity" | "brokerAcceptedAt" | "portfolioId" | "brokerAccountId" | "allocationId" | "createdAt" | "updatedAt", ExtArgs["result"]["order"]>
   export type OrderInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     basketOrder?: boolean | Order$basketOrderArgs<ExtArgs>
     portfolio?: boolean | PortfolioDefaultArgs<ExtArgs>
@@ -12971,6 +14228,7 @@ export namespace Prisma {
       estimatedPrice: Prisma.Decimal | null
       reservedCash: Prisma.Decimal
       reservedQuantity: number
+      brokerAcceptedAt: Date | null
       portfolioId: string
       brokerAccountId: string
       allocationId: string | null
@@ -13424,6 +14682,7 @@ export namespace Prisma {
     readonly estimatedPrice: FieldRef<"Order", 'Decimal'>
     readonly reservedCash: FieldRef<"Order", 'Decimal'>
     readonly reservedQuantity: FieldRef<"Order", 'Int'>
+    readonly brokerAcceptedAt: FieldRef<"Order", 'DateTime'>
     readonly portfolioId: FieldRef<"Order", 'String'>
     readonly brokerAccountId: FieldRef<"Order", 'String'>
     readonly allocationId: FieldRef<"Order", 'String'>
@@ -25439,6 +26698,18 @@ export namespace Prisma {
   export type PortfolioBrokerCashScalarFieldEnum = (typeof PortfolioBrokerCashScalarFieldEnum)[keyof typeof PortfolioBrokerCashScalarFieldEnum]
 
 
+  export const BrokerFundsSnapshotScalarFieldEnum: {
+    id: 'id',
+    brokerAccountId: 'brokerAccountId',
+    availableCash: 'availableCash',
+    usedMargin: 'usedMargin',
+    netAvailable: 'netAvailable',
+    capturedAt: 'capturedAt'
+  };
+
+  export type BrokerFundsSnapshotScalarFieldEnum = (typeof BrokerFundsSnapshotScalarFieldEnum)[keyof typeof BrokerFundsSnapshotScalarFieldEnum]
+
+
   export const CashTransactionScalarFieldEnum: {
     id: 'id',
     portfolioId: 'portfolioId',
@@ -25489,6 +26760,7 @@ export namespace Prisma {
     estimatedPrice: 'estimatedPrice',
     reservedCash: 'reservedCash',
     reservedQuantity: 'reservedQuantity',
+    brokerAcceptedAt: 'brokerAcceptedAt',
     portfolioId: 'portfolioId',
     brokerAccountId: 'brokerAccountId',
     allocationId: 'allocationId',
@@ -26172,6 +27444,7 @@ export namespace Prisma {
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     orders?: OrderListRelationFilter
     holdings?: HoldingListRelationFilter
+    fundsSnapshots?: BrokerFundsSnapshotListRelationFilter
     portfolioCashAllocations?: PortfolioBrokerCashListRelationFilter
     allocations?: AllocationListRelationFilter
     connection?: XOR<BrokerConnectionNullableScalarRelationFilter, BrokerConnectionWhereInput> | null
@@ -26189,6 +27462,7 @@ export namespace Prisma {
     client?: ClientOrderByWithRelationInput
     orders?: OrderOrderByRelationAggregateInput
     holdings?: HoldingOrderByRelationAggregateInput
+    fundsSnapshots?: BrokerFundsSnapshotOrderByRelationAggregateInput
     portfolioCashAllocations?: PortfolioBrokerCashOrderByRelationAggregateInput
     allocations?: AllocationOrderByRelationAggregateInput
     connection?: BrokerConnectionOrderByWithRelationInput
@@ -26210,6 +27484,7 @@ export namespace Prisma {
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
     orders?: OrderListRelationFilter
     holdings?: HoldingListRelationFilter
+    fundsSnapshots?: BrokerFundsSnapshotListRelationFilter
     portfolioCashAllocations?: PortfolioBrokerCashListRelationFilter
     allocations?: AllocationListRelationFilter
     connection?: XOR<BrokerConnectionNullableScalarRelationFilter, BrokerConnectionWhereInput> | null
@@ -26387,6 +27662,68 @@ export namespace Prisma {
     cashBalance?: DecimalWithAggregatesFilter<"PortfolioBrokerCash"> | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeWithAggregatesFilter<"PortfolioBrokerCash"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"PortfolioBrokerCash"> | Date | string
+  }
+
+  export type BrokerFundsSnapshotWhereInput = {
+    AND?: BrokerFundsSnapshotWhereInput | BrokerFundsSnapshotWhereInput[]
+    OR?: BrokerFundsSnapshotWhereInput[]
+    NOT?: BrokerFundsSnapshotWhereInput | BrokerFundsSnapshotWhereInput[]
+    id?: StringFilter<"BrokerFundsSnapshot"> | string
+    brokerAccountId?: StringFilter<"BrokerFundsSnapshot"> | string
+    availableCash?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFilter<"BrokerFundsSnapshot"> | Date | string
+    brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
+  }
+
+  export type BrokerFundsSnapshotOrderByWithRelationInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    availableCash?: SortOrder
+    usedMargin?: SortOrder
+    netAvailable?: SortOrder
+    capturedAt?: SortOrder
+    brokerAccount?: BrokerAccountOrderByWithRelationInput
+  }
+
+  export type BrokerFundsSnapshotWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: BrokerFundsSnapshotWhereInput | BrokerFundsSnapshotWhereInput[]
+    OR?: BrokerFundsSnapshotWhereInput[]
+    NOT?: BrokerFundsSnapshotWhereInput | BrokerFundsSnapshotWhereInput[]
+    brokerAccountId?: StringFilter<"BrokerFundsSnapshot"> | string
+    availableCash?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFilter<"BrokerFundsSnapshot"> | Date | string
+    brokerAccount?: XOR<BrokerAccountScalarRelationFilter, BrokerAccountWhereInput>
+  }, "id">
+
+  export type BrokerFundsSnapshotOrderByWithAggregationInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    availableCash?: SortOrder
+    usedMargin?: SortOrder
+    netAvailable?: SortOrder
+    capturedAt?: SortOrder
+    _count?: BrokerFundsSnapshotCountOrderByAggregateInput
+    _avg?: BrokerFundsSnapshotAvgOrderByAggregateInput
+    _max?: BrokerFundsSnapshotMaxOrderByAggregateInput
+    _min?: BrokerFundsSnapshotMinOrderByAggregateInput
+    _sum?: BrokerFundsSnapshotSumOrderByAggregateInput
+  }
+
+  export type BrokerFundsSnapshotScalarWhereWithAggregatesInput = {
+    AND?: BrokerFundsSnapshotScalarWhereWithAggregatesInput | BrokerFundsSnapshotScalarWhereWithAggregatesInput[]
+    OR?: BrokerFundsSnapshotScalarWhereWithAggregatesInput[]
+    NOT?: BrokerFundsSnapshotScalarWhereWithAggregatesInput | BrokerFundsSnapshotScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"BrokerFundsSnapshot"> | string
+    brokerAccountId?: StringWithAggregatesFilter<"BrokerFundsSnapshot"> | string
+    availableCash?: DecimalWithAggregatesFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalWithAggregatesFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalWithAggregatesFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeWithAggregatesFilter<"BrokerFundsSnapshot"> | Date | string
   }
 
   export type CashTransactionWhereInput = {
@@ -26574,6 +27911,7 @@ export namespace Prisma {
     estimatedPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFilter<"Order"> | number
+    brokerAcceptedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     allocationId?: StringNullableFilter<"Order"> | string | null
@@ -26607,6 +27945,7 @@ export namespace Prisma {
     estimatedPrice?: SortOrderInput | SortOrder
     reservedCash?: SortOrder
     reservedQuantity?: SortOrder
+    brokerAcceptedAt?: SortOrderInput | SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     allocationId?: SortOrderInput | SortOrder
@@ -26644,6 +27983,7 @@ export namespace Prisma {
     estimatedPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFilter<"Order"> | number
+    brokerAcceptedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     createdAt?: DateTimeFilter<"Order"> | Date | string
@@ -26676,6 +28016,7 @@ export namespace Prisma {
     estimatedPrice?: SortOrderInput | SortOrder
     reservedCash?: SortOrder
     reservedQuantity?: SortOrder
+    brokerAcceptedAt?: SortOrderInput | SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     allocationId?: SortOrderInput | SortOrder
@@ -26710,6 +28051,7 @@ export namespace Prisma {
     estimatedPrice?: DecimalNullableWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalWithAggregatesFilter<"Order"> | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntWithAggregatesFilter<"Order"> | number
+    brokerAcceptedAt?: DateTimeNullableWithAggregatesFilter<"Order"> | Date | string | null
     portfolioId?: StringWithAggregatesFilter<"Order"> | string
     brokerAccountId?: StringWithAggregatesFilter<"Order"> | string
     allocationId?: StringNullableWithAggregatesFilter<"Order"> | string | null
@@ -27720,6 +29062,7 @@ export namespace Prisma {
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
@@ -27736,6 +29079,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
@@ -27752,6 +29096,7 @@ export namespace Prisma {
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
@@ -27768,6 +29113,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
@@ -27950,6 +29296,68 @@ export namespace Prisma {
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerFundsSnapshotCreateInput = {
+    id?: string
+    availableCash: Decimal | DecimalJsLike | number | string
+    usedMargin: Decimal | DecimalJsLike | number | string
+    netAvailable: Decimal | DecimalJsLike | number | string
+    capturedAt?: Date | string
+    brokerAccount: BrokerAccountCreateNestedOneWithoutFundsSnapshotsInput
+  }
+
+  export type BrokerFundsSnapshotUncheckedCreateInput = {
+    id?: string
+    brokerAccountId: string
+    availableCash: Decimal | DecimalJsLike | number | string
+    usedMargin: Decimal | DecimalJsLike | number | string
+    netAvailable: Decimal | DecimalJsLike | number | string
+    capturedAt?: Date | string
+  }
+
+  export type BrokerFundsSnapshotUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    availableCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    brokerAccount?: BrokerAccountUpdateOneRequiredWithoutFundsSnapshotsNestedInput
+  }
+
+  export type BrokerFundsSnapshotUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    availableCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerFundsSnapshotCreateManyInput = {
+    id?: string
+    brokerAccountId: string
+    availableCash: Decimal | DecimalJsLike | number | string
+    usedMargin: Decimal | DecimalJsLike | number | string
+    netAvailable: Decimal | DecimalJsLike | number | string
+    capturedAt?: Date | string
+  }
+
+  export type BrokerFundsSnapshotUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    availableCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerFundsSnapshotUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    brokerAccountId?: StringFieldUpdateOperationsInput | string
+    availableCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type CashTransactionCreateInput = {
@@ -28142,6 +29550,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -28172,6 +29581,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     allocationId?: string | null
@@ -28200,6 +29610,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -28230,6 +29641,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -28259,6 +29671,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     allocationId?: string | null
@@ -28284,6 +29697,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28307,6 +29721,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -29444,6 +30859,12 @@ export namespace Prisma {
     none?: HoldingWhereInput
   }
 
+  export type BrokerFundsSnapshotListRelationFilter = {
+    every?: BrokerFundsSnapshotWhereInput
+    some?: BrokerFundsSnapshotWhereInput
+    none?: BrokerFundsSnapshotWhereInput
+  }
+
   export type PortfolioBrokerCashListRelationFilter = {
     every?: PortfolioBrokerCashWhereInput
     some?: PortfolioBrokerCashWhereInput
@@ -29466,6 +30887,10 @@ export namespace Prisma {
   }
 
   export type HoldingOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type BrokerFundsSnapshotOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -29654,6 +31079,45 @@ export namespace Prisma {
 
   export type PortfolioBrokerCashSumOrderByAggregateInput = {
     cashBalance?: SortOrder
+  }
+
+  export type BrokerFundsSnapshotCountOrderByAggregateInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    availableCash?: SortOrder
+    usedMargin?: SortOrder
+    netAvailable?: SortOrder
+    capturedAt?: SortOrder
+  }
+
+  export type BrokerFundsSnapshotAvgOrderByAggregateInput = {
+    availableCash?: SortOrder
+    usedMargin?: SortOrder
+    netAvailable?: SortOrder
+  }
+
+  export type BrokerFundsSnapshotMaxOrderByAggregateInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    availableCash?: SortOrder
+    usedMargin?: SortOrder
+    netAvailable?: SortOrder
+    capturedAt?: SortOrder
+  }
+
+  export type BrokerFundsSnapshotMinOrderByAggregateInput = {
+    id?: SortOrder
+    brokerAccountId?: SortOrder
+    availableCash?: SortOrder
+    usedMargin?: SortOrder
+    netAvailable?: SortOrder
+    capturedAt?: SortOrder
+  }
+
+  export type BrokerFundsSnapshotSumOrderByAggregateInput = {
+    availableCash?: SortOrder
+    usedMargin?: SortOrder
+    netAvailable?: SortOrder
   }
 
   export type EnumCashTransactionTypeFilter<$PrismaModel = never> = {
@@ -29890,6 +31354,7 @@ export namespace Prisma {
     estimatedPrice?: SortOrder
     reservedCash?: SortOrder
     reservedQuantity?: SortOrder
+    brokerAcceptedAt?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     allocationId?: SortOrder
@@ -29927,6 +31392,7 @@ export namespace Prisma {
     estimatedPrice?: SortOrder
     reservedCash?: SortOrder
     reservedQuantity?: SortOrder
+    brokerAcceptedAt?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     allocationId?: SortOrder
@@ -29953,6 +31419,7 @@ export namespace Prisma {
     estimatedPrice?: SortOrder
     reservedCash?: SortOrder
     reservedQuantity?: SortOrder
+    brokerAcceptedAt?: SortOrder
     portfolioId?: SortOrder
     brokerAccountId?: SortOrder
     allocationId?: SortOrder
@@ -31064,6 +32531,13 @@ export namespace Prisma {
     connect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
   }
 
+  export type BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput = {
+    create?: XOR<BrokerFundsSnapshotCreateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput> | BrokerFundsSnapshotCreateWithoutBrokerAccountInput[] | BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput | BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput[]
+    createMany?: BrokerFundsSnapshotCreateManyBrokerAccountInputEnvelope
+    connect?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+  }
+
   export type PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput = {
     create?: XOR<PortfolioBrokerCashCreateWithoutBrokerAccountInput, PortfolioBrokerCashUncheckedCreateWithoutBrokerAccountInput> | PortfolioBrokerCashCreateWithoutBrokerAccountInput[] | PortfolioBrokerCashUncheckedCreateWithoutBrokerAccountInput[]
     connectOrCreate?: PortfolioBrokerCashCreateOrConnectWithoutBrokerAccountInput | PortfolioBrokerCashCreateOrConnectWithoutBrokerAccountInput[]
@@ -31096,6 +32570,13 @@ export namespace Prisma {
     connectOrCreate?: HoldingCreateOrConnectWithoutBrokerAccountInput | HoldingCreateOrConnectWithoutBrokerAccountInput[]
     createMany?: HoldingCreateManyBrokerAccountInputEnvelope
     connect?: HoldingWhereUniqueInput | HoldingWhereUniqueInput[]
+  }
+
+  export type BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput = {
+    create?: XOR<BrokerFundsSnapshotCreateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput> | BrokerFundsSnapshotCreateWithoutBrokerAccountInput[] | BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput | BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput[]
+    createMany?: BrokerFundsSnapshotCreateManyBrokerAccountInputEnvelope
+    connect?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
   }
 
   export type PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput = {
@@ -31156,6 +32637,20 @@ export namespace Prisma {
     update?: HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput | HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput[]
     updateMany?: HoldingUpdateManyWithWhereWithoutBrokerAccountInput | HoldingUpdateManyWithWhereWithoutBrokerAccountInput[]
     deleteMany?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
+  }
+
+  export type BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput = {
+    create?: XOR<BrokerFundsSnapshotCreateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput> | BrokerFundsSnapshotCreateWithoutBrokerAccountInput[] | BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput | BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput[]
+    upsert?: BrokerFundsSnapshotUpsertWithWhereUniqueWithoutBrokerAccountInput | BrokerFundsSnapshotUpsertWithWhereUniqueWithoutBrokerAccountInput[]
+    createMany?: BrokerFundsSnapshotCreateManyBrokerAccountInputEnvelope
+    set?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    disconnect?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    delete?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    connect?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    update?: BrokerFundsSnapshotUpdateWithWhereUniqueWithoutBrokerAccountInput | BrokerFundsSnapshotUpdateWithWhereUniqueWithoutBrokerAccountInput[]
+    updateMany?: BrokerFundsSnapshotUpdateManyWithWhereWithoutBrokerAccountInput | BrokerFundsSnapshotUpdateManyWithWhereWithoutBrokerAccountInput[]
+    deleteMany?: BrokerFundsSnapshotScalarWhereInput | BrokerFundsSnapshotScalarWhereInput[]
   }
 
   export type PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput = {
@@ -31222,6 +32717,20 @@ export namespace Prisma {
     update?: HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput | HoldingUpdateWithWhereUniqueWithoutBrokerAccountInput[]
     updateMany?: HoldingUpdateManyWithWhereWithoutBrokerAccountInput | HoldingUpdateManyWithWhereWithoutBrokerAccountInput[]
     deleteMany?: HoldingScalarWhereInput | HoldingScalarWhereInput[]
+  }
+
+  export type BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput = {
+    create?: XOR<BrokerFundsSnapshotCreateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput> | BrokerFundsSnapshotCreateWithoutBrokerAccountInput[] | BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput[]
+    connectOrCreate?: BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput | BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput[]
+    upsert?: BrokerFundsSnapshotUpsertWithWhereUniqueWithoutBrokerAccountInput | BrokerFundsSnapshotUpsertWithWhereUniqueWithoutBrokerAccountInput[]
+    createMany?: BrokerFundsSnapshotCreateManyBrokerAccountInputEnvelope
+    set?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    disconnect?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    delete?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    connect?: BrokerFundsSnapshotWhereUniqueInput | BrokerFundsSnapshotWhereUniqueInput[]
+    update?: BrokerFundsSnapshotUpdateWithWhereUniqueWithoutBrokerAccountInput | BrokerFundsSnapshotUpdateWithWhereUniqueWithoutBrokerAccountInput[]
+    updateMany?: BrokerFundsSnapshotUpdateManyWithWhereWithoutBrokerAccountInput | BrokerFundsSnapshotUpdateManyWithWhereWithoutBrokerAccountInput[]
+    deleteMany?: BrokerFundsSnapshotScalarWhereInput | BrokerFundsSnapshotScalarWhereInput[]
   }
 
   export type PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput = {
@@ -31552,6 +33061,20 @@ export namespace Prisma {
     upsert?: BrokerAccountUpsertWithoutPortfolioCashAllocationsInput
     connect?: BrokerAccountWhereUniqueInput
     update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutPortfolioCashAllocationsInput, BrokerAccountUpdateWithoutPortfolioCashAllocationsInput>, BrokerAccountUncheckedUpdateWithoutPortfolioCashAllocationsInput>
+  }
+
+  export type BrokerAccountCreateNestedOneWithoutFundsSnapshotsInput = {
+    create?: XOR<BrokerAccountCreateWithoutFundsSnapshotsInput, BrokerAccountUncheckedCreateWithoutFundsSnapshotsInput>
+    connectOrCreate?: BrokerAccountCreateOrConnectWithoutFundsSnapshotsInput
+    connect?: BrokerAccountWhereUniqueInput
+  }
+
+  export type BrokerAccountUpdateOneRequiredWithoutFundsSnapshotsNestedInput = {
+    create?: XOR<BrokerAccountCreateWithoutFundsSnapshotsInput, BrokerAccountUncheckedCreateWithoutFundsSnapshotsInput>
+    connectOrCreate?: BrokerAccountCreateOrConnectWithoutFundsSnapshotsInput
+    upsert?: BrokerAccountUpsertWithoutFundsSnapshotsInput
+    connect?: BrokerAccountWhereUniqueInput
+    update?: XOR<XOR<BrokerAccountUpdateToOneWithWhereWithoutFundsSnapshotsInput, BrokerAccountUpdateWithoutFundsSnapshotsInput>, BrokerAccountUncheckedUpdateWithoutFundsSnapshotsInput>
   }
 
   export type PortfolioCreateNestedOneWithoutCashTransactionsInput = {
@@ -33068,6 +34591,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
@@ -33083,6 +34607,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
@@ -33270,6 +34795,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -33299,6 +34825,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     allocationId?: string | null
     createdAt?: Date | string
@@ -33347,6 +34874,32 @@ export namespace Prisma {
 
   export type HoldingCreateManyBrokerAccountInputEnvelope = {
     data: HoldingCreateManyBrokerAccountInput | HoldingCreateManyBrokerAccountInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type BrokerFundsSnapshotCreateWithoutBrokerAccountInput = {
+    id?: string
+    availableCash: Decimal | DecimalJsLike | number | string
+    usedMargin: Decimal | DecimalJsLike | number | string
+    netAvailable: Decimal | DecimalJsLike | number | string
+    capturedAt?: Date | string
+  }
+
+  export type BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput = {
+    id?: string
+    availableCash: Decimal | DecimalJsLike | number | string
+    usedMargin: Decimal | DecimalJsLike | number | string
+    netAvailable: Decimal | DecimalJsLike | number | string
+    capturedAt?: Date | string
+  }
+
+  export type BrokerFundsSnapshotCreateOrConnectWithoutBrokerAccountInput = {
+    where: BrokerFundsSnapshotWhereUniqueInput
+    create: XOR<BrokerFundsSnapshotCreateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput>
+  }
+
+  export type BrokerFundsSnapshotCreateManyBrokerAccountInputEnvelope = {
+    data: BrokerFundsSnapshotCreateManyBrokerAccountInput | BrokerFundsSnapshotCreateManyBrokerAccountInput[]
     skipDuplicates?: boolean
   }
 
@@ -33506,6 +35059,7 @@ export namespace Prisma {
     estimatedPrice?: DecimalNullableFilter<"Order"> | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFilter<"Order"> | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFilter<"Order"> | number
+    brokerAcceptedAt?: DateTimeNullableFilter<"Order"> | Date | string | null
     portfolioId?: StringFilter<"Order"> | string
     brokerAccountId?: StringFilter<"Order"> | string
     allocationId?: StringNullableFilter<"Order"> | string | null
@@ -33542,6 +35096,34 @@ export namespace Prisma {
     brokerAccountId?: StringFilter<"Holding"> | string
     createdAt?: DateTimeFilter<"Holding"> | Date | string
     updatedAt?: DateTimeFilter<"Holding"> | Date | string
+  }
+
+  export type BrokerFundsSnapshotUpsertWithWhereUniqueWithoutBrokerAccountInput = {
+    where: BrokerFundsSnapshotWhereUniqueInput
+    update: XOR<BrokerFundsSnapshotUpdateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedUpdateWithoutBrokerAccountInput>
+    create: XOR<BrokerFundsSnapshotCreateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedCreateWithoutBrokerAccountInput>
+  }
+
+  export type BrokerFundsSnapshotUpdateWithWhereUniqueWithoutBrokerAccountInput = {
+    where: BrokerFundsSnapshotWhereUniqueInput
+    data: XOR<BrokerFundsSnapshotUpdateWithoutBrokerAccountInput, BrokerFundsSnapshotUncheckedUpdateWithoutBrokerAccountInput>
+  }
+
+  export type BrokerFundsSnapshotUpdateManyWithWhereWithoutBrokerAccountInput = {
+    where: BrokerFundsSnapshotScalarWhereInput
+    data: XOR<BrokerFundsSnapshotUpdateManyMutationInput, BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountInput>
+  }
+
+  export type BrokerFundsSnapshotScalarWhereInput = {
+    AND?: BrokerFundsSnapshotScalarWhereInput | BrokerFundsSnapshotScalarWhereInput[]
+    OR?: BrokerFundsSnapshotScalarWhereInput[]
+    NOT?: BrokerFundsSnapshotScalarWhereInput | BrokerFundsSnapshotScalarWhereInput[]
+    id?: StringFilter<"BrokerFundsSnapshot"> | string
+    brokerAccountId?: StringFilter<"BrokerFundsSnapshot"> | string
+    availableCash?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFilter<"BrokerFundsSnapshot"> | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFilter<"BrokerFundsSnapshot"> | Date | string
   }
 
   export type PortfolioBrokerCashUpsertWithWhereUniqueWithoutBrokerAccountInput = {
@@ -33713,6 +35295,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -33742,6 +35325,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     brokerAccountId: string
     allocationId?: string | null
     createdAt?: Date | string
@@ -34078,6 +35662,7 @@ export namespace Prisma {
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
@@ -34093,6 +35678,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
@@ -34163,6 +35749,7 @@ export namespace Prisma {
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
@@ -34178,6 +35765,87 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    allocations?: AllocationUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
+  }
+
+  export type BrokerAccountCreateWithoutFundsSnapshotsInput = {
+    id?: string
+    broker: string
+    accountId: string
+    accountLabel?: string | null
+    archivedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    client: ClientCreateNestedOneWithoutBrokerAccountsInput
+    orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
+    portfolioCashAllocations?: PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput
+    allocations?: AllocationCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
+  }
+
+  export type BrokerAccountUncheckedCreateWithoutFundsSnapshotsInput = {
+    id?: string
+    broker: string
+    accountId: string
+    accountLabel?: string | null
+    clientId: string
+    archivedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
+    portfolioCashAllocations?: PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput
+    allocations?: AllocationUncheckedCreateNestedManyWithoutBrokerAccountInput
+    connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
+  }
+
+  export type BrokerAccountCreateOrConnectWithoutFundsSnapshotsInput = {
+    where: BrokerAccountWhereUniqueInput
+    create: XOR<BrokerAccountCreateWithoutFundsSnapshotsInput, BrokerAccountUncheckedCreateWithoutFundsSnapshotsInput>
+  }
+
+  export type BrokerAccountUpsertWithoutFundsSnapshotsInput = {
+    update: XOR<BrokerAccountUpdateWithoutFundsSnapshotsInput, BrokerAccountUncheckedUpdateWithoutFundsSnapshotsInput>
+    create: XOR<BrokerAccountCreateWithoutFundsSnapshotsInput, BrokerAccountUncheckedCreateWithoutFundsSnapshotsInput>
+    where?: BrokerAccountWhereInput
+  }
+
+  export type BrokerAccountUpdateToOneWithWhereWithoutFundsSnapshotsInput = {
+    where?: BrokerAccountWhereInput
+    data: XOR<BrokerAccountUpdateWithoutFundsSnapshotsInput, BrokerAccountUncheckedUpdateWithoutFundsSnapshotsInput>
+  }
+
+  export type BrokerAccountUpdateWithoutFundsSnapshotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    broker?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    accountLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
+    orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
+    portfolioCashAllocations?: PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput
+    allocations?: AllocationUpdateManyWithoutBrokerAccountNestedInput
+    connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
+  }
+
+  export type BrokerAccountUncheckedUpdateWithoutFundsSnapshotsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    broker?: StringFieldUpdateOperationsInput | string
+    accountId?: StringFieldUpdateOperationsInput | string
+    accountLabel?: NullableStringFieldUpdateOperationsInput | string | null
+    clientId?: StringFieldUpdateOperationsInput | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    portfolioCashAllocations?: PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
@@ -34297,6 +35965,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
@@ -34312,6 +35981,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
@@ -34382,6 +36052,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
@@ -34397,6 +36068,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
@@ -34486,6 +36158,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
@@ -34501,6 +36174,7 @@ export namespace Prisma {
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
@@ -34727,6 +36401,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
@@ -34742,6 +36417,7 @@ export namespace Prisma {
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
@@ -35040,6 +36716,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     portfolio: PortfolioCreateNestedOneWithoutOrdersInput
@@ -35068,6 +36745,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     allocationId?: string | null
@@ -35201,6 +36879,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -35230,6 +36909,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     allocationId?: string | null
@@ -35273,6 +36953,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -35302,6 +36983,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -35396,6 +37078,7 @@ export namespace Prisma {
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionCreateNestedOneWithoutBrokerAccountInput
   }
@@ -35411,6 +37094,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput
     connection?: BrokerConnectionUncheckedCreateNestedOneWithoutBrokerAccountInput
   }
@@ -35438,6 +37122,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -35467,6 +37152,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     createdAt?: Date | string
@@ -35589,6 +37275,7 @@ export namespace Prisma {
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
   }
@@ -35604,6 +37291,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
   }
@@ -35637,6 +37325,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -35666,6 +37355,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -35818,6 +37508,7 @@ export namespace Prisma {
     client: ClientCreateNestedOneWithoutBrokerAccountsInput
     orders?: OrderCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationCreateNestedManyWithoutBrokerAccountInput
   }
@@ -35833,6 +37524,7 @@ export namespace Prisma {
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutBrokerAccountInput
     holdings?: HoldingUncheckedCreateNestedManyWithoutBrokerAccountInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedCreateNestedManyWithoutBrokerAccountInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedCreateNestedManyWithoutBrokerAccountInput
     allocations?: AllocationUncheckedCreateNestedManyWithoutBrokerAccountInput
   }
@@ -35864,6 +37556,7 @@ export namespace Prisma {
     client?: ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUpdateManyWithoutBrokerAccountNestedInput
   }
@@ -35879,6 +37572,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUncheckedUpdateManyWithoutBrokerAccountNestedInput
   }
@@ -35901,6 +37595,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -35930,6 +37625,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     allocationId?: string | null
@@ -35973,6 +37669,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -36002,6 +37699,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36029,6 +37727,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     basketOrder?: BasketOrderCreateNestedOneWithoutOrdersInput
@@ -36058,6 +37757,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     allocationId?: string | null
@@ -36101,6 +37801,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -36130,6 +37831,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -36433,6 +38135,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUpdateOneWithoutBrokerAccountNestedInput
@@ -36448,6 +38151,7 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutBrokerAccountNestedInput
     holdings?: HoldingUncheckedUpdateManyWithoutBrokerAccountNestedInput
+    fundsSnapshots?: BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountNestedInput
     portfolioCashAllocations?: PortfolioBrokerCashUncheckedUpdateManyWithoutBrokerAccountNestedInput
     allocations?: AllocationUncheckedUpdateManyWithoutBrokerAccountNestedInput
     connection?: BrokerConnectionUncheckedUpdateOneWithoutBrokerAccountNestedInput
@@ -36518,6 +38222,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     allocationId?: string | null
     createdAt?: Date | string
@@ -36533,6 +38238,14 @@ export namespace Prisma {
     portfolioId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type BrokerFundsSnapshotCreateManyBrokerAccountInput = {
+    id?: string
+    availableCash: Decimal | DecimalJsLike | number | string
+    usedMargin: Decimal | DecimalJsLike | number | string
+    netAvailable: Decimal | DecimalJsLike | number | string
+    capturedAt?: Date | string
   }
 
   export type PortfolioBrokerCashCreateManyBrokerAccountInput = {
@@ -36570,6 +38283,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -36599,6 +38313,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36627,6 +38342,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36664,6 +38380,30 @@ export namespace Prisma {
     portfolioId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerFundsSnapshotUpdateWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    availableCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerFundsSnapshotUncheckedUpdateWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    availableCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type BrokerFundsSnapshotUncheckedUpdateManyWithoutBrokerAccountInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    availableCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    usedMargin?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    netAvailable?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    capturedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PortfolioBrokerCashUpdateWithoutBrokerAccountInput = {
@@ -36749,6 +38489,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     brokerAccountId: string
     allocationId?: string | null
     createdAt?: Date | string
@@ -36835,6 +38576,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     basketOrder?: BasketOrderUpdateOneWithoutOrdersNestedInput
@@ -36864,6 +38606,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -36892,6 +38635,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -37041,6 +38785,7 @@ export namespace Prisma {
     estimatedPrice?: Decimal | DecimalJsLike | number | string | null
     reservedCash?: Decimal | DecimalJsLike | number | string
     reservedQuantity?: number
+    brokerAcceptedAt?: Date | string | null
     portfolioId: string
     brokerAccountId: string
     allocationId?: string | null
@@ -37075,6 +38820,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolio?: PortfolioUpdateOneRequiredWithoutOrdersNestedInput
@@ -37103,6 +38849,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null
@@ -37131,6 +38878,7 @@ export namespace Prisma {
     estimatedPrice?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
     reservedCash?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     reservedQuantity?: IntFieldUpdateOperationsInput | number
+    brokerAcceptedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     portfolioId?: StringFieldUpdateOperationsInput | string
     brokerAccountId?: StringFieldUpdateOperationsInput | string
     allocationId?: NullableStringFieldUpdateOperationsInput | string | null

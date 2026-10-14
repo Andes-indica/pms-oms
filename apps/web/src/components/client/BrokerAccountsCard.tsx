@@ -1153,9 +1153,17 @@ export function BrokerAccountsCard({
                                         snapshot && (
                                             <div className="mt-5 rounded-lg border bg-slate-50 p-4">
                                                 <div className="flex items-center justify-between">
-                                                    <p className="font-medium text-slate-900">
-                                                        Broker Snapshot
-                                                    </p>
+                                                    <div>
+                                                        <p className="font-medium text-slate-900">
+                                                            Broker Snapshot
+                                                        </p>
+
+                                                        <p className="mt-1 text-xs text-slate-500">
+                                                            Captured {formatDate(
+                                                                snapshot.fetchedAt,
+                                                            )}
+                                                        </p>
+                                                    </div>
 
                                                     <button
                                                         type="button"

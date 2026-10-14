@@ -55,6 +55,11 @@ Prisma's concurrent transaction query planning through `pg` pipeline mode.
 Rejection tests also verify that broker-provided reasons survive synchronization
 and remain visible to the order UI.
 
+Risk unit tests cover the separation between PMS portfolio cash, PMS broker
+allocation, and a fresh broker funds snapshot. They also verify that direct
+reservations not yet represented in the broker snapshot are deducted before a
+second direct BUY can reserve the same account cash.
+
 To inspect the test database's migration state without changing it:
 
 ```bash

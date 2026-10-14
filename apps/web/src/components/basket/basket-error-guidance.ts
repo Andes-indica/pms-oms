@@ -93,6 +93,18 @@ const guidanceByCode: Record<string, Omit<BasketErrorGuidance, "detail">> = {
     title: "Insufficient cash allocated to this broker account",
     action: "Increase the broker cash allocation or reduce this child order quantity.",
   },
+  INSUFFICIENT_BROKER_AVAILABLE_CASH: {
+    title: "Insufficient available cash at the broker",
+    action: "Add funds or release margin in the broker account, refresh its cash status, and retry with a smaller order if needed.",
+  },
+  BROKER_FUNDS_SNAPSHOT_STALE: {
+    title: "Broker cash status is stale",
+    action: "Refresh the broker connection and cash status before retrying direct execution.",
+  },
+  BROKER_FUNDS_UNSUPPORTED_FOR_DIRECT_EXECUTION: {
+    title: "Broker funds cannot be verified",
+    action: "Use a connected broker that exposes live funds, or use client-confirmed execution when supported.",
+  },
   INSUFFICIENT_HOLDINGS: {
     title: "Insufficient holdings for this sell order",
     action: "Reconcile holdings or reduce the sell quantity.",

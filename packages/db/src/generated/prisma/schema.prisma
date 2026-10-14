@@ -85,6 +85,7 @@ model BrokerAccount {
 
   orders                   Order[]
   holdings                 Holding[]
+  fundsSnapshots           BrokerFundsSnapshot[]
   portfolioCashAllocations PortfolioBrokerCash[]
   allocations              Allocation[]
 
@@ -186,6 +187,21 @@ model PortfolioBrokerCash {
   @@index([brokerAccountId])
 }
 
+model BrokerFundsSnapshot {
+  id String @id @default(cuid())
+
+  brokerAccountId String
+  brokerAccount   BrokerAccount @relation(fields: [brokerAccountId], references: [id], onDelete: Cascade)
+
+  availableCash Decimal @db.Decimal(18, 4)
+  usedMargin    Decimal @db.Decimal(18, 4)
+  netAvailable  Decimal @db.Decimal(18, 4)
+
+  capturedAt DateTime @default(now())
+
+  @@index([brokerAccountId, capturedAt])
+}
+
 model CashTransaction {
   id String @id @default(cuid())
 
@@ -254,9 +270,10 @@ model Order {
   realizedPnl      Decimal?  @db.Decimal(18, 4)
   filledAt         DateTime?
 
-  estimatedPrice   Decimal? @db.Decimal(18, 4)
-  reservedCash     Decimal  @default(0) @db.Decimal(18, 4)
-  reservedQuantity Int      @default(0)
+  estimatedPrice   Decimal?  @db.Decimal(18, 4)
+  reservedCash     Decimal   @default(0) @db.Decimal(18, 4)
+  reservedQuantity Int       @default(0)
+  brokerAcceptedAt DateTime?
 
   portfolioId String
   portfolio   Portfolio @relation(fields: [portfolioId], references: [id])

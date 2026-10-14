@@ -366,6 +366,8 @@ export async function reconcileBasketChildOrderService(
           data: {
             brokerOrderId:
               recovered.brokerOrderId,
+            brokerAcceptedAt:
+              new Date(),
           },
         });
 

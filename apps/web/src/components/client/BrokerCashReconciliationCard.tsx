@@ -289,6 +289,12 @@ export function BrokerCashReconciliationCard({
             />
           </div>
 
+          <p className="mt-2 text-xs text-slate-500">
+            Broker funds captured {new Date(
+              data.fetchedAt,
+            ).toLocaleString()}
+          </p>
+
           {data.allocations.length >
             0 && (
             <div className="mt-4 space-y-2">

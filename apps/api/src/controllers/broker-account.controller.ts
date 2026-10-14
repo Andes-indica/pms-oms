@@ -37,6 +37,10 @@ import {
   handleBrokerError,
 } from "./broker-error-response";
 
+import {
+  captureBrokerFundsSnapshot,
+} from "../services/broker-funds-snapshot.service";
+
 type CreateBrokerAccountBody = {
   broker?: unknown;
   accountId?: unknown;
@@ -86,7 +90,7 @@ export async function getBrokerSnapshot(
     const [
       holdings,
       positions,
-      funds,
+      fundsSnapshot,
     ] =
       await Promise.all([
         supportsHoldings(
@@ -104,9 +108,28 @@ export async function getBrokerSnapshot(
         supportsFunds(
           broker,
         )
-          ? broker.getFunds()
+          ? captureBrokerFundsSnapshot({
+              brokerAccountId:
+                req.params.id,
+              firmId:
+                req.user.firmId,
+              broker,
+              force: true,
+            })
           : Promise.resolve(null),
       ]);
+
+    const funds =
+      fundsSnapshot
+        ? {
+            availableCash:
+              fundsSnapshot.availableCash,
+            usedMargin:
+              fundsSnapshot.usedMargin,
+            netAvailable:
+              fundsSnapshot.netAvailable,
+          }
+        : null;
 
     return res.json({
       data: {
@@ -117,8 +140,22 @@ export async function getBrokerSnapshot(
         positions,
         funds,
 
+        fundsSnapshot:
+          fundsSnapshot
+            ? {
+                capturedAt:
+                  fundsSnapshot
+                    .capturedAt
+                    .toISOString(),
+                reused:
+                  fundsSnapshot.reused,
+              }
+            : null,
+
         fetchedAt:
-          new Date()
+          (fundsSnapshot
+            ?.capturedAt ??
+            new Date())
             .toISOString(),
       },
     });

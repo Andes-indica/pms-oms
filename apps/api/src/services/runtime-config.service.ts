@@ -218,6 +218,12 @@ export function validateRuntimeConfig() {
   );
 
   validateOptionalInteger(
+    "BROKER_FUNDS_SNAPSHOT_TTL_SECONDS",
+    5,
+    300,
+  );
+
+  validateOptionalInteger(
     "LOGIN_RATE_LIMIT_MAX_ATTEMPTS",
     1,
     1_000,

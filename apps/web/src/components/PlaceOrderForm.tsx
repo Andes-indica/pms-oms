@@ -477,8 +477,8 @@ export function PlaceOrderForm({
           <p className="mt-1 text-xs text-slate-500">
             {executionMode ===
             "CLIENT_CONFIRMATION"
-              ? "Creates a secure link. The client reviews and places the order in their own Kite account."
-              : "Uses the existing server-side broker execution flow."}
+              ? "Creates a secure link. Kite verifies the client's live funds when they place it; the PMS cannot read those funds through Publisher."
+              : "Uses the server-side broker connection and verifies fresh broker cash before a BUY is reserved."}
           </p>
         </Field>
 

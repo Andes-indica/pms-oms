@@ -354,6 +354,17 @@ export async function executeOrder(
             error:
               "Insufficient cash allocated to this broker account",
           });
+        case "INSUFFICIENT_BROKER_AVAILABLE_CASH":
+          return res.status(409).json({
+            error:
+              "The broker account does not have enough currently available cash",
+          });
+        case "BROKER_FUNDS_SNAPSHOT_STALE":
+        case "BROKER_FUNDS_UNSUPPORTED_FOR_DIRECT_EXECUTION":
+          return res.status(503).json({
+            error:
+              "Fresh broker funds are required before direct execution",
+          });
         case "RESTRICTED_SECURITY":
           return res.status(400).json({
             error: "security is restricted",
@@ -618,11 +629,26 @@ export async function modifyOrder(
 
       case "INSUFFICIENT_CASH":
       case "INSUFFICIENT_BROKER_CASH":
+      case "INSUFFICIENT_BROKER_AVAILABLE_CASH":
       case "INSUFFICIENT_HOLDINGS":
+      case "RESTRICTED_SECURITY":
+      case "MAX_ORDER_QUANTITY_EXCEEDED":
+      case "MAX_ORDER_VALUE_EXCEEDED":
+      case "MAX_POSITION_QUANTITY_EXCEEDED":
+      case "MAX_POSITION_VALUE_EXCEEDED":
         return res
           .status(409)
           .json({
             error: message,
+          });
+
+      case "BROKER_FUNDS_SNAPSHOT_STALE":
+      case "BROKER_FUNDS_UNSUPPORTED_FOR_DIRECT_EXECUTION":
+        return res
+          .status(503)
+          .json({
+            error:
+              "Fresh broker funds are required before increasing this BUY order",
           });
 
       case "BROKER_ORDER_NOT_FOUND":
