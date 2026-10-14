@@ -164,7 +164,7 @@ export async function captureBrokerFundsSnapshot({
       await tx.$queryRaw`
         SELECT pg_advisory_xact_lock(
           hashtext(${brokerAccountId})
-        )
+        )::text AS locked
       `;
 
       const latest =
