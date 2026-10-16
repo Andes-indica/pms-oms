@@ -55,11 +55,11 @@ Prisma's concurrent transaction query planning through `pg` pipeline mode.
 Rejection tests also verify that broker-provided reasons survive synchronization
 and remain visible to the order UI.
 
-Risk unit tests cover the separation between advisory PMS cash/allocation data
-and an authoritative broker funds snapshot. They verify that broker-authority
-orders are not blocked by stale PMS cash or holdings, while direct reservations
-not yet represented in the broker snapshot are deducted before a second direct
-BUY can reserve the same account cash.
+Risk unit tests verify that PMS cash, broker allocations, cash reservations, and
+holding snapshots do not block broker-authoritative orders. Integration tests
+verify that direct orders reach the broker even when PMS cash is zero, and that
+definitive broker margin rejections retain the broker's exact explanation.
+Zerodha adapter tests distinguish raw cash from net funds available for trading.
 
 Staff lifecycle integration tests verify that invitation tokens are stored only
 as hashes, links are single-use, account activation enables login, password

@@ -690,7 +690,7 @@ export class ZerodhaBroker
 
       const availableCash =
         Number(
-          equity.available?.cash ??
+          equity.net ??
           0,
         );
 

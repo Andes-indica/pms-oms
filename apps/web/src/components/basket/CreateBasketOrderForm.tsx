@@ -610,7 +610,7 @@ export function CreateBasketOrderForm({
             {executionMode ===
             "CLIENT_CONFIRMATION"
               ? "One secure link is generated per client. Kite verifies each client's funds; Publisher does not expose them to the PMS."
-              : "The server submits each child order and verifies fresh broker cash before reserving every BUY."}
+              : "The server submits each child order. Each broker makes the final funds and margin decision for its account."}
           </p>
         </Field>
 

@@ -8,10 +8,6 @@ import {
 } from "../brokers/broker-registry";
 
 import {
-    supportsFunds,
-} from "@pms-oms/broker";
-
-import {
     createAuditLog,
 } from "./audit.service";
 
@@ -23,10 +19,6 @@ import { ensureMockBrokerOrder } from "../brokers/ensure-mock-broker-order";
 import {
     getMarketPrice,
 } from "./market-data.service";
-
-import {
-    captureBrokerFundsSnapshot,
-} from "./broker-funds-snapshot.service";
 
 import {
     runRiskChecks,
@@ -152,27 +144,11 @@ export async function modifyOrderService(
                 order.exchange,
             );
 
-    const brokerFundsSnapshot =
-        order.side !== "BUY"
-            ? undefined
-            : supportsFunds(broker)
-                ? await captureBrokerFundsSnapshot({
-                    brokerAccountId:
-                        order.brokerAccountId,
-                    firmId,
-                    broker,
-                })
-                : undefined;
-
     const estimatedValue =
         newQuantity *
         estimatedPrice;
 
-    /*
-     * Reuse the complete order risk policy for modifications.
-     * Broker available cash only needs to cover an increase,
-     * because the live order's existing margin is already used.
-     */
+    /* Reuse the complete configured risk policy for modifications. */
     await runRiskChecks({
         currentOrderId:
             order.id,
@@ -191,21 +167,6 @@ export async function modifyOrderService(
         estimatedPrice,
         availabilityAuthority:
             "BROKER",
-        brokerFundsSnapshot:
-            brokerFundsSnapshot
-                ? {
-                    availableCash:
-                        brokerFundsSnapshot
-                            .availableCash,
-                    capturedAt:
-                        brokerFundsSnapshot
-                            .capturedAt,
-                    existingOrderReservedCash:
-                        Number(
-                            order.reservedCash,
-                        ),
-                }
-                : undefined,
     });
 
     let newReservedCash = 0;

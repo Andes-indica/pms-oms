@@ -504,7 +504,7 @@ export function PlaceOrderForm({
             {executionMode ===
             "CLIENT_CONFIRMATION"
               ? "Creates a secure link. Kite verifies the client's live funds when they place it; the PMS cannot read those funds through Publisher."
-              : "Uses the server-side broker connection and verifies fresh broker cash before a BUY is reserved."}
+              : "Uses the server-side broker connection. The broker makes the final funds and margin decision when the order is submitted."}
           </p>
         </Field>
 
