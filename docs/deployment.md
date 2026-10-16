@@ -190,18 +190,18 @@ with Zerodha before placing, modifying, or cancelling real orders. The
 Publisher-only client-confirmation handoff happens in the client's browser and
 does not use that direct execution path.
 
-Direct BUY execution also requires a fresh broker funds observation. Configure
-the maximum reuse window:
+Broker cash reconciliation can reuse a recent funds observation. Configure the
+maximum reuse window:
 
 ```env
 BROKER_FUNDS_SNAPSHOT_TTL_SECONDS=30
 ```
 
-The allowed range is 5 to 300 seconds. For brokers that expose funds, the live
-broker snapshot is the execution source of truth. PMS portfolio cash and
-portfolio-to-broker allocations remain advisory accounting/reconciliation data
-and do not block orders. Publisher-only orders cannot perform a funds check and
-are validated by Kite when the client confirms them. See
+The allowed range is 5 to 300 seconds. Funds snapshots, PMS portfolio cash, and
+portfolio-to-broker allocations are advisory accounting/reconciliation data;
+they do not block orders. For direct execution, the broker's order response is
+the funds and margin authority. Publisher-only orders are validated by Kite
+when the client confirms them. See
 `docs/system-architecture/broker-balance-authority.md` for the authority model.
 
 ## 6. Build and migrate

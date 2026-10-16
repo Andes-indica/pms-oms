@@ -389,23 +389,42 @@ describe("basket execution with real broker adapters", () => {
       },
     } as never);
     restoreSpies.push(() => funds.mockRestore());
-    return { zerodha, selectedPortfolio, secondClient };
+    return { zerodha, selectedPortfolio, secondClient, funds };
   }
 
-  test("rejects a direct BUY before placement when Zerodha cash is insufficient", async () => {
-    const { zerodha, selectedPortfolio } =
+  test("lets Zerodha decide funds instead of blocking on PMS cash or reservations", async () => {
+    const { zerodha, selectedPortfolio, funds } =
       await basketAccounts(
         false,
-        1_000,
+        0,
       );
+
+    await prisma.portfolio.update({
+      where: {
+        id: selectedPortfolio.id,
+      },
+      data: {
+        cashBalance: 0,
+      },
+    });
+
+    await prisma.portfolioBrokerCash.create({
+      data: {
+        portfolioId:
+          selectedPortfolio.id,
+        brokerAccountId:
+          zerodha.id,
+        cashBalance: 0,
+      },
+    });
+
     const kitePlace = spyOn(
       KiteConnect.prototype,
       "placeOrder",
-    ).mockRejectedValue(
-      new Error(
-        "UNEXPECTED_KITE_CALL",
-      ),
-    );
+    ).mockResolvedValue({
+      order_id:
+        "KITE-BROKER-AUTHORITY",
+    });
     restoreSpies.push(
       () => kitePlace.mockRestore(),
     );
@@ -445,12 +464,10 @@ describe("basket execution with real broker adapters", () => {
       await processNextExecutionJob(),
     ).toMatchObject({
       processed: true,
-      succeeded: false,
-      retryable: false,
-      error:
-        "INSUFFICIENT_BROKER_AVAILABLE_CASH",
+      succeeded: true,
     });
-    expect(kitePlace).not.toHaveBeenCalled();
+    expect(kitePlace).toHaveBeenCalledTimes(1);
+    expect(funds).not.toHaveBeenCalled();
 
     const order =
       await prisma.order
@@ -461,9 +478,11 @@ describe("basket execution with real broker adapters", () => {
           },
         });
 
-    expect(order.status).toBe(
-      "REJECTED",
-    );
+    expect(order).toMatchObject({
+      status: "SUBMITTED",
+      brokerOrderId:
+        "KITE-BROKER-AUTHORITY",
+    });
     expect(
       await prisma
         .brokerFundsSnapshot
@@ -473,7 +492,7 @@ describe("basket execution with real broker adapters", () => {
               zerodha.id,
           },
         }),
-    ).toBe(1);
+    ).toBe(0);
   });
 
   test.each(["EQUAL_QUANTITY", "FIXED_QUANTITY", "PERCENTAGE"])(

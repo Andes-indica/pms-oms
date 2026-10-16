@@ -76,3 +76,49 @@ describe(
     );
   },
 );
+
+describe(
+  "ZerodhaBroker funds",
+  () => {
+    test(
+      "uses net trading funds instead of raw cash",
+      async () => {
+        const getMargins =
+          spyOn(
+            KiteConnect.prototype,
+            "getMargins",
+          ).mockResolvedValue({
+            equity: {
+              available: {
+                cash: 1_000,
+              },
+              utilised: {
+                debits: 5_000,
+              },
+              net: 25_000,
+            },
+          } as never);
+
+        restores.push(
+          () =>
+            getMargins.mockRestore(),
+        );
+
+        const broker =
+          new ZerodhaBroker({
+            apiKey: "test-api-key",
+            accessToken:
+              "test-access-token",
+          });
+
+        await expect(
+          broker.getFunds(),
+        ).resolves.toEqual({
+          availableCash: 25_000,
+          netAvailable: 25_000,
+          usedMargin: 5_000,
+        });
+      },
+    );
+  },
+);

@@ -10,11 +10,6 @@ type RiskCheckInput = {
   quantity: number;
   estimatedPrice: number;
   availabilityAuthority?: "PMS" | "BROKER";
-  brokerFundsSnapshot?: {
-    availableCash: number;
-    capturedAt: Date;
-    existingOrderReservedCash?: number;
-  };
 };
 
 const ACTIVE_ORDER_STATUSES = [
@@ -63,7 +58,7 @@ export async function runRiskChecks(
   input: RiskCheckInput,
   database: Pick<
     typeof prisma,
-    "portfolio" | "restrictedSecurity" | "order" | "portfolioBrokerCash"
+    "portfolio" | "restrictedSecurity" | "order"
   > = prisma,
 ) {
   const portfolio =
@@ -120,202 +115,10 @@ export async function runRiskChecks(
     input.quantity * input.estimatedPrice;
 
   /*
-   * Cash and holdings imported into the PMS are operational snapshots,
-   * not execution authority. Broker-authoritative flows therefore keep
-   * them for accounting and exposure calculations without rejecting an
-   * order because a local snapshot is stale.
+   * Cash balances and reservations are accounting data, not an order
+   * admission rule. Required margin depends on broker product and margin
+   * rules, so the broker's place/modify response is the authority.
    */
-  if (
-    input.availabilityAuthority !== "BROKER"
-  ) {
-    const brokerCashAllocation =
-      await database.portfolioBrokerCash.findUnique({
-        where: {
-          portfolioId_brokerAccountId: {
-            portfolioId:
-              input.portfolioId,
-            brokerAccountId:
-              input.brokerAccountId,
-          },
-        },
-      });
-
-    const activeReservations = await database.order.aggregate({
-      where: {
-        portfolioId: input.portfolioId,
-        id: {
-          not: input.currentOrderId,
-        },
-        ...activeReservationFilter(),
-      },
-      _sum: {
-        reservedCash: true,
-      },
-    });
-
-    const reservedCash = Number(
-      activeReservations._sum.reservedCash ?? 0,
-    );
-
-    if (
-      input.side === "BUY" &&
-      Number(portfolio.cashBalance) - reservedCash < orderValue
-    ) {
-      throw new Error("INSUFFICIENT_CASH");
-    }
-
-    if (
-      input.side === "BUY" &&
-      brokerCashAllocation
-    ) {
-      const brokerReservations =
-        await database.order.aggregate({
-          where: {
-            portfolioId:
-              input.portfolioId,
-
-            brokerAccountId:
-              input.brokerAccountId,
-
-            id: {
-              not:
-                input.currentOrderId,
-            },
-
-            ...activeReservationFilter(),
-          },
-
-          _sum: {
-            reservedCash: true,
-          },
-        });
-
-      const brokerReservedCash =
-        Number(
-          brokerReservations
-            ._sum
-            .reservedCash ??
-          0,
-        );
-
-      if (
-        Number(
-          brokerCashAllocation
-            .cashBalance,
-        ) -
-          brokerReservedCash <
-        orderValue
-      ) {
-        throw new Error(
-          "INSUFFICIENT_BROKER_CASH",
-        );
-      }
-    }
-  }
-
-  if (
-    input.side === "BUY" &&
-    input.brokerFundsSnapshot
-  ) {
-    const ttlSeconds = Number(
-      process.env
-        .BROKER_FUNDS_SNAPSHOT_TTL_SECONDS ??
-        30,
-    );
-
-    if (
-      !Number.isInteger(ttlSeconds) ||
-      ttlSeconds < 5 ||
-      ttlSeconds > 300
-    ) {
-      throw new Error(
-        "BROKER_FUNDS_SNAPSHOT_TTL_INVALID",
-      );
-    }
-
-    if (
-      Date.now() -
-        input.brokerFundsSnapshot
-          .capturedAt.getTime() >
-      ttlSeconds * 1_000
-    ) {
-      throw new Error(
-        "BROKER_FUNDS_SNAPSHOT_STALE",
-      );
-    }
-
-    /*
-     * The broker snapshot already includes margin for orders
-     * accepted before it was captured. Only subtract PMS
-     * reservations which the snapshot cannot yet include.
-     */
-    const newerReservations =
-      await database.order.aggregate({
-        where: {
-          brokerAccountId:
-            input.brokerAccountId,
-          id: {
-            not:
-              input.currentOrderId,
-          },
-          executionMode:
-            "DIRECT_API",
-          status: {
-            in: [
-              ...ACTIVE_ORDER_STATUSES,
-            ],
-          },
-          reservedCash: {
-            gt: 0,
-          },
-          OR: [
-            {
-              brokerOrderId:
-                null,
-            },
-            {
-              brokerAcceptedAt: {
-                gt:
-                  input
-                    .brokerFundsSnapshot
-                    .capturedAt,
-              },
-            },
-          ],
-        },
-        _sum: {
-          reservedCash: true,
-        },
-      });
-
-    const unavailableSinceSnapshot =
-      Number(
-        newerReservations
-          ._sum.reservedCash ??
-          0,
-      );
-
-    const requiredBrokerCash =
-      Math.max(
-        0,
-        orderValue -
-          (input
-            .brokerFundsSnapshot
-            .existingOrderReservedCash ??
-            0),
-      );
-
-    if (
-      input.brokerFundsSnapshot
-        .availableCash -
-        unavailableSinceSnapshot <
-      requiredBrokerCash
-    ) {
-      throw new Error(
-        "INSUFFICIENT_BROKER_AVAILABLE_CASH",
-      );
-    }
-  }
 
   const limits = portfolio.riskLimit;
 
@@ -340,15 +143,25 @@ export async function runRiskChecks(
     );
   }
 
-  const holding = portfolio.holdings[0];
-
   const currentQuantity =
     portfolio.holdings.reduce(
-      (total, holding) => total + holding.quantity, 0,
+      (total, holding) =>
+        total + holding.quantity,
+      0,
     );
-  const brokerHoldingQuantity = portfolio.holdings.filter((holding) => holding.brokerAccountId === input.brokerAccountId,).reduce(
-    (total, holding) => total + holding.quantity, 0,
-  );
+
+  const brokerHoldingQuantity =
+    portfolio.holdings
+      .filter(
+        (holding) =>
+          holding.brokerAccountId ===
+          input.brokerAccountId,
+      )
+      .reduce(
+        (total, holding) =>
+          total + holding.quantity,
+        0,
+      );
 
   const sellReservations = await database.order.aggregate({
     where: {

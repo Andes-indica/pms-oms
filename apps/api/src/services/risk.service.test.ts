@@ -47,30 +47,19 @@ function fakeDatabase({
   restrictedSecurity =
     null,
 
-  brokerCashBalance =
-    null,
-
-  reservedCash = 0,
-
   reservedQuantity = 0,
 
   buyQuantity = 0,
 
   buyFilledQuantity = 0,
 
-  newerBrokerReservedCash = 0,
 }: {
   portfolio?: any;
   restrictedSecurity?: any;
-  brokerCashBalance?: number | null;
-  reservedCash?: number;
   reservedQuantity?: number;
   buyQuantity?: number;
   buyFilledQuantity?: number;
-  newerBrokerReservedCash?: number;
 } = {}) {
-  let aggregateCall = 0;
-
   return {
     portfolio: {
       findUnique: async () =>
@@ -82,82 +71,26 @@ function fakeDatabase({
         restrictedSecurity,
     },
 
-    portfolioBrokerCash: {
-      findUnique: async () =>
-        brokerCashBalance ===
-          null
-          ? null
-          : {
-              cashBalance:
-                brokerCashBalance,
-            },
-    },
-
     order: {
       aggregate: async (
         args: any,
       ) => {
         if (
-          args?.where
-            ?.executionMode ===
-              "DIRECT_API" &&
-          Array.isArray(
-            args?.where?.OR,
-          )
+          args?._sum?.quantity
         ) {
           return {
             _sum: {
-              reservedCash:
-                newerBrokerReservedCash,
-            },
-          };
-        }
-
-        aggregateCall += 1;
-
-        /*
-         * risk.service currently performs:
-         *
-         * 1. cash reservations
-         * 2. all SELL reservations
-         * 3. broker-specific SELL reservations
-         * 4. BUY reservations
-         */
-        if (aggregateCall === 1) {
-          return {
-            _sum: {
-              reservedCash,
-            },
-          };
-        }
-
-        if (
-          aggregateCall === 2
-        ) {
-          return {
-            _sum: {
-              reservedQuantity,
-            },
-          };
-        }
-
-        if (
-          aggregateCall === 3
-        ) {
-          return {
-            _sum: {
-              reservedQuantity,
+              quantity:
+                buyQuantity,
+              filledQuantity:
+                buyFilledQuantity,
             },
           };
         }
 
         return {
           _sum: {
-            quantity:
-              buyQuantity,
-
-            filledQuantity:
-              buyFilledQuantity,
+            reservedQuantity,
           },
         };
       },
@@ -188,7 +121,7 @@ describe(
   "runRiskChecks",
   () => {
     test(
-      "allows BUY when sufficient cash exists",
+      "allows BUY after configured risk checks pass",
       async () => {
         const result =
           await runRiskChecks(
@@ -207,83 +140,24 @@ describe(
     );
 
     test(
-      "rejects BUY when cash after reservations is insufficient",
-      async () => {
-        expect(
-          runRiskChecks(
-            {
-              ...baseInput,
-
-              quantity: 10,
-
-              estimatedPrice:
-                1000,
-            },
-
-            fakeDatabase({
-              portfolio:
-                makePortfolio({
-                  cashBalance:
-                    15_000,
-                }),
-
-              reservedCash:
-                6_000,
-            }),
-          ),
-        ).rejects.toThrow(
-          "INSUFFICIENT_CASH",
-        );
-      },
-    );
-
-    test(
-      "rejects BUY when broker allocation is insufficient",
-      async () => {
-        expect(
-          runRiskChecks(
-            {
-              ...baseInput,
-
-              quantity: 10,
-
-              estimatedPrice:
-                1000,
-            },
-
-            fakeDatabase({
-              portfolio:
-                makePortfolio({
-                  cashBalance:
-                    100_000,
-                }),
-
-              brokerCashBalance:
-                5_000,
-            }),
-          ),
-        ).rejects.toThrow(
-          "INSUFFICIENT_BROKER_CASH",
-        );
-      },
-    );
-
-    test(
-      "does not block broker-authoritative BUY on stale PMS cash or allocation",
+      "does not use PMS cash or reservations as an order admission check",
       async () => {
         const result =
           await runRiskChecks(
             {
               ...baseInput,
-              availabilityAuthority:
-                "BROKER",
+
+              quantity: 10,
+
+              estimatedPrice:
+                1000,
             },
+
             fakeDatabase({
               portfolio:
                 makePortfolio({
                   cashBalance: 0,
                 }),
-              brokerCashBalance: 0,
             }),
           );
 
@@ -294,94 +168,25 @@ describe(
     );
 
     test(
-      "rejects BUY when the broker reports insufficient available cash",
-      async () => {
-        expect(
-          runRiskChecks(
-            {
-              ...baseInput,
-              brokerFundsSnapshot: {
-                availableCash:
-                  7_000,
-                capturedAt:
-                  new Date(),
-              },
-            },
-            fakeDatabase(),
-          ),
-        ).rejects.toThrow(
-          "INSUFFICIENT_BROKER_AVAILABLE_CASH",
-        );
-      },
-    );
-
-    test(
-      "subtracts direct reservations not represented by the broker snapshot",
-      async () => {
-        expect(
-          runRiskChecks(
-            {
-              ...baseInput,
-              brokerFundsSnapshot: {
-                availableCash:
-                  10_000,
-                capturedAt:
-                  new Date(),
-              },
-            },
-            fakeDatabase({
-              newerBrokerReservedCash:
-                3_000,
-            }),
-          ),
-        ).rejects.toThrow(
-          "INSUFFICIENT_BROKER_AVAILABLE_CASH",
-        );
-      },
-    );
-
-    test(
-      "rejects a stale broker funds snapshot",
-      async () => {
-        expect(
-          runRiskChecks(
-            {
-              ...baseInput,
-              brokerFundsSnapshot: {
-                availableCash:
-                  100_000,
-                capturedAt:
-                  new Date(
-                    Date.now() -
-                      31_000,
-                  ),
-              },
-            },
-            fakeDatabase(),
-          ),
-        ).rejects.toThrow(
-          "BROKER_FUNDS_SNAPSHOT_STALE",
-        );
-      },
-    );
-
-    test(
-      "requires only additional broker cash when modifying a live BUY",
+      "does not require a PMS broker cash allocation",
       async () => {
         const result =
           await runRiskChecks(
             {
               ...baseInput,
-              brokerFundsSnapshot: {
-                availableCash:
-                  500,
-                capturedAt:
-                  new Date(),
-                existingOrderReservedCash:
-                  8_000,
-              },
+
+              quantity: 10,
+
+              estimatedPrice:
+                1000,
             },
-            fakeDatabase(),
+
+            fakeDatabase({
+              portfolio:
+                makePortfolio({
+                  cashBalance: 0,
+                }),
+            }),
           );
 
         expect(result.passed).toBe(

@@ -2,7 +2,6 @@ import { prisma } from "@pms-oms/db";
 
 import {
   BrokerError,
-  supportsFunds,
   supportsOrderRecovery,
   type BrokerOrderResult,
 } from "@pms-oms/broker";
@@ -26,10 +25,6 @@ import {
 import {
   getMarketPrice,
 } from "./market-data.service";
-
-import {
-  captureBrokerFundsSnapshot,
-} from "./broker-funds-snapshot.service";
 
 export async function executeOrderService(
   orderId: string,
@@ -90,21 +85,6 @@ export async function executeOrderService(
         .brokerAccountId,
       firmId,
     );
-
-  const brokerFundsSnapshot =
-    existingOrder.status !==
-      "PENDING" ||
-    existingOrder.side !== "BUY"
-      ? undefined
-      : supportsFunds(broker)
-      ? await captureBrokerFundsSnapshot({
-          brokerAccountId:
-            existingOrder
-              .brokerAccountId,
-          firmId,
-          broker,
-        })
-      : undefined;
 
   const estimatedPrice =
     existingOrder.orderType ===
@@ -272,17 +252,6 @@ export async function executeOrderService(
               availabilityAuthority:
                 "BROKER",
 
-              brokerFundsSnapshot:
-                brokerFundsSnapshot
-                  ? {
-                      availableCash:
-                        brokerFundsSnapshot
-                          .availableCash,
-                      capturedAt:
-                        brokerFundsSnapshot
-                          .capturedAt,
-                    }
-                  : undefined,
             },
 
             tx,
