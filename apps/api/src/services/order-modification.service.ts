@@ -32,13 +32,6 @@ import {
     runRiskChecks,
 } from "./risk.service";
 
-const ACTIVE_STATUSES = [
-    "PENDING",
-    "SUBMITTED",
-    "OPEN",
-    "PARTIALLY_FILLED",
-] as const;
-
 export async function modifyOrderService(
     orderId: string,
     firmId: string,
@@ -57,13 +50,6 @@ export async function modifyOrderService(
                 },
             },
 
-            include: {
-                portfolio: {
-                    include: {
-                        holdings: true,
-                    },
-                },
-            },
         });
 
 
@@ -176,13 +162,7 @@ export async function modifyOrderService(
                     firmId,
                     broker,
                 })
-                : broker === mockBroker
-                    ? undefined
-                    : (() => {
-                        throw new Error(
-                            "BROKER_FUNDS_UNSUPPORTED_FOR_DIRECT_EXECUTION",
-                        );
-                    })();
+                : undefined;
 
     const estimatedValue =
         newQuantity *
@@ -209,6 +189,8 @@ export async function modifyOrderService(
         quantity:
             newQuantity,
         estimatedPrice,
+        availabilityAuthority:
+            "BROKER",
         brokerFundsSnapshot:
             brokerFundsSnapshot
                 ? {
@@ -226,187 +208,15 @@ export async function modifyOrderService(
                 : undefined,
     });
 
-    /*
-     * Get reservations from OTHER
-     * live orders.
-     *
-     * Important: exclude current order
-     * so we don't count its old reservation
-     * against itself.
-     */
-    const brokerCashAllocation =
-        await prisma.portfolioBrokerCash
-            .findUnique({
-                where: {
-                    portfolioId_brokerAccountId: {
-                        portfolioId:
-                            order.portfolioId,
-
-                        brokerAccountId:
-                            order.brokerAccountId,
-                    },
-                },
-            });
-
-    const otherOrders =
-        await prisma.order.findMany({
-            where: {
-                portfolioId:
-                    order.portfolioId,
-
-                id: {
-                    not: order.id,
-                },
-
-                status: {
-                    in: [
-                        ...ACTIVE_STATUSES
-                    ],
-                },
-            },
-
-            select: {
-                brokerAccountId: true,
-                side: true,
-                symbol: true,
-                exchange: true,
-                reservedCash: true,
-                reservedQuantity: true,
-            },
-        });
-
-    /*
-     * BUY modification:
-     * recalculate available buying power.
-     */
     let newReservedCash = 0;
     let newReservedQuantity = 0;
 
     if (order.side === "BUY") {
-        const reservedByOthers =
-            otherOrders.reduce(
-                (total, other) =>
-                    total +
-                    Number(
-                        other.reservedCash,
-                    ),
-                0,
-            );
-
-        const availableCash =
-            Number(
-                order.portfolio.cashBalance,
-            ) -
-            reservedByOthers;
-
-        if (
-            availableCash <
-            estimatedValue
-        ) {
-            throw new Error(
-                "INSUFFICIENT_CASH",
-            );
-        }
-
-        if (
-            brokerCashAllocation
-        ) {
-            const brokerReservedByOthers =
-                otherOrders
-                    .filter(
-                        (other) =>
-                            other
-                                .brokerAccountId ===
-                            order
-                                .brokerAccountId,
-                    )
-                    .reduce(
-                        (
-                            total,
-                            other,
-                        ) =>
-                            total +
-                            Number(
-                                other
-                                    .reservedCash,
-                            ),
-                        0,
-                    );
-
-            const brokerAvailableCash =
-                Number(
-                    brokerCashAllocation
-                        .cashBalance,
-                ) -
-                brokerReservedByOthers;
-
-            if (
-                brokerAvailableCash <
-                estimatedValue
-            ) {
-                throw new Error(
-                    "INSUFFICIENT_BROKER_CASH",
-                );
-            }
-        }
-
         newReservedCash =
             estimatedValue;
     }
 
-    /*
-     * SELL modification:
-     * check owned quantity and quantities
-     * reserved by OTHER orders.
-     */
     if (order.side === "SELL") {
-        const holding =
-            order.portfolio.holdings.find(
-                (holding) =>
-                    holding.brokerAccountId ===
-                    order.brokerAccountId &&
-                    holding.symbol ===
-                    order.symbol &&
-                    holding.exchange ===
-                    order.exchange,
-            );
-
-        const ownedQuantity =
-            holding?.quantity ?? 0;
-
-        const reservedByOthers =
-            otherOrders
-                .filter(
-                    (other) =>
-                        other.side ===
-                        "SELL" &&
-                        other.symbol ===
-                        order.symbol &&
-                        other.exchange ===
-                        order.exchange&&
-                        other.brokerAccountId ===
-                        order.brokerAccountId,
-                )
-                .reduce(
-                    (total, other) =>
-                        total +
-                        other.reservedQuantity,
-                    0,
-                );
-
-        const availableQuantity =
-            ownedQuantity -
-            reservedByOthers;
-
-        if (
-            availableQuantity <
-            newQuantity
-        ) {
-            throw new Error(
-                "INSUFFICIENT_HOLDINGS",
-            );
-        }
-
         newReservedQuantity =
             newQuantity;
     }

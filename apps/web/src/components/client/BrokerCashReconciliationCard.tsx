@@ -209,7 +209,7 @@ export function BrokerCashReconciliationCard({
           </p>
 
           <p className="mt-1 text-xs text-slate-500">
-            Compare broker available cash with PMS cash explicitly allocated to this broker account.
+            Compare broker funds with the PMS accounting allocation. This is an advisory reconciliation and does not block broker execution.
           </p>
         </div>
 

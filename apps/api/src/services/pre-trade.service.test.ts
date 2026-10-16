@@ -142,6 +142,26 @@ describe(
     );
 
     test(
+      "lets the broker validate SELL availability when PMS holdings are stale",
+      async () => {
+        const result =
+          await runPreTradeChecks(
+            "order-1",
+            "firm-1",
+            fakeDatabase({
+              holding: null,
+              otherHolding: null,
+            }),
+            "BROKER",
+          );
+
+        expect(result.id).toBe(
+          "order-1",
+        );
+      },
+    );
+
+    test(
       "does not require holdings for BUY orders",
       async () => {
         const result =

@@ -9,6 +9,7 @@ type RiskCheckInput = {
   side: "BUY" | "SELL";
   quantity: number;
   estimatedPrice: number;
+  availabilityAuthority?: "PMS" | "BROKER";
   brokerFundsSnapshot?: {
     availableCash: number;
     capturedAt: Date;
@@ -118,87 +119,97 @@ export async function runRiskChecks(
   const orderValue =
     input.quantity * input.estimatedPrice;
 
-  const brokerCashAllocation =
-    await database.portfolioBrokerCash.findUnique({
-      where: {
-        portfolioId_brokerAccountId: {
-          portfolioId:
-            input.portfolioId,
-          brokerAccountId:
-            input.brokerAccountId,
-        },
-      },
-    });
-
-  const activeReservations = await database.order.aggregate({
-    where: {
-      portfolioId: input.portfolioId,
-      id: {
-        not: input.currentOrderId,
-      },
-      ...activeReservationFilter(),
-    },
-    _sum: {
-      reservedCash: true,
-    },
-  });
-
-  const reservedCash = Number(
-    activeReservations._sum.reservedCash ?? 0,
-  );
-
+  /*
+   * Cash and holdings imported into the PMS are operational snapshots,
+   * not execution authority. Broker-authoritative flows therefore keep
+   * them for accounting and exposure calculations without rejecting an
+   * order because a local snapshot is stale.
+   */
   if (
-    input.side === "BUY" &&
-    Number(portfolio.cashBalance) - reservedCash < orderValue
+    input.availabilityAuthority !== "BROKER"
   ) {
-    throw new Error("INSUFFICIENT_CASH");
-  }
-
-  if (
-    input.side === "BUY" &&
-    brokerCashAllocation
-  ) {
-    const brokerReservations =
-      await database.order.aggregate({
+    const brokerCashAllocation =
+      await database.portfolioBrokerCash.findUnique({
         where: {
-          portfolioId:
-            input.portfolioId,
-
-          brokerAccountId:
-            input.brokerAccountId,
-
-          id: {
-            not:
-              input.currentOrderId,
+          portfolioId_brokerAccountId: {
+            portfolioId:
+              input.portfolioId,
+            brokerAccountId:
+              input.brokerAccountId,
           },
-
-          ...activeReservationFilter(),
-        },
-
-        _sum: {
-          reservedCash: true,
         },
       });
 
-    const brokerReservedCash =
-      Number(
-        brokerReservations
-          ._sum
-          .reservedCash ??
-        0,
-      );
+    const activeReservations = await database.order.aggregate({
+      where: {
+        portfolioId: input.portfolioId,
+        id: {
+          not: input.currentOrderId,
+        },
+        ...activeReservationFilter(),
+      },
+      _sum: {
+        reservedCash: true,
+      },
+    });
+
+    const reservedCash = Number(
+      activeReservations._sum.reservedCash ?? 0,
+    );
 
     if (
-      Number(
-        brokerCashAllocation
-          .cashBalance,
-      ) -
-        brokerReservedCash <
-      orderValue
+      input.side === "BUY" &&
+      Number(portfolio.cashBalance) - reservedCash < orderValue
     ) {
-      throw new Error(
-        "INSUFFICIENT_BROKER_CASH",
-      );
+      throw new Error("INSUFFICIENT_CASH");
+    }
+
+    if (
+      input.side === "BUY" &&
+      brokerCashAllocation
+    ) {
+      const brokerReservations =
+        await database.order.aggregate({
+          where: {
+            portfolioId:
+              input.portfolioId,
+
+            brokerAccountId:
+              input.brokerAccountId,
+
+            id: {
+              not:
+                input.currentOrderId,
+            },
+
+            ...activeReservationFilter(),
+          },
+
+          _sum: {
+            reservedCash: true,
+          },
+        });
+
+      const brokerReservedCash =
+        Number(
+          brokerReservations
+            ._sum
+            .reservedCash ??
+          0,
+        );
+
+      if (
+        Number(
+          brokerCashAllocation
+            .cashBalance,
+        ) -
+          brokerReservedCash <
+        orderValue
+      ) {
+        throw new Error(
+          "INSUFFICIENT_BROKER_CASH",
+        );
+      }
     }
   }
 
@@ -414,6 +425,7 @@ export async function runRiskChecks(
     (buyReservations._sum.filledQuantity ?? 0);
   if (
     input.side === "SELL" &&
+    input.availabilityAuthority !== "BROKER" &&
     brokerHoldingQuantity -
     brokerReservedQuantity <
     input.quantity
@@ -431,7 +443,10 @@ export async function runRiskChecks(
   if (input.side === "SELL") {
     projectedQuantity -= input.quantity + reservedQuantity;
 
-    if (projectedQuantity < 0) {
+    if (
+      projectedQuantity < 0 &&
+      input.availabilityAuthority !== "BROKER"
+    ) {
       throw new Error(
         "INSUFFICIENT_HOLDINGS",
       );

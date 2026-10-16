@@ -104,13 +104,7 @@ export async function executeOrderService(
           firmId,
           broker,
         })
-      : broker === mockBroker
-        ? undefined
-        : (() => {
-            throw new Error(
-              "BROKER_FUNDS_UNSUPPORTED_FOR_DIRECT_EXECUTION",
-            );
-          })();
+      : undefined;
 
   const estimatedPrice =
     existingOrder.orderType ===
@@ -248,6 +242,7 @@ export async function executeOrderService(
               orderId,
               firmId,
               tx,
+              "BROKER",
             );
 
           await runRiskChecks(
@@ -273,6 +268,9 @@ export async function executeOrderService(
                 checkedOrder.quantity,
 
               estimatedPrice,
+
+              availabilityAuthority:
+                "BROKER",
 
               brokerFundsSnapshot:
                 brokerFundsSnapshot

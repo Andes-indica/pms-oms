@@ -269,6 +269,31 @@ describe(
     );
 
     test(
+      "does not block broker-authoritative BUY on stale PMS cash or allocation",
+      async () => {
+        const result =
+          await runRiskChecks(
+            {
+              ...baseInput,
+              availabilityAuthority:
+                "BROKER",
+            },
+            fakeDatabase({
+              portfolio:
+                makePortfolio({
+                  cashBalance: 0,
+                }),
+              brokerCashBalance: 0,
+            }),
+          );
+
+        expect(result.passed).toBe(
+          true,
+        );
+      },
+    );
+
+    test(
       "rejects BUY when the broker reports insufficient available cash",
       async () => {
         expect(
@@ -555,6 +580,32 @@ describe(
           ),
         ).rejects.toThrow(
           "INSUFFICIENT_HOLDINGS",
+        );
+      },
+    );
+
+    test(
+      "does not block broker-authoritative SELL on a stale PMS holding snapshot",
+      async () => {
+        const result =
+          await runRiskChecks(
+            {
+              ...baseInput,
+              side: "SELL",
+              availabilityAuthority:
+                "BROKER",
+            },
+            fakeDatabase({
+              portfolio:
+                makePortfolio({
+                  holdings: [],
+                }),
+              reservedQuantity: 100,
+            }),
+          );
+
+        expect(result.passed).toBe(
+          true,
         );
       },
     );
