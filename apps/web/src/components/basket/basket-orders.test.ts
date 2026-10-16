@@ -57,6 +57,17 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
+  browser.localStorage.clear();
+  browser.localStorage.setItem(
+    "user",
+    JSON.stringify({
+      id: "admin-user",
+      name: "Test Admin",
+      email: "admin@example.com",
+      role: "ADMIN",
+      firmId: "test-firm",
+    }),
+  );
   container = document.createElement("div");
   document.body.append(container);
   root = createRoot(container);
