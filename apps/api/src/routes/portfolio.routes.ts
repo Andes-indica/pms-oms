@@ -19,8 +19,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router =
   Router();
@@ -31,47 +31,49 @@ router.use(
 
 router.post(
   "/clients/:clientId",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_CLIENTS",
   ),
   createPortfolio,
 );
 
 router.patch(
   "/:id",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_CLIENTS",
   ),
   updatePortfolio,
 );
 
 router.delete(
   "/:id",
-  requireRole(
-    "ADMIN",
+  requirePermission(
+    "DELETE_CLIENT_DATA",
   ),
   deletePortfolio,
 );
 
 router.get(
   "/:id/cash-transactions",
+  requirePermission(
+    "VIEW_CLIENTS",
+  ),
   getPortfolioCashTransactions,
 );
 
 router.post(
   "/:id/cash-transactions",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "MANAGE_CASH",
   ),
   createPortfolioCashTransaction,
 );
 
 router.get(
   "/:id/valuation",
+  requirePermission(
+    "VIEW_CLIENTS",
+  ),
   getPortfolioValuation,
 );
 

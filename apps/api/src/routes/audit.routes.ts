@@ -9,8 +9,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router = Router();
 
@@ -18,9 +18,8 @@ router.use(requireAuth);
 
 router.get(
   "/",
-  requireRole(
-    "ADMIN",
-    "OPERATIONS",
+  requirePermission(
+    "VIEW_AUDIT",
   ),
   getAuditLogs,
 );

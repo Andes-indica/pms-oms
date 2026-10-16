@@ -1,7 +1,9 @@
 import { Router } from "express";
 
 import {
+  completeOnboarding,
   login,
+  lookupOnboarding,
 } from "../controllers/auth.controller";
 
 import {
@@ -14,6 +16,18 @@ router.post(
   "/login",
   loginRateLimit,
   login,
+);
+
+router.post(
+  "/onboarding/lookup",
+  loginRateLimit,
+  lookupOnboarding,
+);
+
+router.post(
+  "/onboarding/complete",
+  loginRateLimit,
+  completeOnboarding,
 );
 
 export default router;

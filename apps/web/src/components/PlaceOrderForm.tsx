@@ -1,5 +1,8 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { apiFetch } from "../lib/api";
+import {
+  loadRuntimeCapabilities,
+} from "../lib/runtime-capabilities";
 
 type Client = {
   id: string;
@@ -102,6 +105,21 @@ export function PlaceOrderForm({
 
   const [success, setSuccess] =
     useState("");
+  const [marketOrdersAllowed, setMarketOrdersAllowed] =
+    useState(false);
+
+  useEffect(() => {
+    void loadRuntimeCapabilities()
+      .then((capabilities) => {
+        setMarketOrdersAllowed(
+          capabilities.marketData
+            .marketOrdersAllowed,
+        );
+      })
+      .catch(() => {
+        setMarketOrdersAllowed(false);
+      });
+  }, []);
 
   useEffect(() => {
     async function loadClients() {
@@ -444,7 +462,10 @@ export function PlaceOrderForm({
             }
             className="w-full rounded-lg border px-3 py-2"
           >
-            <option value="MARKET">
+            <option
+              value="MARKET"
+              disabled={!marketOrdersAllowed}
+            >
               MARKET
             </option>
 
@@ -452,6 +473,11 @@ export function PlaceOrderForm({
               LIMIT
             </option>
           </select>
+          {!marketOrdersAllowed && (
+            <p className="mt-1 text-xs text-amber-700">
+              Market orders require live market data. Use a limit price while limit-only mode is active.
+            </p>
+          )}
         </Field>
 
         <Field label="Execution">

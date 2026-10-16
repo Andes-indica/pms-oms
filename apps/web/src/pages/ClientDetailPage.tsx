@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import { apiFetch } from "../lib/api";
+import { currentUserCan } from "../lib/permissions";
 
 import {
   ClientSummaryCards,
@@ -31,40 +32,21 @@ type Response = {
   data: ClientOverview;
 };
 
-function getCurrentRole() {
-  const raw =
-    localStorage.getItem(
-      "user",
-    );
-
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw)
-      ?.role as string | undefined;
-  } catch {
-    return null;
-  }
-}
-
 export function ClientDetailPage() {
   const { id } = useParams();
 
   const navigate =
     useNavigate();
 
-  const role =
-    getCurrentRole();
-
   const canManage =
-    role === "ADMIN" ||
-    role ===
-      "PORTFOLIO_MANAGER";
+    currentUserCan(
+      "MANAGE_CLIENTS",
+    );
 
   const isAdmin =
-    role === "ADMIN";
+    currentUserCan(
+      "DELETE_CLIENT_DATA",
+    );
 
   const [client, setClient] =
     useState<ClientOverview | null>(

@@ -21,6 +21,28 @@ export async function loginService(
     );
   }
 
+  if (
+    user.status === "INVITED"
+  ) {
+    throw new Error(
+      "ACCOUNT_SETUP_REQUIRED",
+    );
+  }
+
+  if (
+    user.status === "DISABLED"
+  ) {
+    throw new Error(
+      "ACCOUNT_DISABLED",
+    );
+  }
+
+  if (!user.passwordHash) {
+    throw new Error(
+      "ACCOUNT_SETUP_REQUIRED",
+    );
+  }
+
   const passwordValid =
     await Bun.password.verify(
       password,
@@ -38,6 +60,8 @@ export async function loginService(
       userId: user.id,
       firmId: user.firmId,
       role: user.role,
+      sessionVersion:
+        user.sessionVersion,
     });
 
   return {

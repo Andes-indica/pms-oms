@@ -34,6 +34,11 @@ export type Client = $Result.DefaultSelection<Prisma.$ClientPayload>
  */
 export type BrokerAccount = $Result.DefaultSelection<Prisma.$BrokerAccountPayload>
 /**
+ * Model UserOnboardingToken
+ * 
+ */
+export type UserOnboardingToken = $Result.DefaultSelection<Prisma.$UserOnboardingTokenPayload>
+/**
  * Model Portfolio
  * 
  */
@@ -128,6 +133,23 @@ export namespace $Enums {
 export type UserRole = (typeof UserRole)[keyof typeof UserRole]
 
 
+export const UserStatus: {
+  INVITED: 'INVITED',
+  ACTIVE: 'ACTIVE',
+  DISABLED: 'DISABLED'
+};
+
+export type UserStatus = (typeof UserStatus)[keyof typeof UserStatus]
+
+
+export const UserOnboardingTokenType: {
+  INVITATION: 'INVITATION',
+  PASSWORD_RESET: 'PASSWORD_RESET'
+};
+
+export type UserOnboardingTokenType = (typeof UserOnboardingTokenType)[keyof typeof UserOnboardingTokenType]
+
+
 export const OrderExecutionMode: {
   DIRECT_API: 'DIRECT_API',
   CLIENT_CONFIRMATION: 'CLIENT_CONFIRMATION'
@@ -201,6 +223,13 @@ export const AuditAction: {
   ORDER_CONFIRMATION_STARTED: 'ORDER_CONFIRMATION_STARTED',
   ORDER_CLIENT_CONFIRMED: 'ORDER_CLIENT_CONFIRMED',
   ORDER_CONFIRMATION_DECLINED: 'ORDER_CONFIRMATION_DECLINED',
+  USER_INVITED: 'USER_INVITED',
+  USER_ACTIVATED: 'USER_ACTIVATED',
+  USER_ROLE_CHANGED: 'USER_ROLE_CHANGED',
+  USER_DISABLED: 'USER_DISABLED',
+  USER_REACTIVATED: 'USER_REACTIVATED',
+  USER_SESSIONS_REVOKED: 'USER_SESSIONS_REVOKED',
+  USER_PASSWORD_RESET_REQUESTED: 'USER_PASSWORD_RESET_REQUESTED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',
@@ -256,6 +285,14 @@ export type ExecutionJobStatus = (typeof ExecutionJobStatus)[keyof typeof Execut
 export type UserRole = $Enums.UserRole
 
 export const UserRole: typeof $Enums.UserRole
+
+export type UserStatus = $Enums.UserStatus
+
+export const UserStatus: typeof $Enums.UserStatus
+
+export type UserOnboardingTokenType = $Enums.UserOnboardingTokenType
+
+export const UserOnboardingTokenType: typeof $Enums.UserOnboardingTokenType
 
 export type OrderExecutionMode = $Enums.OrderExecutionMode
 
@@ -461,6 +498,16 @@ export class PrismaClient<
     * ```
     */
   get brokerAccount(): Prisma.BrokerAccountDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userOnboardingToken`: Exposes CRUD operations for the **UserOnboardingToken** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserOnboardingTokens
+    * const userOnboardingTokens = await prisma.userOnboardingToken.findMany()
+    * ```
+    */
+  get userOnboardingToken(): Prisma.UserOnboardingTokenDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.portfolio`: Exposes CRUD operations for the **Portfolio** model.
@@ -1072,6 +1119,7 @@ export namespace Prisma {
     User: 'User',
     Client: 'Client',
     BrokerAccount: 'BrokerAccount',
+    UserOnboardingToken: 'UserOnboardingToken',
     Portfolio: 'Portfolio',
     PortfolioBrokerCash: 'PortfolioBrokerCash',
     BrokerFundsSnapshot: 'BrokerFundsSnapshot',
@@ -1103,7 +1151,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "firm" | "user" | "client" | "brokerAccount" | "portfolio" | "portfolioBrokerCash" | "brokerFundsSnapshot" | "cashTransaction" | "holding" | "order" | "auditLog" | "basketOrder" | "clientOrderConfirmation" | "allocation" | "riskLimit" | "instrument" | "restrictedSecurity" | "brokerConnection" | "execution" | "executionJob"
+      modelProps: "firm" | "user" | "client" | "brokerAccount" | "userOnboardingToken" | "portfolio" | "portfolioBrokerCash" | "brokerFundsSnapshot" | "cashTransaction" | "holding" | "order" | "auditLog" | "basketOrder" | "clientOrderConfirmation" | "allocation" | "riskLimit" | "instrument" | "restrictedSecurity" | "brokerConnection" | "execution" | "executionJob"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1400,6 +1448,80 @@ export namespace Prisma {
           count: {
             args: Prisma.BrokerAccountCountArgs<ExtArgs>
             result: $Utils.Optional<BrokerAccountCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserOnboardingToken: {
+        payload: Prisma.$UserOnboardingTokenPayload<ExtArgs>
+        fields: Prisma.UserOnboardingTokenFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserOnboardingTokenFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserOnboardingTokenFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>
+          }
+          findFirst: {
+            args: Prisma.UserOnboardingTokenFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserOnboardingTokenFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>
+          }
+          findMany: {
+            args: Prisma.UserOnboardingTokenFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>[]
+          }
+          create: {
+            args: Prisma.UserOnboardingTokenCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>
+          }
+          createMany: {
+            args: Prisma.UserOnboardingTokenCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserOnboardingTokenCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>[]
+          }
+          delete: {
+            args: Prisma.UserOnboardingTokenDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>
+          }
+          update: {
+            args: Prisma.UserOnboardingTokenUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserOnboardingTokenDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserOnboardingTokenUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserOnboardingTokenUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>[]
+          }
+          upsert: {
+            args: Prisma.UserOnboardingTokenUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserOnboardingTokenPayload>
+          }
+          aggregate: {
+            args: Prisma.UserOnboardingTokenAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserOnboardingToken>
+          }
+          groupBy: {
+            args: Prisma.UserOnboardingTokenGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserOnboardingTokenGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserOnboardingTokenCountArgs<ExtArgs>
+            result: $Utils.Optional<UserOnboardingTokenCountAggregateOutputType> | number
           }
         }
       }
@@ -2714,6 +2836,7 @@ export namespace Prisma {
     user?: UserOmit
     client?: ClientOmit
     brokerAccount?: BrokerAccountOmit
+    userOnboardingToken?: UserOnboardingTokenOmit
     portfolio?: PortfolioOmit
     portfolioBrokerCash?: PortfolioBrokerCashOmit
     brokerFundsSnapshot?: BrokerFundsSnapshotOmit
@@ -2878,10 +3001,12 @@ export namespace Prisma {
 
   export type UserCountOutputType = {
     auditLogs: number
+    onboardingTokens: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
+    onboardingTokens?: boolean | UserCountOutputTypeCountOnboardingTokensArgs
   }
 
   // Custom InputTypes
@@ -2900,6 +3025,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountAuditLogsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: AuditLogWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountOnboardingTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserOnboardingTokenWhereInput
   }
 
 
@@ -4332,8 +4464,18 @@ export namespace Prisma {
 
   export type AggregateUser = {
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
+  }
+
+  export type UserAvgAggregateOutputType = {
+    sessionVersion: number | null
+  }
+
+  export type UserSumAggregateOutputType = {
+    sessionVersion: number | null
   }
 
   export type UserMinAggregateOutputType = {
@@ -4342,6 +4484,12 @@ export namespace Prisma {
     email: string | null
     passwordHash: string | null
     role: $Enums.UserRole | null
+    status: $Enums.UserStatus | null
+    sessionVersion: number | null
+    invitedAt: Date | null
+    activatedAt: Date | null
+    disabledAt: Date | null
+    passwordChangedAt: Date | null
     firmId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4353,6 +4501,12 @@ export namespace Prisma {
     email: string | null
     passwordHash: string | null
     role: $Enums.UserRole | null
+    status: $Enums.UserStatus | null
+    sessionVersion: number | null
+    invitedAt: Date | null
+    activatedAt: Date | null
+    disabledAt: Date | null
+    passwordChangedAt: Date | null
     firmId: string | null
     createdAt: Date | null
     updatedAt: Date | null
@@ -4364,6 +4518,12 @@ export namespace Prisma {
     email: number
     passwordHash: number
     role: number
+    status: number
+    sessionVersion: number
+    invitedAt: number
+    activatedAt: number
+    disabledAt: number
+    passwordChangedAt: number
     firmId: number
     createdAt: number
     updatedAt: number
@@ -4371,12 +4531,26 @@ export namespace Prisma {
   }
 
 
+  export type UserAvgAggregateInputType = {
+    sessionVersion?: true
+  }
+
+  export type UserSumAggregateInputType = {
+    sessionVersion?: true
+  }
+
   export type UserMinAggregateInputType = {
     id?: true
     name?: true
     email?: true
     passwordHash?: true
     role?: true
+    status?: true
+    sessionVersion?: true
+    invitedAt?: true
+    activatedAt?: true
+    disabledAt?: true
+    passwordChangedAt?: true
     firmId?: true
     createdAt?: true
     updatedAt?: true
@@ -4388,6 +4562,12 @@ export namespace Prisma {
     email?: true
     passwordHash?: true
     role?: true
+    status?: true
+    sessionVersion?: true
+    invitedAt?: true
+    activatedAt?: true
+    disabledAt?: true
+    passwordChangedAt?: true
     firmId?: true
     createdAt?: true
     updatedAt?: true
@@ -4399,6 +4579,12 @@ export namespace Prisma {
     email?: true
     passwordHash?: true
     role?: true
+    status?: true
+    sessionVersion?: true
+    invitedAt?: true
+    activatedAt?: true
+    disabledAt?: true
+    passwordChangedAt?: true
     firmId?: true
     createdAt?: true
     updatedAt?: true
@@ -4443,6 +4629,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: UserAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: UserMinAggregateInputType
@@ -4473,6 +4671,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: UserCountAggregateInputType | true
+    _avg?: UserAvgAggregateInputType
+    _sum?: UserSumAggregateInputType
     _min?: UserMinAggregateInputType
     _max?: UserMaxAggregateInputType
   }
@@ -4481,12 +4681,20 @@ export namespace Prisma {
     id: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash: string | null
     role: $Enums.UserRole
+    status: $Enums.UserStatus
+    sessionVersion: number
+    invitedAt: Date | null
+    activatedAt: Date | null
+    disabledAt: Date | null
+    passwordChangedAt: Date | null
     firmId: string
     createdAt: Date
     updatedAt: Date
     _count: UserCountAggregateOutputType | null
+    _avg: UserAvgAggregateOutputType | null
+    _sum: UserSumAggregateOutputType | null
     _min: UserMinAggregateOutputType | null
     _max: UserMaxAggregateOutputType | null
   }
@@ -4511,11 +4719,18 @@ export namespace Prisma {
     email?: boolean
     passwordHash?: boolean
     role?: boolean
+    status?: boolean
+    sessionVersion?: boolean
+    invitedAt?: boolean
+    activatedAt?: boolean
+    disabledAt?: boolean
+    passwordChangedAt?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     firm?: boolean | FirmDefaultArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    onboardingTokens?: boolean | User$onboardingTokensArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4525,6 +4740,12 @@ export namespace Prisma {
     email?: boolean
     passwordHash?: boolean
     role?: boolean
+    status?: boolean
+    sessionVersion?: boolean
+    invitedAt?: boolean
+    activatedAt?: boolean
+    disabledAt?: boolean
+    passwordChangedAt?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4537,6 +4758,12 @@ export namespace Prisma {
     email?: boolean
     passwordHash?: boolean
     role?: boolean
+    status?: boolean
+    sessionVersion?: boolean
+    invitedAt?: boolean
+    activatedAt?: boolean
+    disabledAt?: boolean
+    passwordChangedAt?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
@@ -4549,15 +4776,22 @@ export namespace Prisma {
     email?: boolean
     passwordHash?: boolean
     role?: boolean
+    status?: boolean
+    sessionVersion?: boolean
+    invitedAt?: boolean
+    activatedAt?: boolean
+    disabledAt?: boolean
+    passwordChangedAt?: boolean
     firmId?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "role" | "firmId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
+  export type UserOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "passwordHash" | "role" | "status" | "sessionVersion" | "invitedAt" | "activatedAt" | "disabledAt" | "passwordChangedAt" | "firmId" | "createdAt" | "updatedAt", ExtArgs["result"]["user"]>
   export type UserInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     firm?: boolean | FirmDefaultArgs<ExtArgs>
     auditLogs?: boolean | User$auditLogsArgs<ExtArgs>
+    onboardingTokens?: boolean | User$onboardingTokensArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -4572,13 +4806,20 @@ export namespace Prisma {
     objects: {
       firm: Prisma.$FirmPayload<ExtArgs>
       auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
+      onboardingTokens: Prisma.$UserOnboardingTokenPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
       name: string
       email: string
-      passwordHash: string
+      passwordHash: string | null
       role: $Enums.UserRole
+      status: $Enums.UserStatus
+      sessionVersion: number
+      invitedAt: Date | null
+      activatedAt: Date | null
+      disabledAt: Date | null
+      passwordChangedAt: Date | null
       firmId: string
       createdAt: Date
       updatedAt: Date
@@ -4978,6 +5219,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     firm<T extends FirmDefaultArgs<ExtArgs> = {}>(args?: Subset<T, FirmDefaultArgs<ExtArgs>>): Prisma__FirmClient<$Result.GetResult<Prisma.$FirmPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     auditLogs<T extends User$auditLogsArgs<ExtArgs> = {}>(args?: Subset<T, User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    onboardingTokens<T extends User$onboardingTokensArgs<ExtArgs> = {}>(args?: Subset<T, User$onboardingTokensArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5012,6 +5254,12 @@ export namespace Prisma {
     readonly email: FieldRef<"User", 'String'>
     readonly passwordHash: FieldRef<"User", 'String'>
     readonly role: FieldRef<"User", 'UserRole'>
+    readonly status: FieldRef<"User", 'UserStatus'>
+    readonly sessionVersion: FieldRef<"User", 'Int'>
+    readonly invitedAt: FieldRef<"User", 'DateTime'>
+    readonly activatedAt: FieldRef<"User", 'DateTime'>
+    readonly disabledAt: FieldRef<"User", 'DateTime'>
+    readonly passwordChangedAt: FieldRef<"User", 'DateTime'>
     readonly firmId: FieldRef<"User", 'String'>
     readonly createdAt: FieldRef<"User", 'DateTime'>
     readonly updatedAt: FieldRef<"User", 'DateTime'>
@@ -5437,6 +5685,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: AuditLogScalarFieldEnum | AuditLogScalarFieldEnum[]
+  }
+
+  /**
+   * User.onboardingTokens
+   */
+  export type User$onboardingTokensArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    where?: UserOnboardingTokenWhereInput
+    orderBy?: UserOnboardingTokenOrderByWithRelationInput | UserOnboardingTokenOrderByWithRelationInput[]
+    cursor?: UserOnboardingTokenWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserOnboardingTokenScalarFieldEnum | UserOnboardingTokenScalarFieldEnum[]
   }
 
   /**
@@ -7856,6 +8128,1095 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BrokerAccountInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserOnboardingToken
+   */
+
+  export type AggregateUserOnboardingToken = {
+    _count: UserOnboardingTokenCountAggregateOutputType | null
+    _min: UserOnboardingTokenMinAggregateOutputType | null
+    _max: UserOnboardingTokenMaxAggregateOutputType | null
+  }
+
+  export type UserOnboardingTokenMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.UserOnboardingTokenType | null
+    tokenHash: string | null
+    expiresAt: Date | null
+    usedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type UserOnboardingTokenMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    type: $Enums.UserOnboardingTokenType | null
+    tokenHash: string | null
+    expiresAt: Date | null
+    usedAt: Date | null
+    createdAt: Date | null
+  }
+
+  export type UserOnboardingTokenCountAggregateOutputType = {
+    id: number
+    userId: number
+    type: number
+    tokenHash: number
+    expiresAt: number
+    usedAt: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type UserOnboardingTokenMinAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    tokenHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+  }
+
+  export type UserOnboardingTokenMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    tokenHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+  }
+
+  export type UserOnboardingTokenCountAggregateInputType = {
+    id?: true
+    userId?: true
+    type?: true
+    tokenHash?: true
+    expiresAt?: true
+    usedAt?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type UserOnboardingTokenAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserOnboardingToken to aggregate.
+     */
+    where?: UserOnboardingTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnboardingTokens to fetch.
+     */
+    orderBy?: UserOnboardingTokenOrderByWithRelationInput | UserOnboardingTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserOnboardingTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnboardingTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnboardingTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserOnboardingTokens
+    **/
+    _count?: true | UserOnboardingTokenCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserOnboardingTokenMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserOnboardingTokenMaxAggregateInputType
+  }
+
+  export type GetUserOnboardingTokenAggregateType<T extends UserOnboardingTokenAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserOnboardingToken]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserOnboardingToken[P]>
+      : GetScalarType<T[P], AggregateUserOnboardingToken[P]>
+  }
+
+
+
+
+  export type UserOnboardingTokenGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserOnboardingTokenWhereInput
+    orderBy?: UserOnboardingTokenOrderByWithAggregationInput | UserOnboardingTokenOrderByWithAggregationInput[]
+    by: UserOnboardingTokenScalarFieldEnum[] | UserOnboardingTokenScalarFieldEnum
+    having?: UserOnboardingTokenScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserOnboardingTokenCountAggregateInputType | true
+    _min?: UserOnboardingTokenMinAggregateInputType
+    _max?: UserOnboardingTokenMaxAggregateInputType
+  }
+
+  export type UserOnboardingTokenGroupByOutputType = {
+    id: string
+    userId: string
+    type: $Enums.UserOnboardingTokenType
+    tokenHash: string
+    expiresAt: Date
+    usedAt: Date | null
+    createdAt: Date
+    _count: UserOnboardingTokenCountAggregateOutputType | null
+    _min: UserOnboardingTokenMinAggregateOutputType | null
+    _max: UserOnboardingTokenMaxAggregateOutputType | null
+  }
+
+  type GetUserOnboardingTokenGroupByPayload<T extends UserOnboardingTokenGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserOnboardingTokenGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserOnboardingTokenGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserOnboardingTokenGroupByOutputType[P]>
+            : GetScalarType<T[P], UserOnboardingTokenGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserOnboardingTokenSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userOnboardingToken"]>
+
+  export type UserOnboardingTokenSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userOnboardingToken"]>
+
+  export type UserOnboardingTokenSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userOnboardingToken"]>
+
+  export type UserOnboardingTokenSelectScalar = {
+    id?: boolean
+    userId?: boolean
+    type?: boolean
+    tokenHash?: boolean
+    expiresAt?: boolean
+    usedAt?: boolean
+    createdAt?: boolean
+  }
+
+  export type UserOnboardingTokenOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "type" | "tokenHash" | "expiresAt" | "usedAt" | "createdAt", ExtArgs["result"]["userOnboardingToken"]>
+  export type UserOnboardingTokenInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type UserOnboardingTokenIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type UserOnboardingTokenIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $UserOnboardingTokenPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserOnboardingToken"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      type: $Enums.UserOnboardingTokenType
+      tokenHash: string
+      expiresAt: Date
+      usedAt: Date | null
+      createdAt: Date
+    }, ExtArgs["result"]["userOnboardingToken"]>
+    composites: {}
+  }
+
+  type UserOnboardingTokenGetPayload<S extends boolean | null | undefined | UserOnboardingTokenDefaultArgs> = $Result.GetResult<Prisma.$UserOnboardingTokenPayload, S>
+
+  type UserOnboardingTokenCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserOnboardingTokenFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserOnboardingTokenCountAggregateInputType | true
+    }
+
+  export interface UserOnboardingTokenDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserOnboardingToken'], meta: { name: 'UserOnboardingToken' } }
+    /**
+     * Find zero or one UserOnboardingToken that matches the filter.
+     * @param {UserOnboardingTokenFindUniqueArgs} args - Arguments to find a UserOnboardingToken
+     * @example
+     * // Get one UserOnboardingToken
+     * const userOnboardingToken = await prisma.userOnboardingToken.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserOnboardingTokenFindUniqueArgs>(args: SelectSubset<T, UserOnboardingTokenFindUniqueArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserOnboardingToken that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserOnboardingTokenFindUniqueOrThrowArgs} args - Arguments to find a UserOnboardingToken
+     * @example
+     * // Get one UserOnboardingToken
+     * const userOnboardingToken = await prisma.userOnboardingToken.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserOnboardingTokenFindUniqueOrThrowArgs>(args: SelectSubset<T, UserOnboardingTokenFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserOnboardingToken that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnboardingTokenFindFirstArgs} args - Arguments to find a UserOnboardingToken
+     * @example
+     * // Get one UserOnboardingToken
+     * const userOnboardingToken = await prisma.userOnboardingToken.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserOnboardingTokenFindFirstArgs>(args?: SelectSubset<T, UserOnboardingTokenFindFirstArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserOnboardingToken that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnboardingTokenFindFirstOrThrowArgs} args - Arguments to find a UserOnboardingToken
+     * @example
+     * // Get one UserOnboardingToken
+     * const userOnboardingToken = await prisma.userOnboardingToken.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserOnboardingTokenFindFirstOrThrowArgs>(args?: SelectSubset<T, UserOnboardingTokenFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserOnboardingTokens that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnboardingTokenFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserOnboardingTokens
+     * const userOnboardingTokens = await prisma.userOnboardingToken.findMany()
+     * 
+     * // Get first 10 UserOnboardingTokens
+     * const userOnboardingTokens = await prisma.userOnboardingToken.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userOnboardingTokenWithIdOnly = await prisma.userOnboardingToken.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserOnboardingTokenFindManyArgs>(args?: SelectSubset<T, UserOnboardingTokenFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserOnboardingToken.
+     * @param {UserOnboardingTokenCreateArgs} args - Arguments to create a UserOnboardingToken.
+     * @example
+     * // Create one UserOnboardingToken
+     * const UserOnboardingToken = await prisma.userOnboardingToken.create({
+     *   data: {
+     *     // ... data to create a UserOnboardingToken
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserOnboardingTokenCreateArgs>(args: SelectSubset<T, UserOnboardingTokenCreateArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserOnboardingTokens.
+     * @param {UserOnboardingTokenCreateManyArgs} args - Arguments to create many UserOnboardingTokens.
+     * @example
+     * // Create many UserOnboardingTokens
+     * const userOnboardingToken = await prisma.userOnboardingToken.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserOnboardingTokenCreateManyArgs>(args?: SelectSubset<T, UserOnboardingTokenCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserOnboardingTokens and returns the data saved in the database.
+     * @param {UserOnboardingTokenCreateManyAndReturnArgs} args - Arguments to create many UserOnboardingTokens.
+     * @example
+     * // Create many UserOnboardingTokens
+     * const userOnboardingToken = await prisma.userOnboardingToken.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserOnboardingTokens and only return the `id`
+     * const userOnboardingTokenWithIdOnly = await prisma.userOnboardingToken.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserOnboardingTokenCreateManyAndReturnArgs>(args?: SelectSubset<T, UserOnboardingTokenCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserOnboardingToken.
+     * @param {UserOnboardingTokenDeleteArgs} args - Arguments to delete one UserOnboardingToken.
+     * @example
+     * // Delete one UserOnboardingToken
+     * const UserOnboardingToken = await prisma.userOnboardingToken.delete({
+     *   where: {
+     *     // ... filter to delete one UserOnboardingToken
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserOnboardingTokenDeleteArgs>(args: SelectSubset<T, UserOnboardingTokenDeleteArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserOnboardingToken.
+     * @param {UserOnboardingTokenUpdateArgs} args - Arguments to update one UserOnboardingToken.
+     * @example
+     * // Update one UserOnboardingToken
+     * const userOnboardingToken = await prisma.userOnboardingToken.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserOnboardingTokenUpdateArgs>(args: SelectSubset<T, UserOnboardingTokenUpdateArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserOnboardingTokens.
+     * @param {UserOnboardingTokenDeleteManyArgs} args - Arguments to filter UserOnboardingTokens to delete.
+     * @example
+     * // Delete a few UserOnboardingTokens
+     * const { count } = await prisma.userOnboardingToken.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserOnboardingTokenDeleteManyArgs>(args?: SelectSubset<T, UserOnboardingTokenDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserOnboardingTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnboardingTokenUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserOnboardingTokens
+     * const userOnboardingToken = await prisma.userOnboardingToken.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserOnboardingTokenUpdateManyArgs>(args: SelectSubset<T, UserOnboardingTokenUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserOnboardingTokens and returns the data updated in the database.
+     * @param {UserOnboardingTokenUpdateManyAndReturnArgs} args - Arguments to update many UserOnboardingTokens.
+     * @example
+     * // Update many UserOnboardingTokens
+     * const userOnboardingToken = await prisma.userOnboardingToken.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserOnboardingTokens and only return the `id`
+     * const userOnboardingTokenWithIdOnly = await prisma.userOnboardingToken.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserOnboardingTokenUpdateManyAndReturnArgs>(args: SelectSubset<T, UserOnboardingTokenUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserOnboardingToken.
+     * @param {UserOnboardingTokenUpsertArgs} args - Arguments to update or create a UserOnboardingToken.
+     * @example
+     * // Update or create a UserOnboardingToken
+     * const userOnboardingToken = await prisma.userOnboardingToken.upsert({
+     *   create: {
+     *     // ... data to create a UserOnboardingToken
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserOnboardingToken we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserOnboardingTokenUpsertArgs>(args: SelectSubset<T, UserOnboardingTokenUpsertArgs<ExtArgs>>): Prisma__UserOnboardingTokenClient<$Result.GetResult<Prisma.$UserOnboardingTokenPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserOnboardingTokens.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnboardingTokenCountArgs} args - Arguments to filter UserOnboardingTokens to count.
+     * @example
+     * // Count the number of UserOnboardingTokens
+     * const count = await prisma.userOnboardingToken.count({
+     *   where: {
+     *     // ... the filter for the UserOnboardingTokens we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserOnboardingTokenCountArgs>(
+      args?: Subset<T, UserOnboardingTokenCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserOnboardingTokenCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserOnboardingToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnboardingTokenAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserOnboardingTokenAggregateArgs>(args: Subset<T, UserOnboardingTokenAggregateArgs>): Prisma.PrismaPromise<GetUserOnboardingTokenAggregateType<T>>
+
+    /**
+     * Group by UserOnboardingToken.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserOnboardingTokenGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserOnboardingTokenGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserOnboardingTokenGroupByArgs['orderBy'] }
+        : { orderBy?: UserOnboardingTokenGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserOnboardingTokenGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserOnboardingTokenGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserOnboardingToken model
+   */
+  readonly fields: UserOnboardingTokenFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserOnboardingToken.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserOnboardingTokenClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserOnboardingToken model
+   */
+  interface UserOnboardingTokenFieldRefs {
+    readonly id: FieldRef<"UserOnboardingToken", 'String'>
+    readonly userId: FieldRef<"UserOnboardingToken", 'String'>
+    readonly type: FieldRef<"UserOnboardingToken", 'UserOnboardingTokenType'>
+    readonly tokenHash: FieldRef<"UserOnboardingToken", 'String'>
+    readonly expiresAt: FieldRef<"UserOnboardingToken", 'DateTime'>
+    readonly usedAt: FieldRef<"UserOnboardingToken", 'DateTime'>
+    readonly createdAt: FieldRef<"UserOnboardingToken", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserOnboardingToken findUnique
+   */
+  export type UserOnboardingTokenFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which UserOnboardingToken to fetch.
+     */
+    where: UserOnboardingTokenWhereUniqueInput
+  }
+
+  /**
+   * UserOnboardingToken findUniqueOrThrow
+   */
+  export type UserOnboardingTokenFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which UserOnboardingToken to fetch.
+     */
+    where: UserOnboardingTokenWhereUniqueInput
+  }
+
+  /**
+   * UserOnboardingToken findFirst
+   */
+  export type UserOnboardingTokenFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which UserOnboardingToken to fetch.
+     */
+    where?: UserOnboardingTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnboardingTokens to fetch.
+     */
+    orderBy?: UserOnboardingTokenOrderByWithRelationInput | UserOnboardingTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserOnboardingTokens.
+     */
+    cursor?: UserOnboardingTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnboardingTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnboardingTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserOnboardingTokens.
+     */
+    distinct?: UserOnboardingTokenScalarFieldEnum | UserOnboardingTokenScalarFieldEnum[]
+  }
+
+  /**
+   * UserOnboardingToken findFirstOrThrow
+   */
+  export type UserOnboardingTokenFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which UserOnboardingToken to fetch.
+     */
+    where?: UserOnboardingTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnboardingTokens to fetch.
+     */
+    orderBy?: UserOnboardingTokenOrderByWithRelationInput | UserOnboardingTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserOnboardingTokens.
+     */
+    cursor?: UserOnboardingTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnboardingTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnboardingTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserOnboardingTokens.
+     */
+    distinct?: UserOnboardingTokenScalarFieldEnum | UserOnboardingTokenScalarFieldEnum[]
+  }
+
+  /**
+   * UserOnboardingToken findMany
+   */
+  export type UserOnboardingTokenFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * Filter, which UserOnboardingTokens to fetch.
+     */
+    where?: UserOnboardingTokenWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserOnboardingTokens to fetch.
+     */
+    orderBy?: UserOnboardingTokenOrderByWithRelationInput | UserOnboardingTokenOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserOnboardingTokens.
+     */
+    cursor?: UserOnboardingTokenWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserOnboardingTokens from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserOnboardingTokens.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserOnboardingTokens.
+     */
+    distinct?: UserOnboardingTokenScalarFieldEnum | UserOnboardingTokenScalarFieldEnum[]
+  }
+
+  /**
+   * UserOnboardingToken create
+   */
+  export type UserOnboardingTokenCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserOnboardingToken.
+     */
+    data: XOR<UserOnboardingTokenCreateInput, UserOnboardingTokenUncheckedCreateInput>
+  }
+
+  /**
+   * UserOnboardingToken createMany
+   */
+  export type UserOnboardingTokenCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserOnboardingTokens.
+     */
+    data: UserOnboardingTokenCreateManyInput | UserOnboardingTokenCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserOnboardingToken createManyAndReturn
+   */
+  export type UserOnboardingTokenCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserOnboardingTokens.
+     */
+    data: UserOnboardingTokenCreateManyInput | UserOnboardingTokenCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserOnboardingToken update
+   */
+  export type UserOnboardingTokenUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserOnboardingToken.
+     */
+    data: XOR<UserOnboardingTokenUpdateInput, UserOnboardingTokenUncheckedUpdateInput>
+    /**
+     * Choose, which UserOnboardingToken to update.
+     */
+    where: UserOnboardingTokenWhereUniqueInput
+  }
+
+  /**
+   * UserOnboardingToken updateMany
+   */
+  export type UserOnboardingTokenUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserOnboardingTokens.
+     */
+    data: XOR<UserOnboardingTokenUpdateManyMutationInput, UserOnboardingTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which UserOnboardingTokens to update
+     */
+    where?: UserOnboardingTokenWhereInput
+    /**
+     * Limit how many UserOnboardingTokens to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserOnboardingToken updateManyAndReturn
+   */
+  export type UserOnboardingTokenUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * The data used to update UserOnboardingTokens.
+     */
+    data: XOR<UserOnboardingTokenUpdateManyMutationInput, UserOnboardingTokenUncheckedUpdateManyInput>
+    /**
+     * Filter which UserOnboardingTokens to update
+     */
+    where?: UserOnboardingTokenWhereInput
+    /**
+     * Limit how many UserOnboardingTokens to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserOnboardingToken upsert
+   */
+  export type UserOnboardingTokenUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserOnboardingToken to update in case it exists.
+     */
+    where: UserOnboardingTokenWhereUniqueInput
+    /**
+     * In case the UserOnboardingToken found by the `where` argument doesn't exist, create a new UserOnboardingToken with this data.
+     */
+    create: XOR<UserOnboardingTokenCreateInput, UserOnboardingTokenUncheckedCreateInput>
+    /**
+     * In case the UserOnboardingToken was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserOnboardingTokenUpdateInput, UserOnboardingTokenUncheckedUpdateInput>
+  }
+
+  /**
+   * UserOnboardingToken delete
+   */
+  export type UserOnboardingTokenDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
+    /**
+     * Filter which UserOnboardingToken to delete.
+     */
+    where: UserOnboardingTokenWhereUniqueInput
+  }
+
+  /**
+   * UserOnboardingToken deleteMany
+   */
+  export type UserOnboardingTokenDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserOnboardingTokens to delete
+     */
+    where?: UserOnboardingTokenWhereInput
+    /**
+     * Limit how many UserOnboardingTokens to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserOnboardingToken without action
+   */
+  export type UserOnboardingTokenDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserOnboardingToken
+     */
+    select?: UserOnboardingTokenSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserOnboardingToken
+     */
+    omit?: UserOnboardingTokenOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserOnboardingTokenInclude<ExtArgs> | null
   }
 
 
@@ -17640,6 +19001,9 @@ export namespace Prisma {
     handoffStartedAt: Date | null
     confirmedAt: Date | null
     lastError: string | null
+    reconciledAt: Date | null
+    reconciledByUserId: string | null
+    reconciliationNotes: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -17653,6 +19017,9 @@ export namespace Prisma {
     handoffStartedAt: Date | null
     confirmedAt: Date | null
     lastError: string | null
+    reconciledAt: Date | null
+    reconciledByUserId: string | null
+    reconciliationNotes: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -17666,6 +19033,9 @@ export namespace Prisma {
     handoffStartedAt: number
     confirmedAt: number
     lastError: number
+    reconciledAt: number
+    reconciledByUserId: number
+    reconciliationNotes: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -17681,6 +19051,9 @@ export namespace Prisma {
     handoffStartedAt?: true
     confirmedAt?: true
     lastError?: true
+    reconciledAt?: true
+    reconciledByUserId?: true
+    reconciliationNotes?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -17694,6 +19067,9 @@ export namespace Prisma {
     handoffStartedAt?: true
     confirmedAt?: true
     lastError?: true
+    reconciledAt?: true
+    reconciledByUserId?: true
+    reconciliationNotes?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -17707,6 +19083,9 @@ export namespace Prisma {
     handoffStartedAt?: true
     confirmedAt?: true
     lastError?: true
+    reconciledAt?: true
+    reconciledByUserId?: true
+    reconciliationNotes?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -17793,6 +19172,9 @@ export namespace Prisma {
     handoffStartedAt: Date | null
     confirmedAt: Date | null
     lastError: string | null
+    reconciledAt: Date | null
+    reconciledByUserId: string | null
+    reconciliationNotes: string | null
     createdAt: Date
     updatedAt: Date
     _count: ClientOrderConfirmationCountAggregateOutputType | null
@@ -17823,6 +19205,9 @@ export namespace Prisma {
     handoffStartedAt?: boolean
     confirmedAt?: boolean
     lastError?: boolean
+    reconciledAt?: boolean
+    reconciledByUserId?: boolean
+    reconciliationNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -17837,6 +19222,9 @@ export namespace Prisma {
     handoffStartedAt?: boolean
     confirmedAt?: boolean
     lastError?: boolean
+    reconciledAt?: boolean
+    reconciledByUserId?: boolean
+    reconciliationNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -17851,6 +19239,9 @@ export namespace Prisma {
     handoffStartedAt?: boolean
     confirmedAt?: boolean
     lastError?: boolean
+    reconciledAt?: boolean
+    reconciledByUserId?: boolean
+    reconciliationNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -17865,11 +19256,14 @@ export namespace Prisma {
     handoffStartedAt?: boolean
     confirmedAt?: boolean
     lastError?: boolean
+    reconciledAt?: boolean
+    reconciledByUserId?: boolean
+    reconciliationNotes?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ClientOrderConfirmationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "tokenHash" | "status" | "expiresAt" | "handoffStartedAt" | "confirmedAt" | "lastError" | "createdAt" | "updatedAt", ExtArgs["result"]["clientOrderConfirmation"]>
+  export type ClientOrderConfirmationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "tokenHash" | "status" | "expiresAt" | "handoffStartedAt" | "confirmedAt" | "lastError" | "reconciledAt" | "reconciledByUserId" | "reconciliationNotes" | "createdAt" | "updatedAt", ExtArgs["result"]["clientOrderConfirmation"]>
   export type ClientOrderConfirmationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }
@@ -17894,6 +19288,9 @@ export namespace Prisma {
       handoffStartedAt: Date | null
       confirmedAt: Date | null
       lastError: string | null
+      reconciledAt: Date | null
+      reconciledByUserId: string | null
+      reconciliationNotes: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["clientOrderConfirmation"]>
@@ -18328,6 +19725,9 @@ export namespace Prisma {
     readonly handoffStartedAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
     readonly confirmedAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
     readonly lastError: FieldRef<"ClientOrderConfirmation", 'String'>
+    readonly reconciledAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
+    readonly reconciledByUserId: FieldRef<"ClientOrderConfirmation", 'String'>
+    readonly reconciliationNotes: FieldRef<"ClientOrderConfirmation", 'String'>
     readonly createdAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
     readonly updatedAt: FieldRef<"ClientOrderConfirmation", 'DateTime'>
   }
@@ -26640,6 +28040,12 @@ export namespace Prisma {
     email: 'email',
     passwordHash: 'passwordHash',
     role: 'role',
+    status: 'status',
+    sessionVersion: 'sessionVersion',
+    invitedAt: 'invitedAt',
+    activatedAt: 'activatedAt',
+    disabledAt: 'disabledAt',
+    passwordChangedAt: 'passwordChangedAt',
     firmId: 'firmId',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
@@ -26672,6 +28078,19 @@ export namespace Prisma {
   };
 
   export type BrokerAccountScalarFieldEnum = (typeof BrokerAccountScalarFieldEnum)[keyof typeof BrokerAccountScalarFieldEnum]
+
+
+  export const UserOnboardingTokenScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    type: 'type',
+    tokenHash: 'tokenHash',
+    expiresAt: 'expiresAt',
+    usedAt: 'usedAt',
+    createdAt: 'createdAt'
+  };
+
+  export type UserOnboardingTokenScalarFieldEnum = (typeof UserOnboardingTokenScalarFieldEnum)[keyof typeof UserOnboardingTokenScalarFieldEnum]
 
 
   export const PortfolioScalarFieldEnum: {
@@ -26815,6 +28234,9 @@ export namespace Prisma {
     handoffStartedAt: 'handoffStartedAt',
     confirmedAt: 'confirmedAt',
     lastError: 'lastError',
+    reconciledAt: 'reconciledAt',
+    reconciledByUserId: 'reconciledByUserId',
+    reconciliationNotes: 'reconciliationNotes',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -27009,6 +28431,48 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'UserStatus'
+   */
+  export type EnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserStatus[]'
+   */
+  export type ListEnumUserStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int'
+   */
+  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+  /**
+   * Reference to a field of type 'Int[]'
+   */
+  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserOnboardingTokenType'
+   */
+  export type EnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserOnboardingTokenType'>
+    
+
+
+  /**
+   * Reference to a field of type 'UserOnboardingTokenType[]'
+   */
+  export type ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'UserOnboardingTokenType[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Decimal'
    */
   export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -27033,20 +28497,6 @@ export namespace Prisma {
    * Reference to a field of type 'CashTransactionType[]'
    */
   export type ListEnumCashTransactionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CashTransactionType[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int'
-   */
-  export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-  /**
-   * Reference to a field of type 'Int[]'
-   */
-  export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -27297,26 +28747,40 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     name?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
-    passwordHash?: StringFilter<"User"> | string
+    passwordHash?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    status?: EnumUserStatusFilter<"User"> | $Enums.UserStatus
+    sessionVersion?: IntFilter<"User"> | number
+    invitedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    activatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    disabledAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    passwordChangedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     firmId?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
     auditLogs?: AuditLogListRelationFilter
+    onboardingTokens?: UserOnboardingTokenListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    passwordHash?: SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     role?: SortOrder
+    status?: SortOrder
+    sessionVersion?: SortOrder
+    invitedAt?: SortOrderInput | SortOrder
+    activatedAt?: SortOrderInput | SortOrder
+    disabledAt?: SortOrderInput | SortOrder
+    passwordChangedAt?: SortOrderInput | SortOrder
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     firm?: FirmOrderByWithRelationInput
     auditLogs?: AuditLogOrderByRelationAggregateInput
+    onboardingTokens?: UserOnboardingTokenOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -27326,27 +28790,42 @@ export namespace Prisma {
     OR?: UserWhereInput[]
     NOT?: UserWhereInput | UserWhereInput[]
     name?: StringFilter<"User"> | string
-    passwordHash?: StringFilter<"User"> | string
+    passwordHash?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    status?: EnumUserStatusFilter<"User"> | $Enums.UserStatus
+    sessionVersion?: IntFilter<"User"> | number
+    invitedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    activatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    disabledAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    passwordChangedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     firmId?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
     firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
     auditLogs?: AuditLogListRelationFilter
+    onboardingTokens?: UserOnboardingTokenListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
     id?: SortOrder
     name?: SortOrder
     email?: SortOrder
-    passwordHash?: SortOrder
+    passwordHash?: SortOrderInput | SortOrder
     role?: SortOrder
+    status?: SortOrder
+    sessionVersion?: SortOrder
+    invitedAt?: SortOrderInput | SortOrder
+    activatedAt?: SortOrderInput | SortOrder
+    disabledAt?: SortOrderInput | SortOrder
+    passwordChangedAt?: SortOrderInput | SortOrder
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: UserCountOrderByAggregateInput
+    _avg?: UserAvgOrderByAggregateInput
     _max?: UserMaxOrderByAggregateInput
     _min?: UserMinOrderByAggregateInput
+    _sum?: UserSumOrderByAggregateInput
   }
 
   export type UserScalarWhereWithAggregatesInput = {
@@ -27356,8 +28835,14 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"User"> | string
     name?: StringWithAggregatesFilter<"User"> | string
     email?: StringWithAggregatesFilter<"User"> | string
-    passwordHash?: StringWithAggregatesFilter<"User"> | string
+    passwordHash?: StringNullableWithAggregatesFilter<"User"> | string | null
     role?: EnumUserRoleWithAggregatesFilter<"User"> | $Enums.UserRole
+    status?: EnumUserStatusWithAggregatesFilter<"User"> | $Enums.UserStatus
+    sessionVersion?: IntWithAggregatesFilter<"User"> | number
+    invitedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    activatedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    disabledAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
+    passwordChangedAt?: DateTimeNullableWithAggregatesFilter<"User"> | Date | string | null
     firmId?: StringWithAggregatesFilter<"User"> | string
     createdAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"User"> | Date | string
@@ -27516,6 +29001,71 @@ export namespace Prisma {
     archivedAt?: DateTimeNullableWithAggregatesFilter<"BrokerAccount"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"BrokerAccount"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"BrokerAccount"> | Date | string
+  }
+
+  export type UserOnboardingTokenWhereInput = {
+    AND?: UserOnboardingTokenWhereInput | UserOnboardingTokenWhereInput[]
+    OR?: UserOnboardingTokenWhereInput[]
+    NOT?: UserOnboardingTokenWhereInput | UserOnboardingTokenWhereInput[]
+    id?: StringFilter<"UserOnboardingToken"> | string
+    userId?: StringFilter<"UserOnboardingToken"> | string
+    type?: EnumUserOnboardingTokenTypeFilter<"UserOnboardingToken"> | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFilter<"UserOnboardingToken"> | string
+    expiresAt?: DateTimeFilter<"UserOnboardingToken"> | Date | string
+    usedAt?: DateTimeNullableFilter<"UserOnboardingToken"> | Date | string | null
+    createdAt?: DateTimeFilter<"UserOnboardingToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type UserOnboardingTokenOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type UserOnboardingTokenWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    tokenHash?: string
+    AND?: UserOnboardingTokenWhereInput | UserOnboardingTokenWhereInput[]
+    OR?: UserOnboardingTokenWhereInput[]
+    NOT?: UserOnboardingTokenWhereInput | UserOnboardingTokenWhereInput[]
+    userId?: StringFilter<"UserOnboardingToken"> | string
+    type?: EnumUserOnboardingTokenTypeFilter<"UserOnboardingToken"> | $Enums.UserOnboardingTokenType
+    expiresAt?: DateTimeFilter<"UserOnboardingToken"> | Date | string
+    usedAt?: DateTimeNullableFilter<"UserOnboardingToken"> | Date | string | null
+    createdAt?: DateTimeFilter<"UserOnboardingToken"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "tokenHash">
+
+  export type UserOnboardingTokenOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: UserOnboardingTokenCountOrderByAggregateInput
+    _max?: UserOnboardingTokenMaxOrderByAggregateInput
+    _min?: UserOnboardingTokenMinOrderByAggregateInput
+  }
+
+  export type UserOnboardingTokenScalarWhereWithAggregatesInput = {
+    AND?: UserOnboardingTokenScalarWhereWithAggregatesInput | UserOnboardingTokenScalarWhereWithAggregatesInput[]
+    OR?: UserOnboardingTokenScalarWhereWithAggregatesInput[]
+    NOT?: UserOnboardingTokenScalarWhereWithAggregatesInput | UserOnboardingTokenScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UserOnboardingToken"> | string
+    userId?: StringWithAggregatesFilter<"UserOnboardingToken"> | string
+    type?: EnumUserOnboardingTokenTypeWithAggregatesFilter<"UserOnboardingToken"> | $Enums.UserOnboardingTokenType
+    tokenHash?: StringWithAggregatesFilter<"UserOnboardingToken"> | string
+    expiresAt?: DateTimeWithAggregatesFilter<"UserOnboardingToken"> | Date | string
+    usedAt?: DateTimeNullableWithAggregatesFilter<"UserOnboardingToken"> | Date | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"UserOnboardingToken"> | Date | string
   }
 
   export type PortfolioWhereInput = {
@@ -28257,6 +29807,9 @@ export namespace Prisma {
     handoffStartedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
     confirmedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
     lastError?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
+    reconciledAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
+    reconciledByUserId?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
+    reconciliationNotes?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
     createdAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
     updatedAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
@@ -28271,6 +29824,9 @@ export namespace Prisma {
     handoffStartedAt?: SortOrderInput | SortOrder
     confirmedAt?: SortOrderInput | SortOrder
     lastError?: SortOrderInput | SortOrder
+    reconciledAt?: SortOrderInput | SortOrder
+    reconciledByUserId?: SortOrderInput | SortOrder
+    reconciliationNotes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     order?: OrderOrderByWithRelationInput
@@ -28288,6 +29844,9 @@ export namespace Prisma {
     handoffStartedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
     confirmedAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
     lastError?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
+    reconciledAt?: DateTimeNullableFilter<"ClientOrderConfirmation"> | Date | string | null
+    reconciledByUserId?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
+    reconciliationNotes?: StringNullableFilter<"ClientOrderConfirmation"> | string | null
     createdAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
     updatedAt?: DateTimeFilter<"ClientOrderConfirmation"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
@@ -28302,6 +29861,9 @@ export namespace Prisma {
     handoffStartedAt?: SortOrderInput | SortOrder
     confirmedAt?: SortOrderInput | SortOrder
     lastError?: SortOrderInput | SortOrder
+    reconciledAt?: SortOrderInput | SortOrder
+    reconciledByUserId?: SortOrderInput | SortOrder
+    reconciliationNotes?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ClientOrderConfirmationCountOrderByAggregateInput
@@ -28321,6 +29883,9 @@ export namespace Prisma {
     handoffStartedAt?: DateTimeNullableWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string | null
     confirmedAt?: DateTimeNullableWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string | null
     lastError?: StringNullableWithAggregatesFilter<"ClientOrderConfirmation"> | string | null
+    reconciledAt?: DateTimeNullableWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string | null
+    reconciledByUserId?: StringNullableWithAggregatesFilter<"ClientOrderConfirmation"> | string | null
+    reconciliationNotes?: StringNullableWithAggregatesFilter<"ClientOrderConfirmation"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ClientOrderConfirmation"> | Date | string
   }
@@ -28905,56 +30470,90 @@ export namespace Prisma {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutUsersInput
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    onboardingTokens?: UserOnboardingTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    onboardingTokens?: UserOnboardingTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutUsersNestedInput
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    onboardingTokens?: UserOnboardingTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    onboardingTokens?: UserOnboardingTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
@@ -28964,8 +30563,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -28974,8 +30579,14 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -29149,6 +30760,75 @@ export namespace Prisma {
     archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnboardingTokenCreateInput = {
+    id?: string
+    type: $Enums.UserOnboardingTokenType
+    tokenHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutOnboardingTokensInput
+  }
+
+  export type UserOnboardingTokenUncheckedCreateInput = {
+    id?: string
+    userId: string
+    type: $Enums.UserOnboardingTokenType
+    tokenHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type UserOnboardingTokenUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumUserOnboardingTokenTypeFieldUpdateOperationsInput | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutOnboardingTokensNestedInput
+  }
+
+  export type UserOnboardingTokenUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumUserOnboardingTokenTypeFieldUpdateOperationsInput | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnboardingTokenCreateManyInput = {
+    id?: string
+    userId: string
+    type: $Enums.UserOnboardingTokenType
+    tokenHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type UserOnboardingTokenUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumUserOnboardingTokenTypeFieldUpdateOperationsInput | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnboardingTokenUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    type?: EnumUserOnboardingTokenTypeFieldUpdateOperationsInput | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type PortfolioCreateInput = {
@@ -29945,6 +31625,9 @@ export namespace Prisma {
     handoffStartedAt?: Date | string | null
     confirmedAt?: Date | string | null
     lastError?: string | null
+    reconciledAt?: Date | string | null
+    reconciledByUserId?: string | null
+    reconciliationNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutClientConfirmationInput
@@ -29959,6 +31642,9 @@ export namespace Prisma {
     handoffStartedAt?: Date | string | null
     confirmedAt?: Date | string | null
     lastError?: string | null
+    reconciledAt?: Date | string | null
+    reconciledByUserId?: string | null
+    reconciliationNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -29971,6 +31657,9 @@ export namespace Prisma {
     handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciledByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciliationNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutClientConfirmationNestedInput
@@ -29985,6 +31674,9 @@ export namespace Prisma {
     handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciledByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciliationNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -29998,6 +31690,9 @@ export namespace Prisma {
     handoffStartedAt?: Date | string | null
     confirmedAt?: Date | string | null
     lastError?: string | null
+    reconciledAt?: Date | string | null
+    reconciledByUserId?: string | null
+    reconciliationNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30010,6 +31705,9 @@ export namespace Prisma {
     handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciledByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciliationNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30023,6 +31721,9 @@ export namespace Prisma {
     handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciledByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciliationNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30691,61 +32392,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type EnumUserRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
-  }
-
-  export type FirmScalarRelationFilter = {
-    is?: FirmWhereInput
-    isNot?: FirmWhereInput
-  }
-
-  export type UserCountOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    passwordHash?: SortOrder
-    role?: SortOrder
-    firmId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type UserMaxOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    passwordHash?: SortOrder
-    role?: SortOrder
-    firmId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type UserMinOrderByAggregateInput = {
-    id?: SortOrder
-    name?: SortOrder
-    email?: SortOrder
-    passwordHash?: SortOrder
-    role?: SortOrder
-    firmId?: SortOrder
-    createdAt?: SortOrder
-    updatedAt?: SortOrder
-  }
-
-  export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumUserRoleFilter<$PrismaModel>
-    _max?: NestedEnumUserRoleFilter<$PrismaModel>
-  }
-
   export type StringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -30761,6 +32407,189 @@ export namespace Prisma {
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
   }
 
+  export type EnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
+  export type EnumUserStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserStatus | EnumUserStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserStatusFilter<$PrismaModel> | $Enums.UserStatus
+  }
+
+  export type IntFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntFilter<$PrismaModel> | number
+  }
+
+  export type DateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  }
+
+  export type FirmScalarRelationFilter = {
+    is?: FirmWhereInput
+    isNot?: FirmWhereInput
+  }
+
+  export type UserOnboardingTokenListRelationFilter = {
+    every?: UserOnboardingTokenWhereInput
+    some?: UserOnboardingTokenWhereInput
+    none?: UserOnboardingTokenWhereInput
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type UserOnboardingTokenOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserCountOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    passwordHash?: SortOrder
+    role?: SortOrder
+    status?: SortOrder
+    sessionVersion?: SortOrder
+    invitedAt?: SortOrder
+    activatedAt?: SortOrder
+    disabledAt?: SortOrder
+    passwordChangedAt?: SortOrder
+    firmId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserAvgOrderByAggregateInput = {
+    sessionVersion?: SortOrder
+  }
+
+  export type UserMaxOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    passwordHash?: SortOrder
+    role?: SortOrder
+    status?: SortOrder
+    sessionVersion?: SortOrder
+    invitedAt?: SortOrder
+    activatedAt?: SortOrder
+    disabledAt?: SortOrder
+    passwordChangedAt?: SortOrder
+    firmId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserMinOrderByAggregateInput = {
+    id?: SortOrder
+    name?: SortOrder
+    email?: SortOrder
+    passwordHash?: SortOrder
+    role?: SortOrder
+    status?: SortOrder
+    sessionVersion?: SortOrder
+    invitedAt?: SortOrder
+    activatedAt?: SortOrder
+    disabledAt?: SortOrder
+    passwordChangedAt?: SortOrder
+    firmId?: SortOrder
+    createdAt?: SortOrder
+    updatedAt?: SortOrder
+  }
+
+  export type UserSumOrderByAggregateInput = {
+    sessionVersion?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    mode?: QueryMode
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type EnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
+  export type EnumUserStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserStatus | EnumUserStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserStatusWithAggregatesFilter<$PrismaModel> | $Enums.UserStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserStatusFilter<$PrismaModel>
+    _max?: NestedEnumUserStatusFilter<$PrismaModel>
+  }
+
+  export type IntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedDateTimeNullableFilter<$PrismaModel>
+    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
   export type BrokerAccountListRelationFilter = {
     every?: BrokerAccountWhereInput
     some?: BrokerAccountWhereInput
@@ -30771,11 +32600,6 @@ export namespace Prisma {
     every?: PortfolioWhereInput
     some?: PortfolioWhereInput
     none?: PortfolioWhereInput
-  }
-
-  export type SortOrderInput = {
-    sort: SortOrder
-    nulls?: NullsOrder
   }
 
   export type BrokerAccountOrderByRelationAggregateInput = {
@@ -30811,35 +32635,6 @@ export namespace Prisma {
     firmId?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
-  }
-
-  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: string | StringFieldRefInput<$PrismaModel> | null
-    in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    notIn?: string[] | ListStringFieldRefInput<$PrismaModel> | null
-    lt?: string | StringFieldRefInput<$PrismaModel>
-    lte?: string | StringFieldRefInput<$PrismaModel>
-    gt?: string | StringFieldRefInput<$PrismaModel>
-    gte?: string | StringFieldRefInput<$PrismaModel>
-    contains?: string | StringFieldRefInput<$PrismaModel>
-    startsWith?: string | StringFieldRefInput<$PrismaModel>
-    endsWith?: string | StringFieldRefInput<$PrismaModel>
-    mode?: QueryMode
-    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedStringNullableFilter<$PrismaModel>
-    _max?: NestedStringNullableFilter<$PrismaModel>
-  }
-
-  export type DateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type ClientScalarRelationFilter = {
@@ -30940,18 +32735,56 @@ export namespace Prisma {
     updatedAt?: SortOrder
   }
 
-  export type DateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableWithAggregatesFilter<$PrismaModel> | Date | string | null
-    _count?: NestedIntNullableFilter<$PrismaModel>
-    _min?: NestedDateTimeNullableFilter<$PrismaModel>
-    _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  export type EnumUserOnboardingTokenTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserOnboardingTokenType | EnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserOnboardingTokenTypeFilter<$PrismaModel> | $Enums.UserOnboardingTokenType
+  }
+
+  export type UserScalarRelationFilter = {
+    is?: UserWhereInput
+    isNot?: UserWhereInput
+  }
+
+  export type UserOnboardingTokenCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserOnboardingTokenMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserOnboardingTokenMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    type?: SortOrder
+    tokenHash?: SortOrder
+    expiresAt?: SortOrder
+    usedAt?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type EnumUserOnboardingTokenTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserOnboardingTokenType | EnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserOnboardingTokenTypeWithAggregatesFilter<$PrismaModel> | $Enums.UserOnboardingTokenType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserOnboardingTokenTypeFilter<$PrismaModel>
+    _max?: NestedEnumUserOnboardingTokenTypeFilter<$PrismaModel>
   }
 
   export type DecimalFilter<$PrismaModel = never> = {
@@ -31186,17 +33019,6 @@ export namespace Prisma {
     _max?: NestedEnumCashTransactionTypeFilter<$PrismaModel>
   }
 
-  export type IntFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntFilter<$PrismaModel> | number
-  }
-
   export type HoldingPortfolioIdBrokerAccountIdSymbolExchangeCompoundUniqueInput = {
     portfolioId: string
     brokerAccountId: string
@@ -31248,22 +33070,6 @@ export namespace Prisma {
   export type HoldingSumOrderByAggregateInput = {
     quantity?: SortOrder
     averagePrice?: SortOrder
-  }
-
-  export type IntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
   }
 
   export type EnumOrderSideFilter<$PrismaModel = never> = {
@@ -31715,6 +33521,9 @@ export namespace Prisma {
     handoffStartedAt?: SortOrder
     confirmedAt?: SortOrder
     lastError?: SortOrder
+    reconciledAt?: SortOrder
+    reconciledByUserId?: SortOrder
+    reconciliationNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -31728,6 +33537,9 @@ export namespace Prisma {
     handoffStartedAt?: SortOrder
     confirmedAt?: SortOrder
     lastError?: SortOrder
+    reconciledAt?: SortOrder
+    reconciledByUserId?: SortOrder
+    reconciliationNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -31741,6 +33553,9 @@ export namespace Prisma {
     handoffStartedAt?: SortOrder
     confirmedAt?: SortOrder
     lastError?: SortOrder
+    reconciledAt?: SortOrder
+    reconciledByUserId?: SortOrder
+    reconciliationNotes?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32362,6 +34177,13 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
+  export type UserOnboardingTokenCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserOnboardingTokenCreateWithoutUserInput, UserOnboardingTokenUncheckedCreateWithoutUserInput> | UserOnboardingTokenCreateWithoutUserInput[] | UserOnboardingTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserOnboardingTokenCreateOrConnectWithoutUserInput | UserOnboardingTokenCreateOrConnectWithoutUserInput[]
+    createMany?: UserOnboardingTokenCreateManyUserInputEnvelope
+    connect?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+  }
+
   export type AuditLogUncheckedCreateNestedManyWithoutActorInput = {
     create?: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput> | AuditLogCreateWithoutActorInput[] | AuditLogUncheckedCreateWithoutActorInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutActorInput | AuditLogCreateOrConnectWithoutActorInput[]
@@ -32369,8 +34191,35 @@ export namespace Prisma {
     connect?: AuditLogWhereUniqueInput | AuditLogWhereUniqueInput[]
   }
 
+  export type UserOnboardingTokenUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserOnboardingTokenCreateWithoutUserInput, UserOnboardingTokenUncheckedCreateWithoutUserInput> | UserOnboardingTokenCreateWithoutUserInput[] | UserOnboardingTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserOnboardingTokenCreateOrConnectWithoutUserInput | UserOnboardingTokenCreateOrConnectWithoutUserInput[]
+    createMany?: UserOnboardingTokenCreateManyUserInputEnvelope
+    connect?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
+  }
+
   export type EnumUserRoleFieldUpdateOperationsInput = {
     set?: $Enums.UserRole
+  }
+
+  export type EnumUserStatusFieldUpdateOperationsInput = {
+    set?: $Enums.UserStatus
+  }
+
+  export type IntFieldUpdateOperationsInput = {
+    set?: number
+    increment?: number
+    decrement?: number
+    multiply?: number
+    divide?: number
+  }
+
+  export type NullableDateTimeFieldUpdateOperationsInput = {
+    set?: Date | string | null
   }
 
   export type FirmUpdateOneRequiredWithoutUsersNestedInput = {
@@ -32395,6 +34244,20 @@ export namespace Prisma {
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
   }
 
+  export type UserOnboardingTokenUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserOnboardingTokenCreateWithoutUserInput, UserOnboardingTokenUncheckedCreateWithoutUserInput> | UserOnboardingTokenCreateWithoutUserInput[] | UserOnboardingTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserOnboardingTokenCreateOrConnectWithoutUserInput | UserOnboardingTokenCreateOrConnectWithoutUserInput[]
+    upsert?: UserOnboardingTokenUpsertWithWhereUniqueWithoutUserInput | UserOnboardingTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserOnboardingTokenCreateManyUserInputEnvelope
+    set?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    disconnect?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    delete?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    connect?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    update?: UserOnboardingTokenUpdateWithWhereUniqueWithoutUserInput | UserOnboardingTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserOnboardingTokenUpdateManyWithWhereWithoutUserInput | UserOnboardingTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserOnboardingTokenScalarWhereInput | UserOnboardingTokenScalarWhereInput[]
+  }
+
   export type AuditLogUncheckedUpdateManyWithoutActorNestedInput = {
     create?: XOR<AuditLogCreateWithoutActorInput, AuditLogUncheckedCreateWithoutActorInput> | AuditLogCreateWithoutActorInput[] | AuditLogUncheckedCreateWithoutActorInput[]
     connectOrCreate?: AuditLogCreateOrConnectWithoutActorInput | AuditLogCreateOrConnectWithoutActorInput[]
@@ -32407,6 +34270,20 @@ export namespace Prisma {
     update?: AuditLogUpdateWithWhereUniqueWithoutActorInput | AuditLogUpdateWithWhereUniqueWithoutActorInput[]
     updateMany?: AuditLogUpdateManyWithWhereWithoutActorInput | AuditLogUpdateManyWithWhereWithoutActorInput[]
     deleteMany?: AuditLogScalarWhereInput | AuditLogScalarWhereInput[]
+  }
+
+  export type UserOnboardingTokenUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserOnboardingTokenCreateWithoutUserInput, UserOnboardingTokenUncheckedCreateWithoutUserInput> | UserOnboardingTokenCreateWithoutUserInput[] | UserOnboardingTokenUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserOnboardingTokenCreateOrConnectWithoutUserInput | UserOnboardingTokenCreateOrConnectWithoutUserInput[]
+    upsert?: UserOnboardingTokenUpsertWithWhereUniqueWithoutUserInput | UserOnboardingTokenUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserOnboardingTokenCreateManyUserInputEnvelope
+    set?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    disconnect?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    delete?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    connect?: UserOnboardingTokenWhereUniqueInput | UserOnboardingTokenWhereUniqueInput[]
+    update?: UserOnboardingTokenUpdateWithWhereUniqueWithoutUserInput | UserOnboardingTokenUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserOnboardingTokenUpdateManyWithWhereWithoutUserInput | UserOnboardingTokenUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserOnboardingTokenScalarWhereInput | UserOnboardingTokenScalarWhereInput[]
   }
 
   export type FirmCreateNestedOneWithoutClientsInput = {
@@ -32441,10 +34318,6 @@ export namespace Prisma {
     connectOrCreate?: PortfolioCreateOrConnectWithoutClientInput | PortfolioCreateOrConnectWithoutClientInput[]
     createMany?: PortfolioCreateManyClientInputEnvelope
     connect?: PortfolioWhereUniqueInput | PortfolioWhereUniqueInput[]
-  }
-
-  export type NullableStringFieldUpdateOperationsInput = {
-    set?: string | null
   }
 
   export type FirmUpdateOneRequiredWithoutClientsNestedInput = {
@@ -32597,10 +34470,6 @@ export namespace Prisma {
     create?: XOR<BrokerConnectionCreateWithoutBrokerAccountInput, BrokerConnectionUncheckedCreateWithoutBrokerAccountInput>
     connectOrCreate?: BrokerConnectionCreateOrConnectWithoutBrokerAccountInput
     connect?: BrokerConnectionWhereUniqueInput
-  }
-
-  export type NullableDateTimeFieldUpdateOperationsInput = {
-    set?: Date | string | null
   }
 
   export type ClientUpdateOneRequiredWithoutBrokerAccountsNestedInput = {
@@ -32769,6 +34638,24 @@ export namespace Prisma {
     delete?: BrokerConnectionWhereInput | boolean
     connect?: BrokerConnectionWhereUniqueInput
     update?: XOR<XOR<BrokerConnectionUpdateToOneWithWhereWithoutBrokerAccountInput, BrokerConnectionUpdateWithoutBrokerAccountInput>, BrokerConnectionUncheckedUpdateWithoutBrokerAccountInput>
+  }
+
+  export type UserCreateNestedOneWithoutOnboardingTokensInput = {
+    create?: XOR<UserCreateWithoutOnboardingTokensInput, UserUncheckedCreateWithoutOnboardingTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOnboardingTokensInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumUserOnboardingTokenTypeFieldUpdateOperationsInput = {
+    set?: $Enums.UserOnboardingTokenType
+  }
+
+  export type UserUpdateOneRequiredWithoutOnboardingTokensNestedInput = {
+    create?: XOR<UserCreateWithoutOnboardingTokensInput, UserUncheckedCreateWithoutOnboardingTokensInput>
+    connectOrCreate?: UserCreateOrConnectWithoutOnboardingTokensInput
+    upsert?: UserUpsertWithoutOnboardingTokensInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutOnboardingTokensInput, UserUpdateWithoutOnboardingTokensInput>, UserUncheckedUpdateWithoutOnboardingTokensInput>
   }
 
   export type ClientCreateNestedOneWithoutPortfoliosInput = {
@@ -33105,14 +34992,6 @@ export namespace Prisma {
     create?: XOR<BrokerAccountCreateWithoutHoldingsInput, BrokerAccountUncheckedCreateWithoutHoldingsInput>
     connectOrCreate?: BrokerAccountCreateOrConnectWithoutHoldingsInput
     connect?: BrokerAccountWhereUniqueInput
-  }
-
-  export type IntFieldUpdateOperationsInput = {
-    set?: number
-    increment?: number
-    decrement?: number
-    multiply?: number
-    divide?: number
   }
 
   export type PortfolioUpdateOneRequiredWithoutHoldingsNestedInput = {
@@ -33712,23 +35591,6 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
-  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
-  }
-
-  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
-    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
-    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumUserRoleFilter<$PrismaModel>
-    _max?: NestedEnumUserRoleFilter<$PrismaModel>
-  }
-
   export type NestedStringNullableFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel> | null
     in?: string[] | ListStringFieldRefInput<$PrismaModel> | null
@@ -33741,6 +35603,31 @@ export namespace Prisma {
     startsWith?: string | StringFieldRefInput<$PrismaModel>
     endsWith?: string | StringFieldRefInput<$PrismaModel>
     not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedEnumUserRoleFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleFilter<$PrismaModel> | $Enums.UserRole
+  }
+
+  export type NestedEnumUserStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserStatus | EnumUserStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserStatusFilter<$PrismaModel> | $Enums.UserStatus
+  }
+
+  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
   }
 
   export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33771,15 +35658,51 @@ export namespace Prisma {
     not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
-  export type NestedDateTimeNullableFilter<$PrismaModel = never> = {
-    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel> | null
-    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel> | null
-    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
-    not?: NestedDateTimeNullableFilter<$PrismaModel> | Date | string | null
+  export type NestedEnumUserRoleWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserRole | EnumUserRoleFieldRefInput<$PrismaModel>
+    in?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserRole[] | ListEnumUserRoleFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserRoleWithAggregatesFilter<$PrismaModel> | $Enums.UserRole
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserRoleFilter<$PrismaModel>
+    _max?: NestedEnumUserRoleFilter<$PrismaModel>
+  }
+
+  export type NestedEnumUserStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserStatus | EnumUserStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserStatus[] | ListEnumUserStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserStatusWithAggregatesFilter<$PrismaModel> | $Enums.UserStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserStatusFilter<$PrismaModel>
+    _max?: NestedEnumUserStatusFilter<$PrismaModel>
+  }
+
+  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel>
+    in?: number[] | ListIntFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
+    _count?: NestedIntFilter<$PrismaModel>
+    _avg?: NestedFloatFilter<$PrismaModel>
+    _sum?: NestedIntFilter<$PrismaModel>
+    _min?: NestedIntFilter<$PrismaModel>
+    _max?: NestedIntFilter<$PrismaModel>
+  }
+
+  export type NestedFloatFilter<$PrismaModel = never> = {
+    equals?: number | FloatFieldRefInput<$PrismaModel>
+    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
+    lt?: number | FloatFieldRefInput<$PrismaModel>
+    lte?: number | FloatFieldRefInput<$PrismaModel>
+    gt?: number | FloatFieldRefInput<$PrismaModel>
+    gte?: number | FloatFieldRefInput<$PrismaModel>
+    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedDateTimeNullableWithAggregatesFilter<$PrismaModel = never> = {
@@ -33794,6 +35717,23 @@ export namespace Prisma {
     _count?: NestedIntNullableFilter<$PrismaModel>
     _min?: NestedDateTimeNullableFilter<$PrismaModel>
     _max?: NestedDateTimeNullableFilter<$PrismaModel>
+  }
+
+  export type NestedEnumUserOnboardingTokenTypeFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserOnboardingTokenType | EnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserOnboardingTokenTypeFilter<$PrismaModel> | $Enums.UserOnboardingTokenType
+  }
+
+  export type NestedEnumUserOnboardingTokenTypeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.UserOnboardingTokenType | EnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    in?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.UserOnboardingTokenType[] | ListEnumUserOnboardingTokenTypeFieldRefInput<$PrismaModel>
+    not?: NestedEnumUserOnboardingTokenTypeWithAggregatesFilter<$PrismaModel> | $Enums.UserOnboardingTokenType
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumUserOnboardingTokenTypeFilter<$PrismaModel>
+    _max?: NestedEnumUserOnboardingTokenTypeFilter<$PrismaModel>
   }
 
   export type NestedDecimalFilter<$PrismaModel = never> = {
@@ -33838,33 +35778,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumCashTransactionTypeFilter<$PrismaModel>
     _max?: NestedEnumCashTransactionTypeFilter<$PrismaModel>
-  }
-
-  export type NestedIntWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: number | IntFieldRefInput<$PrismaModel>
-    in?: number[] | ListIntFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListIntFieldRefInput<$PrismaModel>
-    lt?: number | IntFieldRefInput<$PrismaModel>
-    lte?: number | IntFieldRefInput<$PrismaModel>
-    gt?: number | IntFieldRefInput<$PrismaModel>
-    gte?: number | IntFieldRefInput<$PrismaModel>
-    not?: NestedIntWithAggregatesFilter<$PrismaModel> | number
-    _count?: NestedIntFilter<$PrismaModel>
-    _avg?: NestedFloatFilter<$PrismaModel>
-    _sum?: NestedIntFilter<$PrismaModel>
-    _min?: NestedIntFilter<$PrismaModel>
-    _max?: NestedIntFilter<$PrismaModel>
-  }
-
-  export type NestedFloatFilter<$PrismaModel = never> = {
-    equals?: number | FloatFieldRefInput<$PrismaModel>
-    in?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    notIn?: number[] | ListFloatFieldRefInput<$PrismaModel>
-    lt?: number | FloatFieldRefInput<$PrismaModel>
-    lte?: number | FloatFieldRefInput<$PrismaModel>
-    gt?: number | FloatFieldRefInput<$PrismaModel>
-    gte?: number | FloatFieldRefInput<$PrismaModel>
-    not?: NestedFloatFilter<$PrismaModel> | number
   }
 
   export type NestedEnumOrderSideFilter<$PrismaModel = never> = {
@@ -34131,22 +36044,36 @@ export namespace Prisma {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+    onboardingTokens?: UserOnboardingTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFirmInput = {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+    onboardingTokens?: UserOnboardingTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFirmInput = {
@@ -34316,8 +36243,14 @@ export namespace Prisma {
     id?: StringFilter<"User"> | string
     name?: StringFilter<"User"> | string
     email?: StringFilter<"User"> | string
-    passwordHash?: StringFilter<"User"> | string
+    passwordHash?: StringNullableFilter<"User"> | string | null
     role?: EnumUserRoleFilter<"User"> | $Enums.UserRole
+    status?: EnumUserStatusFilter<"User"> | $Enums.UserStatus
+    sessionVersion?: IntFilter<"User"> | number
+    invitedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    activatedAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    disabledAt?: DateTimeNullableFilter<"User"> | Date | string | null
+    passwordChangedAt?: DateTimeNullableFilter<"User"> | Date | string | null
     firmId?: StringFilter<"User"> | string
     createdAt?: DateTimeFilter<"User"> | Date | string
     updatedAt?: DateTimeFilter<"User"> | Date | string
@@ -34505,6 +36438,34 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserOnboardingTokenCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.UserOnboardingTokenType
+    tokenHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type UserOnboardingTokenUncheckedCreateWithoutUserInput = {
+    id?: string
+    type: $Enums.UserOnboardingTokenType
+    tokenHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
+  export type UserOnboardingTokenCreateOrConnectWithoutUserInput = {
+    where: UserOnboardingTokenWhereUniqueInput
+    create: XOR<UserOnboardingTokenCreateWithoutUserInput, UserOnboardingTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserOnboardingTokenCreateManyUserInputEnvelope = {
+    data: UserOnboardingTokenCreateManyUserInput | UserOnboardingTokenCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FirmUpsertWithoutUsersInput = {
     update: XOR<FirmUpdateWithoutUsersInput, FirmUncheckedUpdateWithoutUsersInput>
     create: XOR<FirmCreateWithoutUsersInput, FirmUncheckedCreateWithoutUsersInput>
@@ -34552,6 +36513,35 @@ export namespace Prisma {
   export type AuditLogUpdateManyWithWhereWithoutActorInput = {
     where: AuditLogScalarWhereInput
     data: XOR<AuditLogUpdateManyMutationInput, AuditLogUncheckedUpdateManyWithoutActorInput>
+  }
+
+  export type UserOnboardingTokenUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserOnboardingTokenWhereUniqueInput
+    update: XOR<UserOnboardingTokenUpdateWithoutUserInput, UserOnboardingTokenUncheckedUpdateWithoutUserInput>
+    create: XOR<UserOnboardingTokenCreateWithoutUserInput, UserOnboardingTokenUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserOnboardingTokenUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserOnboardingTokenWhereUniqueInput
+    data: XOR<UserOnboardingTokenUpdateWithoutUserInput, UserOnboardingTokenUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserOnboardingTokenUpdateManyWithWhereWithoutUserInput = {
+    where: UserOnboardingTokenScalarWhereInput
+    data: XOR<UserOnboardingTokenUpdateManyMutationInput, UserOnboardingTokenUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserOnboardingTokenScalarWhereInput = {
+    AND?: UserOnboardingTokenScalarWhereInput | UserOnboardingTokenScalarWhereInput[]
+    OR?: UserOnboardingTokenScalarWhereInput[]
+    NOT?: UserOnboardingTokenScalarWhereInput | UserOnboardingTokenScalarWhereInput[]
+    id?: StringFilter<"UserOnboardingToken"> | string
+    userId?: StringFilter<"UserOnboardingToken"> | string
+    type?: EnumUserOnboardingTokenTypeFilter<"UserOnboardingToken"> | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFilter<"UserOnboardingToken"> | string
+    expiresAt?: DateTimeFilter<"UserOnboardingToken"> | Date | string
+    usedAt?: DateTimeNullableFilter<"UserOnboardingToken"> | Date | string | null
+    createdAt?: DateTimeFilter<"UserOnboardingToken"> | Date | string
   }
 
   export type FirmCreateWithoutClientsInput = {
@@ -35218,6 +37208,94 @@ export namespace Prisma {
     lastConnectedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserCreateWithoutOnboardingTokensInput = {
+    id?: string
+    name: string
+    email: string
+    passwordHash?: string | null
+    role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    firm: FirmCreateNestedOneWithoutUsersInput
+    auditLogs?: AuditLogCreateNestedManyWithoutActorInput
+  }
+
+  export type UserUncheckedCreateWithoutOnboardingTokensInput = {
+    id?: string
+    name: string
+    email: string
+    passwordHash?: string | null
+    role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
+    firmId: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    auditLogs?: AuditLogUncheckedCreateNestedManyWithoutActorInput
+  }
+
+  export type UserCreateOrConnectWithoutOnboardingTokensInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutOnboardingTokensInput, UserUncheckedCreateWithoutOnboardingTokensInput>
+  }
+
+  export type UserUpsertWithoutOnboardingTokensInput = {
+    update: XOR<UserUpdateWithoutOnboardingTokensInput, UserUncheckedUpdateWithoutOnboardingTokensInput>
+    create: XOR<UserCreateWithoutOnboardingTokensInput, UserUncheckedCreateWithoutOnboardingTokensInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutOnboardingTokensInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutOnboardingTokensInput, UserUncheckedUpdateWithoutOnboardingTokensInput>
+  }
+
+  export type UserUpdateWithoutOnboardingTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    firm?: FirmUpdateOneRequiredWithoutUsersNestedInput
+    auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutOnboardingTokensInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    firmId?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
   }
 
   export type ClientCreateWithoutPortfoliosInput = {
@@ -36273,6 +38351,9 @@ export namespace Prisma {
     handoffStartedAt?: Date | string | null
     confirmedAt?: Date | string | null
     lastError?: string | null
+    reconciledAt?: Date | string | null
+    reconciledByUserId?: string | null
+    reconciliationNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36285,6 +38366,9 @@ export namespace Prisma {
     handoffStartedAt?: Date | string | null
     confirmedAt?: Date | string | null
     lastError?: string | null
+    reconciledAt?: Date | string | null
+    reconciledByUserId?: string | null
+    reconciliationNotes?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -36535,6 +38619,9 @@ export namespace Prisma {
     handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciledByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciliationNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36547,6 +38634,9 @@ export namespace Prisma {
     handoffStartedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     confirmedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reconciledByUserId?: NullableStringFieldUpdateOperationsInput | string | null
+    reconciliationNotes?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -36582,22 +38672,36 @@ export namespace Prisma {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutUsersInput
+    onboardingTokens?: UserOnboardingTokenCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAuditLogsInput = {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     firmId: string
     createdAt?: Date | string
     updatedAt?: Date | string
+    onboardingTokens?: UserOnboardingTokenUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -36653,22 +38757,36 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutUsersNestedInput
+    onboardingTokens?: UserOnboardingTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAuditLogsInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     firmId?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    onboardingTokens?: UserOnboardingTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FirmCreateWithoutBasketOrdersInput = {
@@ -37845,8 +39963,14 @@ export namespace Prisma {
     id?: string
     name: string
     email: string
-    passwordHash: string
+    passwordHash?: string | null
     role?: $Enums.UserRole
+    status?: $Enums.UserStatus
+    sessionVersion?: number
+    invitedAt?: Date | string | null
+    activatedAt?: Date | string | null
+    disabledAt?: Date | string | null
+    passwordChangedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -37898,30 +40022,50 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUpdateManyWithoutActorNestedInput
+    onboardingTokens?: UserOnboardingTokenUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFirmInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     auditLogs?: AuditLogUncheckedUpdateManyWithoutActorNestedInput
+    onboardingTokens?: UserOnboardingTokenUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateManyWithoutFirmInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
-    passwordHash?: StringFieldUpdateOperationsInput | string
+    passwordHash?: NullableStringFieldUpdateOperationsInput | string | null
     role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    status?: EnumUserStatusFieldUpdateOperationsInput | $Enums.UserStatus
+    sessionVersion?: IntFieldUpdateOperationsInput | number
+    invitedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    activatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    disabledAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    passwordChangedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -38074,6 +40218,15 @@ export namespace Prisma {
     createdAt?: Date | string
   }
 
+  export type UserOnboardingTokenCreateManyUserInput = {
+    id?: string
+    type: $Enums.UserOnboardingTokenType
+    tokenHash: string
+    expiresAt: Date | string
+    usedAt?: Date | string | null
+    createdAt?: Date | string
+  }
+
   export type AuditLogUpdateWithoutActorInput = {
     id?: StringFieldUpdateOperationsInput | string
     action?: EnumAuditActionFieldUpdateOperationsInput | $Enums.AuditAction
@@ -38104,6 +40257,33 @@ export namespace Prisma {
     entityId?: StringFieldUpdateOperationsInput | string
     message?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnboardingTokenUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumUserOnboardingTokenTypeFieldUpdateOperationsInput | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnboardingTokenUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumUserOnboardingTokenTypeFieldUpdateOperationsInput | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserOnboardingTokenUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumUserOnboardingTokenTypeFieldUpdateOperationsInput | $Enums.UserOnboardingTokenType
+    tokenHash?: StringFieldUpdateOperationsInput | string
+    expiresAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

@@ -11,6 +11,7 @@ import {
 
 import {
   requestOrderConfirmation,
+  reconcilePublisherOrder,
   resolveOrderConfirmationAsNotPlaced,
 } from "../controllers/client-order-confirmation.controller";
 
@@ -19,8 +20,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router = Router();
 
@@ -34,6 +35,9 @@ router.use(requireAuth);
 //
 router.get(
   "/",
+  requirePermission(
+    "VIEW_ORDERS",
+  ),
   getOrders,
 );
 
@@ -42,9 +46,8 @@ router.get(
 //
 router.post(
   "/",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "CREATE_ORDERS",
   ),
   createOrder,
 );
@@ -55,30 +58,34 @@ router.post(
 //
 router.post(
   "/:id/execute",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "EXECUTE_ORDERS",
   ),
   executeOrder,
 );
 
 router.post(
   "/:id/client-confirmation",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "EXECUTE_ORDERS",
   ),
   requestOrderConfirmation,
 );
 
 router.post(
   "/:id/client-confirmation/resolve-not-placed",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "OPERATE_ORDERS",
   ),
   resolveOrderConfirmationAsNotPlaced,
+);
+
+router.post(
+  "/:id/client-confirmation/reconcile",
+  requirePermission(
+    "OPERATE_ORDERS",
+  ),
+  reconcilePublisherOrder,
 );
 
 //
@@ -86,20 +93,16 @@ router.post(
 //
 router.post(
   "/:id/sync",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "OPERATE_ORDERS",
   ),
   syncOrder,
 );
 
 router.patch(
   "/:id",
-  requireAuth,
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "EXECUTE_ORDERS",
   ),
   modifyOrder,
 );
@@ -109,10 +112,8 @@ router.patch(
 //
 router.post(
   "/:id/cancel",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "OPERATE_ORDERS",
   ),
   cancelOrder,
 );

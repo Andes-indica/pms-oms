@@ -26,6 +26,15 @@ import {
 import {
   ClientOrderConfirmationPage,
 } from "./pages/ClientOrderConfirmationPage";
+import {
+  AuditPage,
+} from "./pages/AuditPage";
+import {
+  AccountSetupPage,
+} from "./pages/AccountSetupPage";
+import {
+  PermissionRoute,
+} from "./components/PermissionRoute";
 
 function AuthenticatedLayout() {
   const token = localStorage.getItem("accessToken");
@@ -41,6 +50,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route
+          path="/account-setup"
+          element={<AccountSetupPage />}
+        />
         <Route
           path="/client-confirmation"
           element={
@@ -59,27 +72,47 @@ function App() {
         }>
           <Route
             path="/"
-            element={<DashboardPage />}
+            element={
+              <PermissionRoute permission="VIEW_DASHBOARD">
+                <DashboardPage />
+              </PermissionRoute>
+            }
           />
 
           <Route
             path="/clients"
-            element={<ClientsPage />}
+            element={
+              <PermissionRoute permission="VIEW_CLIENTS">
+                <ClientsPage />
+              </PermissionRoute>
+            }
           />
 
           <Route
             path="/orders"
-            element={<OrdersPage />}
+            element={
+              <PermissionRoute permission="VIEW_ORDERS">
+                <OrdersPage />
+              </PermissionRoute>
+            }
           />
 
           <Route
             path="/basket-orders"
-            element={<BasketOrdersPage />}
+            element={
+              <PermissionRoute permission="VIEW_ORDERS">
+                <BasketOrdersPage />
+              </PermissionRoute>
+            }
           />
 
           <Route
             path="/risk"
-            element={<RiskPage />}
+            element={
+              <PermissionRoute permission="VIEW_RISK">
+                <RiskPage />
+              </PermissionRoute>
+            }
           />
 
           <Route
@@ -88,11 +121,27 @@ function App() {
           />
           <Route
             path="/clients/:id"
-            element={<ClientDetailPage />}
+            element={
+              <PermissionRoute permission="VIEW_CLIENTS">
+                <ClientDetailPage />
+              </PermissionRoute>
+            }
           />
           <Route
             path="/users"
-            element={<UsersPage />}
+            element={
+              <PermissionRoute permission="VIEW_USERS">
+                <UsersPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/audit"
+            element={
+              <PermissionRoute permission="VIEW_AUDIT">
+                <AuditPage />
+              </PermissionRoute>
+            }
           />
         </Route>
       </Routes>

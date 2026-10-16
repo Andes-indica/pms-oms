@@ -6,6 +6,8 @@ import {
 } from "bun:test";
 
 import {
+  assertMarketOrderSupported,
+  getMarketDataCapabilities,
   getMarketPrice,
 } from "./market-data.service";
 
@@ -84,6 +86,36 @@ afterEach(() => {
 describe(
   "getMarketPrice",
   () => {
+    test(
+      "reports and enforces explicit limit-only mode",
+      () => {
+        process.env
+          .MARKET_DATA_PROVIDER =
+          "disabled";
+
+        expect(
+          getMarketDataCapabilities(),
+        ).toEqual({
+          mode: "DISABLED",
+          marketDataAvailable: false,
+          marketOrdersAllowed: false,
+          valuationAvailable: false,
+        });
+        expect(() =>
+          assertMarketOrderSupported(
+            "MARKET",
+          ),
+        ).toThrow(
+          "MARKET_ORDERS_DISABLED",
+        );
+        expect(() =>
+          assertMarketOrderSupported(
+            "LIMIT",
+          ),
+        ).not.toThrow();
+      },
+    );
+
     test(
       "uses mock provider by default",
       async () => {

@@ -18,6 +18,16 @@ export async function getAuditLogs(
       orderBy: {
         createdAt: "desc",
       },
+      take: 200,
+      include: {
+        actor: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
     });
 
     return res.status(200).json({

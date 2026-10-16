@@ -1,6 +1,7 @@
 import { prisma } from "@pms-oms/db";
 
 import {
+  getMarketDataCapabilities,
   getMarketPrice,
 } from "./market-data.service";
 
@@ -22,6 +23,9 @@ export async function getDashboardService(
         },
       },
     });
+
+  const marketData =
+    getMarketDataCapabilities();
 
   let totalCash = 0;
   let totalMarketValue = 0;
@@ -75,6 +79,13 @@ export async function getDashboardService(
       clientCash += cash;
 
       for (const holding of portfolio.holdings) {
+        if (
+          !marketData
+            .valuationAvailable
+        ) {
+          continue;
+        }
+
         const currentPrice =
           await getMarketPrice(
             holding.symbol,
@@ -217,11 +228,28 @@ export async function getDashboardService(
   );
 
   return {
-    totalAum,
+    totalAum:
+      marketData
+        .valuationAvailable
+        ? totalAum
+        : null,
     totalCash,
-    totalMarketValue,
-    totalUnrealizedPnl,
+    totalMarketValue:
+      marketData
+        .valuationAvailable
+        ? totalMarketValue
+        : null,
+    totalUnrealizedPnl:
+      marketData
+        .valuationAvailable
+        ? totalUnrealizedPnl
+        : null,
     totalRealizedPnl,
+    valuationAvailable:
+      marketData
+        .valuationAvailable,
+    marketDataMode:
+      marketData.mode,
 
     clients:
       clients.length,
@@ -235,7 +263,21 @@ export async function getDashboardService(
     totalOrders:
       allOrders.length,
 
-    clientBreakdown,
-    topHoldings,
+    clientBreakdown:
+      marketData
+        .valuationAvailable
+        ? clientBreakdown
+        : clientBreakdown.map(
+            (client) => ({
+              ...client,
+              marketValue: null,
+              aum: null,
+            }),
+          ),
+    topHoldings:
+      marketData
+        .valuationAvailable
+        ? topHoldings
+        : [],
   };
 }

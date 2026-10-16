@@ -205,6 +205,10 @@ const guidanceByCode: Record<string, Omit<BasketErrorGuidance, "detail">> = {
     title: "Market price service is not configured",
     action: "Configure market data or submit a valid limit order.",
   },
+  MARKET_ORDERS_DISABLED: {
+    title: "Market orders are disabled",
+    action: "Use a limit price while the system is operating in limit-only mode.",
+  },
   MARKET_DATA_REQUEST_FAILED: {
     title: "Market price request failed",
     action: "Retry when market data is available or submit a valid limit order.",

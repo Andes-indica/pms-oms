@@ -168,6 +168,16 @@ export async function createOrder(
       }
 
       if (
+        error.message ===
+          "MARKET_ORDERS_DISABLED"
+      ) {
+        return res.status(409).json({
+          error:
+            error.message,
+        });
+      }
+
+      if (
         error.message === "INVALID_INSTRUMENT" ||
         error.message === "UNKNOWN_INSTRUMENT"
       ) {
@@ -232,6 +242,9 @@ export async function getOrders(
             expiresAt: true,
             confirmedAt: true,
             lastError: true,
+            reconciledAt: true,
+            reconciledByUserId: true,
+            reconciliationNotes: true,
           },
         },
       },

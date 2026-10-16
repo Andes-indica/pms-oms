@@ -13,29 +13,14 @@ import type {
 import {
   formatCurrency,
 } from "./utils";
+import {
+  currentUserCan,
+} from "../../lib/permissions";
 
 type Props = {
   portfolioId: string;
   riskLimit?: RiskLimit | null;
 };
-
-function getCurrentRole() {
-  const raw =
-    localStorage.getItem(
-      "user",
-    );
-
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw)
-      ?.role as string | undefined;
-  } catch {
-    return null;
-  }
-}
 
 function toInputValue(
   value:
@@ -138,13 +123,10 @@ export function RiskLimitCard({
       ),
     );
 
-  const role =
-    getCurrentRole();
-
   const canManage =
-    role === "ADMIN" ||
-    role ===
-      "PORTFOLIO_MANAGER";
+    currentUserCan(
+      "MANAGE_RISK",
+    );
 
   function resetForm(
     next:

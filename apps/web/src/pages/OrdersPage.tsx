@@ -14,6 +14,12 @@ import {
   formatOrderStatusLabel,
   getBasketErrorGuidance,
 } from "../components/basket/basket-error-guidance";
+import {
+  currentUserCan,
+} from "../lib/permissions";
+import {
+  PublisherReconciliationForm,
+} from "../components/PublisherReconciliationForm";
 
 type Order = {
   id: string;
@@ -32,12 +38,16 @@ type Order = {
 
   averageFillPrice?: string | null;
   realizedPnl?: string | null;
+  brokerOrderId?: string | null;
 
   clientConfirmation?: {
     status: string;
     expiresAt: string;
     confirmedAt?: string | null;
     lastError?: string | null;
+    reconciledAt?: string | null;
+    reconciledByUserId?: string | null;
+    reconciliationNotes?: string | null;
   } | null;
 
   executionJob?: {
@@ -130,9 +140,13 @@ export function OrdersPage() {
 
   return (
     <div className="space-y-8">
-      <PlaceOrderForm
-        onCreated={loadOrders}
-      />
+      {currentUserCan(
+        "CREATE_ORDERS",
+      ) && (
+        <PlaceOrderForm
+          onCreated={loadOrders}
+        />
+      )}
 
       <section>
         <h2 className="text-2xl font-semibold text-slate-900">
@@ -170,6 +184,15 @@ function OrdersTable({
   orders: Order[];
   onUpdated: () => Promise<void>;
 }) {
+  const canExecuteOrders =
+    currentUserCan(
+      "EXECUTE_ORDERS",
+    );
+  const canOperateOrders =
+    currentUserCan(
+      "OPERATE_ORDERS",
+    );
+
   const [
     actionOrderId,
     setActionOrderId,
@@ -180,6 +203,12 @@ function OrdersTable({
     modifyingOrder,
     setModifyingOrder,
   ] = useState<Order | null>(null);
+  const [
+    reconcilingOrder,
+    setReconcilingOrder,
+  ] = useState<Order | null>(
+    null,
+  );
 
   const [
     expandedOrderId,
@@ -235,10 +264,24 @@ function OrdersTable({
   }
 
   async function createConfirmationLink(
-    orderId: string,
+    order: Order,
   ) {
+    const replaceActive =
+      order.clientConfirmation
+        ?.status ===
+      "AWAITING_CLIENT";
+
+    if (
+      replaceActive &&
+      !window.confirm(
+        "Regenerate this client link? The current link will stop working immediately.",
+      )
+    ) {
+      return;
+    }
+
     try {
-      setActionOrderId(orderId);
+      setActionOrderId(order.id);
 
       const response =
         await apiFetch<{
@@ -246,9 +289,12 @@ function OrdersTable({
             token: string;
           };
         }>(
-          `/api/orders/${orderId}/client-confirmation`,
+          `/api/orders/${order.id}/client-confirmation`,
           {
             method: "POST",
+            body: JSON.stringify({
+              replaceActive,
+            }),
           },
         );
 
@@ -258,7 +304,7 @@ function OrdersTable({
       setConfirmationLinks(
         (current) => ({
           ...current,
-          [orderId]: link,
+          [order.id]: link,
         }),
       );
 
@@ -496,6 +542,7 @@ function OrdersTable({
                     : order.status;
 
             const canExecute =
+              canExecuteOrders &&
               order.executionMode ===
                 "DIRECT_API" &&
               order.status ===
@@ -539,6 +586,7 @@ function OrdersTable({
                 ?.status ?? "";
 
             const canCreateLink =
+              canExecuteOrders &&
               isClientConfirmed &&
               order.status === "PENDING" &&
               ![
@@ -674,20 +722,22 @@ function OrdersTable({
                         disabled={busy}
                         onClick={() =>
                           void createConfirmationLink(
-                            order.id,
+                            order,
                           )
                         }
                         className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white disabled:opacity-60"
                       >
                         {busy
                           ? "Creating..."
-                          : order.clientConfirmation
-                            ? "Replace Client Link"
+                          : confirmationStatus ===
+                              "AWAITING_CLIENT"
+                            ? "Regenerate Client Link"
                             : "Create Client Link"}
                       </button>
                     )}
 
-                    {isClientConfirmed &&
+                    {canOperateOrders &&
+                      isClientConfirmed &&
                       order.status ===
                         "PENDING" &&
                       confirmationStatus ===
@@ -705,7 +755,7 @@ function OrdersTable({
                       </button>
                     )}
 
-                    {[
+                    {canOperateOrders && [
                       "SUBMITTED",
                       "OPEN",
                       "PARTIALLY_FILLED",
@@ -731,7 +781,7 @@ function OrdersTable({
                         </button>
                       )}
 
-                    {[
+                    {canOperateOrders && [
                       "PENDING",
                       "SUBMITTED",
                       "OPEN",
@@ -756,7 +806,7 @@ function OrdersTable({
                           Cancel
                         </button>
                       )}
-                    {[
+                    {canExecuteOrders && [
                       "SUBMITTED",
                       "OPEN",
                     ].includes(
@@ -882,6 +932,63 @@ function OrdersTable({
                           </p>
                         </div>
                       )}
+
+                      {isClientConfirmed &&
+                        confirmationStatus ===
+                          "AWAITING_CLIENT" &&
+                        !confirmationLinks[
+                          order.id
+                        ] && (
+                          <p className="mt-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                            An active link already exists and expires {order.clientConfirmation?.expiresAt
+                              ? new Date(order.clientConfirmation.expiresAt).toLocaleString()
+                              : "soon"}. Regenerate only if the original link was lost; doing so invalidates it immediately.
+                          </p>
+                        )}
+
+                      {isClientConfirmed &&
+                        confirmationStatus ===
+                          "CONFIRMED" &&
+                        ![
+                          "FILLED",
+                          "CANCELLED",
+                          "REJECTED",
+                        ].includes(
+                          order.status,
+                        ) &&
+                        canOperateOrders && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setReconcilingOrder(
+                                order,
+                              )
+                            }
+                            className="mt-3 rounded-md border border-blue-300 bg-white px-3 py-1.5 text-xs font-medium text-blue-800"
+                          >
+                            Record verified Kite outcome
+                          </button>
+                        )}
+
+                      {order.clientConfirmation
+                        ?.reconciledAt && (
+                          <div className="mt-4 rounded-md border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
+                            <p className="font-semibold">
+                              Reconciled with Kite
+                            </p>
+                            <p className="mt-1">
+                              Verified {new Date(order.clientConfirmation.reconciledAt).toLocaleString()}
+                              {order.brokerOrderId
+                                ? ` · Broker order ${order.brokerOrderId}`
+                                : ""}
+                            </p>
+                            {order.clientConfirmation.reconciliationNotes && (
+                              <p className="mt-1 text-emerald-800">
+                                {order.clientConfirmation.reconciliationNotes}
+                              </p>
+                            )}
+                          </div>
+                        )}
 
                       {isClientConfirmed &&
                         [
@@ -1016,6 +1123,17 @@ function OrdersTable({
             </div>
           </div>
         </div>
+      )}
+      {reconcilingOrder && (
+        <PublisherReconciliationForm
+          order={reconcilingOrder}
+          onClose={() =>
+            setReconcilingOrder(
+              null,
+            )
+          }
+          onReconciled={onUpdated}
+        />
       )}
     </>
   );

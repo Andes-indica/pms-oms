@@ -8,8 +8,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 import {
   deactivateInstrument,
@@ -27,6 +27,9 @@ router.use(
 
 router.get(
   "/",
+  requirePermission(
+    "VIEW_ORDERS",
+  ),
   async (
     req:
       AuthenticatedRequest,
@@ -78,9 +81,8 @@ router.get(
 
 router.post(
   "/",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_INSTRUMENTS",
   ),
   async (
     req:
@@ -119,8 +121,8 @@ router.post(
 
 router.post(
   "/import",
-  requireRole(
-    "ADMIN",
+  requirePermission(
+    "IMPORT_INSTRUMENTS",
   ),
   async (
     req:
@@ -169,9 +171,8 @@ router.post(
 
 router.delete(
   "/:id",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_INSTRUMENTS",
   ),
   async (
     req:

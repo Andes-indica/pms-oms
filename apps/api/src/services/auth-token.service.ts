@@ -20,6 +20,7 @@ export type AuthTokenPayload = {
     | "PORTFOLIO_MANAGER"
     | "OPERATIONS"
     | "VIEWER";
+  sessionVersion?: number;
 };
 
 export async function createAccessToken(
@@ -28,6 +29,9 @@ export async function createAccessToken(
   return new SignJWT({
     firmId: payload.firmId,
     role: payload.role,
+    sessionVersion:
+      payload.sessionVersion ??
+      0,
   })
     .setProtectedHeader({
       alg: "HS256",
@@ -57,6 +61,11 @@ export async function verifyAccessToken(
     !payload.sub ||
     typeof payload.firmId !== "string" ||
     typeof payload.role !== "string" ||
+    typeof payload.sessionVersion !==
+      "number" ||
+    !Number.isInteger(
+      payload.sessionVersion,
+    ) ||
     !allowedRoles.includes(payload.role as AuthTokenPayload["role"])
   ) {
     throw new Error("INVALID_TOKEN");
@@ -66,5 +75,7 @@ export async function verifyAccessToken(
     userId: payload.sub,
     firmId: payload.firmId,
     role: payload.role as AuthTokenPayload["role"],
+    sessionVersion:
+      payload.sessionVersion,
   };
 }

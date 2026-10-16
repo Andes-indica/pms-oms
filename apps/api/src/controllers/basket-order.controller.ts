@@ -151,6 +151,9 @@ export async function getBasketOrders(
                   expiresAt: true,
                   confirmedAt: true,
                   lastError: true,
+                  reconciledAt: true,
+                  reconciledByUserId: true,
+                  reconciliationNotes: true,
                 },
               },
               portfolio: {

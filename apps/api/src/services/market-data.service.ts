@@ -16,6 +16,67 @@ const mockPrices:
 const DEFAULT_REQUEST_TIMEOUT_MS =
   5_000;
 
+export type MarketDataMode =
+  | "LIVE"
+  | "SIMULATED"
+  | "DISABLED";
+
+function getConfiguredProvider() {
+  return (
+    process.env
+      .MARKET_DATA_PROVIDER ??
+    "mock"
+  )
+    .trim()
+    .toLowerCase();
+}
+
+export function getMarketDataCapabilities() {
+  const provider =
+    getConfiguredProvider();
+  const configured =
+    provider === "mock" ||
+    (
+      provider === "http" &&
+      Boolean(
+        process.env
+          .MARKET_DATA_BASE_URL
+          ?.trim(),
+      )
+    );
+  const mode: MarketDataMode =
+    provider === "mock"
+      ? "SIMULATED"
+      : provider === "http" &&
+          configured
+        ? "LIVE"
+        : "DISABLED";
+
+  return {
+    mode,
+    marketDataAvailable:
+      mode !== "DISABLED",
+    marketOrdersAllowed:
+      mode !== "DISABLED",
+    valuationAvailable:
+      mode !== "DISABLED",
+  };
+}
+
+export function assertMarketOrderSupported(
+  orderType: "MARKET" | "LIMIT",
+) {
+  if (
+    orderType === "MARKET" &&
+    !getMarketDataCapabilities()
+      .marketOrdersAllowed
+  ) {
+    throw new Error(
+      "MARKET_ORDERS_DISABLED",
+    );
+  }
+}
+
 function getRequestTimeoutMs() {
   const configured =
     Number(
@@ -158,13 +219,7 @@ class HttpMarketDataProvider
 function resolveProvider():
   MarketDataProvider {
   const provider =
-    (
-      process.env
-        .MARKET_DATA_PROVIDER ??
-      "mock"
-    )
-      .trim()
-      .toLowerCase();
+    getConfiguredProvider();
 
   if (
     provider === "mock"

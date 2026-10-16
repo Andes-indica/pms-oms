@@ -107,6 +107,11 @@ async function main() {
                 adminEmail,
               passwordHash,
               role: "ADMIN",
+              status: "ACTIVE",
+              activatedAt:
+                new Date(),
+              passwordChangedAt:
+                new Date(),
               firmId: firm.id,
             },
             select: {

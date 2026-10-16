@@ -9,6 +9,9 @@ import { createAuditLog } from "./audit.service";
 import {
   validateInstrument,
 } from "./instrument-master.service";
+import {
+  assertMarketOrderSupported,
+} from "./market-data.service";
 
 type CreateBasketOrderInput = {
   firmId: string;
@@ -74,6 +77,10 @@ export async function createBasketOrderService(
   if (!(["MARKET", "LIMIT"] as const).includes(input.orderType)) {
     throw new Error("INVALID_ORDER_TYPE");
   }
+
+  assertMarketOrderSupported(
+    input.orderType,
+  );
 
   if (
     input.orderType === "LIMIT" &&

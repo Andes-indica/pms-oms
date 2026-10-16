@@ -15,8 +15,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router =
   Router();
@@ -27,47 +27,40 @@ router.use(
 
 router.put(
   "/portfolios/:id/limits",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_RISK",
   ),
   updatePortfolioRiskLimit,
 );
 
 router.delete(
   "/portfolios/:id/limits",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_RISK",
   ),
   deletePortfolioRiskLimit,
 );
 
 router.get(
   "/restricted-securities",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
-    "VIEWER",
+  requirePermission(
+    "VIEW_RISK",
   ),
   getRestrictedSecurities,
 );
 
 router.post(
   "/restricted-securities",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_RISK",
   ),
   createRestrictedSecurity,
 );
 
 router.delete(
   "/restricted-securities/:id",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_RISK",
   ),
   deleteRestrictedSecurity,
 );

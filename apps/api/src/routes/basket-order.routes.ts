@@ -20,8 +20,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router = Router();
 
@@ -29,80 +29,72 @@ router.use(requireAuth);
 
 router.get(
   "/",
+  requirePermission(
+    "VIEW_ORDERS",
+  ),
   getBasketOrders,
 );
 
 router.post(
   "/",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "CREATE_ORDERS",
   ),
   createBasketOrder,
 );
 
 router.post(
   "/:id/execute",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "EXECUTE_ORDERS",
   ),
   executeBasketOrder,
 );
 
 router.post(
   "/:id/client-confirmations",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "EXECUTE_ORDERS",
   ),
   requestBasketConfirmations,
 );
 
 router.post(
   "/:id/orders/:orderId/retry",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "EXECUTE_ORDERS",
   ),
   retryBasketChildOrder,
 );
 
 router.post(
   "/:id/orders/:orderId/reconcile",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "OPERATE_ORDERS",
   ),
   reconcileBasketChildOrder,
 );
 
 router.post(
   "/:id/orders/:orderId/replacement",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "EXECUTE_ORDERS",
   ),
   createBasketChildReplacement,
 );
 
 router.post(
   "/:id/cancel",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "OPERATE_ORDERS",
   ),
   cancelBasketOrder,
 );
 
 router.post(
   "/:id/sync",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "OPERATE_ORDERS",
   ),
   syncBasketOrder,
 );

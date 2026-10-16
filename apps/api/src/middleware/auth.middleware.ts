@@ -62,10 +62,17 @@ export async function requireAuth(
         id: true,
         firmId: true,
         role: true,
+        status: true,
+        sessionVersion: true,
       },
     });
 
-    if (!user) {
+    if (
+      !user ||
+      user.status !== "ACTIVE" ||
+      user.sessionVersion !==
+        payload.sessionVersion
+    ) {
       throw new Error("INVALID_TOKEN_USER");
     }
 

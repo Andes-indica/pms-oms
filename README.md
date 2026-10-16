@@ -157,6 +157,9 @@ Examples of role separation:
 - **VIEWER**: read-only access where allowed
 
 Requests are scoped to the authenticated user's firm.
+Role checks are centralized and enforced by both API permissions and matching
+route/action visibility in the web application. Administrators invite staff
+with single-use setup links; passwords are never chosen by the administrator.
 
 ## Broker Architecture
 
@@ -524,6 +527,12 @@ GET /api/audit-logs
 GET   /api/users
 POST  /api/users
 PATCH /api/users/:id/role
+PATCH /api/users/:id/status
+POST  /api/users/:id/revoke-sessions
+POST  /api/users/:id/password-link
+
+POST  /api/auth/onboarding/lookup
+POST  /api/auth/onboarding/complete
 ```
 
 ### Health
