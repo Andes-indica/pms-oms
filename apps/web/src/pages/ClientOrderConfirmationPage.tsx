@@ -6,6 +6,9 @@ import {
 import {
   apiFetch,
 } from "../lib/api";
+import {
+  getClientConfirmationGuidance,
+} from "../components/client-confirmation-guidance";
 
 type Confirmation = {
   status: string;
@@ -97,9 +100,9 @@ export function ClientOrderConfirmationPage() {
       } catch (error) {
         if (!cancelled) {
           setError(
-            error instanceof Error
-              ? error.message
-              : "Unable to open this confirmation link.",
+            getClientConfirmationGuidance(
+              error,
+            ),
           );
         }
       } finally {
@@ -163,9 +166,9 @@ export function ClientOrderConfirmationPage() {
       form.submit();
     } catch (error) {
       setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to continue to Zerodha.",
+        getClientConfirmationGuidance(
+          error,
+        ),
       );
       setSubmitting(false);
     }
@@ -200,9 +203,9 @@ export function ClientOrderConfirmationPage() {
       );
     } catch (error) {
       setError(
-        error instanceof Error
-          ? error.message
-          : "Unable to decline this order.",
+        getClientConfirmationGuidance(
+          error,
+        ),
       );
     } finally {
       setSubmitting(false);

@@ -1,15 +1,74 @@
+import {
+  useEffect,
+  useState,
+} from "react";
 import { NavLink, Outlet } from "react-router-dom";
+import {
+  getCurrentUser,
+  hasPermission,
+  type Permission,
+} from "../lib/permissions";
+import {
+  loadRuntimeCapabilities,
+  type RuntimeCapabilities,
+} from "../lib/runtime-capabilities";
+
+const NAV_ITEMS: Array<{
+  to: string;
+  label: string;
+  permission: Permission;
+}> = [
+  {
+    to: "/",
+    label: "Dashboard",
+    permission: "VIEW_DASHBOARD",
+  },
+  {
+    to: "/clients",
+    label: "Clients",
+    permission: "VIEW_CLIENTS",
+  },
+  {
+    to: "/orders",
+    label: "Orders",
+    permission: "VIEW_ORDERS",
+  },
+  {
+    to: "/basket-orders",
+    label: "Basket Orders",
+    permission: "VIEW_ORDERS",
+  },
+  {
+    to: "/risk",
+    label: "Risk",
+    permission: "VIEW_RISK",
+  },
+  {
+    to: "/audit",
+    label: "Audit",
+    permission: "VIEW_AUDIT",
+  },
+  {
+    to: "/users",
+    label: "Users",
+    permission: "VIEW_USERS",
+  },
+];
 
 export function AppLayout() {
-  // const rawUser = localStorage.getItem("user");
-  // const user = rawUser ? JSON.parse(rawUser) : null;
-  const storedUser =
-  localStorage.getItem("user");
+  const user = getCurrentUser();
+  const [capabilities, setCapabilities] =
+    useState<RuntimeCapabilities | null>(
+      null,
+    );
 
-const user =
-  storedUser
-    ? JSON.parse(storedUser)
-    : null;
+  useEffect(() => {
+    void loadRuntimeCapabilities()
+      .then(setCapabilities)
+      .catch(() => {
+        // Individual pages still surface request failures.
+      });
+  }, []);
 
   function logout() {
     localStorage.removeItem("accessToken");
@@ -26,39 +85,30 @@ const user =
     }`;
 
   return (
-    <div className="flex min-h-screen bg-slate-10s0">
+    <div className="flex min-h-screen bg-slate-100">
       <aside className="w-64 border-r bg-white p-5">
         <h1 className="text-xl font-bold text-slate-900">
           PMS-OMS
         </h1>
 
         <nav className="mt-8 space-y-2">
-          <NavLink to="/" className={navClass}>
-            Dashboard
-          </NavLink>
-
-          <NavLink to="/clients" className={navClass}>
-            Clients
-          </NavLink>
-
-          <NavLink to="/orders" className={navClass}>
-            Orders
-          </NavLink>
-
-          <NavLink to="/basket-orders" className={navClass}>
-            Basket Orders
-          </NavLink>
-
-          <NavLink to="/risk" className={navClass}>
-            Risk
-          </NavLink>
-          {user?.role === "ADMIN" && (
-            <NavLink
-            to="/users" 
-            className={navClass}>
-              Users
-            </NavLink>
-          )}
+          {NAV_ITEMS
+            .filter((item) =>
+              hasPermission(
+                user?.role,
+                item.permission,
+              ),
+            )
+            .map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.to === "/"}
+                className={navClass}
+              >
+                {item.label}
+              </NavLink>
+            ))}
         </nav>
       </aside>
 
@@ -83,6 +133,17 @@ const user =
         </header>
 
         <main className="flex-1 p-8">
+          {capabilities?.marketData
+            .mode === "DISABLED" && (
+              <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+                <p className="font-semibold">
+                  Limit-only mode
+                </p>
+                <p className="mt-1">
+                  Live market data is not configured. Market orders and live valuations are unavailable; limit orders remain enabled.
+                </p>
+              </div>
+            )}
           <Outlet />
         </main>
       </div>

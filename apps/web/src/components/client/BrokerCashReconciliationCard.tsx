@@ -14,6 +14,9 @@ import type {
 import {
   formatCurrency,
 } from "./utils";
+import {
+  currentUserCan,
+} from "../../lib/permissions";
 
 type CashReconciliation = {
   brokerAccountId: string;
@@ -47,24 +50,6 @@ type Props = {
   portfolios: Portfolio[];
 };
 
-function getCurrentRole() {
-  const raw =
-    localStorage.getItem(
-      "user",
-    );
-
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw)
-      ?.role as string | undefined;
-  } catch {
-    return null;
-  }
-}
-
 export function BrokerCashReconciliationCard({
   account,
   portfolios,
@@ -92,15 +77,10 @@ export function BrokerCashReconciliationCard({
   const [error, setError] =
     useState("");
 
-  const role =
-    getCurrentRole();
-
   const canManage =
-    role === "ADMIN" ||
-    role ===
-      "PORTFOLIO_MANAGER" ||
-    role ===
-      "OPERATIONS";
+    currentUserCan(
+      "MANAGE_CASH",
+    );
 
   async function load() {
     try {

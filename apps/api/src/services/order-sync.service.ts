@@ -14,12 +14,26 @@ import {
 } from "../brokers/broker-registry";
 import {
   supportsExecutions,
+  type BrokerExecution,
+  type BrokerOrderUpdate,
 } from "@pms-oms/broker";
+
+export type ReportedOrderUpdateOptions = {
+  brokerUpdate: BrokerOrderUpdate;
+  brokerExecutions?:
+    | BrokerExecution[]
+    | null;
+  source:
+    | "BROKER_API"
+    | "MANUAL_PUBLISHER_RECONCILIATION";
+  reconciliationNotes?: string;
+};
 
 export async function syncOrderService(
   orderId: string,
   firmId: string,
   actorUserId?: string,
+  reportedUpdate?: ReportedOrderUpdateOptions,
 ) {
   const order =
     await prisma.order.findFirst({
@@ -40,7 +54,10 @@ export async function syncOrderService(
     );
   }
 
-  if (!order.brokerOrderId) {
+  if (
+    !order.brokerOrderId &&
+    !reportedUpdate
+  ) {
     throw new Error(
       "ORDER_NOT_SUBMITTED",
     );
@@ -57,35 +74,53 @@ export async function syncOrderService(
       "REJECTED",
     ].includes(order.status)
   ) {
+    if (reportedUpdate) {
+      throw new Error(
+        "ORDER_ALREADY_TERMINAL",
+      );
+    }
+
     return order;
   }
 
-  const broker =
-    await resolveBroker(
-      order.brokerAccountId,
-      firmId,
-    );
+  let brokerUpdate:
+    BrokerOrderUpdate;
+  let brokerExecutions:
+    BrokerExecution[] | null;
 
+  if (reportedUpdate) {
+    brokerUpdate =
+      reportedUpdate.brokerUpdate;
+    brokerExecutions =
+      reportedUpdate
+        .brokerExecutions ??
+      null;
+  } else {
+    const broker =
+      await resolveBroker(
+        order.brokerAccountId,
+        firmId,
+      );
 
-  if (broker === mockBroker) {
-    ensureMockBrokerOrder(
-      order,
-    );
-  }
+    if (broker === mockBroker) {
+      ensureMockBrokerOrder(
+        order,
+      );
+    }
 
-
-  const brokerUpdate =
-    await broker.getOrderStatus(
-      order.brokerOrderId,
-    );
-  const brokerExecutions =
-    supportsExecutions(
-      broker,
-    )
-      ? await broker.getExecutions(
-        order.brokerOrderId,
+    brokerUpdate =
+      await broker.getOrderStatus(
+        order.brokerOrderId!,
+      );
+    brokerExecutions =
+      supportsExecutions(
+        broker,
       )
-      : null;
+        ? await broker.getExecutions(
+          order.brokerOrderId!,
+        )
+        : null;
+  }
   if (brokerExecutions) {
     const executionQuantity =
       brokerExecutions.reduce(
@@ -637,6 +672,12 @@ export async function syncOrderService(
           },
 
           data: {
+            brokerOrderId:
+              freshOrder
+                .brokerOrderId ??
+              brokerUpdate
+                .brokerOrderId,
+
             status:
               brokerUpdate.status,
 
@@ -689,6 +730,36 @@ export async function syncOrderService(
         });
       }
 
+      if (
+        reportedUpdate?.source ===
+          "MANUAL_PUBLISHER_RECONCILIATION"
+      ) {
+        await tx
+          .clientOrderConfirmation
+          .updateMany({
+            where: {
+              orderId:
+                updatedOrder.id,
+              status: "CONFIRMED",
+            },
+            data: {
+              reconciledAt:
+                new Date(),
+              reconciledByUserId:
+                actorUserId ??
+                null,
+              reconciliationNotes:
+                reportedUpdate
+                  .reconciliationNotes ??
+                null,
+              lastError:
+                rejectionReason
+                  ? `BROKER_ORDER_REJECTED: ${rejectionReason}`
+                  : null,
+            },
+          });
+      }
+
       const action =
         updatedOrder.status ===
           "FILLED"
@@ -714,7 +785,10 @@ export async function syncOrderService(
             updatedOrder.id,
 
           message:
-            rejectionReason
+            reportedUpdate?.source ===
+              "MANUAL_PUBLISHER_RECONCILIATION"
+              ? "Publisher order outcome manually reconciled against Kite"
+              : rejectionReason
               ? "Order rejected by broker during synchronization"
               : "Order synchronized with broker",
 
@@ -738,6 +812,20 @@ export async function syncOrderService(
                 .realizedPnl
                 ?.toString(),
             executionCount: brokerExecutions ?.length ?? null,
+
+            updateSource:
+              reportedUpdate
+                ?.source ??
+              "BROKER_API",
+
+            ...(reportedUpdate
+              ?.reconciliationNotes
+              ? {
+                  reconciliationNotes:
+                    reportedUpdate
+                      .reconciliationNotes,
+                }
+              : {}),
 
             ...(rejectionReason
               ? {

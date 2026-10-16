@@ -10,6 +10,7 @@ export async function clearTestDatabase() {
     prisma.executionJob.deleteMany(),
     prisma.auditLog.deleteMany(),
     prisma.clientOrderConfirmation.deleteMany(),
+    prisma.userOnboardingToken.deleteMany(),
 
     prisma.order.deleteMany(),
     prisma.basketOrder.deleteMany(),

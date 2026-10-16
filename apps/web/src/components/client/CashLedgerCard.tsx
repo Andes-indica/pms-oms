@@ -10,6 +10,9 @@ import {
 import {
   formatCurrency,
 } from "./utils";
+import {
+  currentUserCan,
+} from "../../lib/permissions";
 
 type CashTransaction = {
   id: string;
@@ -34,24 +37,6 @@ type Props = {
     | string
     | number;
 };
-
-function getCurrentRole() {
-  const raw =
-    localStorage.getItem(
-      "user",
-    );
-
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw)
-      ?.role as string | undefined;
-  } catch {
-    return null;
-  }
-}
 
 export function CashLedgerCard({
   portfolioId,
@@ -86,14 +71,10 @@ export function CashLedgerCard({
   const [error, setError] =
     useState("");
 
-  const role =
-    getCurrentRole();
-
   const canManage =
-    role === "ADMIN" ||
-    role ===
-      "PORTFOLIO_MANAGER" ||
-    role === "OPERATIONS";
+    currentUserCan(
+      "MANAGE_CASH",
+    );
 
   async function load() {
     try {

@@ -16,6 +16,12 @@ import {
   formatOrderStatusLabel,
   getBasketErrorGuidance,
 } from "../components/basket/basket-error-guidance";
+import {
+  currentUserCan,
+} from "../lib/permissions";
+import {
+  PublisherReconciliationForm,
+} from "../components/PublisherReconciliationForm";
 
 type BasketChildRecoveryAction =
   | "RETRY"
@@ -41,10 +47,14 @@ type Basket = {
     quantity: number;
     status: string;
     brokerOrderId?: string | null;
+    filledQuantity?: number;
+    averageFillPrice?: string | null;
     clientConfirmation?: {
       status: string;
       expiresAt: string;
       lastError?: string | null;
+      reconciledAt?: string | null;
+      reconciliationNotes?: string | null;
     } | null;
     executionJob?: {
       status: string;
@@ -147,9 +157,13 @@ export function BasketOrdersPage() {
 
   return (
     <div className="space-y-8">
-      <CreateBasketOrderForm
-        onCreated={loadBaskets}
-      />
+      {currentUserCan(
+        "CREATE_ORDERS",
+      ) && (
+        <CreateBasketOrderForm
+          onCreated={loadBaskets}
+        />
+      )}
 
       <section>
         <h2 className="text-2xl font-semibold text-slate-900">
@@ -189,10 +203,30 @@ function BasketList({
   baskets: Basket[];
   onUpdated: () => Promise<void>;
 }) {
+  const canExecuteOrders =
+    currentUserCan(
+      "EXECUTE_ORDERS",
+    );
+  const canOperateOrders =
+    currentUserCan(
+      "OPERATE_ORDERS",
+    );
+
   const [busyId, setBusyId] =
     useState<string | null>(null);
   const [busyChildId, setBusyChildId] =
     useState<string | null>(null);
+  const [reconcilingOrder, setReconcilingOrder] =
+    useState<{
+      id: string;
+      symbol: string;
+      side: "BUY" | "SELL";
+      quantity: number;
+      status: string;
+      brokerOrderId?: string | null;
+      filledQuantity?: number;
+      averageFillPrice?: string | null;
+    } | null>(null);
   const [actionErrors, setActionErrors] = useState<Record<string, Array<{ label: string; error: string }>>>({});
   const [actionNotices, setActionNotices] = useState<Record<string, string>>({});
   const [confirmationLinks, setConfirmationLinks] = useState<Record<string, Array<{
@@ -336,6 +370,23 @@ function BasketList({
   async function createClientLinks(
     basket: Basket,
   ) {
+    const replaceActive =
+      basket.orders.some(
+        (order) =>
+          order.clientConfirmation
+            ?.status ===
+          "AWAITING_CLIENT",
+      );
+
+    if (
+      replaceActive &&
+      !window.confirm(
+        "Regenerate the active client links in this basket? Every existing active link will stop working immediately.",
+      )
+    ) {
+      return;
+    }
+
     try {
       setBusyId(basket.id);
       setActionErrors((current) => ({ ...current, [basket.id]: [] }));
@@ -354,6 +405,9 @@ function BasketList({
         `/api/basket-orders/${basket.id}/client-confirmations`,
         {
           method: "POST",
+          body: JSON.stringify({
+            replaceActive,
+          }),
         },
       );
 
@@ -454,6 +508,13 @@ function BasketList({
             order.executionJob
               ?.lastError,
         ).length;
+        const hasActiveClientLinks =
+          basket.orders.some(
+            (order) =>
+              order.clientConfirmation
+                ?.status ===
+              "AWAITING_CLIENT",
+          );
 
         return (
           <div
@@ -503,6 +564,12 @@ function BasketList({
                       "REJECTED"
                       ? "ORDER_REJECTION_REASON_UNAVAILABLE"
                       : null);
+
+                  const canRunRecovery =
+                    order.recoveryAction ===
+                      "RECONCILE"
+                      ? canOperateOrders
+                      : canExecuteOrders;
 
                   return (
                     <div
@@ -577,7 +644,8 @@ function BasketList({
                             )}
                           </p>
                         )}
-                        {order.recoveryAction && (
+                        {order.recoveryAction &&
+                          canRunRecovery && (
                           <button
                             disabled={
                               busy ||
@@ -611,6 +679,53 @@ function BasketList({
                             Publisher handoff completed. Verify the final broker status in this client's Kite account.
                           </p>
                         )}
+                        {basket.executionMode ===
+                          "CLIENT_CONFIRMATION" &&
+                          order.clientConfirmation
+                            ?.status ===
+                              "CONFIRMED" &&
+                          ![
+                            "FILLED",
+                            "CANCELLED",
+                            "REJECTED",
+                          ].includes(
+                            order.status,
+                          ) &&
+                          canOperateOrders && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setReconcilingOrder({
+                                  id: order.id,
+                                  symbol:
+                                    basket.symbol,
+                                  side:
+                                    basket.side as
+                                      | "BUY"
+                                      | "SELL",
+                                  quantity:
+                                    order.quantity,
+                                  status:
+                                    order.status,
+                                  brokerOrderId:
+                                    order.brokerOrderId,
+                                  filledQuantity:
+                                    order.filledQuantity,
+                                  averageFillPrice:
+                                    order.averageFillPrice,
+                                })
+                              }
+                              className="mt-2 rounded-md border border-blue-300 bg-white px-3 py-1.5 text-xs font-medium text-blue-800"
+                            >
+                              Record Kite outcome
+                            </button>
+                          )}
+                        {order.clientConfirmation
+                          ?.reconciledAt && (
+                            <p className="mt-2 text-xs font-medium text-emerald-700">
+                              Reconciled {new Date(order.clientConfirmation.reconciledAt).toLocaleString()}
+                            </p>
+                          )}
                       </div>
                     </div>
                   );
@@ -658,8 +773,20 @@ function BasketList({
               </div>
             )}
 
+            {basket.executionMode ===
+              "CLIENT_CONFIRMATION" &&
+              hasActiveClientLinks &&
+              !confirmationLinks[
+                basket.id
+              ]?.length && (
+                <p className="mt-3 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
+                  This basket has active client links. Regenerate only if they were lost; all current active links will be invalidated.
+                </p>
+              )}
+
             <div className="mt-4 flex gap-2">
-              {basket.status ===
+              {canExecuteOrders &&
+                basket.status ===
                 "PENDING" &&
                 failedChildCount === 0 &&
                 basket.executionMode ===
@@ -683,7 +810,8 @@ function BasketList({
                 </button>
               )}
 
-              {basket.status ===
+              {canExecuteOrders &&
+                basket.status ===
                 "PENDING" &&
                 basket.executionMode ===
                   "CLIENT_CONFIRMATION" && (
@@ -701,15 +829,13 @@ function BasketList({
                 >
                   {busy
                     ? "Creating links..."
-                    : confirmationLinks[
-                          basket.id
-                        ]?.length
-                      ? "Replace Client Links"
+                    : hasActiveClientLinks
+                      ? "Regenerate Client Links"
                       : "Create Client Links"}
                 </button>
               )}
 
-              {[
+              {canOperateOrders && [
                 "SUBMITTED",
                 "PARTIALLY_SUBMITTED",
                 "PARTIALLY_FILLED",
@@ -734,7 +860,7 @@ function BasketList({
                     : "Sync Basket"}
                 </button>
               )}
-              {[
+              {canOperateOrders && [
                 "PENDING",
                 "SUBMITTED",
                 "PARTIALLY_SUBMITTED",
@@ -764,6 +890,17 @@ function BasketList({
           </div>
         );
       })}
+      {reconcilingOrder && (
+        <PublisherReconciliationForm
+          order={reconcilingOrder}
+          onClose={() =>
+            setReconcilingOrder(
+              null,
+            )
+          }
+          onReconciled={onUpdated}
+        />
+      )}
     </div>
   );
 }

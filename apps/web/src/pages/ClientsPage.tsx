@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../lib/api";
 import { Link } from "react-router-dom";
+import { currentUserCan } from "../lib/permissions";
 
 type Client = {
     id: string;
@@ -30,35 +31,6 @@ type ClientsResponse = {
     data: Client[];
 };
 
-function getCurrentRole() {
-    const raw =
-        localStorage.getItem(
-            "user",
-        );
-
-    if (!raw) {
-        return null;
-    }
-
-    try {
-        return JSON.parse(raw)
-            ?.role as string | undefined;
-    } catch {
-        return null;
-    }
-}
-
-function canManageClients() {
-    const role =
-        getCurrentRole();
-
-    return (
-        role === "ADMIN" ||
-        role ===
-            "PORTFOLIO_MANAGER"
-    );
-}
-
 export function ClientsPage() {
     const [clients, setClients] =
         useState<Client[]>([]);
@@ -73,7 +45,9 @@ export function ClientsPage() {
         useState(false);
 
     const canManage =
-        canManageClients();
+        currentUserCan(
+            "MANAGE_CLIENTS",
+        );
 
     const [loading, setLoading] =
         useState(true);

@@ -72,11 +72,11 @@ export type ValuedHolding = {
   exchange: string;
   quantity: number;
   averagePrice: number;
-  currentPrice: number;
+  currentPrice: number | null;
   costValue: number;
-  marketValue: number;
-  unrealizedPnl: number;
-  unrealizedPnlPercent: number;
+  marketValue: number | null;
+  unrealizedPnl: number | null;
+  unrealizedPnlPercent: number | null;
 };
 
 export type PortfolioValuation = {
@@ -86,11 +86,17 @@ export type PortfolioValuation = {
   cashBalance: number;
 
   totalCostValue: number;
-  totalMarketValue: number;
+  totalMarketValue: number | null;
 
-  totalUnrealizedPnl: number;
+  totalUnrealizedPnl: number | null;
 
-  portfolioValue: number;
+  portfolioValue: number | null;
+
+  valuationAvailable: boolean;
+  marketDataMode:
+    | "LIVE"
+    | "SIMULATED"
+    | "DISABLED";
 
   holdings: ValuedHolding[];
 };

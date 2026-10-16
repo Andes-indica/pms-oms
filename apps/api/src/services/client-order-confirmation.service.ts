@@ -365,6 +365,7 @@ export async function requestClientOrderConfirmation(
   firmId: string,
   actorUserId?: string,
   now = new Date(),
+  replaceActive = false,
 ) {
   const existingOrder =
     await prisma.order.findFirst({
@@ -474,6 +475,16 @@ export async function requestClientOrderConfirmation(
   ) {
     throw new Error(
       "CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS",
+    );
+  }
+
+  if (
+    existingConfirmationStatus ===
+      "AWAITING_CLIENT" &&
+    !replaceActive
+  ) {
+    throw new Error(
+      "CLIENT_CONFIRMATION_LINK_ACTIVE",
     );
   }
 
@@ -630,6 +641,9 @@ export async function requestClientOrderConfirmation(
                 expiresAt.toISOString(),
               executionMode:
                 "CLIENT_CONFIRMATION",
+              replacedActiveLink:
+                existingConfirmationStatus ===
+                  "AWAITING_CLIENT",
             },
           },
           tx,
@@ -653,6 +667,7 @@ export async function requestBasketClientConfirmations(
   basketOrderId: string,
   firmId: string,
   actorUserId?: string,
+  replaceActive = false,
 ) {
   const basket =
     await prisma.basketOrder
@@ -690,6 +705,8 @@ export async function requestBasketClientConfirmations(
           order.id,
           firmId,
           actorUserId,
+          new Date(),
+          replaceActive,
         );
 
       results.push({

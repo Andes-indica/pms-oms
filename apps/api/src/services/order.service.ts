@@ -3,6 +3,9 @@ import { createAuditLog } from "./audit.service";
 import {
   validateInstrument,
 } from "./instrument-master.service";
+import {
+  assertMarketOrderSupported,
+} from "./market-data.service";
 
 type CreateOrderInput = {
   firmId: string;
@@ -36,6 +39,10 @@ export async function createOrderService(input: CreateOrderInput) {
       "DIRECT_API",
     actorUserId,
   } = input;
+
+  assertMarketOrderSupported(
+    orderType,
+  );
 
   const instrument =
     await validateInstrument(

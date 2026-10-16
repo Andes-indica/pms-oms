@@ -14,8 +14,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router =
   Router();
@@ -34,9 +34,8 @@ router.use(
 router.put(
   "/:brokerAccountId/zerodha/configure",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_BROKERS",
   ),
 
   configureZerodha,
@@ -45,9 +44,8 @@ router.put(
 router.get(
   "/:brokerAccountId/zerodha/login-url",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_BROKERS",
   ),
 
   getZerodhaLoginUrl,
@@ -56,9 +54,8 @@ router.get(
 router.post(
   "/:brokerAccountId/zerodha/session",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_BROKERS",
   ),
 
   createZerodhaSession,
@@ -70,6 +67,9 @@ router.post(
  */
 router.get(
   "/:brokerAccountId",
+  requirePermission(
+    "VIEW_BROKER_DETAILS",
+  ),
   getBrokerConnection,
 );
 

@@ -1,6 +1,7 @@
 import { prisma } from "@pms-oms/db";
 
 import {
+  getMarketDataCapabilities,
   getMarketPrice,
 } from "./market-data.service";
 
@@ -27,6 +28,69 @@ export async function getPortfolioValuationService(
     throw new Error(
       "PORTFOLIO_NOT_FOUND",
     );
+  }
+
+  const marketData =
+    getMarketDataCapabilities();
+
+  if (
+    !marketData
+      .valuationAvailable
+  ) {
+    const holdings =
+      portfolio.holdings.map(
+        (holding) => {
+          const averagePrice =
+            Number(
+              holding.averagePrice,
+            );
+          const costValue =
+            averagePrice *
+            holding.quantity;
+
+          return {
+            id: holding.id,
+            symbol:
+              holding.symbol,
+            exchange:
+              holding.exchange,
+            quantity:
+              holding.quantity,
+            averagePrice,
+            currentPrice: null,
+            costValue,
+            marketValue: null,
+            unrealizedPnl: null,
+            unrealizedPnlPercent:
+              null,
+          };
+        },
+      );
+
+    return {
+      portfolioId:
+        portfolio.id,
+      portfolioName:
+        portfolio.name,
+      cashBalance:
+        Number(
+          portfolio.cashBalance,
+        ),
+      totalCostValue:
+        holdings.reduce(
+          (total, holding) =>
+            total +
+            holding.costValue,
+          0,
+        ),
+      totalMarketValue: null,
+      totalUnrealizedPnl: null,
+      portfolioValue: null,
+      holdings,
+      valuationAvailable: false,
+      marketDataMode:
+        marketData.mode,
+    };
   }
 
   const holdings =
@@ -142,5 +206,8 @@ export async function getPortfolioValuationService(
     portfolioValue,
 
     holdings,
+    valuationAvailable: true,
+    marketDataMode:
+      marketData.mode,
   };
 }

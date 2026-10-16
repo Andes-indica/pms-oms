@@ -10,13 +10,13 @@ import {
 } from "../lib/api";
 
 type DashboardData = {
-  totalAum: number;
+  totalAum: number | null;
 
   totalCash: number;
 
-  totalMarketValue: number;
+  totalMarketValue: number | null;
 
-  totalUnrealizedPnl: number;
+  totalUnrealizedPnl: number | null;
 
   totalRealizedPnl: number;
 
@@ -29,6 +29,12 @@ type DashboardData = {
   filledOrders: number;
 
   totalOrders: number;
+
+  valuationAvailable: boolean;
+  marketDataMode:
+    | "LIVE"
+    | "SIMULATED"
+    | "DISABLED";
 
   clientBreakdown: ClientBreakdown[];
 
@@ -43,8 +49,8 @@ type ClientBreakdown = {
   clientId: string;
   clientName: string;
   cash: number;
-  marketValue: number;
-  aum: number;
+  marketValue: number | null;
+  aum: number | null;
 };
 
 type TopHolding = {
@@ -160,10 +166,16 @@ export function DashboardPage() {
         </p>
       </div>
 
+      {!data.valuationAvailable && (
+        <p className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          Live valuation is unavailable in limit-only mode. Cash, realized P&amp;L, clients, and order activity remain current; market value, AUM, allocation, and unrealized P&amp;L are intentionally not estimated.
+        </p>
+      )}
+
       <div className="grid gap-4 md:grid-cols-4">
         <SummaryCard
           label="Total AUM"
-          value={formatCurrency(data.totalAum)}
+          value={formatOptionalCurrency(data.totalAum)}
         />
 
         <SummaryCard
@@ -173,18 +185,21 @@ export function DashboardPage() {
 
         <SummaryCard
           label="Market Value"
-          value={formatCurrency(
+          value={formatOptionalCurrency(
             data.totalMarketValue,
           )}
         />
 
         <SummaryCard
           label="Unrealized P&L"
-          value={formatCurrency(
+          value={formatOptionalCurrency(
             data.totalUnrealizedPnl,
           )}
           positive={
-            data.totalUnrealizedPnl >= 0
+            data.totalUnrealizedPnl ===
+              null
+              ? undefined
+              : data.totalUnrealizedPnl >= 0
           }
         />
       </div>
@@ -219,6 +234,9 @@ export function DashboardPage() {
       <div className="grid gap-6 xl:grid-cols-2">
         <TopHoldings
           holdings={data.topHoldings}
+          valuationAvailable={
+            data.valuationAvailable
+          }
         />
 
         <ClientAumBreakdown
@@ -331,10 +349,20 @@ function formatCurrency(
     },
   ).format(value);
 }
+
+function formatOptionalCurrency(
+  value: number | null,
+) {
+  return value === null
+    ? "Unavailable"
+    : formatCurrency(value);
+}
 function TopHoldings({
   holdings,
+  valuationAvailable,
 }: {
   holdings: TopHolding[];
+  valuationAvailable: boolean;
 }) {
   return (
     <div className="rounded-xl border bg-white">
@@ -349,6 +377,11 @@ function TopHoldings({
       </div>
 
       <div className="overflow-x-auto">
+        {!valuationAvailable ? (
+          <p className="p-5 text-sm text-slate-500">
+            Configure live market data to rank holdings by market value.
+          </p>
+        ) : (
         <table className="w-full text-left text-sm">
           <thead className="bg-slate-50 text-slate-600">
             <tr>
@@ -414,6 +447,7 @@ function TopHoldings({
             )}
           </tbody>
         </table>
+        )}
       </div>
     </div>
   );
@@ -457,16 +491,18 @@ function ClientAumBreakdown({
                   )}
                   {" • "}
                   Holdings{" "}
-                  {formatCurrency(
+                  {formatOptionalCurrency(
                     client.marketValue,
                   )}
                 </p>
               </div>
 
               <p className="font-semibold">
-                {formatCurrency(
-                  client.aum,
-                )}
+                {client.aum === null
+                  ? "Valuation unavailable"
+                  : formatCurrency(
+                      client.aum,
+                    )}
               </p>
             </div>
           ),

@@ -27,6 +27,9 @@ import {
 } from "./client-order-confirmation.service";
 
 import { enqueueOrderExecution } from "./order-execution-queue.service";
+import {
+  reconcilePublisherOrderService,
+} from "./publisher-order-reconciliation.service";
 
 const previousPublisherApiKey =
   process.env.ZERODHA_PUBLISHER_API_KEY;
@@ -433,6 +436,156 @@ describe("client-confirmed execution integration", () => {
         ),
       ).rejects.toThrow(
         "CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS",
+      );
+    },
+  );
+
+  test(
+    "requires explicit regeneration and invalidates the previous active link",
+    async () => {
+      const account =
+        await createConfirmationOrder();
+      const first =
+        await requestClientOrderConfirmation(
+          account.order.id,
+          account.firm.id,
+        );
+
+      await expect(
+        requestClientOrderConfirmation(
+          account.order.id,
+          account.firm.id,
+        ),
+      ).rejects.toThrow(
+        "CLIENT_CONFIRMATION_LINK_ACTIVE",
+      );
+
+      const replacement =
+        await requestClientOrderConfirmation(
+          account.order.id,
+          account.firm.id,
+          undefined,
+          new Date(),
+          true,
+        );
+
+      expect(replacement.token)
+        .not.toBe(first.token);
+      await expect(
+        getClientOrderConfirmation(
+          first.token,
+        ),
+      ).rejects.toThrow(
+        "CLIENT_CONFIRMATION_LINK_INVALID",
+      );
+      await expect(
+        getClientOrderConfirmation(
+          replacement.token,
+        ),
+      ).resolves.toMatchObject({
+        status: "AWAITING_CLIENT",
+      });
+    },
+  );
+
+  test(
+    "applies a manager-verified Publisher fill to PMS cash and holdings",
+    async () => {
+      const account =
+        await createConfirmationOrder();
+      const requested =
+        await requestClientOrderConfirmation(
+          account.order.id,
+          account.firm.id,
+        );
+
+      await startClientOrderHandoff(
+        requested.token,
+      );
+      await completeClientOrderConfirmation({
+        token: requested.token,
+        status: "success",
+        requestToken:
+          "publisherrequesttoken1",
+      });
+
+      const actor =
+        await prisma.user.create({
+          data: {
+            name: "Operations User",
+            email:
+              `operations-${crypto.randomUUID()}@example.com`,
+            passwordHash: "test",
+            role: "OPERATIONS",
+            firmId: account.firm.id,
+          },
+        });
+
+      const updated =
+        await reconcilePublisherOrderService({
+          orderId: account.order.id,
+          firmId: account.firm.id,
+          actorUserId:
+            actor.id,
+          brokerOrderId:
+            "ZERODHA-ORDER-1",
+          status: "FILLED",
+          filledQuantity: 10,
+          averageFillPrice: 1_510,
+          notes:
+            "Verified in the client Kite order book",
+        });
+
+      expect(updated.status).toBe("FILLED");
+      expect(updated.brokerOrderId)
+        .toBe("ZERODHA-ORDER-1");
+      expect(updated.filledQuantity).toBe(10);
+
+      const holding =
+        await prisma.holding.findUniqueOrThrow({
+          where: {
+            portfolioId_brokerAccountId_symbol_exchange: {
+              portfolioId:
+                account.portfolio.id,
+              brokerAccountId:
+                account.brokerAccount.id,
+              symbol: "INFY",
+              exchange: "NSE",
+            },
+          },
+        });
+      expect(holding.quantity).toBe(10);
+      expect(Number(holding.averagePrice))
+        .toBe(1_510);
+
+      const portfolio =
+        await prisma.portfolio.findUniqueOrThrow({
+          where: {
+            id: account.portfolio.id,
+          },
+        });
+      expect(Number(portfolio.cashBalance))
+        .toBe(84_900);
+
+      const confirmation =
+        await prisma.clientOrderConfirmation
+          .findUniqueOrThrow({
+            where: {
+              orderId:
+                account.order.id,
+            },
+          });
+      expect(confirmation.reconciledAt)
+        .not.toBeNull();
+      expect(
+        confirmation
+          .reconciledByUserId,
+      ).toBe(actor.id);
+      expect(
+        confirmation
+          .reconciliationNotes,
+      ).toBe(
+        "Verified in the client Kite order book",
       );
     },
   );

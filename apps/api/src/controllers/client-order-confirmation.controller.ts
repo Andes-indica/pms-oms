@@ -20,6 +20,9 @@ import {
 import {
   publishLiveUpdate,
 } from "../services/live-update.service";
+import {
+  reconcilePublisherOrderService,
+} from "../services/publisher-order-reconciliation.service";
 
 function confirmationError(
   res: Response,
@@ -60,12 +63,17 @@ function confirmationError(
       "CLIENT_CONFIRMATION_REQUIRED",
       "CLIENT_CONFIRMATION_HANDOFF_IN_PROGRESS",
       "CLIENT_CONFIRMATION_HANDOFF_NOT_STARTED",
+      "CLIENT_CONFIRMATION_LINK_ACTIVE",
       "CLIENT_CONFIRMATION_RESOLUTION_NOT_ALLOWED",
       "ZERODHA_CALLBACK_STATUS_UNCERTAIN",
       "ORDER_NOT_CLIENT_CONFIRMED",
       "BASKET_NOT_CLIENT_CONFIRMED",
       "ORDER_ALREADY_CONFIRMED",
       "ORDER_NOT_PENDING",
+      "ORDER_ALREADY_TERMINAL",
+      "PUBLISHER_ORDER_NOT_CONFIRMED",
+      "BROKER_ORDER_ID_MISMATCH",
+      "BROKER_ORDER_ID_ALREADY_LINKED",
     ].includes(error.message)
   ) {
     return res.status(409).json({
@@ -88,6 +96,12 @@ function confirmationError(
       "MAX_ORDER_VALUE_EXCEEDED",
       "MAX_POSITION_QUANTITY_EXCEEDED",
       "MAX_POSITION_VALUE_EXCEEDED",
+      "INVALID_BROKER_ORDER_ID",
+      "INVALID_RECONCILIATION_STATUS",
+      "INVALID_FILL_QUANTITY",
+      "INVALID_FILL_PRICE",
+      "REJECTION_REASON_REQUIRED",
+      "INVALID_RECONCILIATION_NOTES",
     ].includes(error.message)
   ) {
     return res.status(400).json({
@@ -141,6 +155,9 @@ export async function requestOrderConfirmation(
         req.params.id,
         req.user.firmId,
         req.user.userId,
+        new Date(),
+        req.body?.replaceActive ===
+          true,
       );
 
     publishLiveUpdate(
@@ -222,6 +239,8 @@ export async function requestBasketConfirmations(
         req.params.id,
         req.user.firmId,
         req.user.userId,
+        req.body?.replaceActive ===
+          true,
       );
 
     publishLiveUpdate(
@@ -236,6 +255,61 @@ export async function requestBasketConfirmations(
     );
 
     return res.status(201).json({
+      data: result,
+    });
+  } catch (error) {
+    return confirmationError(
+      res,
+      error,
+    );
+  }
+}
+
+export async function reconcilePublisherOrder(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  if (!req.user) {
+    return res.status(401).json({
+      error:
+        "Authentication required",
+    });
+  }
+
+  try {
+    const result =
+      await reconcilePublisherOrderService({
+        orderId: req.params.id,
+        firmId: req.user.firmId,
+        actorUserId:
+          req.user.userId,
+        brokerOrderId:
+          req.body?.brokerOrderId,
+        status: req.body?.status,
+        filledQuantity:
+          req.body?.filledQuantity,
+        averageFillPrice:
+          req.body?.averageFillPrice,
+        rejectionReason:
+          req.body?.rejectionReason,
+        notes: req.body?.notes,
+      });
+
+    publishLiveUpdate(
+      req.user.firmId,
+      {
+        type:
+          "order.publisher_reconciled",
+        entityType: "ORDER",
+        entityId: req.params.id,
+      },
+    );
+
+    return res.status(200).json({
       data: result,
     });
   } catch (error) {

@@ -2,7 +2,10 @@ import { Router } from "express";
 
 import {
   createUser,
+  createUserPasswordLink,
   getUsers,
+  revokeUserSessions,
+  setUserEnabled,
   updateUserRole,
 } from "../controllers/user.controller";
 
@@ -11,8 +14,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router = Router();
 
@@ -20,20 +23,38 @@ router.use(requireAuth);
 
 router.get(
   "/",
-  requireRole("ADMIN"),
+  requirePermission("VIEW_USERS"),
   getUsers,
 );
 
 router.post(
   "/",
-  requireRole("ADMIN"),
+  requirePermission("MANAGE_USERS"),
   createUser,
 );
 
 router.patch(
   "/:id/role",
-  requireRole("ADMIN"),
+  requirePermission("MANAGE_USERS"),
   updateUserRole,
+);
+
+router.patch(
+  "/:id/status",
+  requirePermission("MANAGE_USERS"),
+  setUserEnabled,
+);
+
+router.post(
+  "/:id/revoke-sessions",
+  requirePermission("MANAGE_USERS"),
+  revokeUserSessions,
+);
+
+router.post(
+  "/:id/password-link",
+  requirePermission("MANAGE_USERS"),
+  createUserPasswordLink,
 );
 
 export default router;

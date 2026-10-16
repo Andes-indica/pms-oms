@@ -17,8 +17,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router =
   Router();
@@ -29,47 +29,57 @@ router.use(
 
 router.get(
   "/",
+  requirePermission(
+    "VIEW_CLIENTS",
+  ),
   getClients,
 );
 
 router.post(
   "/",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_CLIENTS",
   ),
   createClient,
 );
 
 router.get(
   "/:id/overview",
+  requirePermission(
+    "VIEW_CLIENTS",
+  ),
   getClientOverview,
 );
 
 router.get(
   "/:id/portfolio-summary",
+  requirePermission(
+    "VIEW_CLIENTS",
+  ),
   getClientPortfolioSummary,
 );
 
 router.patch(
   "/:id",
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_CLIENTS",
   ),
   updateClient,
 );
 
 router.delete(
   "/:id",
-  requireRole(
-    "ADMIN",
+  requirePermission(
+    "DELETE_CLIENT_DATA",
   ),
   deleteClient,
 );
 
 router.get(
   "/:id",
+  requirePermission(
+    "VIEW_CLIENTS",
+  ),
   getClientById,
 );
 

@@ -27,8 +27,8 @@ import {
 } from "../middleware/auth.middleware";
 
 import {
-  requireRole,
-} from "../middleware/role.middleware";
+  requirePermission,
+} from "../security/permissions";
 
 const router =
   Router();
@@ -40,9 +40,8 @@ router.use(
 router.post(
   "/clients/:clientId/broker-accounts",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_BROKERS",
   ),
 
   createBrokerAccount,
@@ -51,9 +50,8 @@ router.post(
 router.patch(
   "/broker-accounts/:id",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_BROKERS",
   ),
 
   updateBrokerAccount,
@@ -62,9 +60,8 @@ router.patch(
 router.post(
   "/broker-accounts/:id/disconnect",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
+  requirePermission(
+    "MANAGE_BROKERS",
   ),
 
   disconnectBrokerAccountController,
@@ -73,8 +70,8 @@ router.post(
 router.delete(
   "/broker-accounts/:id",
 
-  requireRole(
-    "ADMIN",
+  requirePermission(
+    "ARCHIVE_BROKERS",
   ),
 
   archiveBrokerAccountController,
@@ -83,11 +80,8 @@ router.delete(
 router.get(
   "/broker-accounts/:id/snapshot",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
-    "VIEWER",
+  requirePermission(
+    "VIEW_BROKER_DETAILS",
   ),
 
   getBrokerSnapshot,
@@ -95,11 +89,8 @@ router.get(
 router.get(
   "/broker-accounts/:id/cash-reconciliation",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
-    "VIEWER",
+  requirePermission(
+    "VIEW_BROKER_DETAILS",
   ),
 
   getBrokerCashStatus,
@@ -108,10 +99,8 @@ router.get(
 router.put(
   "/broker-accounts/:id/cash-allocations",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "MANAGE_CASH",
   ),
 
   updateBrokerCashAllocation,
@@ -120,10 +109,8 @@ router.put(
 router.delete(
   "/broker-accounts/:id/cash-allocations/:portfolioId",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "MANAGE_CASH",
   ),
 
   deleteBrokerCashAllocation,
@@ -132,11 +119,8 @@ router.delete(
 router.get(
   "/broker-accounts/:id/reconciliation",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
-    "VIEWER",
+  requirePermission(
+    "VIEW_BROKER_DETAILS",
   ),
 
   getBrokerReconciliation,
@@ -145,10 +129,8 @@ router.get(
 router.post(
   "/broker-accounts/:id/reconciliation/repair",
 
-  requireRole(
-    "ADMIN",
-    "PORTFOLIO_MANAGER",
-    "OPERATIONS",
+  requirePermission(
+    "RECONCILE_BROKERS",
   ),
 
   repairBrokerReconciliation,
@@ -156,10 +138,8 @@ router.post(
 router.post(
     "/broker-accounts/:id/holdings/import",
 
-    requireRole(
-        "ADMIN",
-        "PORTFOLIO_MANAGER",
-        "OPERATIONS",
+    requirePermission(
+        "RECONCILE_BROKERS",
     ),
 
     importBrokerAccountHoldings,

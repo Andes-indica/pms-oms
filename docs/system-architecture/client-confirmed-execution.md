@@ -33,7 +33,9 @@ This is a safety boundary, not only a UI distinction.
    does not exchange the request token or obtain access to the client's broker
    account.
 7. The client verifies the final order, fill, rejection, modification, or
-   cancellation status in Kite. The PMS keeps the reservation because a
+   cancellation status in Kite. A manager or operations user then records the
+   verified broker order ID and final status in the PMS. Until that manual
+   reconciliation happens, the PMS keeps the reservation because a
    Publisher-only app cannot read the broker order book.
 
 For a multi-client basket, the API issues one link for each child order. Each
@@ -62,7 +64,9 @@ which revokes its active link and releases its reservation. After the handoff
 starts, modifications and cancellations are performed in Kite. The direct API
 sync/modification/cancellation paths are deliberately blocked for these
 orders, because Publisher mode does not grant broker-account API access.
-Only an unopened `AWAITING_CLIENT` link can expire and be replaced. A
+Creating another link for an `AWAITING_CLIENT` proposal is an explicit action:
+the UI warns the operator, and the previous link becomes invalid. Only an
+unopened `AWAITING_CLIENT` link can expire and be replaced. A
 `HANDOFF_STARTED` proposal remains reserved and cannot be regenerated even
 after its original expiry time, because the broker may already have accepted
 the order while the browser callback was lost. After checking the intended
@@ -75,13 +79,18 @@ it must never be used without the broker-side check.
 This version solves client-side order placement without sharing client API
 credentials, but it is not a substitute for broker order-book access. The
 manager UI explicitly labels a completed handoff as requiring verification in
-Kite; it does not invent a broker order ID or a rejection reason.
+Kite. An authorized manager or operations user can record a broker-verified
+`OPEN`, `PARTIALLY_FILLED`, `FILLED`, `CANCELLED`, or `REJECTED` result,
+including broker order ID, filled quantity, average price, rejection reason,
+and reconciliation notes. That action uses the normal synchronization and
+accounting path, updates reservations/cash/holdings where applicable, and is
+audit logged. The operator must never guess these values.
 
 Zerodha documents verified order postbacks for approved platform/public apps
-where one API key serves multiple users. Enabling automatic broker status,
-rejection reasons, fills, and portfolio accounting therefore requires Zerodha
-multi-user/platform approval plus a separately implemented, checksum-verified
-postback endpoint. Do not reuse the personal direct-API connection for this.
+where one API key serves multiple users. Automating the manual reconciliation
+step therefore requires Zerodha multi-user/platform approval plus a separately
+implemented, checksum-verified postback endpoint. Do not reuse the personal
+direct-API connection for this.
 
 ## Market-data boundary
 

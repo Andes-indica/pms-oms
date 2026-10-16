@@ -133,6 +133,12 @@ exports.Prisma.UserScalarFieldEnum = {
   email: 'email',
   passwordHash: 'passwordHash',
   role: 'role',
+  status: 'status',
+  sessionVersion: 'sessionVersion',
+  invitedAt: 'invitedAt',
+  activatedAt: 'activatedAt',
+  disabledAt: 'disabledAt',
+  passwordChangedAt: 'passwordChangedAt',
   firmId: 'firmId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -156,6 +162,16 @@ exports.Prisma.BrokerAccountScalarFieldEnum = {
   archivedAt: 'archivedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
+};
+
+exports.Prisma.UserOnboardingTokenScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  type: 'type',
+  tokenHash: 'tokenHash',
+  expiresAt: 'expiresAt',
+  usedAt: 'usedAt',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.PortfolioScalarFieldEnum = {
@@ -275,6 +291,9 @@ exports.Prisma.ClientOrderConfirmationScalarFieldEnum = {
   handoffStartedAt: 'handoffStartedAt',
   confirmedAt: 'confirmedAt',
   lastError: 'lastError',
+  reconciledAt: 'reconciledAt',
+  reconciledByUserId: 'reconciledByUserId',
+  reconciliationNotes: 'reconciliationNotes',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -388,6 +407,17 @@ exports.UserRole = exports.$Enums.UserRole = {
   VIEWER: 'VIEWER'
 };
 
+exports.UserStatus = exports.$Enums.UserStatus = {
+  INVITED: 'INVITED',
+  ACTIVE: 'ACTIVE',
+  DISABLED: 'DISABLED'
+};
+
+exports.UserOnboardingTokenType = exports.$Enums.UserOnboardingTokenType = {
+  INVITATION: 'INVITATION',
+  PASSWORD_RESET: 'PASSWORD_RESET'
+};
+
 exports.CashTransactionType = exports.$Enums.CashTransactionType = {
   DEPOSIT: 'DEPOSIT',
   WITHDRAWAL: 'WITHDRAWAL',
@@ -434,6 +464,13 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   ORDER_CONFIRMATION_STARTED: 'ORDER_CONFIRMATION_STARTED',
   ORDER_CLIENT_CONFIRMED: 'ORDER_CLIENT_CONFIRMED',
   ORDER_CONFIRMATION_DECLINED: 'ORDER_CONFIRMATION_DECLINED',
+  USER_INVITED: 'USER_INVITED',
+  USER_ACTIVATED: 'USER_ACTIVATED',
+  USER_ROLE_CHANGED: 'USER_ROLE_CHANGED',
+  USER_DISABLED: 'USER_DISABLED',
+  USER_REACTIVATED: 'USER_REACTIVATED',
+  USER_SESSIONS_REVOKED: 'USER_SESSIONS_REVOKED',
+  USER_PASSWORD_RESET_REQUESTED: 'USER_PASSWORD_RESET_REQUESTED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',
@@ -484,6 +521,7 @@ exports.Prisma.ModelName = {
   User: 'User',
   Client: 'Client',
   BrokerAccount: 'BrokerAccount',
+  UserOnboardingToken: 'UserOnboardingToken',
   Portfolio: 'Portfolio',
   PortfolioBrokerCash: 'PortfolioBrokerCash',
   BrokerFundsSnapshot: 'BrokerFundsSnapshot',

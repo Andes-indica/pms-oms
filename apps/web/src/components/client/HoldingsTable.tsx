@@ -95,7 +95,7 @@ export function HoldingsTable({
                   </td>
 
                   <td className="px-4 py-4">
-                    {formatCurrency(
+                    {formatOptionalCurrency(
                       holding.currentPrice,
                     )}
                   </td>
@@ -107,36 +107,44 @@ export function HoldingsTable({
                   </td>
 
                   <td className="px-4 py-4">
-                    {formatCurrency(
+                    {formatOptionalCurrency(
                       holding.marketValue,
                     )}
                   </td>
 
                   <td
                     className={`px-4 py-4 font-medium ${
-                      holding.unrealizedPnl >=
-                      0
+                      holding.unrealizedPnl ===
+                        null
+                        ? "text-slate-500"
+                        : holding.unrealizedPnl >=
+                            0
                         ? "text-green-700"
                         : "text-red-600"
                     }`}
                   >
-                    {formatCurrency(
+                    {formatOptionalCurrency(
                       holding.unrealizedPnl,
                     )}
                   </td>
 
                   <td
                     className={`px-4 py-4 font-medium ${
-                      holding.unrealizedPnlPercent >=
-                      0
+                      holding.unrealizedPnlPercent ===
+                        null
+                        ? "text-slate-500"
+                        : holding.unrealizedPnlPercent >=
+                            0
                         ? "text-green-700"
                         : "text-red-600"
                     }`}
                   >
-                    {holding.unrealizedPnlPercent.toFixed(
-                      2,
-                    )}
-                    %
+                    {holding.unrealizedPnlPercent ===
+                    null
+                      ? "Unavailable"
+                      : `${holding.unrealizedPnlPercent.toFixed(
+                          2,
+                        )}%`}
                   </td>
                 </tr>
               ),
@@ -146,4 +154,12 @@ export function HoldingsTable({
       )}
     </div>
   );
+}
+
+function formatOptionalCurrency(
+  value: number | null,
+) {
+  return value === null
+    ? "Unavailable"
+    : formatCurrency(value);
 }

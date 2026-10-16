@@ -85,8 +85,11 @@ MARKET_DATA_BASE_URL=
 MARKET_DATA_API_TOKEN=
 ```
 
-In this mode, create only `LIMIT` orders. `MARKET` orders fail safely with
-`MARKET_DATA_NOT_CONFIGURED`; there is no mock-price or stale-price fallback.
+In this mode, create only `LIMIT` orders. The UI shows a global limit-only
+banner, disables market-order selection, and labels live valuation fields as
+unavailable. The API independently rejects `MARKET` orders with
+`MARKET_ORDERS_DISABLED`; there is no mock-price, zero-price, or stale-price
+fallback.
 
 When a real provider is available, configure:
 
@@ -260,6 +263,16 @@ unset BOOTSTRAP_ADMIN_PASSWORD
 The password must contain 12 to 128 characters. The command refuses to run if
 any user already exists; it never overwrites an existing administrator.
 
+After the first administrator signs in, create all other staff from **User
+Management**. The API returns a one-time invitation link whose raw token is not
+stored in the database. Share it through a secure channel. Invitations expire
+after 24 hours; administrator-generated password reset links expire after one
+hour. Regenerating a link invalidates its previous unused link. Disabling an
+account, changing its role, resetting its password, or selecting **Revoke
+sessions** invalidates existing access tokens. The application prevents an
+administrator from disabling or demoting themselves and prevents removal of
+the last active administrator.
+
 ## 8. Start and verify
 
 Start the application:
@@ -314,12 +327,15 @@ After login:
    browser session, confirm it in the matching client Kite account, and verify
    that the PMS records the completed Publisher handoff without inventing a
    broker order ID
-10. inspect that client's Kite order book and verify the final broker status
+10. inspect that client's Kite order book and use **Record verified outcome**
+    to enter the broker order ID, exact final status, fills, average price, and
+    rejection reason; verify the reservation and accounting updates
 
 Do not submit the same client-confirmed proposal again after the Publisher
 handoff. In Publisher-only mode, Kite is the source of truth for final broker
-status; automatic PMS tracking requires the separately approved postback
-upgrade described in the architecture document.
+status; the manual reconciliation must be based on that order book. Automatic
+PMS tracking requires the separately approved postback upgrade described in
+the architecture document.
 
 Zerodha access tokens expire at 6 AM on the following day. Operations must
 reconnect affected accounts before further broker activity.

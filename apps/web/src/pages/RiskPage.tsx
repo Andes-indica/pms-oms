@@ -6,6 +6,9 @@ import {
 import {
   apiFetch,
 } from "../lib/api";
+import {
+  currentUserCan,
+} from "../lib/permissions";
 
 type RestrictedSecurity = {
   id: string;
@@ -14,24 +17,6 @@ type RestrictedSecurity = {
   reason?: string | null;
   firmId?: string | null;
 };
-
-function getCurrentRole() {
-  const raw =
-    localStorage.getItem(
-      "user",
-    );
-
-  if (!raw) {
-    return null;
-  }
-
-  try {
-    return JSON.parse(raw)
-      ?.role as string | undefined;
-  } catch {
-    return null;
-  }
-}
 
 export function RiskPage() {
   const [items, setItems] =
@@ -54,13 +39,10 @@ export function RiskPage() {
   const [saving, setSaving] =
     useState(false);
 
-  const role =
-    getCurrentRole();
-
   const canManage =
-    role === "ADMIN" ||
-    role ===
-      "PORTFOLIO_MANAGER";
+    currentUserCan(
+      "MANAGE_RISK",
+    );
 
   async function load() {
     try {

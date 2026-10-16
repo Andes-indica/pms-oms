@@ -5,6 +5,9 @@ import {
 import {
     apiFetch,
 } from "../../lib/api";
+import {
+    currentUserCan,
+} from "../../lib/permissions";
 
 import type {
     BrokerAccount,
@@ -86,75 +89,20 @@ function getStatusClasses(
 }
 
 function canManageBrokerAccounts() {
-    const rawUser =
-        localStorage.getItem(
-            "user",
-        );
-
-    if (!rawUser) {
-        return false;
-    }
-
-    try {
-        const user =
-            JSON.parse(rawUser);
-
-        return (
-            user?.role ===
-            "ADMIN" ||
-            user?.role ===
-            "PORTFOLIO_MANAGER"
-        );
-    } catch {
-        return false;
-    }
+    return currentUserCan(
+        "MANAGE_BROKERS",
+    );
 }
 function isBrokerAdmin() {
-    const rawUser =
-        localStorage.getItem(
-            "user",
-        );
-
-    if (!rawUser) {
-        return false;
-    }
-
-    try {
-        return (
-            JSON.parse(rawUser)
-                ?.role ===
-            "ADMIN"
-        );
-    } catch {
-        return false;
-    }
+    return currentUserCan(
+        "ARCHIVE_BROKERS",
+    );
 }
 
 function canRepairReconciliation() {
-    const rawUser =
-        localStorage.getItem(
-            "user",
-        );
-
-    if (!rawUser) {
-        return false;
-    }
-
-    try {
-        const user =
-            JSON.parse(rawUser);
-
-        return (
-            user?.role ===
-            "ADMIN" ||
-            user?.role ===
-            "PORTFOLIO_MANAGER" ||
-            user?.role ===
-            "OPERATIONS"
-        );
-    } catch {
-        return false;
-    }
+    return currentUserCan(
+        "RECONCILE_BROKERS",
+    );
 }
 
 export function BrokerAccountsCard({

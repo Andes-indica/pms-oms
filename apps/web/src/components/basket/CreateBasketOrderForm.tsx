@@ -6,6 +6,9 @@ import {
 } from "react";
 
 import { apiFetch } from "../../lib/api";
+import {
+  loadRuntimeCapabilities,
+} from "../../lib/runtime-capabilities";
 import { getBasketErrorGuidance } from "./basket-error-guidance";
 
 type Client = {
@@ -115,6 +118,21 @@ export function CreateBasketOrderForm({
 
   const [success, setSuccess] =
     useState("");
+  const [marketOrdersAllowed, setMarketOrdersAllowed] =
+    useState(false);
+
+  useEffect(() => {
+    void loadRuntimeCapabilities()
+      .then((capabilities) => {
+        setMarketOrdersAllowed(
+          capabilities.marketData
+            .marketOrdersAllowed,
+        );
+      })
+      .catch(() => {
+        setMarketOrdersAllowed(false);
+      });
+  }, []);
 
   const errorGuidance =
     error
@@ -550,7 +568,10 @@ export function CreateBasketOrderForm({
             }
             className="w-full rounded-lg border px-3 py-2"
           >
-            <option value="MARKET">
+            <option
+              value="MARKET"
+              disabled={!marketOrdersAllowed}
+            >
               MARKET
             </option>
 
@@ -558,6 +579,11 @@ export function CreateBasketOrderForm({
               LIMIT
             </option>
           </select>
+          {!marketOrdersAllowed && (
+            <p className="mt-1 text-xs text-amber-700">
+              Market baskets require live market data. Use a limit price while limit-only mode is active.
+            </p>
+          )}
         </Field>
 
         <Field label="Execution">

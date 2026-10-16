@@ -26,6 +26,8 @@ import riskRoutes
   from "./routes/risk.routes";
 import clientOrderConfirmationRoutes
   from "./routes/client-order-confirmation.routes";
+import runtimeRoutes
+  from "./routes/runtime.routes";
 
 import {
   securityHeaders,
@@ -116,6 +118,10 @@ app.use(express.json({
   limit: "256kb",
 }));
 app.use("/api/auth", authRoutes);
+app.use(
+  "/api/runtime",
+  runtimeRoutes,
+);
 app.use(
   "/api/client-order-confirmations",
   clientOrderConfirmationRoutes,

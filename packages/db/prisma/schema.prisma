@@ -15,6 +15,17 @@ enum UserRole {
   VIEWER
 }
 
+enum UserStatus {
+  INVITED
+  ACTIVE
+  DISABLED
+}
+
+enum UserOnboardingTokenType {
+  INVITATION
+  PASSWORD_RESET
+}
+
 enum OrderExecutionMode {
   DIRECT_API
   CLIENT_CONFIRMATION
@@ -43,16 +54,24 @@ model Firm {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  name         String
-  email        String   @unique
-  passwordHash String
-  role         UserRole @default(PORTFOLIO_MANAGER)
+  id             String     @id @default(cuid())
+  name           String
+  email          String     @unique
+  passwordHash   String?
+  role           UserRole   @default(PORTFOLIO_MANAGER)
+  status         UserStatus @default(ACTIVE)
+  sessionVersion Int        @default(0)
+
+  invitedAt         DateTime?
+  activatedAt       DateTime?
+  disabledAt        DateTime?
+  passwordChangedAt DateTime?
 
   firmId String
   firm   Firm   @relation(fields: [firmId], references: [id])
 
-  auditLogs AuditLog[] @relation("AuditActor")
+  auditLogs        AuditLog[]            @relation("AuditActor")
+  onboardingTokens UserOnboardingToken[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -141,11 +160,35 @@ enum AuditAction {
   ORDER_CLIENT_CONFIRMED
   ORDER_CONFIRMATION_DECLINED
 
+  USER_INVITED
+  USER_ACTIVATED
+  USER_ROLE_CHANGED
+  USER_DISABLED
+  USER_REACTIVATED
+  USER_SESSIONS_REVOKED
+  USER_PASSWORD_RESET_REQUESTED
+
   BASKET_CREATED
   BASKET_SUBMITTED
   BASKET_CANCELLED
 
   BROKER_RECONCILED
+}
+
+model UserOnboardingToken {
+  id String @id @default(cuid())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type      UserOnboardingTokenType
+  tokenHash String                  @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, type, expiresAt])
 }
 
 model Portfolio {
@@ -369,6 +412,10 @@ model ClientOrderConfirmation {
   handoffStartedAt DateTime?
   confirmedAt      DateTime?
   lastError        String?
+
+  reconciledAt        DateTime?
+  reconciledByUserId  String?
+  reconciliationNotes String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -60,6 +60,17 @@ allocation, and a fresh broker funds snapshot. They also verify that direct
 reservations not yet represented in the broker snapshot are deducted before a
 second direct BUY can reserve the same account cash.
 
+Staff lifecycle integration tests verify that invitation tokens are stored only
+as hashes, links are single-use, account activation enables login, password
+resets and explicit session revocation advance the session version, and the
+last active administrator/self-management protections cannot be bypassed.
+Permission tests verify the centralized API role matrix, while the web uses the
+same role boundaries for route, navigation, and action visibility.
+
+Market-data tests verify that explicit disabled mode rejects market orders but
+leaves limit orders available. In this mode dashboard and portfolio responses
+return `null` for live valuation fields rather than fabricated zero values.
+
 To inspect the test database's migration state without changing it:
 
 ```bash
