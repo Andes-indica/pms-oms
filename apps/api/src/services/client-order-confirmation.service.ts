@@ -548,6 +548,7 @@ export async function requestClientOrderConfirmation(
             orderId,
             firmId,
             tx,
+            "BROKER",
           );
 
         await runRiskChecks(
@@ -569,6 +570,8 @@ export async function requestClientOrderConfirmation(
             quantity:
               checkedOrder.quantity,
             estimatedPrice,
+            availabilityAuthority:
+              "BROKER",
           },
           tx,
         );

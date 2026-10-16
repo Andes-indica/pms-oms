@@ -4,6 +4,7 @@ export async function runPreTradeChecks(
   orderId: string,
   firmId: string,
   database: Pick<typeof prisma, "order" | "holding"> = prisma,
+  availabilityAuthority: "PMS" | "BROKER" = "PMS",
 ) {
   const order = await database.order.findFirst({
     where: {
@@ -36,15 +37,40 @@ export async function runPreTradeChecks(
     throw new Error("INVALID_QUANTITY");
   }
 
-  if (order.side === "SELL") {
-  const holding =
-    await database.holding.findUnique({
-      where: {
-        portfolioId_brokerAccountId_symbol_exchange:
-          {
-            portfolioId:
-              order.portfolioId,
+  /*
+   * A broker-authoritative execution must not be blocked by a stale
+   * PMS holding snapshot. The broker validates deliverable quantity
+   * when it accepts the order. PMS-authoritative callers retain the
+   * stricter local inventory check.
+   */
+  if (
+    order.side === "SELL" &&
+    availabilityAuthority === "PMS"
+  ) {
+    const holding =
+      await database.holding.findUnique({
+        where: {
+          portfolioId_brokerAccountId_symbol_exchange:
+            {
+              portfolioId:
+                order.portfolioId,
 
+              brokerAccountId:
+                order.brokerAccountId,
+
+              symbol:
+                order.symbol,
+
+              exchange:
+                order.exchange,
+            },
+        },
+      });
+
+    if (!holding) {
+      const brokerHolding =
+        await database.holding.findFirst({
+          where: {
             brokerAccountId:
               order.brokerAccountId,
 
@@ -54,44 +80,28 @@ export async function runPreTradeChecks(
             exchange:
               order.exchange,
           },
-      },
-    });
+        });
 
-  if (!holding) {
-    const brokerHolding =
-      await database.holding.findFirst({
-        where: {
-          brokerAccountId:
-            order.brokerAccountId,
+      if (brokerHolding) {
+        throw new Error(
+          "HOLDING_IN_DIFFERENT_PORTFOLIO",
+        );
+      }
 
-          symbol:
-            order.symbol,
-
-          exchange:
-            order.exchange,
-        },
-      });
-
-    if (brokerHolding) {
       throw new Error(
-        "HOLDING_IN_DIFFERENT_PORTFOLIO",
+        "INSUFFICIENT_HOLDINGS",
       );
     }
 
-    throw new Error(
-      "INSUFFICIENT_HOLDINGS",
-    );
+    if (
+      holding.quantity <
+      order.quantity
+    ) {
+      throw new Error(
+        "INSUFFICIENT_HOLDINGS",
+      );
+    }
   }
-
-  if (
-    holding.quantity <
-    order.quantity
-  ) {
-    throw new Error(
-      "INSUFFICIENT_HOLDINGS",
-    );
-  }
-}
 
   return order;
 }
