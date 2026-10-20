@@ -69,6 +69,7 @@ export async function enqueueOrderExecution(
             availableAt:
               new Date(),
             lockedAt: null,
+            leaseToken: null,
           },
         });
     }

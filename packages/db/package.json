@@ -19,7 +19,8 @@
     "migrate":"prisma migrate dev",
     "studio":"prisma studio",
     "seed":"bun --env-file=../../.env prisma/seed.ts",
-    "bootstrap:admin":"bun prisma/bootstrap-admin.ts"
+    "bootstrap:admin":"bun prisma/bootstrap-admin.ts",
+    "recover:admin":"bun prisma/recover-admin.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",

@@ -662,6 +662,11 @@ bun run test:all
 - [x] Durable execution queue / worker
 - [x] Automatic broker status monitoring
 - [x] Worker crash recovery / stale-job reclamation
+- [x] Lease heartbeats, ownership tokens, adaptive polling, retry backoff, and queue retention
+- [x] Administrator/Operations execution-queue monitoring
+- [x] Audited client and portfolio archive/restore lifecycle
+- [x] Guarded zero-administrator terminal recovery
+- [x] Settled plus T1 Zerodha holdings reconciliation
 - [x] Fail-closed production configuration validation
 - [x] Login throttling and defensive HTTP headers
 - [x] Bounded database pooling and graceful worker shutdown
@@ -727,4 +732,4 @@ Real-broker execution should only be used with:
 
 ## Status
 
-The project is under active development. Core PMS/OMS functionality, Zerodha execution, reconciliation, persistent fills, automatic monitoring, durable queued execution, live UI updates, canonical instrument validation, actor-aware auditing, and production deployment safeguards are operational. Remaining work is concrete infrastructure provisioning, a real quote-provider configuration, controlled live verification, and optional future schema refinement.
+The project is under active development. Core PMS/OMS functionality, Zerodha execution, reconciliation, persistent fills, automatic monitoring, hardened durable queued execution, lifecycle archiving, operational visibility, live UI updates, canonical instrument validation, actor-aware auditing, and production deployment safeguards are operational. Remaining work is a real quote-provider configuration, controlled live verification, Zerodha approval/postback work for automatic Publisher-order synchronization, and optional future schema refinement.

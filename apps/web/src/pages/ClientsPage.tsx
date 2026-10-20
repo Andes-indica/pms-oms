@@ -7,6 +7,7 @@ type Client = {
     id: string;
     name: string;
     email?: string;
+    archivedAt?: string | null;
 
     brokerAccounts: Array<{
         id: string;
@@ -44,6 +45,9 @@ export function ClientsPage() {
     const [creating, setCreating] =
         useState(false);
 
+    const [showArchived, setShowArchived] =
+        useState(false);
+
     const canManage =
         currentUserCan(
             "MANAGE_CLIENTS",
@@ -59,7 +63,9 @@ export function ClientsPage() {
         try {
             const response =
                 await apiFetch<ClientsResponse>(
-                    "/api/clients",
+                    showArchived
+                        ? "/api/clients?archived=true"
+                        : "/api/clients",
                 );
 
             setClients(response.data);
@@ -75,8 +81,44 @@ export function ClientsPage() {
     }
 
     useEffect(() => {
-        void loadClients();
-    }, []);
+        let active = true;
+
+        async function load() {
+            try {
+                const response =
+                    await apiFetch<ClientsResponse>(
+                        showArchived
+                            ? "/api/clients?archived=true"
+                            : "/api/clients",
+                    );
+
+                if (active) {
+                    setClients(
+                        response.data,
+                    );
+                    setError("");
+                }
+            } catch (error) {
+                if (active) {
+                    setError(
+                        error instanceof Error
+                            ? error.message
+                            : "Failed to load clients",
+                    );
+                }
+            } finally {
+                if (active) {
+                    setLoading(false);
+                }
+            }
+        }
+
+        void load();
+
+        return () => {
+            active = false;
+        };
+    }, [showArchived]);
 
     async function createClient() {
         if (!name.trim()) {
@@ -142,6 +184,25 @@ export function ClientsPage() {
                 <p className="mt-1 text-sm text-slate-500">
                     Manage client portfolios and broker accounts.
                 </p>
+
+                {currentUserCan(
+                    "ARCHIVE_CLIENT_DATA",
+                ) && (
+                    <button
+                        type="button"
+                        onClick={() =>
+                            setShowArchived(
+                                (current) =>
+                                    !current,
+                            )
+                        }
+                        className="mt-3 rounded-lg border px-3 py-1.5 text-sm"
+                    >
+                        {showArchived
+                            ? "Show active clients"
+                            : "Show archived clients"}
+                    </button>
+                )}
             </div>
 
             {canManage && (
@@ -209,6 +270,10 @@ export function ClientsPage() {
                             <th className="px-5 py-3">
                                 Holdings
                             </th>
+
+                            <th className="px-5 py-3">
+                                Status
+                            </th>
                         </tr>
                     </thead>
 
@@ -260,6 +325,12 @@ export function ClientsPage() {
                                             (portfolio.holdings?.length ?? 0),
                                         0,
                                     ) ?? 0}
+                                </td>
+
+                                <td className="px-5 py-4">
+                                    {client.archivedAt
+                                        ? "Archived"
+                                        : "Active"}
                                 </td>
                             </tr>
                         ))}

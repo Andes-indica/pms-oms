@@ -13,6 +13,8 @@ import {
   createPortfolioService,
   updatePortfolioService,
   deletePortfolioService,
+  archivePortfolioService,
+  restorePortfolioService,
 } from "../services/portfolio-management.service";
 
 export async function getPortfolioValuation(
@@ -197,6 +199,7 @@ export async function deletePortfolio(
       await deletePortfolioService(
         req.params.id,
         req.user.firmId,
+        req.user.userId,
       );
 
     return res.status(200).json({
@@ -224,10 +227,127 @@ export async function deletePortfolio(
     ) {
       return res.status(409).json({
         error:
-          "Portfolio has holdings or orders and cannot be deleted",
+          "Only a never-used portfolio can be permanently deleted; archive it to preserve holdings, orders, or cash history",
+        code: message,
       });
     }
 
     throw error;
+  }
+}
+
+function portfolioLifecycleError(
+  res: Response,
+  error: unknown,
+) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : "UNKNOWN_ERROR";
+
+  if (
+    message ===
+    "PORTFOLIO_NOT_FOUND"
+  ) {
+    return res.status(404).json({
+      error:
+        "Portfolio not found",
+    });
+  }
+
+  const conflictMessages:
+    Record<string, string> = {
+    PORTFOLIO_HAS_OPEN_POSITIONS:
+      "Close or reconcile this portfolio's holdings before archiving",
+    PORTFOLIO_HAS_ACTIVE_ORDERS:
+      "Wait for, cancel, or reconcile this portfolio's active orders before archiving",
+    PORTFOLIO_HAS_ALLOCATED_CASH:
+      "Reduce this portfolio's broker cash allocation to zero before archiving",
+  };
+
+  if (conflictMessages[message]) {
+    return res.status(409).json({
+      error:
+        conflictMessages[message],
+      code: message,
+    });
+  }
+
+  console.error(
+    "Portfolio lifecycle operation failed:",
+    error,
+  );
+
+  return res.status(500).json({
+    error:
+      "Portfolio lifecycle operation failed",
+  });
+}
+
+export async function archivePortfolio(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  if (!req.user) {
+    return res.status(401).json({
+      error:
+        "Authentication required",
+    });
+  }
+
+  try {
+    const portfolio =
+      await archivePortfolioService(
+        req.params.id,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    return res.status(200).json({
+      data: portfolio,
+    });
+  } catch (error) {
+    return portfolioLifecycleError(
+      res,
+      error,
+    );
+  }
+}
+
+export async function restorePortfolio(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  if (!req.user) {
+    return res.status(401).json({
+      error:
+        "Authentication required",
+    });
+  }
+
+  try {
+    const portfolio =
+      await restorePortfolioService(
+        req.params.id,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    return res.status(200).json({
+      data: portfolio,
+    });
+  } catch (error) {
+    return portfolioLifecycleError(
+      res,
+      error,
+    );
   }
 }

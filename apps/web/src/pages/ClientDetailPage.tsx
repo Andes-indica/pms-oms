@@ -32,6 +32,37 @@ type Response = {
   data: ClientOverview;
 };
 
+const lifecycleErrorMessages:
+  Record<string, string> = {
+  CLIENT_HAS_OPEN_POSITIONS:
+    "Close or reconcile all client holdings before archiving.",
+  CLIENT_HAS_ACTIVE_ORDERS:
+    "Wait for, cancel, or reconcile all active client orders before archiving.",
+  CLIENT_HAS_ALLOCATED_CASH:
+    "Reduce all broker cash allocations to zero before archiving.",
+  PORTFOLIO_HAS_OPEN_POSITIONS:
+    "Close or reconcile this portfolio's holdings before archiving.",
+  PORTFOLIO_HAS_ACTIVE_ORDERS:
+    "Wait for, cancel, or reconcile this portfolio's active orders before archiving.",
+  PORTFOLIO_HAS_ALLOCATED_CASH:
+    "Reduce this portfolio's broker cash allocation to zero before archiving.",
+  PORTFOLIO_NOT_EMPTY:
+    "Only a never-used portfolio can be permanently deleted. Archive it to preserve history.",
+};
+
+function readableLifecycleError(
+  error: unknown,
+  fallback: string,
+) {
+  if (!(error instanceof Error)) {
+    return fallback;
+  }
+
+  return lifecycleErrorMessages[
+    error.message
+  ] ?? error.message;
+}
+
 export function ClientDetailPage() {
   const { id } = useParams();
 
@@ -46,6 +77,11 @@ export function ClientDetailPage() {
   const isAdmin =
     currentUserCan(
       "DELETE_CLIENT_DATA",
+    );
+
+  const canArchive =
+    currentUserCan(
+      "ARCHIVE_CLIENT_DATA",
     );
 
   const [client, setClient] =
@@ -250,9 +286,10 @@ export function ClientDetailPage() {
       );
     } catch (error) {
       setError(
-        error instanceof Error
-          ? error.message
-          : "Failed to delete portfolio",
+        readableLifecycleError(
+          error,
+          "Failed to delete portfolio",
+        ),
       );
     } finally {
       setSaving(false);
@@ -297,6 +334,88 @@ export function ClientDetailPage() {
     }
   }
 
+  async function setClientArchived(
+    archived: boolean,
+  ) {
+    if (
+      !id ||
+      !window.confirm(
+        archived
+          ? "Archive this client? Open positions, active orders and allocated broker cash must be cleared first. Broker sessions will be disconnected."
+          : "Restore this client? Portfolios and broker accounts remain archived until restored separately.",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+
+      await apiFetch(
+        `/api/clients/${id}/${archived ? "archive" : "restore"}`,
+        {
+          method: "PATCH",
+        },
+      );
+
+      setRefreshKey(
+        (current) =>
+          current + 1,
+      );
+    } catch (error) {
+      setError(
+        readableLifecycleError(
+          error,
+          "Failed to update client lifecycle",
+        ),
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function setPortfolioArchived(
+    portfolioId: string,
+    archived: boolean,
+  ) {
+    if (
+      !window.confirm(
+        archived
+          ? "Archive this portfolio? It must have no open positions, active orders or allocated broker cash."
+          : "Restore this portfolio?",
+      )
+    ) {
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+
+      await apiFetch(
+        `/api/portfolios/${portfolioId}/${archived ? "archive" : "restore"}`,
+        {
+          method: "PATCH",
+        },
+      );
+
+      setRefreshKey(
+        (current) =>
+          current + 1,
+      );
+    } catch (error) {
+      setError(
+        readableLifecycleError(
+          error,
+          "Failed to update portfolio lifecycle",
+        ),
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+
   if (loading) {
     return (
       <p className="text-slate-500">
@@ -305,7 +424,7 @@ export function ClientDetailPage() {
     );
   }
 
-  if (error) {
+  if (error && !client) {
     return (
       <p className="text-red-600">
         {error}
@@ -323,6 +442,15 @@ export function ClientDetailPage() {
 
   return (
     <div className="space-y-8">
+      {error && (
+        <div
+          role="alert"
+          className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+        >
+          {error}
+        </div>
+      )}
+
       <div>
         <Link
           to="/clients"
@@ -388,7 +516,14 @@ export function ClientDetailPage() {
                 {client.name}
               </h2>
 
-              {canManage && (
+              {client.archivedAt && (
+                <span className="rounded-full bg-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700">
+                  Archived
+                </span>
+              )}
+
+              {canManage &&
+                !client.archivedAt && (
                 <button
                   type="button"
                   onClick={() =>
@@ -402,7 +537,8 @@ export function ClientDetailPage() {
                 </button>
               )}
 
-              {isAdmin && (
+              {isAdmin &&
+                client.canDeletePermanently && (
                 <button
                   type="button"
                   disabled={saving}
@@ -411,7 +547,24 @@ export function ClientDetailPage() {
                   }
                   className="rounded-lg border border-red-200 px-3 py-1.5 text-sm text-red-700 disabled:opacity-50"
                 >
-                  Delete
+                  Delete unused client
+                </button>
+              )}
+
+              {canArchive && (
+                <button
+                  type="button"
+                  disabled={saving}
+                  onClick={() =>
+                    void setClientArchived(
+                      !client.archivedAt,
+                    )
+                  }
+                  className="rounded-lg border border-amber-300 px-3 py-1.5 text-sm text-amber-800 disabled:opacity-50"
+                >
+                  {client.archivedAt
+                    ? "Restore client"
+                    : "Archive client"}
                 </button>
               )}
             </div>
@@ -426,7 +579,8 @@ export function ClientDetailPage() {
       <ClientSummaryCards
         client={client}
       />
-      {canManage && (
+      {canManage &&
+        !client.archivedAt && (
         <section className="rounded-xl border bg-white p-5">
           <h3 className="font-semibold text-slate-900">
             Add Portfolio
@@ -472,28 +626,55 @@ export function ClientDetailPage() {
         </section>
       )}
 
-      <BrokerAccountsCard
-      clientId={client.id}
-        accounts={
-          client.brokerAccounts
-        } 
-        portfolios={client.portfolios}
-        onChanged={()=>
-          setRefreshKey(
-            (current)=> current+1
-          )
-        }
-      />
-      {client.portfolios.map(
+      {!client.archivedAt && (
+        <BrokerAccountsCard
+          clientId={client.id}
+          accounts={
+            client.brokerAccounts
+          }
+          portfolios={client.portfolios.filter(
+            (portfolio) =>
+              !portfolio.archivedAt,
+          )}
+          onChanged={() =>
+            setRefreshKey(
+              (current) =>
+                current + 1,
+            )
+          }
+        />
+      )}
+      {client.portfolios
+        .filter(
+          (portfolio) =>
+            !portfolio.archivedAt,
+        )
+        .map(
         (portfolio) => (
           <div
             key={portfolio.id}
             className="space-y-2"
           >
-            {isAdmin &&
-              portfolio.holdings.length === 0 &&
-              portfolio.orders.length === 0 && (
-                <div className="flex justify-end">
+            {(isAdmin || canArchive) && (
+                <div className="flex justify-end gap-2">
+                  {canArchive && (
+                    <button
+                      type="button"
+                      disabled={saving}
+                      onClick={() =>
+                        void setPortfolioArchived(
+                          portfolio.id,
+                          true,
+                        )
+                      }
+                      className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs text-amber-800 disabled:opacity-50"
+                    >
+                      Archive portfolio
+                    </button>
+                  )}
+
+                  {isAdmin &&
+                    portfolio.canDeletePermanently && (
                   <button
                     type="button"
                     disabled={saving}
@@ -504,8 +685,9 @@ export function ClientDetailPage() {
                     }
                     className="rounded-lg border border-red-200 px-3 py-1.5 text-xs text-red-700 disabled:opacity-50"
                   >
-                    Delete empty portfolio
+                    Delete unused portfolio
                   </button>
+                    )}
                 </div>
               )}
 
@@ -514,6 +696,59 @@ export function ClientDetailPage() {
             />
           </div>
         ),
+      )}
+
+      {client.portfolios.some(
+        (portfolio) =>
+          Boolean(
+            portfolio.archivedAt,
+          ),
+      ) && (
+        <section className="rounded-xl border bg-white p-5">
+          <h3 className="font-semibold text-slate-900">
+            Archived portfolios
+          </h3>
+          <div className="mt-4 space-y-3">
+            {client.portfolios
+              .filter(
+                (portfolio) =>
+                  Boolean(
+                    portfolio.archivedAt,
+                  ),
+              )
+              .map((portfolio) => (
+                <div
+                  key={portfolio.id}
+                  className="flex items-center justify-between rounded-lg border p-3"
+                >
+                  <div>
+                    <p className="font-medium text-slate-900">
+                      {portfolio.name}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Archived {new Date(portfolio.archivedAt!).toLocaleString()}
+                    </p>
+                  </div>
+                  {canArchive &&
+                    !client.archivedAt && (
+                      <button
+                        type="button"
+                        disabled={saving}
+                        onClick={() =>
+                          void setPortfolioArchived(
+                            portfolio.id,
+                            false,
+                          )
+                        }
+                        className="rounded-lg border px-3 py-1.5 text-sm disabled:opacity-50"
+                      >
+                        Restore
+                      </button>
+                    )}
+                </div>
+              ))}
+          </div>
+        </section>
       )}
     </div>
   );

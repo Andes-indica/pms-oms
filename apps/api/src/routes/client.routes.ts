@@ -10,6 +10,8 @@ import {
   getClientPortfolioSummary,
   getClients,
   updateClient,
+  archiveClient,
+  restoreClient,
 } from "../controllers/client.controller";
 
 import {
@@ -73,6 +75,22 @@ router.delete(
     "DELETE_CLIENT_DATA",
   ),
   deleteClient,
+);
+
+router.patch(
+  "/:id/archive",
+  requirePermission(
+    "ARCHIVE_CLIENT_DATA",
+  ),
+  archiveClient,
+);
+
+router.patch(
+  "/:id/restore",
+  requirePermission(
+    "ARCHIVE_CLIENT_DATA",
+  ),
+  restoreClient,
 );
 
 router.get(

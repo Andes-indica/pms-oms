@@ -286,6 +286,10 @@ describe(
                     updatedJob.lockedAt,
                 ).toBeNull();
 
+                expect(
+                    updatedJob.leaseToken,
+                ).toBeNull();
+
                 const updatedOrder =
                     await prisma.order
                         .findUniqueOrThrow({
@@ -658,6 +662,10 @@ describe(
 
                     expect(
                         updatedJob.lockedAt,
+                    ).toBeNull();
+
+                    expect(
+                        updatedJob.leaseToken,
                     ).toBeNull();
 
                     const updatedOrder =

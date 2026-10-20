@@ -7,6 +7,8 @@ import {
   createClientService,
   updateClientService,
   deleteClientService,
+  archiveClientService,
+  restoreClientService,
 } from "../services/client-management.service";
 
 export async function getClients(
@@ -23,6 +25,16 @@ export async function getClients(
     const clients = await prisma.client.findMany({
       where: {
         firmId: req.user.firmId,
+        ...(req.query?.archived ===
+        "true"
+          ? {
+              archivedAt: {
+                not: null,
+              },
+            }
+          : {
+              archivedAt: null,
+            }),
       },
       include: {
         brokerAccounts: {
@@ -31,6 +43,9 @@ export async function getClients(
           },
         },
       portfolios:{
+        where: {
+          archivedAt: null,
+        },
         include:{
           holdings:true,
         },
@@ -80,6 +95,9 @@ export async function getClientById(
           },
         },
         portfolios: {
+          where: {
+            archivedAt: null,
+          },
           include: {
             holdings: true,
           },
@@ -124,6 +142,9 @@ export async function getClientPortfolioSummary(
       },
       include: {
         portfolios: {
+          where: {
+            archivedAt: null,
+          },
           include: {
             holdings: true,
             orders: {
@@ -203,6 +224,13 @@ export async function getClientOverview(
         },
 
         include: {
+          _count: {
+            select: {
+              brokerAccounts: true,
+              portfolios: true,
+            },
+          },
+
           brokerAccounts: {
             where: {
               archivedAt: null,
@@ -228,6 +256,15 @@ export async function getClientOverview(
           portfolios: {
             include: {
               holdings: true,
+
+              _count: {
+                select: {
+                  holdings: true,
+                  orders: true,
+                  cashTransactions: true,
+                  allocations: true,
+                },
+              },
 
               riskLimit: true,
 
@@ -270,9 +307,19 @@ export async function getClientOverview(
               0,
             );
 
+          const {
+            _count,
+            ...portfolioData
+          } = portfolio;
+
           return {
-            ...portfolio,
+            ...portfolioData,
             realizedPnl,
+            canDeletePermanently:
+              _count.holdings === 0 &&
+              _count.orders === 0 &&
+              _count.cashTransactions === 0 &&
+              _count.allocations === 0,
           };
         },
       );
@@ -280,18 +327,22 @@ export async function getClientOverview(
     const totalCash =
       portfolios.reduce(
         (total, portfolio) =>
-          total +
-          Number(
-            portfolio.cashBalance,
-          ),
+          portfolio.archivedAt
+            ? total
+            : total +
+              Number(
+                portfolio.cashBalance,
+              ),
         0,
       );
 
     const totalRealizedPnl =
       portfolios.reduce(
         (total, portfolio) =>
-          total +
-          portfolio.realizedPnl,
+          portfolio.archivedAt
+            ? total
+            : total +
+              portfolio.realizedPnl,
         0,
       );
 
@@ -300,12 +351,18 @@ export async function getClientOverview(
         id: client.id,
         name: client.name,
         email: client.email,
+        archivedAt:
+          client.archivedAt,
 
         brokerAccounts:
           client.brokerAccounts,
 
         totalCash,
         totalRealizedPnl,
+
+        canDeletePermanently:
+          client._count.portfolios === 0 &&
+          client._count.brokerAccounts === 0,
 
         portfolios,
       },
@@ -456,6 +513,7 @@ export async function deleteClient(
       await deleteClientService(
         req.params.id,
         req.user.firmId,
+        req.user.userId,
       );
 
     return res.status(200).json({
@@ -496,5 +554,121 @@ export async function deleteClient(
       error:
         "Failed to delete client",
     });
+  }
+}
+
+function clientLifecycleError(
+  res: Response,
+  error: unknown,
+) {
+  const message =
+    error instanceof Error
+      ? error.message
+      : "UNKNOWN_ERROR";
+
+  if (
+    message ===
+    "CLIENT_NOT_FOUND"
+  ) {
+    return res.status(404).json({
+      error:
+        "Client not found",
+    });
+  }
+
+  const conflictMessages:
+    Record<string, string> = {
+    CLIENT_HAS_OPEN_POSITIONS:
+      "Close or reconcile all client holdings before archiving",
+    CLIENT_HAS_ACTIVE_ORDERS:
+      "Wait for, cancel, or reconcile all active client orders before archiving",
+    CLIENT_HAS_ALLOCATED_CASH:
+      "Reduce all client broker cash allocations to zero before archiving",
+  };
+
+  if (conflictMessages[message]) {
+    return res.status(409).json({
+      error:
+        conflictMessages[message],
+      code: message,
+    });
+  }
+
+  console.error(
+    "Client lifecycle operation failed:",
+    error,
+  );
+
+  return res.status(500).json({
+    error:
+      "Client lifecycle operation failed",
+  });
+}
+
+export async function archiveClient(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  if (!req.user) {
+    return res.status(401).json({
+      error:
+        "Authentication required",
+    });
+  }
+
+  try {
+    const client =
+      await archiveClientService(
+        req.params.id,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    return res.status(200).json({
+      data: client,
+    });
+  } catch (error) {
+    return clientLifecycleError(
+      res,
+      error,
+    );
+  }
+}
+
+export async function restoreClient(
+  req: AuthenticatedRequest & {
+    params: {
+      id: string;
+    };
+  },
+  res: Response,
+) {
+  if (!req.user) {
+    return res.status(401).json({
+      error:
+        "Authentication required",
+    });
+  }
+
+  try {
+    const client =
+      await restoreClientService(
+        req.params.id,
+        req.user.firmId,
+        req.user.userId,
+      );
+
+    return res.status(200).json({
+      data: client,
+    });
+  } catch (error) {
+    return clientLifecycleError(
+      res,
+      error,
+    );
   }
 }

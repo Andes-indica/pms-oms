@@ -42,8 +42,10 @@ export async function setPortfolioRiskLimit(
     await prisma.portfolio.findFirst({
       where: {
         id: portfolioId,
+        archivedAt: null,
         client: {
           firmId,
+          archivedAt: null,
         },
       },
       select: {
@@ -121,8 +123,10 @@ export async function clearPortfolioRiskLimit(
     await prisma.portfolio.findFirst({
       where: {
         id: portfolioId,
+        archivedAt: null,
         client: {
           firmId,
+          archivedAt: null,
         },
       },
       select: {

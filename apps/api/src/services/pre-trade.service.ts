@@ -10,9 +10,14 @@ export async function runPreTradeChecks(
     where: {
       id: orderId,
       portfolio: {
+        archivedAt: null,
         client: {
           firmId,
+          archivedAt: null,
         },
+      },
+      brokerAccount: {
+        archivedAt: null,
       },
     },
     include: {

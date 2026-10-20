@@ -1,5 +1,6 @@
 import {
     supportsHoldings,
+    type BrokerHolding,
 } from "@pms-oms/broker";
 
 import {
@@ -56,6 +57,89 @@ function key(
     symbol: string,
 ) {
     return `${exchange.toUpperCase()}:${symbol.toUpperCase()}`;
+}
+
+type AggregatedBrokerHolding = {
+    symbol: string;
+    exchange: string;
+    quantity: number;
+    averagePrice: number;
+    totalCost: number;
+};
+
+function aggregateBrokerHoldings(
+    holdings: BrokerHolding[],
+) {
+    const aggregated =
+        new Map<
+            string,
+            AggregatedBrokerHolding
+        >();
+
+    for (const holding of holdings) {
+        const symbol =
+            holding.symbol
+                .trim()
+                .toUpperCase();
+        const exchange =
+            holding.exchange
+                .trim()
+                .toUpperCase();
+
+        if (
+            !symbol ||
+            !exchange ||
+            !Number.isInteger(
+                holding.quantity,
+            ) ||
+            holding.quantity < 0 ||
+            !Number.isFinite(
+                holding.averagePrice,
+            ) ||
+            holding.averagePrice < 0
+        ) {
+            throw new Error(
+                "BROKER_INVALID_HOLDINGS_RESPONSE",
+            );
+        }
+
+        const normalizedKey =
+            key(exchange, symbol);
+        const existing =
+            aggregated.get(
+                normalizedKey,
+            );
+        const cost =
+            holding.quantity *
+            holding.averagePrice;
+
+        if (existing) {
+            existing.quantity +=
+                holding.quantity;
+            existing.totalCost +=
+                cost;
+            existing.averagePrice =
+                existing.quantity > 0
+                    ? existing.totalCost /
+                      existing.quantity
+                    : 0;
+        } else {
+            aggregated.set(
+                normalizedKey,
+                {
+                    symbol,
+                    exchange,
+                    quantity:
+                        holding.quantity,
+                    averagePrice:
+                        holding.averagePrice,
+                    totalCost: cost,
+                },
+            );
+        }
+    }
+
+    return aggregated;
 }
 
 export async function reconcileBrokerHoldings(
@@ -207,27 +291,8 @@ export async function reconcileBrokerHoldings(
     }
 
     const brokerMap =
-        new Map(
-            brokerHoldings.map(
-                (holding) => [
-                    key(
-                        holding.exchange,
-                        holding.symbol,
-                    ),
-
-                    {
-                        ...holding,
-
-                        symbol:
-                            holding.symbol
-                                .toUpperCase(),
-
-                        exchange:
-                            holding.exchange
-                                .toUpperCase(),
-                    },
-                ],
-            ),
+        aggregateBrokerHoldings(
+            brokerHoldings,
         );
 
     const instrumentKeys =
@@ -459,11 +524,16 @@ export async function repairBrokerHolding(
                 id:
                     input.portfolioId,
 
+                archivedAt:
+                    null,
+
                 clientId:
                     brokerAccount.clientId,
 
                 client: {
                     firmId,
+                    archivedAt:
+                        null,
                 },
             },
 
@@ -503,14 +573,10 @@ export async function repairBrokerHolding(
         await broker.getHoldings();
 
     const brokerHolding =
-        brokerHoldings.find(
-            (holding) =>
-                holding.symbol
-                    .toUpperCase() ===
-                symbol &&
-                holding.exchange
-                    .toUpperCase() ===
-                exchange,
+        aggregateBrokerHoldings(
+            brokerHoldings,
+        ).get(
+            key(exchange, symbol),
         );
 
     const brokerQuantity =
@@ -943,11 +1009,14 @@ export async function importBrokerHoldings(
             where: {
                 id: input.portfolioId,
 
+                archivedAt: null,
+
                 clientId:
                     brokerAccount.clientId,
 
                 client: {
                     firmId,
+                    archivedAt: null,
                 },
             },
 
@@ -974,8 +1043,11 @@ export async function importBrokerHoldings(
         );
     }
 
-    const brokerHoldings =
-        await broker.getHoldings();
+    const brokerHoldings = [
+        ...aggregateBrokerHoldings(
+            await broker.getHoldings(),
+        ).values(),
+    ];
 
     const existingHoldings =
         await prisma.holding.findMany({

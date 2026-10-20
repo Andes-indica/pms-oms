@@ -122,3 +122,53 @@ describe(
     );
   },
 );
+
+describe(
+  "ZerodhaBroker holdings",
+  () => {
+    test(
+      "combines settled and T1 delivery quantities",
+      async () => {
+        const getHoldings =
+          spyOn(
+            KiteConnect.prototype,
+            "getHoldings",
+          ).mockResolvedValue([
+            {
+              tradingsymbol:
+                "INFY",
+              exchange: "NSE",
+              quantity: 8,
+              t1_quantity: 2,
+              average_price:
+                1_500,
+            },
+          ] as never);
+
+        restores.push(
+          () =>
+            getHoldings.mockRestore(),
+        );
+
+        const broker =
+          new ZerodhaBroker({
+            apiKey:
+              "test-api-key",
+            accessToken:
+              "test-access-token",
+          });
+
+        await expect(
+          broker.getHoldings(),
+        ).resolves.toEqual([
+          {
+            symbol: "INFY",
+            exchange: "NSE",
+            quantity: 10,
+            averagePrice: 1_500,
+          },
+        ]);
+      },
+    );
+  },
+);

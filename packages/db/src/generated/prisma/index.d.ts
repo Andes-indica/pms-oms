@@ -230,6 +230,13 @@ export const AuditAction: {
   USER_REACTIVATED: 'USER_REACTIVATED',
   USER_SESSIONS_REVOKED: 'USER_SESSIONS_REVOKED',
   USER_PASSWORD_RESET_REQUESTED: 'USER_PASSWORD_RESET_REQUESTED',
+  ADMIN_RECOVERED: 'ADMIN_RECOVERED',
+  CLIENT_ARCHIVED: 'CLIENT_ARCHIVED',
+  CLIENT_RESTORED: 'CLIENT_RESTORED',
+  CLIENT_DELETED: 'CLIENT_DELETED',
+  PORTFOLIO_ARCHIVED: 'PORTFOLIO_ARCHIVED',
+  PORTFOLIO_RESTORED: 'PORTFOLIO_RESTORED',
+  PORTFOLIO_DELETED: 'PORTFOLIO_DELETED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',
@@ -5745,6 +5752,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     firmId: string | null
+    archivedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5754,6 +5762,7 @@ export namespace Prisma {
     name: string | null
     email: string | null
     firmId: string | null
+    archivedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -5763,6 +5772,7 @@ export namespace Prisma {
     name: number
     email: number
     firmId: number
+    archivedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -5774,6 +5784,7 @@ export namespace Prisma {
     name?: true
     email?: true
     firmId?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5783,6 +5794,7 @@ export namespace Prisma {
     name?: true
     email?: true
     firmId?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -5792,6 +5804,7 @@ export namespace Prisma {
     name?: true
     email?: true
     firmId?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -5874,6 +5887,7 @@ export namespace Prisma {
     name: string
     email: string | null
     firmId: string
+    archivedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: ClientCountAggregateOutputType | null
@@ -5900,6 +5914,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     firmId?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     firm?: boolean | FirmDefaultArgs<ExtArgs>
@@ -5913,6 +5928,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     firmId?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     firm?: boolean | FirmDefaultArgs<ExtArgs>
@@ -5923,6 +5939,7 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     firmId?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     firm?: boolean | FirmDefaultArgs<ExtArgs>
@@ -5933,11 +5950,12 @@ export namespace Prisma {
     name?: boolean
     email?: boolean
     firmId?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "firmId" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
+  export type ClientOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "email" | "firmId" | "archivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
   export type ClientInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     firm?: boolean | FirmDefaultArgs<ExtArgs>
     brokerAccounts?: boolean | Client$brokerAccountsArgs<ExtArgs>
@@ -5963,6 +5981,7 @@ export namespace Prisma {
       name: string
       email: string | null
       firmId: string
+      archivedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["client"]>
@@ -6395,6 +6414,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Client", 'String'>
     readonly email: FieldRef<"Client", 'String'>
     readonly firmId: FieldRef<"Client", 'String'>
+    readonly archivedAt: FieldRef<"Client", 'DateTime'>
     readonly createdAt: FieldRef<"Client", 'DateTime'>
     readonly updatedAt: FieldRef<"Client", 'DateTime'>
   }
@@ -9245,6 +9265,7 @@ export namespace Prisma {
     name: string | null
     clientId: string | null
     cashBalance: Decimal | null
+    archivedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9254,6 +9275,7 @@ export namespace Prisma {
     name: string | null
     clientId: string | null
     cashBalance: Decimal | null
+    archivedAt: Date | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -9263,6 +9285,7 @@ export namespace Prisma {
     name: number
     clientId: number
     cashBalance: number
+    archivedAt: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -9282,6 +9305,7 @@ export namespace Prisma {
     name?: true
     clientId?: true
     cashBalance?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9291,6 +9315,7 @@ export namespace Prisma {
     name?: true
     clientId?: true
     cashBalance?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -9300,6 +9325,7 @@ export namespace Prisma {
     name?: true
     clientId?: true
     cashBalance?: true
+    archivedAt?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -9396,6 +9422,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance: Decimal
+    archivedAt: Date | null
     createdAt: Date
     updatedAt: Date
     _count: PortfolioCountAggregateOutputType | null
@@ -9424,6 +9451,7 @@ export namespace Prisma {
     name?: boolean
     clientId?: boolean
     cashBalance?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
@@ -9441,6 +9469,7 @@ export namespace Prisma {
     name?: boolean
     clientId?: boolean
     cashBalance?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
@@ -9451,6 +9480,7 @@ export namespace Prisma {
     name?: boolean
     clientId?: boolean
     cashBalance?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     client?: boolean | ClientDefaultArgs<ExtArgs>
@@ -9461,11 +9491,12 @@ export namespace Prisma {
     name?: boolean
     clientId?: boolean
     cashBalance?: boolean
+    archivedAt?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type PortfolioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "clientId" | "cashBalance" | "createdAt" | "updatedAt", ExtArgs["result"]["portfolio"]>
+  export type PortfolioOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "name" | "clientId" | "cashBalance" | "archivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["portfolio"]>
   export type PortfolioInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     client?: boolean | ClientDefaultArgs<ExtArgs>
     holdings?: boolean | Portfolio$holdingsArgs<ExtArgs>
@@ -9499,6 +9530,7 @@ export namespace Prisma {
       name: string
       clientId: string
       cashBalance: Prisma.Decimal
+      archivedAt: Date | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["portfolio"]>
@@ -9935,6 +9967,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Portfolio", 'String'>
     readonly clientId: FieldRef<"Portfolio", 'String'>
     readonly cashBalance: FieldRef<"Portfolio", 'Decimal'>
+    readonly archivedAt: FieldRef<"Portfolio", 'DateTime'>
     readonly createdAt: FieldRef<"Portfolio", 'DateTime'>
     readonly updatedAt: FieldRef<"Portfolio", 'DateTime'>
   }
@@ -26889,6 +26922,7 @@ export namespace Prisma {
     lastError: string | null
     availableAt: Date | null
     lockedAt: Date | null
+    leaseToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -26901,6 +26935,7 @@ export namespace Prisma {
     lastError: string | null
     availableAt: Date | null
     lockedAt: Date | null
+    leaseToken: string | null
     createdAt: Date | null
     updatedAt: Date | null
   }
@@ -26913,6 +26948,7 @@ export namespace Prisma {
     lastError: number
     availableAt: number
     lockedAt: number
+    leaseToken: number
     createdAt: number
     updatedAt: number
     _all: number
@@ -26935,6 +26971,7 @@ export namespace Prisma {
     lastError?: true
     availableAt?: true
     lockedAt?: true
+    leaseToken?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -26947,6 +26984,7 @@ export namespace Prisma {
     lastError?: true
     availableAt?: true
     lockedAt?: true
+    leaseToken?: true
     createdAt?: true
     updatedAt?: true
   }
@@ -26959,6 +26997,7 @@ export namespace Prisma {
     lastError?: true
     availableAt?: true
     lockedAt?: true
+    leaseToken?: true
     createdAt?: true
     updatedAt?: true
     _all?: true
@@ -27058,6 +27097,7 @@ export namespace Prisma {
     lastError: string | null
     availableAt: Date
     lockedAt: Date | null
+    leaseToken: string | null
     createdAt: Date
     updatedAt: Date
     _count: ExecutionJobCountAggregateOutputType | null
@@ -27089,6 +27129,7 @@ export namespace Prisma {
     lastError?: boolean
     availableAt?: boolean
     lockedAt?: boolean
+    leaseToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -27102,6 +27143,7 @@ export namespace Prisma {
     lastError?: boolean
     availableAt?: boolean
     lockedAt?: boolean
+    leaseToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -27115,6 +27157,7 @@ export namespace Prisma {
     lastError?: boolean
     availableAt?: boolean
     lockedAt?: boolean
+    leaseToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
     order?: boolean | OrderDefaultArgs<ExtArgs>
@@ -27128,11 +27171,12 @@ export namespace Prisma {
     lastError?: boolean
     availableAt?: boolean
     lockedAt?: boolean
+    leaseToken?: boolean
     createdAt?: boolean
     updatedAt?: boolean
   }
 
-  export type ExecutionJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "status" | "attempts" | "lastError" | "availableAt" | "lockedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["executionJob"]>
+  export type ExecutionJobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "orderId" | "status" | "attempts" | "lastError" | "availableAt" | "lockedAt" | "leaseToken" | "createdAt" | "updatedAt", ExtArgs["result"]["executionJob"]>
   export type ExecutionJobInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     order?: boolean | OrderDefaultArgs<ExtArgs>
   }
@@ -27156,6 +27200,7 @@ export namespace Prisma {
       lastError: string | null
       availableAt: Date
       lockedAt: Date | null
+      leaseToken: string | null
       createdAt: Date
       updatedAt: Date
     }, ExtArgs["result"]["executionJob"]>
@@ -27589,6 +27634,7 @@ export namespace Prisma {
     readonly lastError: FieldRef<"ExecutionJob", 'String'>
     readonly availableAt: FieldRef<"ExecutionJob", 'DateTime'>
     readonly lockedAt: FieldRef<"ExecutionJob", 'DateTime'>
+    readonly leaseToken: FieldRef<"ExecutionJob", 'String'>
     readonly createdAt: FieldRef<"ExecutionJob", 'DateTime'>
     readonly updatedAt: FieldRef<"ExecutionJob", 'DateTime'>
   }
@@ -28059,6 +28105,7 @@ export namespace Prisma {
     name: 'name',
     email: 'email',
     firmId: 'firmId',
+    archivedAt: 'archivedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -28098,6 +28145,7 @@ export namespace Prisma {
     name: 'name',
     clientId: 'clientId',
     cashBalance: 'cashBalance',
+    archivedAt: 'archivedAt',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -28335,6 +28383,7 @@ export namespace Prisma {
     lastError: 'lastError',
     availableAt: 'availableAt',
     lockedAt: 'lockedAt',
+    leaseToken: 'leaseToken',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt'
   };
@@ -28856,6 +28905,7 @@ export namespace Prisma {
     name?: StringFilter<"Client"> | string
     email?: StringNullableFilter<"Client"> | string | null
     firmId?: StringFilter<"Client"> | string
+    archivedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
     firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
@@ -28868,6 +28918,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     firmId?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     firm?: FirmOrderByWithRelationInput
@@ -28883,6 +28934,7 @@ export namespace Prisma {
     name?: StringFilter<"Client"> | string
     email?: StringNullableFilter<"Client"> | string | null
     firmId?: StringFilter<"Client"> | string
+    archivedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
     firm?: XOR<FirmScalarRelationFilter, FirmWhereInput>
@@ -28895,6 +28947,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrderInput | SortOrder
     firmId?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ClientCountOrderByAggregateInput
@@ -28910,6 +28963,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Client"> | string
     email?: StringNullableWithAggregatesFilter<"Client"> | string | null
     firmId?: StringWithAggregatesFilter<"Client"> | string
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"Client"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Client"> | Date | string
   }
@@ -29076,6 +29130,7 @@ export namespace Prisma {
     name?: StringFilter<"Portfolio"> | string
     clientId?: StringFilter<"Portfolio"> | string
     cashBalance?: DecimalFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
+    archivedAt?: DateTimeNullableFilter<"Portfolio"> | Date | string | null
     createdAt?: DateTimeFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
@@ -29092,6 +29147,7 @@ export namespace Prisma {
     name?: SortOrder
     clientId?: SortOrder
     cashBalance?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     client?: ClientOrderByWithRelationInput
@@ -29111,6 +29167,7 @@ export namespace Prisma {
     name?: StringFilter<"Portfolio"> | string
     clientId?: StringFilter<"Portfolio"> | string
     cashBalance?: DecimalFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
+    archivedAt?: DateTimeNullableFilter<"Portfolio"> | Date | string | null
     createdAt?: DateTimeFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
     client?: XOR<ClientScalarRelationFilter, ClientWhereInput>
@@ -29127,6 +29184,7 @@ export namespace Prisma {
     name?: SortOrder
     clientId?: SortOrder
     cashBalance?: SortOrder
+    archivedAt?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: PortfolioCountOrderByAggregateInput
@@ -29144,6 +29202,7 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"Portfolio"> | string
     clientId?: StringWithAggregatesFilter<"Portfolio"> | string
     cashBalance?: DecimalWithAggregatesFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
+    archivedAt?: DateTimeNullableWithAggregatesFilter<"Portfolio"> | Date | string | null
     createdAt?: DateTimeWithAggregatesFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Portfolio"> | Date | string
   }
@@ -30331,6 +30390,7 @@ export namespace Prisma {
     lastError?: StringNullableFilter<"ExecutionJob"> | string | null
     availableAt?: DateTimeFilter<"ExecutionJob"> | Date | string
     lockedAt?: DateTimeNullableFilter<"ExecutionJob"> | Date | string | null
+    leaseToken?: StringNullableFilter<"ExecutionJob"> | string | null
     createdAt?: DateTimeFilter<"ExecutionJob"> | Date | string
     updatedAt?: DateTimeFilter<"ExecutionJob"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
@@ -30344,6 +30404,7 @@ export namespace Prisma {
     lastError?: SortOrderInput | SortOrder
     availableAt?: SortOrder
     lockedAt?: SortOrderInput | SortOrder
+    leaseToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     order?: OrderOrderByWithRelationInput
@@ -30360,6 +30421,7 @@ export namespace Prisma {
     lastError?: StringNullableFilter<"ExecutionJob"> | string | null
     availableAt?: DateTimeFilter<"ExecutionJob"> | Date | string
     lockedAt?: DateTimeNullableFilter<"ExecutionJob"> | Date | string | null
+    leaseToken?: StringNullableFilter<"ExecutionJob"> | string | null
     createdAt?: DateTimeFilter<"ExecutionJob"> | Date | string
     updatedAt?: DateTimeFilter<"ExecutionJob"> | Date | string
     order?: XOR<OrderScalarRelationFilter, OrderWhereInput>
@@ -30373,6 +30435,7 @@ export namespace Prisma {
     lastError?: SortOrderInput | SortOrder
     availableAt?: SortOrder
     lockedAt?: SortOrderInput | SortOrder
+    leaseToken?: SortOrderInput | SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
     _count?: ExecutionJobCountOrderByAggregateInput
@@ -30393,6 +30456,7 @@ export namespace Prisma {
     lastError?: StringNullableWithAggregatesFilter<"ExecutionJob"> | string | null
     availableAt?: DateTimeWithAggregatesFilter<"ExecutionJob"> | Date | string
     lockedAt?: DateTimeNullableWithAggregatesFilter<"ExecutionJob"> | Date | string | null
+    leaseToken?: StringNullableWithAggregatesFilter<"ExecutionJob"> | string | null
     createdAt?: DateTimeWithAggregatesFilter<"ExecutionJob"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"ExecutionJob"> | Date | string
   }
@@ -30596,6 +30660,7 @@ export namespace Prisma {
     id?: string
     name: string
     email?: string | null
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutClientsInput
@@ -30608,6 +30673,7 @@ export namespace Prisma {
     name: string
     email?: string | null
     firmId: string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     brokerAccounts?: BrokerAccountUncheckedCreateNestedManyWithoutClientInput
@@ -30618,6 +30684,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutClientsNestedInput
@@ -30630,6 +30697,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     firmId?: StringFieldUpdateOperationsInput | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     brokerAccounts?: BrokerAccountUncheckedUpdateManyWithoutClientNestedInput
@@ -30641,6 +30709,7 @@ export namespace Prisma {
     name: string
     email?: string | null
     firmId: string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30649,6 +30718,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30658,6 +30728,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     firmId?: StringFieldUpdateOperationsInput | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30835,6 +30906,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
@@ -30851,6 +30923,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
@@ -30865,6 +30938,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
@@ -30881,6 +30955,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -30896,6 +30971,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -30904,6 +30980,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -30913,6 +30990,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32187,6 +32265,7 @@ export namespace Prisma {
     lastError?: string | null
     availableAt?: Date | string
     lockedAt?: Date | string | null
+    leaseToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     order: OrderCreateNestedOneWithoutExecutionJobInput
@@ -32200,6 +32279,7 @@ export namespace Prisma {
     lastError?: string | null
     availableAt?: Date | string
     lockedAt?: Date | string | null
+    leaseToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32211,6 +32291,7 @@ export namespace Prisma {
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
     availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     order?: OrderUpdateOneRequiredWithoutExecutionJobNestedInput
@@ -32224,6 +32305,7 @@ export namespace Prisma {
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
     availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32236,6 +32318,7 @@ export namespace Prisma {
     lastError?: string | null
     availableAt?: Date | string
     lockedAt?: Date | string | null
+    leaseToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -32247,6 +32330,7 @@ export namespace Prisma {
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
     availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32259,6 +32343,7 @@ export namespace Prisma {
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
     availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -32615,6 +32700,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     firmId?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32624,6 +32710,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     firmId?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32633,6 +32720,7 @@ export namespace Prisma {
     name?: SortOrder
     email?: SortOrder
     firmId?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32818,6 +32906,7 @@ export namespace Prisma {
     name?: SortOrder
     clientId?: SortOrder
     cashBalance?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32831,6 +32920,7 @@ export namespace Prisma {
     name?: SortOrder
     clientId?: SortOrder
     cashBalance?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -32840,6 +32930,7 @@ export namespace Prisma {
     name?: SortOrder
     clientId?: SortOrder
     cashBalance?: SortOrder
+    archivedAt?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -33900,6 +33991,7 @@ export namespace Prisma {
     lastError?: SortOrder
     availableAt?: SortOrder
     lockedAt?: SortOrder
+    leaseToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -33916,6 +34008,7 @@ export namespace Prisma {
     lastError?: SortOrder
     availableAt?: SortOrder
     lockedAt?: SortOrder
+    leaseToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -33928,6 +34021,7 @@ export namespace Prisma {
     lastError?: SortOrder
     availableAt?: SortOrder
     lockedAt?: SortOrder
+    leaseToken?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
   }
@@ -36090,6 +36184,7 @@ export namespace Prisma {
     id?: string
     name: string
     email?: string | null
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     brokerAccounts?: BrokerAccountCreateNestedManyWithoutClientInput
@@ -36100,6 +36195,7 @@ export namespace Prisma {
     id?: string
     name: string
     email?: string | null
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     brokerAccounts?: BrokerAccountUncheckedCreateNestedManyWithoutClientInput
@@ -36280,6 +36376,7 @@ export namespace Prisma {
     name?: StringFilter<"Client"> | string
     email?: StringNullableFilter<"Client"> | string | null
     firmId?: StringFilter<"Client"> | string
+    archivedAt?: DateTimeNullableFilter<"Client"> | Date | string | null
     createdAt?: DateTimeFilter<"Client"> | Date | string
     updatedAt?: DateTimeFilter<"Client"> | Date | string
   }
@@ -36617,6 +36714,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingCreateNestedManyWithoutPortfolioInput
@@ -36631,6 +36729,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
@@ -36738,6 +36837,7 @@ export namespace Prisma {
     name?: StringFilter<"Portfolio"> | string
     clientId?: StringFilter<"Portfolio"> | string
     cashBalance?: DecimalFilter<"Portfolio"> | Decimal | DecimalJsLike | number | string
+    archivedAt?: DateTimeNullableFilter<"Portfolio"> | Date | string | null
     createdAt?: DateTimeFilter<"Portfolio"> | Date | string
     updatedAt?: DateTimeFilter<"Portfolio"> | Date | string
   }
@@ -36746,6 +36846,7 @@ export namespace Prisma {
     id?: string
     name: string
     email?: string | null
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutClientsInput
@@ -36757,6 +36858,7 @@ export namespace Prisma {
     name: string
     email?: string | null
     firmId: string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     portfolios?: PortfolioUncheckedCreateNestedManyWithoutClientInput
@@ -36995,6 +37097,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutClientsNestedInput
@@ -37006,6 +37109,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     firmId?: StringFieldUpdateOperationsInput | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     portfolios?: PortfolioUncheckedUpdateManyWithoutClientNestedInput
@@ -37302,6 +37406,7 @@ export namespace Prisma {
     id?: string
     name: string
     email?: string | null
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     firm: FirmCreateNestedOneWithoutClientsInput
@@ -37313,6 +37418,7 @@ export namespace Prisma {
     name: string
     email?: string | null
     firmId: string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     brokerAccounts?: BrokerAccountUncheckedCreateNestedManyWithoutClientInput
@@ -37553,6 +37659,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     firm?: FirmUpdateOneRequiredWithoutClientsNestedInput
@@ -37564,6 +37671,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
     firmId?: StringFieldUpdateOperationsInput | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     brokerAccounts?: BrokerAccountUncheckedUpdateManyWithoutClientNestedInput
@@ -37700,6 +37808,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
@@ -37715,6 +37824,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
@@ -37781,6 +37891,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
@@ -37796,6 +37907,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -37932,6 +38044,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
@@ -37947,6 +38060,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
@@ -37976,6 +38090,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
@@ -37991,6 +38106,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -38004,6 +38120,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
@@ -38019,6 +38136,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     orders?: OrderUncheckedCreateNestedManyWithoutPortfolioInput
@@ -38085,6 +38203,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
@@ -38100,6 +38219,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     orders?: OrderUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -38197,6 +38317,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
@@ -38212,6 +38333,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
@@ -38323,6 +38445,7 @@ export namespace Prisma {
     lastError?: string | null
     availableAt?: Date | string
     lockedAt?: Date | string | null
+    leaseToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -38334,6 +38457,7 @@ export namespace Prisma {
     lastError?: string | null
     availableAt?: Date | string
     lockedAt?: Date | string | null
+    leaseToken?: string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -38440,6 +38564,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
@@ -38455,6 +38580,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -38585,6 +38711,7 @@ export namespace Prisma {
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
     availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -38596,6 +38723,7 @@ export namespace Prisma {
     lastError?: NullableStringFieldUpdateOperationsInput | string | null
     availableAt?: DateTimeFieldUpdateOperationsInput | Date | string
     lockedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    leaseToken?: NullableStringFieldUpdateOperationsInput | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -39156,6 +39284,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
@@ -39171,6 +39300,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
@@ -39347,6 +39477,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
@@ -39362,6 +39493,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -39487,6 +39619,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     client: ClientCreateNestedOneWithoutPortfoliosInput
@@ -39502,6 +39635,7 @@ export namespace Prisma {
     name: string
     clientId: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
     holdings?: HoldingUncheckedCreateNestedManyWithoutPortfolioInput
@@ -39531,6 +39665,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     client?: ClientUpdateOneRequiredWithoutPortfoliosNestedInput
@@ -39546,6 +39681,7 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     clientId?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -39979,6 +40115,7 @@ export namespace Prisma {
     id?: string
     name: string
     email?: string | null
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -40074,6 +40211,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     brokerAccounts?: BrokerAccountUpdateManyWithoutClientNestedInput
@@ -40084,6 +40222,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     brokerAccounts?: BrokerAccountUncheckedUpdateManyWithoutClientNestedInput
@@ -40094,6 +40233,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     email?: NullableStringFieldUpdateOperationsInput | string | null
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -40301,6 +40441,7 @@ export namespace Prisma {
     id?: string
     name: string
     cashBalance?: Decimal | DecimalJsLike | number | string
+    archivedAt?: Date | string | null
     createdAt?: Date | string
     updatedAt?: Date | string
   }
@@ -40351,6 +40492,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUpdateManyWithoutPortfolioNestedInput
@@ -40365,6 +40507,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
     holdings?: HoldingUncheckedUpdateManyWithoutPortfolioNestedInput
@@ -40379,6 +40522,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     cashBalance?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    archivedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }

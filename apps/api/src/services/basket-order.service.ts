@@ -115,8 +115,10 @@ export async function createBasketOrderService(
       await prisma.portfolio.findFirst({
         where: {
           id: allocation.portfolioId,
+          archivedAt: null,
           client: {
             firmId: input.firmId,
+            archivedAt: null,
           },
         },
       });
@@ -134,6 +136,7 @@ export async function createBasketOrderService(
           archivedAt: null,
           client: {
             firmId: input.firmId,
+            archivedAt: null,
           },
         },
       });
@@ -169,6 +172,94 @@ export async function createBasketOrderService(
   const basket =
     await prisma.$transaction(
       async (tx) => {
+        const portfolioIds = [
+          ...new Set(
+            allocations.map(
+              (allocation) =>
+                allocation.portfolioId,
+            ),
+          ),
+        ];
+
+        const brokerAccountIds = [
+          ...new Set(
+            allocations.map(
+              (allocation) =>
+                allocation.brokerAccountId,
+            ),
+          ),
+        ];
+
+        const clientIds =
+          await tx.portfolio.findMany({
+            where: {
+              id: {
+                in: portfolioIds,
+              },
+              archivedAt: null,
+              client: {
+                firmId:
+                  input.firmId,
+                archivedAt: null,
+              },
+            },
+            select: {
+              clientId: true,
+            },
+          });
+
+        for (
+          const clientId of
+          [
+            ...new Set(
+              clientIds.map(
+                (item) =>
+                  item.clientId,
+              ),
+            ),
+          ].sort()
+        ) {
+          await tx.$queryRaw`
+            SELECT "id"
+            FROM "Client"
+            WHERE "id" = ${clientId}
+            FOR SHARE
+          `;
+        }
+
+        if (
+          clientIds.length !==
+          portfolioIds.length
+        ) {
+          throw new Error(
+            "PORTFOLIO_NOT_FOUND",
+          );
+        }
+
+        const activeAccounts =
+          await tx.brokerAccount.count({
+            where: {
+              id: {
+                in: brokerAccountIds,
+              },
+              archivedAt: null,
+              client: {
+                firmId:
+                  input.firmId,
+                archivedAt: null,
+              },
+            },
+          });
+
+        if (
+          activeAccounts !==
+          brokerAccountIds.length
+        ) {
+          throw new Error(
+            "BROKER_ACCOUNT_NOT_FOUND",
+          );
+        }
+
         const createdBasket =
           await tx.basketOrder.create({
             data: {

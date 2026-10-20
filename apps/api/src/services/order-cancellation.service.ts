@@ -190,6 +190,9 @@ export async function cancelOrderService(
 
                 lockedAt:
                   null,
+
+                leaseToken:
+                  null,
               },
             });
 

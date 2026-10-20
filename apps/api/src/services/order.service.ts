@@ -53,8 +53,10 @@ export async function createOrderService(input: CreateOrderInput) {
   const portfolio = await prisma.portfolio.findFirst({
     where: {
        id: portfolioId,
+       archivedAt: null,
         client: {
           firmId,
+          archivedAt: null,
         },
       },
   });
@@ -69,6 +71,7 @@ export async function createOrderService(input: CreateOrderInput) {
       archivedAt: null,
       client: {
         firmId,
+        archivedAt: null,
       },
     },
   });
@@ -94,6 +97,55 @@ export async function createOrderService(input: CreateOrderInput) {
   }
 
   return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`
+      SELECT "id"
+      FROM "Client"
+      WHERE "id" = ${portfolio.clientId}
+      FOR SHARE
+    `;
+
+    const activePortfolio =
+      await tx.portfolio.findFirst({
+        where: {
+          id: portfolioId,
+          archivedAt: null,
+          client: {
+            firmId,
+            archivedAt: null,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+    const activeBrokerAccount =
+      await tx.brokerAccount.findFirst({
+        where: {
+          id: brokerAccountId,
+          archivedAt: null,
+          client: {
+            firmId,
+            archivedAt: null,
+          },
+        },
+        select: {
+          id: true,
+        },
+      });
+
+    if (!activePortfolio) {
+      throw new Error(
+        "PORTFOLIO_NOT_FOUND",
+      );
+    }
+
+    if (!activeBrokerAccount) {
+      throw new Error(
+        "BROKER_ACCOUNT_NOT_FOUND",
+      );
+    }
+
     const order = await tx.order.create({
       data: {
         portfolioId,

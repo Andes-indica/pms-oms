@@ -104,8 +104,10 @@ export async function adjustPortfolioCash(
         await tx.portfolio.findFirst({
           where: {
             id: portfolioId,
+            archivedAt: null,
             client: {
               firmId,
+              archivedAt: null,
             },
           },
         });

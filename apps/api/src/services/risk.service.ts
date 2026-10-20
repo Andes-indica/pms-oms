@@ -73,6 +73,7 @@ export async function runRiskChecks(
         client: {
           select: {
             firmId: true,
+            archivedAt: true,
           },
         },
 
@@ -84,7 +85,11 @@ export async function runRiskChecks(
         },
       },
     });
-  if (!portfolio) {
+  if (
+    !portfolio ||
+    portfolio.archivedAt ||
+    portfolio.client.archivedAt
+  ) {
     throw new Error("PORTFOLIO_NOT_FOUND");
   }
 

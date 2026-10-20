@@ -88,8 +88,12 @@ model Client {
   brokerAccounts BrokerAccount[]
   portfolios     Portfolio[]
 
+  archivedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([firmId, archivedAt])
 }
 
 model BrokerAccount {
@@ -167,6 +171,14 @@ enum AuditAction {
   USER_REACTIVATED
   USER_SESSIONS_REVOKED
   USER_PASSWORD_RESET_REQUESTED
+  ADMIN_RECOVERED
+
+  CLIENT_ARCHIVED
+  CLIENT_RESTORED
+  CLIENT_DELETED
+  PORTFOLIO_ARCHIVED
+  PORTFOLIO_RESTORED
+  PORTFOLIO_DELETED
 
   BASKET_CREATED
   BASKET_SUBMITTED
@@ -208,8 +220,12 @@ model Portfolio {
 
   riskLimit RiskLimit?
 
+  archivedAt DateTime?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([clientId, archivedAt])
 }
 
 model PortfolioBrokerCash {
@@ -570,9 +586,12 @@ model ExecutionJob {
 
   availableAt DateTime  @default(now())
   lockedAt    DateTime?
+  leaseToken  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([status, availableAt])
+  @@index([status, lockedAt])
+  @@index([status, updatedAt])
 }

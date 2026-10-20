@@ -245,11 +245,16 @@ export async function setBrokerCashAllocation(
             id:
               portfolioId,
 
+            archivedAt:
+              null,
+
             clientId:
               account.clientId,
 
             client: {
               firmId,
+              archivedAt:
+                null,
             },
           },
 

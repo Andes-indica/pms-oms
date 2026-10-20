@@ -60,6 +60,9 @@ holding snapshots do not block broker-authoritative orders. Integration tests
 verify that direct orders reach the broker even when PMS cash is zero, and that
 definitive broker margin rejections retain the broker's exact explanation.
 Zerodha adapter tests distinguish raw cash from net funds available for trading.
+They also verify that settled and T1 delivery quantities are combined. Broker
+workflow tests aggregate duplicate normalized broker rows so inventory cannot be
+silently overwritten during reconciliation.
 
 Staff lifecycle integration tests verify that invitation tokens are stored only
 as hashes, links are single-use, account activation enables login, password
@@ -67,6 +70,16 @@ resets and explicit session revocation advance the session version, and the
 last active administrator/self-management protections cannot be bypassed.
 Permission tests verify the centralized API role matrix, while the web uses the
 same role boundaries for route, navigation, and action visibility.
+
+Production-hardening integration tests verify that client/portfolio archival
+preserves order history, rejects open positions, active orders, and allocated
+broker cash, blocks new trading on archived records, and restricts permanent
+deletion to unused entities. Administrator recovery tests cover the zero-admin
+guard, session-version increment, audit event, and disabled-user refusal.
+
+Execution-queue tests cover competing claims, stale and active leases, lease
+token cleanup, retry backoff, and retention cleanup. The operations snapshot is
+tested against firm-scoped queue data.
 
 Market-data tests verify that explicit disabled mode rejects market orders but
 leaves limit orders available. In this mode dashboard and portfolio responses
