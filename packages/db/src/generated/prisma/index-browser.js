@@ -149,6 +149,7 @@ exports.Prisma.ClientScalarFieldEnum = {
   name: 'name',
   email: 'email',
   firmId: 'firmId',
+  archivedAt: 'archivedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -179,6 +180,7 @@ exports.Prisma.PortfolioScalarFieldEnum = {
   name: 'name',
   clientId: 'clientId',
   cashBalance: 'cashBalance',
+  archivedAt: 'archivedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -371,6 +373,7 @@ exports.Prisma.ExecutionJobScalarFieldEnum = {
   lastError: 'lastError',
   availableAt: 'availableAt',
   lockedAt: 'lockedAt',
+  leaseToken: 'leaseToken',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 };
@@ -471,6 +474,13 @@ exports.AuditAction = exports.$Enums.AuditAction = {
   USER_REACTIVATED: 'USER_REACTIVATED',
   USER_SESSIONS_REVOKED: 'USER_SESSIONS_REVOKED',
   USER_PASSWORD_RESET_REQUESTED: 'USER_PASSWORD_RESET_REQUESTED',
+  ADMIN_RECOVERED: 'ADMIN_RECOVERED',
+  CLIENT_ARCHIVED: 'CLIENT_ARCHIVED',
+  CLIENT_RESTORED: 'CLIENT_RESTORED',
+  CLIENT_DELETED: 'CLIENT_DELETED',
+  PORTFOLIO_ARCHIVED: 'PORTFOLIO_ARCHIVED',
+  PORTFOLIO_RESTORED: 'PORTFOLIO_RESTORED',
+  PORTFOLIO_DELETED: 'PORTFOLIO_DELETED',
   BASKET_CREATED: 'BASKET_CREATED',
   BASKET_SUBMITTED: 'BASKET_SUBMITTED',
   BASKET_CANCELLED: 'BASKET_CANCELLED',

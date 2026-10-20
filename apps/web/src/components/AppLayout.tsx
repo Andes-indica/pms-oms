@@ -49,6 +49,12 @@ const NAV_ITEMS: Array<{
     permission: "VIEW_AUDIT",
   },
   {
+    to: "/operations",
+    label: "Operations",
+    permission:
+      "VIEW_OPERATIONS",
+  },
+  {
     to: "/users",
     label: "Users",
     permission: "VIEW_USERS",

@@ -30,6 +30,9 @@ import {
   AuditPage,
 } from "./pages/AuditPage";
 import {
+  OperationsPage,
+} from "./pages/OperationsPage";
+import {
   AccountSetupPage,
 } from "./pages/AccountSetupPage";
 import {
@@ -140,6 +143,14 @@ function App() {
             element={
               <PermissionRoute permission="VIEW_AUDIT">
                 <AuditPage />
+              </PermissionRoute>
+            }
+          />
+          <Route
+            path="/operations"
+            element={
+              <PermissionRoute permission="VIEW_OPERATIONS">
+                <OperationsPage />
               </PermissionRoute>
             }
           />

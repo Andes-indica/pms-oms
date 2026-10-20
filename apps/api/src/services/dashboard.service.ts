@@ -12,10 +12,14 @@ export async function getDashboardService(
     await prisma.client.findMany({
       where: {
         firmId,
+        archivedAt: null,
       },
 
       include: {
         portfolios: {
+          where: {
+            archivedAt: null,
+          },
           include: {
             holdings: true,
             orders: true,

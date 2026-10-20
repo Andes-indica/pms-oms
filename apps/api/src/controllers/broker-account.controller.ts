@@ -309,6 +309,9 @@ export async function createBrokerAccount(
 
             firmId:
               req.user.firmId,
+
+            archivedAt:
+              null,
           },
 
           select: {

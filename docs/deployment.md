@@ -74,6 +74,25 @@ Keep the total pool capacity below the database plan's connection limit. With
 one API replica and one migration process, a pool maximum of 10 is a safe
 starting point for a small deployment.
 
+Configure the durable execution worker explicitly:
+
+```env
+ORDER_EXECUTION_WORKER_ENABLED=true
+ORDER_EXECUTION_WORKER_INTERVAL_MS=1000
+ORDER_EXECUTION_WORKER_MAX_INTERVAL_MS=10000
+ORDER_EXECUTION_LOCK_TIMEOUT_MS=60000
+ORDER_EXECUTION_RECOVERY_INTERVAL_MS=30000
+ORDER_EXECUTION_CLEANUP_INTERVAL_MS=3600000
+ORDER_EXECUTION_DRAIN_BATCH_SIZE=25
+ORDER_EXECUTION_COMPLETED_RETENTION_DAYS=30
+ORDER_EXECUTION_FAILED_RETENTION_DAYS=90
+```
+
+The worker uses leased PostgreSQL jobs, bounded batch draining, adaptive idle
+polling, exponential retry delay, and independent stale-lease maintenance. Keep
+the lock timeout above the worst expected broker request duration. See
+`docs/operations-runbook.md` before changing these values.
+
 ## 3. Configure market data or limit-only mode
 
 Production startup always rejects the mock provider. Until a real subscription
@@ -273,6 +292,34 @@ sessions** invalidates existing access tokens. The application prevents an
 administrator from disabling or demoting themselves and prevents removal of
 the last active administrator.
 
+If a firm nevertheless reaches zero active administrators, recover an existing
+active password-enabled user from the server terminal:
+
+```bash
+export RECOVERY_ADMIN_EMAIL="operator@example.com"
+export RECOVERY_CONFIRM="RECOVER_ADMIN"
+
+docker compose \
+  --env-file .env.production \
+  -f docker-compose.production.yml \
+  run --rm \
+  -e RECOVERY_ADMIN_EMAIL \
+  -e RECOVERY_CONFIRM \
+  migrate bun prisma/recover-admin.ts
+
+unset RECOVERY_ADMIN_EMAIL RECOVERY_CONFIRM
+```
+
+The command refuses to run when an active administrator already exists. It
+revokes the recovered user's old sessions and writes an `ADMIN_RECOVERED` audit
+event.
+
+Archive clients and portfolios that have any business history; permanent
+deletion is restricted to never-used records. Client archival clears encrypted
+broker credentials and sessions. Restoring a client leaves portfolios and
+broker accounts archived so an administrator must deliberately restore the
+required portfolios and reconnect each broker account.
+
 ## 8. Start and verify
 
 Start the application:
@@ -309,6 +356,12 @@ GET /ready
 `/health` is process liveness. `/health/db` checks PostgreSQL. `/ready` checks
 PostgreSQL and confirms that at least one active/configured instrument exists.
 The API container health check uses `/ready`.
+
+After signing in as an Administrator or Operations user, open **Operations**.
+It should show a running worker, zero stale leases, no uncertain submissions,
+and a stable oldest-pending age. The authenticated equivalent is
+`GET /api/operations`; do not expose it through an unauthenticated health check.
+Use `docs/operations-runbook.md` for investigation and recovery steps.
 
 ## 9. Controlled broker verification
 
@@ -376,8 +429,9 @@ Keep the broker encryption key stable and store a recoverable copy in a secrets
 manager. Losing it makes existing encrypted broker credentials unreadable.
 
 Enable database encryption, automated backups, point-in-time recovery, and
-manual pre-release snapshots. Perform a restore drill before onboarding real
-clients.
+manual pre-release snapshots. Record a successful restore drill into a separate
+database before onboarding real clients and after material schema/provider
+changes. Never overwrite production while testing a restore.
 
 ## 12. Release gate
 

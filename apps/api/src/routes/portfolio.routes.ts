@@ -7,6 +7,8 @@ import {
   deletePortfolio,
   getPortfolioValuation,
   updatePortfolio,
+  archivePortfolio,
+  restorePortfolio,
 } from "../controllers/portfolio.controller";
 
 import {
@@ -51,6 +53,22 @@ router.delete(
     "DELETE_CLIENT_DATA",
   ),
   deletePortfolio,
+);
+
+router.patch(
+  "/:id/archive",
+  requirePermission(
+    "ARCHIVE_CLIENT_DATA",
+  ),
+  archivePortfolio,
+);
+
+router.patch(
+  "/:id/restore",
+  requirePermission(
+    "ARCHIVE_CLIENT_DATA",
+  ),
+  restorePortfolio,
 );
 
 router.get(

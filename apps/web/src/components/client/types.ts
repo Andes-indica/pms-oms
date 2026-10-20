@@ -42,6 +42,8 @@ export type Portfolio = {
   holdings: Holding[];
   orders: Order[];
   riskLimit?: RiskLimit | null;
+  archivedAt?: string | null;
+  canDeletePermanently: boolean;
 };
 
 export type BrokerAccount = {
@@ -57,9 +59,11 @@ export type ClientOverview = {
   id: string;
   name: string;
   email?: string | null;
+  archivedAt?: string | null;
 
   totalCash: number;
   totalRealizedPnl: number;
+  canDeletePermanently: boolean;
 
   brokerAccounts: BrokerAccount[];
 

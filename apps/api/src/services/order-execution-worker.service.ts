@@ -18,6 +18,7 @@ import {
 
 type ClaimedJob = {
   id: string;
+  leaseToken: string;
 };
 
 const DEFAULT_INTERVAL_MS =
@@ -25,6 +26,24 @@ const DEFAULT_INTERVAL_MS =
 
 const DEFAULT_LOCK_TIMEOUT_MS =
   60_000;
+
+const DEFAULT_MAX_IDLE_INTERVAL_MS =
+  10_000;
+
+const DEFAULT_RECOVERY_INTERVAL_MS =
+  30_000;
+
+const DEFAULT_CLEANUP_INTERVAL_MS =
+  60 * 60 * 1_000;
+
+const DEFAULT_DRAIN_BATCH_SIZE =
+  25;
+
+const DEFAULT_RETRY_BASE_MS =
+  5_000;
+
+const DEFAULT_RETRY_MAX_MS =
+  5 * 60 * 1_000;
 
 const MAX_ATTEMPTS =
   5;
@@ -92,9 +111,57 @@ let workerTimer:
 
 let workerStopped = true;
 
+let maintenanceTimer:
+  ReturnType<
+    typeof setTimeout
+  > | null = null;
+
 let activeWorkerCycle:
   Promise<void> | null =
   null;
+
+let activeMaintenanceCycle:
+  Promise<void> | null =
+  null;
+
+const workerId =
+  process.env
+    .ORDER_EXECUTION_WORKER_ID
+    ?.trim() ||
+  `${process.pid}-${crypto.randomUUID()}`;
+
+const workerState = {
+  workerId,
+  running: false,
+  active: false,
+  startedAt:
+    null as Date | null,
+  lastCycleAt:
+    null as Date | null,
+  lastSuccessfulCycleAt:
+    null as Date | null,
+  lastMaintenanceAt:
+    null as Date | null,
+  lastError:
+    null as string | null,
+  lastMaintenanceError:
+    null as string | null,
+};
+
+function readInteger(
+  key: string,
+  fallback: number,
+  minimum: number,
+) {
+  const configured =
+    Number(process.env[key]);
+
+  return Number.isInteger(
+    configured,
+  ) && configured >= minimum
+    ? configured
+    : fallback;
+}
 
 function getLockTimeoutMs() {
   const configured =
@@ -111,17 +178,19 @@ function getLockTimeoutMs() {
     : DEFAULT_LOCK_TIMEOUT_MS;
 }
 
-async function recoverStaleJobs() {
+export async function recoverStaleExecutionJobs() {
   const lockTimeoutMs =
     getLockTimeoutMs();
 
-  await prisma.$transaction(
+  return prisma.$transaction(
     async (tx) => {
-      await tx.$executeRaw`
+      const failed =
+        await tx.$executeRaw`
         UPDATE "ExecutionJob"
         SET
           "status" = 'FAILED',
           "lockedAt" = NULL,
+          "leaseToken" = NULL,
           "lastError" =
             COALESCE(
               "lastError",
@@ -140,11 +209,13 @@ async function recoverStaleJobs() {
           AND "attempts" >= ${MAX_ATTEMPTS}
       `;
 
-      await tx.$executeRaw`
+      const recovered =
+        await tx.$executeRaw`
         UPDATE "ExecutionJob"
         SET
           "status" = 'PENDING',
           "lockedAt" = NULL,
+          "leaseToken" = NULL,
           "availableAt" = NOW(),
           "lastError" =
             'WORKER_LEASE_EXPIRED',
@@ -160,12 +231,76 @@ async function recoverStaleJobs() {
             )
           AND "attempts" < ${MAX_ATTEMPTS}
       `;
+
+      return {
+        failed,
+        recovered,
+      };
     },
   );
 }
 
+export async function cleanupExecutionJobs(
+  now = new Date(),
+) {
+  const completedRetentionDays =
+    readInteger(
+      "ORDER_EXECUTION_COMPLETED_RETENTION_DAYS",
+      30,
+      1,
+    );
+
+  const failedRetentionDays =
+    readInteger(
+      "ORDER_EXECUTION_FAILED_RETENTION_DAYS",
+      90,
+      1,
+    );
+
+  const completedBefore =
+    new Date(
+      now.getTime() -
+      completedRetentionDays *
+        86_400_000,
+    );
+
+  const failedBefore =
+    new Date(
+      now.getTime() -
+      failedRetentionDays *
+        86_400_000,
+    );
+
+  const result =
+    await prisma.executionJob.deleteMany({
+      where: {
+        OR: [
+          {
+            status: "COMPLETED",
+            updatedAt: {
+              lt: completedBefore,
+            },
+          },
+          {
+            status: "FAILED",
+            updatedAt: {
+              lt: failedBefore,
+            },
+          },
+        ],
+      },
+    });
+
+  return {
+    deleted: result.count,
+  };
+}
+
 async function claimNextJob():
   Promise<ClaimedJob | null> {
+  const leaseToken =
+    crypto.randomUUID();
+
   return prisma.$transaction(
     async (tx) => {
       const rows =
@@ -187,6 +322,7 @@ async function claimNextJob():
           SET
             "status" = 'PROCESSING',
             "lockedAt" = NOW(),
+            "leaseToken" = ${leaseToken},
             "attempts" =
               "attempts" + 1,
             "updatedAt" = NOW()
@@ -196,15 +332,140 @@ async function claimNextJob():
             FROM candidate
           )
 
-          RETURNING "id"
+          RETURNING "id", "leaseToken"
         `;
 
       return rows[0] ?? null;
     },
   );
 }
-export async function processNextExecutionJob() {
-  await recoverStaleJobs();
+
+type ProcessExecutionJobOptions = {
+  recoverStale?: boolean;
+};
+
+function startLeaseHeartbeat(
+  job: ClaimedJob,
+) {
+  const intervalMs =
+    Math.max(
+      250,
+      Math.floor(
+        getLockTimeoutMs() / 3,
+      ),
+    );
+
+  let stopped = false;
+  let timer:
+    ReturnType<
+      typeof setTimeout
+    > | null = null;
+  let active:
+    Promise<void> | null =
+    null;
+
+  async function pulse() {
+    if (stopped) {
+      return;
+    }
+
+    active =
+      (async () => {
+        const result =
+          await prisma.executionJob
+            .updateMany({
+              where: {
+                id: job.id,
+                status:
+                  "PROCESSING",
+                leaseToken:
+                  job.leaseToken,
+              },
+              data: {
+                lockedAt:
+                  new Date(),
+              },
+            });
+
+        if (result.count === 0) {
+          stopped = true;
+        }
+      })().catch(
+        (error) => {
+          console.error(
+            "Execution job lease heartbeat failed:",
+            error,
+          );
+        },
+      );
+
+    await active;
+    active = null;
+
+    if (!stopped) {
+      timer = setTimeout(
+        pulse,
+        intervalMs,
+      );
+    }
+  }
+
+  timer = setTimeout(
+    pulse,
+    intervalMs,
+  );
+
+  return async () => {
+    stopped = true;
+
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+
+    await active;
+  };
+}
+
+export function calculateExecutionRetryDelayMs(
+  attempts: number,
+  jitter = Math.random(),
+) {
+  const exponential =
+    DEFAULT_RETRY_BASE_MS *
+    2 ** Math.max(
+      0,
+      attempts - 1,
+    );
+
+  const bounded =
+    Math.min(
+      exponential,
+      DEFAULT_RETRY_MAX_MS,
+    );
+
+  const safeJitter =
+    Math.min(
+      1,
+      Math.max(0, jitter),
+    );
+
+  return Math.round(
+    bounded *
+      (1 + safeJitter * 0.2),
+  );
+}
+
+export async function processNextExecutionJob(
+  options:
+    ProcessExecutionJobOptions = {},
+) {
+  if (
+    options.recoverStale !==
+    false
+  ) {
+    await recoverStaleExecutionJobs();
+  }
 
   const claimed =
     await claimNextJob();
@@ -247,6 +508,14 @@ export async function processNextExecutionJob() {
       .client
       .firmId;
 
+  const stopHeartbeat =
+    startLeaseHeartbeat(
+      claimed,
+    );
+
+  let executionSucceeded =
+    false;
+
   try {
     const order =
       await executeOrderService(
@@ -254,9 +523,16 @@ export async function processNextExecutionJob() {
         firmId,
       );
 
-    await prisma.executionJob.update({
+    executionSucceeded = true;
+
+    const completed =
+      await prisma.executionJob.updateMany({
       where: {
         id: job.id,
+        status:
+          "PROCESSING",
+        leaseToken:
+          claimed.leaseToken,
       },
 
       data: {
@@ -268,8 +544,13 @@ export async function processNextExecutionJob() {
 
         lockedAt:
           null,
+
+        leaseToken:
+          null,
       },
     });
+
+    await stopHeartbeat();
 
     publishLiveUpdate(
       firmId,
@@ -315,8 +596,23 @@ export async function processNextExecutionJob() {
       processed: true,
       succeeded: true,
       jobId: job.id,
+      leaseLost:
+        completed.count === 0,
     };
   } catch (error) {
+    await stopHeartbeat();
+
+    /*
+     * A database or notification failure after
+     * broker execution must not be converted into
+     * an execution retry. The persisted order state
+     * prevents a second broker placement, while the
+     * stale-lease path can repair the queue record.
+     */
+    if (executionSucceeded) {
+      throw error;
+    }
+
     const message =
       describeExecutionError(error);
 
@@ -327,9 +623,14 @@ export async function processNextExecutionJob() {
       job.attempts <
         MAX_ATTEMPTS;
 
-    await prisma.executionJob.update({
+    const updated =
+      await prisma.executionJob.updateMany({
       where: {
         id: job.id,
+        status:
+          "PROCESSING",
+        leaseToken:
+          claimed.leaseToken,
       },
 
       data: retryable
@@ -343,10 +644,15 @@ export async function processNextExecutionJob() {
             lockedAt:
               null,
 
+            leaseToken:
+              null,
+
             availableAt:
               new Date(
                 Date.now() +
-                  5_000,
+                  calculateExecutionRetryDelayMs(
+                    job.attempts,
+                  ),
               ),
           }
         : {
@@ -357,6 +663,9 @@ export async function processNextExecutionJob() {
               message,
 
             lockedAt:
+              null,
+
+            leaseToken:
               null,
           },
     });
@@ -409,8 +718,30 @@ export async function processNextExecutionJob() {
       retryable,
       jobId: job.id,
       error: message,
+      leaseLost:
+        updated.count === 0,
     };
   }
+}
+
+export function getOrderExecutionWorkerStatus() {
+  return {
+    ...workerState,
+    startedAt:
+      workerState.startedAt
+        ?.toISOString() ?? null,
+    lastCycleAt:
+      workerState.lastCycleAt
+        ?.toISOString() ?? null,
+    lastSuccessfulCycleAt:
+      workerState
+        .lastSuccessfulCycleAt
+        ?.toISOString() ?? null,
+    lastMaintenanceAt:
+      workerState
+        .lastMaintenanceAt
+        ?.toISOString() ?? null,
+  };
 }
 export function startOrderExecutionWorker() {
   if (!workerStopped) {
@@ -418,6 +749,10 @@ export function startOrderExecutionWorker() {
   }
 
   workerStopped = false;
+  workerState.running = true;
+  workerState.startedAt =
+    new Date();
+  workerState.lastError = null;
 
   const configuredInterval =
     Number(
@@ -433,6 +768,26 @@ export function startOrderExecutionWorker() {
       ? configuredInterval
       : DEFAULT_INTERVAL_MS;
 
+  const maxIdleIntervalMs =
+    Math.max(
+      intervalMs,
+      readInteger(
+        "ORDER_EXECUTION_WORKER_MAX_INTERVAL_MS",
+        DEFAULT_MAX_IDLE_INTERVAL_MS,
+        intervalMs,
+      ),
+    );
+
+  const batchSize =
+    readInteger(
+      "ORDER_EXECUTION_DRAIN_BATCH_SIZE",
+      DEFAULT_DRAIN_BATCH_SIZE,
+      1,
+    );
+
+  let idleIntervalMs =
+    intervalMs;
+
   async function run() {
     if (workerStopped) {
       return;
@@ -440,28 +795,69 @@ export function startOrderExecutionWorker() {
 
     const cycle =
       (async () => {
+        workerState.active = true;
+        workerState.lastCycleAt =
+          new Date();
+
         try {
           /*
            * Drain available jobs before
            * sleeping again.
            */
+          let processed = 0;
+
           while (
-            !workerStopped
+            !workerStopped &&
+            processed < batchSize
           ) {
             const result =
-              await processNextExecutionJob();
+              await processNextExecutionJob({
+                recoverStale: false,
+              });
 
             if (
               !result.processed
             ) {
               break;
             }
+
+            processed += 1;
+          }
+
+          workerState
+            .lastSuccessfulCycleAt =
+            new Date();
+          workerState.lastError =
+            null;
+
+          if (processed === 0) {
+            idleIntervalMs =
+              Math.min(
+                maxIdleIntervalMs,
+                Math.max(
+                  intervalMs,
+                  idleIntervalMs * 2,
+                ),
+              );
+          } else {
+            idleIntervalMs =
+              processed >= batchSize
+                ? 0
+                : intervalMs;
           }
         } catch (error) {
+          workerState.lastError =
+            describeExecutionError(
+              error,
+            );
+
           console.error(
             "Order execution worker cycle failed:",
             error,
           );
+        } finally {
+          workerState.active =
+            false;
         }
       })();
 
@@ -482,16 +878,95 @@ export function startOrderExecutionWorker() {
       workerTimer =
         setTimeout(
           run,
-          intervalMs,
+          idleIntervalMs,
+        );
+    }
+  }
+
+  const recoveryIntervalMs =
+    readInteger(
+      "ORDER_EXECUTION_RECOVERY_INTERVAL_MS",
+      DEFAULT_RECOVERY_INTERVAL_MS,
+      1_000,
+    );
+
+  const cleanupIntervalMs =
+    readInteger(
+      "ORDER_EXECUTION_CLEANUP_INTERVAL_MS",
+      DEFAULT_CLEANUP_INTERVAL_MS,
+      60_000,
+    );
+
+  let lastCleanupAt = 0;
+
+  async function maintain() {
+    if (workerStopped) {
+      return;
+    }
+
+    const cycle =
+      (async () => {
+        try {
+          await recoverStaleExecutionJobs();
+
+          if (
+            Date.now() -
+              lastCleanupAt >=
+            cleanupIntervalMs
+          ) {
+            await cleanupExecutionJobs();
+            lastCleanupAt =
+              Date.now();
+          }
+
+          workerState
+            .lastMaintenanceAt =
+            new Date();
+          workerState
+            .lastMaintenanceError =
+            null;
+        } catch (error) {
+          workerState
+            .lastMaintenanceError =
+            describeExecutionError(
+              error,
+            );
+
+          console.error(
+            "Order execution queue maintenance failed:",
+            error,
+          );
+        }
+      })();
+
+    activeMaintenanceCycle =
+      cycle;
+    await cycle;
+
+    if (
+      activeMaintenanceCycle ===
+      cycle
+    ) {
+      activeMaintenanceCycle =
+        null;
+    }
+
+    if (!workerStopped) {
+      maintenanceTimer =
+        setTimeout(
+          maintain,
+          recoveryIntervalMs,
         );
     }
   }
 
   void run();
+  void maintain();
 }
 
 export async function stopOrderExecutionWorker() {
   workerStopped = true;
+  workerState.running = false;
 
   if (workerTimer) {
     clearTimeout(
@@ -501,5 +976,15 @@ export async function stopOrderExecutionWorker() {
     workerTimer = null;
   }
 
-  await activeWorkerCycle;
+  if (maintenanceTimer) {
+    clearTimeout(
+      maintenanceTimer,
+    );
+    maintenanceTimer = null;
+  }
+
+  await Promise.all([
+    activeWorkerCycle,
+    activeMaintenanceCycle,
+  ]);
 }

@@ -518,11 +518,21 @@ export class ZerodhaBroker
 
       return holdings.map(
         (holding: any) => {
-          const quantity =
+          const settledQuantity =
             Number(
               holding.quantity ??
               0,
             );
+
+          const t1Quantity =
+            Number(
+              holding.t1_quantity ??
+              0,
+            );
+
+          const quantity =
+            settledQuantity +
+            t1Quantity;
 
           const averagePrice =
             Number(
@@ -534,7 +544,24 @@ export class ZerodhaBroker
             !Number.isFinite(
               quantity,
             ) ||
+            !Number.isInteger(
+              quantity,
+            ) ||
             quantity < 0 ||
+            !Number.isFinite(
+              settledQuantity,
+            ) ||
+            !Number.isInteger(
+              settledQuantity,
+            ) ||
+            settledQuantity < 0 ||
+            !Number.isFinite(
+              t1Quantity,
+            ) ||
+            !Number.isInteger(
+              t1Quantity,
+            ) ||
+            t1Quantity < 0 ||
             !Number.isFinite(
               averagePrice,
             ) ||

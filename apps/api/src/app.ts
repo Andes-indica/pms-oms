@@ -28,6 +28,8 @@ import clientOrderConfirmationRoutes
   from "./routes/client-order-confirmation.routes";
 import runtimeRoutes
   from "./routes/runtime.routes";
+import operationsRoutes
+  from "./routes/operations.routes";
 
 import {
   securityHeaders,
@@ -121,6 +123,10 @@ app.use("/api/auth", authRoutes);
 app.use(
   "/api/runtime",
   runtimeRoutes,
+);
+app.use(
+  "/api/operations",
+  operationsRoutes,
 );
 app.use(
   "/api/client-order-confirmations",

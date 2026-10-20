@@ -131,6 +131,29 @@ async function repair() {
 }
 
 describe("Zerodha reconnect and inventory reconciliation through HTTP", () => {
+  test("duplicate broker rows are aggregated instead of overwriting inventory", async () => {
+    await createHolding(10, 1400);
+    const holdings = await connectZerodha();
+
+    holdings.mockResolvedValue([
+      { symbol: "INFY", exchange: "NSE", quantity: 8, averagePrice: 1300 },
+      { symbol: "infy", exchange: "nse", quantity: 2, averagePrice: 1800 },
+    ]);
+
+    const reconciliation = await api("GET", reconciliationPath());
+
+    expect(reconciliation.status).toBe("MATCH");
+    expect(reconciliation.items).toHaveLength(1);
+    expect(reconciliation.items[0]).toMatchObject({
+      symbol: "INFY",
+      exchange: "NSE",
+      brokerQuantity: 10,
+      brokerAveragePrice: 1400,
+      pmsQuantity: 10,
+      status: "MATCH",
+    });
+  });
+
   test("a new session with unchanged quantities stays MATCH and preserves PMS cost and cash", async () => {
     const holding = await createHolding();
     const holdings = await connectZerodha();

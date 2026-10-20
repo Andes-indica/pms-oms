@@ -58,92 +58,114 @@ export async function archiveBrokerAccount(
   brokerAccountId: string,
   firmId: string,
 ) {
-  const account =
-    await prisma.brokerAccount.findFirst({
-      where: {
-        id:
-          brokerAccountId,
-
-        archivedAt:
-          null,
-
-        client: {
-          firmId,
-        },
-      },
-
-      include: {
-        holdings: {
-          select: {
-            id: true,
-          },
-        },
-
-        orders: {
-          where: {
-            status: {
-              in: [
-                ...ACTIVE_ORDER_STATUSES,
-              ],
-            },
-          },
-
-          select: {
-            id: true,
-          },
-        },
-
-        portfolioCashAllocations: {
-          where: {
-            cashBalance: {
-              gt: 0,
-            },
-          },
-
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-
-  if (!account) {
-    throw new Error(
-      "BROKER_ACCOUNT_NOT_FOUND",
-    );
-  }
-
-  if (
-    account.holdings.length >
-    0
-  ) {
-    throw new Error(
-      "BROKER_ACCOUNT_HAS_HOLDINGS",
-    );
-  }
-
-  if (
-    account.orders.length >
-    0
-  ) {
-    throw new Error(
-      "BROKER_ACCOUNT_HAS_ACTIVE_ORDERS",
-    );
-  }
-
-  if (
-    account
-      .portfolioCashAllocations
-      .length >
-    0
-  ) {
-    throw new Error(
-      "BROKER_ACCOUNT_HAS_ALLOCATED_CASH",
-    );
-  }
-
   return prisma.$transaction(
     async (tx) => {
+      const candidate =
+        await tx.brokerAccount.findFirst({
+          where: {
+            id: brokerAccountId,
+            client: {
+              firmId,
+            },
+          },
+          select: {
+            clientId: true,
+          },
+        });
+
+      if (!candidate) {
+        throw new Error(
+          "BROKER_ACCOUNT_NOT_FOUND",
+        );
+      }
+
+      /*
+       * Serialize against order creation, which
+       * holds this same client row in shared mode.
+       */
+      await tx.$queryRaw`
+        SELECT "id"
+        FROM "Client"
+        WHERE "id" = ${candidate.clientId}
+        FOR UPDATE
+      `;
+
+      await tx.$queryRaw`
+        SELECT "id"
+        FROM "BrokerAccount"
+        WHERE "id" = ${brokerAccountId}
+        FOR UPDATE
+      `;
+
+      const account =
+        await tx.brokerAccount.findFirst({
+          where: {
+            id: brokerAccountId,
+            archivedAt: null,
+            client: {
+              firmId,
+              archivedAt: null,
+            },
+          },
+          include: {
+            holdings: {
+              select: {
+                id: true,
+              },
+            },
+            orders: {
+              where: {
+                status: {
+                  in: [
+                    ...ACTIVE_ORDER_STATUSES,
+                  ],
+                },
+              },
+              select: {
+                id: true,
+              },
+            },
+            portfolioCashAllocations: {
+              where: {
+                cashBalance: {
+                  gt: 0,
+                },
+              },
+              select: {
+                id: true,
+              },
+            },
+          },
+        });
+
+      if (!account) {
+        throw new Error(
+          "BROKER_ACCOUNT_NOT_FOUND",
+        );
+      }
+
+      if (account.holdings.length > 0) {
+        throw new Error(
+          "BROKER_ACCOUNT_HAS_HOLDINGS",
+        );
+      }
+
+      if (account.orders.length > 0) {
+        throw new Error(
+          "BROKER_ACCOUNT_HAS_ACTIVE_ORDERS",
+        );
+      }
+
+      if (
+        account
+          .portfolioCashAllocations
+          .length > 0
+      ) {
+        throw new Error(
+          "BROKER_ACCOUNT_HAS_ALLOCATED_CASH",
+        );
+      }
+
       await tx.brokerConnection.updateMany({
         where: {
           brokerAccountId:

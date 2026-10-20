@@ -246,4 +246,52 @@ export function validateRuntimeConfig() {
     5_000,
     120_000,
   );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_WORKER_INTERVAL_MS",
+    250,
+    60_000,
+  );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_WORKER_MAX_INTERVAL_MS",
+    250,
+    60_000,
+  );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_LOCK_TIMEOUT_MS",
+    1_000,
+    600_000,
+  );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_RECOVERY_INTERVAL_MS",
+    1_000,
+    3_600_000,
+  );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_CLEANUP_INTERVAL_MS",
+    60_000,
+    86_400_000,
+  );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_DRAIN_BATCH_SIZE",
+    1,
+    1_000,
+  );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_COMPLETED_RETENTION_DAYS",
+    1,
+    3_650,
+  );
+
+  validateOptionalInteger(
+    "ORDER_EXECUTION_FAILED_RETENTION_DAYS",
+    1,
+    3_650,
+  );
 }

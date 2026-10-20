@@ -211,6 +211,7 @@ export async function retryBasketChildOrderService(
             availableAt:
               new Date(),
             lockedAt: null,
+            leaseToken: null,
           },
         });
 
@@ -412,6 +413,7 @@ export async function reconcileBasketChildOrderService(
         status: "COMPLETED",
         lastError: null,
         lockedAt: null,
+        leaseToken: null,
       },
     });
 
@@ -441,6 +443,7 @@ export async function reconcileBasketChildOrderService(
         status: "FAILED",
         lastError: message,
         lockedAt: null,
+        leaseToken: null,
       },
     });
 

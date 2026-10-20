@@ -1,5 +1,6 @@
 import {
     supportsHoldings,
+    type BrokerHolding,
 } from "@pms-oms/broker";
 
 import {
@@ -56,6 +57,89 @@ function key(
     symbol: string,
 ) {
     return `${exchange.toUpperCase()}:${symbol.toUpperCase()}`;
+}
+
+type AggregatedBrokerHolding = {
+    symbol: string;
+    exchange: string;
+    quantity: number;
+    averagePrice: number;
+    totalCost: number;
+};
+
+function aggregateBrokerHoldings(
+    holdings: BrokerHolding[],
+) {
+    const aggregated =
+        new Map<
+            string,
+            AggregatedBrokerHolding
+        >();
+
+    for (const holding of holdings) {
+        const symbol =
+            holding.symbol
+                .trim()
+                .toUpperCase();
+        const exchange =
+            holding.exchange
+                .trim()
+                .toUpperCase();
+
+        if (
+            !symbol ||
+            !exchange ||
+            !Number.isInteger(
+                holding.quantity,
+            ) ||
+            holding.quantity < 0 ||
+            !Number.isFinite(
+                holding.averagePrice,
+            ) ||
+            holding.averagePrice < 0
+        ) {
+            throw new Error(
+                "BROKER_INVALID_HOLDINGS_RESPONSE",
+            );
+        }
+
+        const normalizedKey =
+            key(exchange, symbol);
+        const existing =
+            aggregated.get(
+                normalizedKey,
+            );
+        const cost =
+            holding.quantity *
+            holding.averagePrice;
+
+        if (existing) {
+            existing.quantity +=
+                holding.quantity;
+            existing.totalCost +=
+                cost;
+            existing.averagePrice =
+                existing.quantity > 0
+                    ? existing.totalCost /
+                      existing.quantity
+                    : 0;
+        } else {
+            aggregated.set(
+                normalizedKey,
+                {
+                    symbol,
+                    exchange,
+                    quantity:
+                        holding.quantity,
+                    averagePrice:
+                        holding.averagePrice,
+                    totalCost: cost,
+                },
+            );
+        }
+    }
+
+    return aggregated;
 }
 
 export async function reconcileBrokerHoldings(
@@ -207,27 +291,8 @@ export async function reconcileBrokerHoldings(
     }
 
     const brokerMap =
-        new Map(
-            brokerHoldings.map(
-                (holding) => [
-                    key(
-                        holding.exchange,
-                        holding.symbol,
-                    ),
-
-                    {
-                        ...holding,
-
-                        symbol:
-                            holding.symbol
-                                .toUpperCase(),
-
-                        exchange:
-                            holding.exchange
-                                .toUpperCase(),
-                    },
-                ],
-            ),
+        aggregateBrokerHoldings(
+            brokerHoldings,
         );
 
     const instrumentKeys =
@@ -459,11 +524,16 @@ export async function repairBrokerHolding(
                 id:
                     input.portfolioId,
 
+                archivedAt:
+                    null,
+
                 clientId:
                     brokerAccount.clientId,
 
                 client: {
                     firmId,
+                    archivedAt:
+                        null,
                 },
             },
 
@@ -503,14 +573,10 @@ export async function repairBrokerHolding(
         await broker.getHoldings();
 
     const brokerHolding =
-        brokerHoldings.find(
-            (holding) =>
-                holding.symbol
-                    .toUpperCase() ===
-                symbol &&
-                holding.exchange
-                    .toUpperCase() ===
-                exchange,
+        aggregateBrokerHoldings(
+            brokerHoldings,
+        ).get(
+            key(exchange, symbol),
         );
 
     const brokerQuantity =
@@ -685,477 +751,3 @@ export async function repairBrokerHolding(
                         null,
 
                     portfolioId:
-                        portfolio.id,
-                };
-            }
-
-            if (
-                brokerAveragePrice === null ||
-                !Number.isFinite(
-                    brokerAveragePrice,
-                ) ||
-                brokerAveragePrice < 0
-            ) {
-                throw new Error(
-                    "BROKER_INVALID_HOLDINGS_RESPONSE",
-                );
-            }
-
-            /*
-             * Broker has a holding but PMS doesn't.
-             *
-             * Explicit portfolio selection makes
-             * creation safe.
-             */
-            if (!existingHolding) {
-                const created =
-                    await tx.holding.create({
-                        data: {
-                            portfolioId:
-                                portfolio.id,
-
-                            brokerAccountId:
-                                brokerAccount.id,
-
-                            symbol,
-                            exchange,
-
-                            quantity:
-                                brokerQuantity,
-
-                            averagePrice:
-                                brokerAveragePrice,
-                        },
-                    });
-
-                await createAuditLog(
-                    {
-                        firmId,
-
-                        action:
-                            "BROKER_RECONCILED",
-
-                        entityType:
-                            "BROKER_ACCOUNT",
-
-                        entityId:
-                            brokerAccount.id,
-
-                        message:
-                            "Broker holding reconciliation repaired PMS state",
-
-                        actorUserId,
-
-                        metadata: {
-                            symbol,
-                            exchange,
-
-                            repair:
-                                "CREATE_MISSING_PMS_HOLDING",
-
-                            before: null,
-
-                            after: {
-                                quantity:
-                                    created.quantity,
-
-                                averagePrice:
-                                    Number(
-                                        created.averagePrice,
-                                    ),
-
-                                portfolioId:
-                                    created.portfolioId,
-                            },
-
-                            brokerQuantity,
-
-                            brokerAveragePrice,
-
-                            portfolioId:
-                                portfolio.id,
-                        },
-                    },
-
-                    tx,
-                );
-
-                return {
-                    changed: true,
-
-                    symbol,
-                    exchange,
-
-                    quantity:
-                        created.quantity,
-
-                    averagePrice:
-                        Number(
-                            created.averagePrice,
-                        ),
-
-                    portfolioId:
-                        created.portfolioId,
-                };
-            }
-
-            /*
-             * Exactly one PMS holding exists.
-             *
-             * Safe to align it directly with the
-             * broker account's current holding.
-             */
-            const changed =
-                existingHolding.quantity !==
-                brokerQuantity;
-
-            if (!changed) {
-                return {
-                    changed: false,
-
-                    reason:
-                        "ALREADY_RECONCILED",
-                };
-            }
-
-            const updated =
-                await tx.holding.update({
-                    where: {
-                        id:
-                            existingHolding.id,
-                    },
-
-                    data: {
-                        quantity:
-                            brokerQuantity,
-                    },
-                });
-
-            await createAuditLog(
-                {
-                    firmId,
-
-                    action:
-                        "BROKER_RECONCILED",
-
-                    entityType:
-                        "BROKER_ACCOUNT",
-
-                    entityId:
-                        brokerAccount.id,
-
-                    message:
-                        "Broker holding reconciliation repaired PMS state",
-
-                    metadata: {
-                        symbol,
-                        exchange,
-
-                        repair:
-                            "UPDATE_PMS_HOLDING",
-
-                        before,
-
-                        after: {
-                            quantity:
-                                updated.quantity,
-
-                            averagePrice:
-                                Number(
-                                    updated.averagePrice,
-                                ),
-
-                            portfolioId:
-                                updated.portfolioId,
-                        },
-
-                        brokerQuantity,
-
-                        brokerAveragePrice,
-
-                        portfolioId:
-                            portfolio.id,
-                    },
-                },
-
-                tx,
-            );
-
-            return {
-                changed: true,
-
-                symbol,
-                exchange,
-
-                quantity:
-                    updated.quantity,
-
-                averagePrice:
-                    Number(
-                        updated.averagePrice,
-                    ),
-
-                portfolioId:
-                    updated.portfolioId,
-            };
-        },
-    );
-}
-export async function importBrokerHoldings(
-    brokerAccountId: string,
-    firmId: string,
-    input: ImportBrokerHoldingsInput,
-    actorUserId?: string,
-) {
-    if (!input.portfolioId) {
-        throw new Error(
-            "INVALID_RECONCILIATION_INPUT",
-        );
-    }
-
-    const brokerAccount =
-        await prisma.brokerAccount.findFirst({
-            where: {
-                id: brokerAccountId,
-
-                archivedAt:
-                    null,
-
-                client: {
-                    firmId,
-                },
-            },
-
-            select: {
-                id: true,
-                clientId: true,
-            },
-        });
-
-    if (!brokerAccount) {
-        throw new Error(
-            "BROKER_ACCOUNT_NOT_FOUND",
-        );
-    }
-
-    const portfolio =
-        await prisma.portfolio.findFirst({
-            where: {
-                id: input.portfolioId,
-
-                clientId:
-                    brokerAccount.clientId,
-
-                client: {
-                    firmId,
-                },
-            },
-
-            select: {
-                id: true,
-            },
-        });
-
-    if (!portfolio) {
-        throw new Error(
-            "RECONCILIATION_PORTFOLIO_INVALID",
-        );
-    }
-
-    const broker =
-        await resolveBroker(
-            brokerAccountId,
-            firmId,
-        );
-
-    if (!supportsHoldings(broker)) {
-        throw new Error(
-            "BROKER_HOLDINGS_UNSUPPORTED",
-        );
-    }
-
-    const brokerHoldings =
-        await broker.getHoldings();
-
-    const existingHoldings =
-        await prisma.holding.findMany({
-            where: {
-                brokerAccountId,
-
-                portfolio: {
-                    client: {
-                        firmId,
-                    },
-                },
-            },
-
-            select: {
-                symbol: true,
-                exchange: true,
-            },
-        });
-
-    const existingKeys =
-        new Set(
-            existingHoldings.map(
-                (holding) =>
-                    key(
-                        holding.exchange,
-                        holding.symbol,
-                    ),
-            ),
-        );
-
-    const missingHoldings =
-        brokerHoldings.filter(
-            (holding) =>
-                holding.quantity > 0 &&
-                !existingKeys.has(
-                    key(
-                        holding.exchange,
-                        holding.symbol,
-                    ),
-                ),
-        );
-
-    return prisma.$transaction(
-        async (tx) => {
-            const imported = [];
-
-            for (
-                const holding of
-                missingHoldings
-            ) {
-                const symbol =
-                    holding.symbol
-                        .trim()
-                        .toUpperCase();
-
-                const exchange =
-                    holding.exchange
-                        .trim()
-                        .toUpperCase();
-
-                if (
-                    !Number.isInteger(
-                        holding.quantity,
-                    ) ||
-                    holding.quantity <= 0 ||
-                    !Number.isFinite(
-                        holding.averagePrice,
-                    ) ||
-                    holding.averagePrice < 0
-                ) {
-                    throw new Error(
-                        "BROKER_INVALID_HOLDINGS_RESPONSE",
-                    );
-                }
-                const existingAllocation =
-                    await tx.holding.findFirst({
-                        where: {
-                            brokerAccountId:
-                                brokerAccount.id,
-
-                            symbol,
-                            exchange,
-                        },
-                    });
-
-                if (existingAllocation) {
-                    continue;
-                }
-                const created =
-                    await tx.holding.upsert({
-                        where: {
-                            portfolioId_brokerAccountId_symbol_exchange:
-                            {
-                                portfolioId:
-                                    portfolio.id,
-
-                                brokerAccountId:
-                                    brokerAccount.id,
-
-                                symbol,
-                                exchange,
-                            },
-                        },
-
-                        update: {},
-
-                        create: {
-                            portfolioId:
-                                portfolio.id,
-
-                            brokerAccountId:
-                                brokerAccount.id,
-
-                            symbol,
-                            exchange,
-
-                            quantity:
-                                holding.quantity,
-
-                            averagePrice:
-                                holding.averagePrice,
-                        },
-                    });
-
-                imported.push(
-                    created,
-                );
-
-                await createAuditLog(
-                    {
-                        firmId,
-
-                        action:
-                            "BROKER_RECONCILED",
-
-                        entityType:
-                            "BROKER_ACCOUNT",
-
-                        entityId:
-                            brokerAccount.id,
-
-                        message:
-                            "Broker holding imported into PMS",
-
-                        actorUserId,
-
-                        metadata: {
-                            repair:
-                                "IMPORT_EXISTING_BROKER_HOLDING",
-
-                            symbol,
-                            exchange,
-
-                            quantity:
-                                created.quantity,
-
-                            averagePrice:
-                                Number(
-                                    created.averagePrice,
-                                ),
-
-                            portfolioId:
-                                portfolio.id,
-                        },
-                    },
-
-                    tx,
-                );
-            }
-
-            return {
-                importedCount:
-                    imported.length,
-
-                portfolioId:
-                    portfolio.id,
-
-                holdings:
-                    imported,
-            };
-        },
-    );
-}

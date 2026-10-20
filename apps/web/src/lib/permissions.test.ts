@@ -46,6 +46,12 @@ describe("web role permissions", () => {
     expect(
       hasPermission(
         "OPERATIONS",
+        "VIEW_OPERATIONS",
+      ),
+    ).toBe(true);
+    expect(
+      hasPermission(
+        "OPERATIONS",
         "EXECUTE_ORDERS",
       ),
     ).toBe(false);
@@ -68,6 +74,12 @@ describe("web role permissions", () => {
       hasPermission(
         "PORTFOLIO_MANAGER",
         "VIEW_AUDIT",
+      ),
+    ).toBe(false);
+    expect(
+      hasPermission(
+        "PORTFOLIO_MANAGER",
+        "ARCHIVE_CLIENT_DATA",
       ),
     ).toBe(false);
   });
